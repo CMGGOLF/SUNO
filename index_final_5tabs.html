@@ -1006,7 +1006,8 @@ async function callClaude(prompt, systemPrompt=''){
   messages.push({role:'user', content:prompt});
 
   const body = {
-    model:'anthropic/claude-3.5-sonnet',
+    // OpenRouter free router: avoids 'No endpoints found' on unavailable paid models
+    model:'openrouter/free',
     messages:messages,
     max_tokens:2500,
     temperature:0.8
