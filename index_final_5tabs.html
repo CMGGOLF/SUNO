@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>수노 뮤직 프롬프트 메이커</title>
+<title>국악 뮤직 프롬프트 메이커</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -368,7 +368,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">수노 뮤직 프롬프트 메이커</div>
+        <div class="logo-text">국악 뮤직 프롬프트</div>
         <div class="logo-sub">Korean Fusion Music Prompt Maker</div>
       </div>
     </div>
@@ -897,24 +897,20 @@ textures:[
    STATE
 ═══════════════════════════════════════════ */
 const STATE = {
-  genre:null, moods:[], instr:null, concept:null,
-  vocalStyle:null, 
-
-vocalTones:[
-  {en:'Smooth female vocals',kr:'매끄러운 여성 보컬',gender:'female',desc:'서울 밤 감성·Neo Soul·Jazz 계열에 적합'},
-  {en:'Soulful female vocals',kr:'소울풀한 여성 보컬',gender:'female',desc:'감정선과 Groove를 동시에 살리는 스타일'},
-  {en:'Breathy female vocals',kr:'숨 섞인 여성 보컬',gender:'female',desc:'늦은 밤 재즈바 같은 부드러운 분위기 강화'},
-  {en:'Airy female harmonies',kr:'공기감 있는 여성 화음',gender:'female',desc:'세련된 글로벌 감성 강화'},
-  {en:'Smooth male vocals',kr:'매끄러운 남성 보컬',gender:'male',desc:'부드러운 Soul·Jazz 감성에 적합'},
-  {en:'Deep soulful male vocals',kr:'깊은 소울 남성 보컬',gender:'male',desc:'몸을 울리는 저음 Soul/Blues 감성'},
-  {en:'Smoky blues baritone',kr:'스모키 블루스 바리톤',gender:'male',desc:'묵직한 재즈·블루스 저음 스타일'},
-  {en:'Warm raspy male vocals',kr:'따뜻하고 거친 남성 보컬',gender:'male',desc:'인간적이고 빈티지한 질감 강화'},
-  {en:'Gospel-inspired male vocals',kr:'가스펠 스타일 남성 보컬',gender:'male',desc:'흑인 Soul 감성과 깊은 울림 강화'},
-  {en:'Slow groove phrasing',kr:'느긋한 그루브 창법',gender:'both',desc:'박자를 뒤로 끌며 Groove를 살리는 스타일'},
-  {en:'Emotional vocal delivery',kr:'감성적 표현',gender:'both',desc:'한국적 감정선과 Soul 표현을 자연스럽게 연결'},
-  {en:'Call and response vocals',kr:'콜 앤 리스폰스 보컬',gender:'both',desc:'Soul/Funk 특유의 주고받는 보컬 에너지'},
-],
-textures:[], grooves:[], spaces:[], koreanGrooves:[], bassStyles:[], koreanFeelings:[], bpm:95, gender:'all'
+  genre:null,
+  moods:[],
+  instr:null,
+  concept:null,
+  vocalStyle:null,
+  vocalTones:[],
+  textures:[],
+  grooves:[],
+  spaces:[],
+  koreanGrooves:[],
+  bassStyles:[],
+  koreanFeelings:[],
+  bpm:95,
+  gender:'all'
 };
 
 /* ═══════════════════════════════════════════
@@ -1325,81 +1321,22 @@ async function runAI(){
   loading.classList.remove('show');
 }
 
-```js id="lz7v3h"
 async function aiExpandPrompt(){
-
   const current = document.getElementById('promptBox').textContent;
-
   if(!current || current.includes('←')) return;
-
   const loading = document.getElementById('promptLoading');
-
   loading.classList.add('show');
-
   try{
-
     const text = await callClaude(
-
-`Create ONE Suno AI prompt.
-
-Rules:
-- English only
-- Maximum 220 characters
-- One line only
-- No explanation
-- No quotation marks
-- Groove and rhythm MUST come first
-- Make it rhythmic, funky, soulful, and head-nodding
-- Korean elements should feel subtle and modern
-
-Priority:
-deep groove bass,
-syncopated pocket drums,
-tight funk groove
-
-Use:
-genre,
-groove,
-bass movement,
-rhythm,
-key instruments,
-vocal tone,
-BPM
-
-Music settings:
-${current}`,
-
-'Output ONLY one short Suno prompt under 220 characters.'
-
+      `Create ONE Suno AI style prompt from the music settings below.\n\nRules:\n- English only\n- Maximum 230 characters total\n- One line only\n- No title, no explanation, no quotation marks\n- Include genre, Korean identity, groove, bass movement, key instruments, vocal tone, BPM
+- Make it groove-driven, rhythmic, head-nodding, and emotionally Korean — not ambient-only
+- Korean elements must feel natural: gayageum riffs, haegeum slides, janggu groove, Seoul night atmosphere\n\nSettings:\n${current}`,
+      'You are a Suno AI music prompt expert. Output only one concise English prompt under 230 characters.'
     );
-
-    let finalPrompt = sanitizeSunoPrompt(text,220);
-
-    // Groove boost
-    if(!finalPrompt.toLowerCase().includes('deep groove bass')){
-      finalPrompt =
-      'deep groove bass, syncopated pocket drums, tight funk groove, '
-      + finalPrompt;
-    }
-
-    // Final cut
-    if(finalPrompt.length > 220){
-      finalPrompt = finalPrompt.substring(0,220).trim();
-    }
-
-    document.getElementById('promptBox').textContent = finalPrompt;
-
-  }catch(e){
-
-    alert('오류: ' + (e.message || '알 수 없는 오류'));
-
-  }
-
+    document.getElementById('promptBox').textContent = sanitizeSunoPrompt(text, 230);
+  }catch(e){ alert('오류: '+(e.message||'알 수 없는 오류')); }
   loading.classList.remove('show');
-
 }
-```
-
 
 async function genTitle(){
   const current = document.getElementById('promptBox').textContent;
