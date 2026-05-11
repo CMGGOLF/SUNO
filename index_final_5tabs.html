@@ -384,18 +384,18 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 <div class="section" style="border-color:rgba(201,168,76,.35);background:rgba(201,168,76,.04)">
   <div class="section-head" style="background:rgba(201,168,76,.08)">
     <div class="sec-num" style="background:var(--teal)">🔑</div>
-    <div class="sec-title">Anthropic API 키 설정</div>
+    <div class="sec-title">OpenRouter API 키 설정</div>
     <div class="sec-sub">AI 기능 사용 전 필수 입력 · 브라우저에만 저장됩니다</div>
   </div>
   <div class="section-body">
     <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center">
-      <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-xxxxxxxx... (Anthropic API Key 입력)" oninput="onApiKeyInput(this.value)">
+      <input type="password" id="apiKeyInput" placeholder="sk-or-v1-xxxxxxxx... (OpenRouter API Key 입력)" oninput="onApiKeyInput(this.value)">
       <button class="btn btn-teal" onclick="saveApiKey()">💾 저장</button>
       <button class="btn btn-outline" onclick="clearApiKey()">삭제</button>
     </div>
     <div class="info-bar" style="margin-top:8px" id="apiKeyStatus">
       ⚠️ API 키가 없으면 제목 생성·가사 생성·키워드 확장 등 AI 기능이 작동하지 않습니다.<br>
-      🔗 API 키 발급: <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--gold)">console.anthropic.com</a> → API Keys → Create Key
+      🔗 API 키 발급: <a href="https://openrouter.ai/settings/keys" target="_blank" style="color:var(--gold)">openrouter.ai</a> → Keys → Create Key
     </div>
   </div>
 </div>
@@ -983,41 +983,59 @@ function buildPrompt(){
 }
 
 /* ═══════════════════════════════════════════
-   ANTHROPIC API HELPER
+   OPENROUTER API HELPER
 ═══════════════════════════════════════════ */
 function getApiKey(){
   return (document.getElementById('apiKeyInput')?.value||'').trim() || localStorage.getItem('gugak_api_key') || '';
 }
+
 async function callClaude(prompt, systemPrompt=''){
   const apiKey = getApiKey();
-  if(!apiKey){ document.getElementById('apiKeyInput')?.focus(); throw new Error('API 키를 먼저 입력해 주세요.'); }
+  if(!apiKey){
+    document.getElementById('apiKeyInput')?.focus();
+    throw new Error('OpenRouter API 키를 먼저 입력해 주세요.');
+  }
+  if(!apiKey.startsWith('sk-or-v1-')){
+    throw new Error('OpenRouter 키 형식이 아닙니다. sk-or-v1- 로 시작하는 키를 입력하세요.');
+  }
+
+  const messages = [];
+  if(systemPrompt){
+    messages.push({role:'system', content:systemPrompt});
+  }
+  messages.push({role:'user', content:prompt});
+
   const body = {
-    model:'claude-sonnet-4-20250514',
-    max_tokens:2000,
-    temperature:0.8,
-    messages:[{role:'user',content:prompt}]
+    model:'anthropic/claude-3.5-sonnet',
+    messages:messages,
+    max_tokens:2500,
+    temperature:0.8
   };
-  if(systemPrompt) body.system = systemPrompt;
-  const res = await fetch('https://api.anthropic.com/v1/messages',{
+
+  const res = await fetch('https://openrouter.ai/api/v1/chat/completions',{
     method:'POST',
     headers:{
       'Content-Type':'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version':'2023-06-01',
-      'anthropic-dangerous-direct-browser-access':'true'
+      'Authorization':`Bearer ${apiKey}`,
+      'HTTP-Referer':window.location.href || 'http://localhost',
+      'X-Title':'Gugak Prompt Maker'
     },
     body:JSON.stringify(body)
   });
+
+  const data = await res.json().catch(()=>({}));
+
   if(!res.ok){
-    const err=await res.json().catch(()=>({}));
-    let msg = err?.error?.message || `API 오류 (${res.status})`;
-    if(res.status===401) msg='401 인증 오류 - API 키 확인';
-    if(res.status===403) msg='403 접근 거부 - 브라우저 호출 제한 또는 권한 문제';
-    if(res.status===429) msg='429 사용량 제한 - 크레딧/요금제 확인';
+    console.error('OpenRouter error:', data);
+    let msg = data?.error?.message || `OpenRouter API 오류 (${res.status})`;
+    if(res.status===401) msg='401 인증 오류 - OpenRouter API 키 확인';
+    if(res.status===402) msg='402 결제/크레딧 부족 - OpenRouter 크레딧 확인';
+    if(res.status===403) msg='403 접근 거부 - 모델 권한 또는 키 권한 확인';
+    if(res.status===429) msg='429 사용량 제한 - 요청 제한 또는 크레딧 확인';
     throw new Error(msg);
   }
-  const data = await res.json();
-  return data.content?.map(b=>b.text||'').join('\n') || '결과를 가져올 수 없습니다.';
+
+  return data.choices?.[0]?.message?.content || '결과를 가져올 수 없습니다.';
 }
 
 /* ═══════════════════════════════════════════
@@ -1138,7 +1156,9 @@ async function genRec(){
       '국악 퓨전 음악 시장 분석가. 트렌드와 조회수 데이터 전문가. JSON만 출력.'
     );
     const clean = text.replace(/```json|```/g,'').trim();
-    const items = JSON.parse(clean);
+    const match = clean.match(/\[[\s\S]*\]/);
+    if(!match) throw new Error('JSON 배열 응답 형식 오류');
+    const items = JSON.parse(match[0]);
     grid.innerHTML = items.map(item=>`
       <div class="rec-card" onclick="applyRec('${item.nameEn}')">
         <div class="rec-rank">#${item.rank} 추천</div>
@@ -1146,7 +1166,7 @@ async function genRec(){
         <div class="rec-view">📈 예상 조회수: ${item.views}</div>
         <div class="rec-tags">${item.tags.map(t=>`<span class="rtag">${t}</span>`).join('')}</div>
       </div>`).join('');
-  }catch(e){grid.innerHTML=`<div style="color:var(--muted);font-size:12px">추천 생성 오류</div>`}
+  }catch(e){grid.innerHTML=`<div style="color:var(--muted);font-size:12px">추천 생성 오류: ${e.message||'알 수 없는 오류'}</div>`}
   loading.classList.remove('show');
 }
 
@@ -1211,7 +1231,7 @@ function saveApiKey(){
   const k = document.getElementById('apiKeyInput').value.trim();
   if(!k){ alert('API 키를 입력해 주세요.'); return; }
   localStorage.setItem('gugak_api_key', k);
-  showApiStatus('✅ API 키가 저장되었습니다. 이제 AI 기능을 사용할 수 있습니다.', '#3a8fa0');
+  showApiStatus('✅ OpenRouter API 키가 저장되었습니다. 이제 AI 기능을 사용할 수 있습니다.', '#3a8fa0');
 }
 function clearApiKey(){
   localStorage.removeItem('gugak_api_key');
@@ -1219,7 +1239,12 @@ function clearApiKey(){
   showApiStatus('🗑️ API 키가 삭제되었습니다.', 'var(--red)');
 }
 function onApiKeyInput(v){
-  if(v.startsWith('sk-ant')) showApiStatus('✔ 키 형식 확인됨. 저장 버튼을 눌러 저장하세요.','var(--teal)');
+  const key = v.trim();
+  if(key.startsWith('sk-or-v1-')){
+    showApiStatus('✔ OpenRouter 키 형식 확인됨. 저장 버튼을 눌러 저장하세요.','var(--teal)');
+  }else if(key.length>0){
+    showApiStatus('⚠️ OpenRouter 키는 sk-or-v1- 로 시작해야 합니다.','var(--red)');
+  }
 }
 function showApiStatus(msg, color){
   const el = document.getElementById('apiKeyStatus');
@@ -1229,7 +1254,7 @@ function loadSavedKey(){
   const k = localStorage.getItem('gugak_api_key');
   if(k){
     document.getElementById('apiKeyInput').value = k;
-    showApiStatus('✅ 저장된 API 키가 불러와졌습니다. AI 기능 사용 가능.','var(--teal)');
+    showApiStatus('✅ 저장된 OpenRouter API 키가 불러와졌습니다. AI 기능 사용 가능.','var(--teal)');
   }
 }
 
