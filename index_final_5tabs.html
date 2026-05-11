@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>수노 뮤직 프롬프트 메이커</title>
+<title>국악 뮤직 프롬프트 메이커</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -368,7 +368,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">수노 뮤직 프롬프트 메이커</div>
+        <div class="logo-text">국악 뮤직 프롬프트</div>
         <div class="logo-sub">Korean Fusion Music Prompt Maker</div>
       </div>
     </div>
@@ -611,6 +611,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       <button class="btn btn-gold" onclick="copyPrompt()">📋 복사</button>
       <button class="btn btn-teal" onclick="aiExpandPrompt()">✦ Suno 프롬프트 생성</button>
       <button class="btn btn-outline" onclick="applyGroovePreset()">⚡ 한국 그루브 추천 세팅</button>
+      <button class="btn btn-outline" onclick="applyUltimateGroovePreset()">🔥 Ultimate Groove</button>
       <button class="btn btn-outline" onclick="resetAll()">↺ 초기화</button>
     </div>
     <div class="ai-loading" id="promptLoading" style="margin-top:8px">
@@ -753,7 +754,7 @@ instruments:[
   {en:'Gayageum + Neo Soul Drums + Rhodes',kr:'가야금 + 네오소울 드럼 + 로즈 피아노',desc:'몸을 움직이게 만드는 Neo Soul Groove 위에 한국적 감성을 결합'},
   {en:'Haegeum + Funk Bass + Jazz Piano',kr:'해금 + 펑키 베이스 + 재즈 피아노',desc:'애절한 해금과 움직이는 재즈 그루브의 조합'},
   {en:'Geomungo + Boom Bap Drums + Upright Bass',kr:'거문고 + 붐뱁 드럼 + 업라이트 베이스',desc:'힙합 리듬과 한국적 저역 리프를 결합한 Groove 스타일'},
-  {en:'Daegeum + Ambient Rhodes + Groove Percussion',kr:'대금 + 앰비언트 로즈 + 그루브 퍼커션',desc:'동양적 숨결감과 세련된 Soul Groove의 조화'},
+  {en:'Daegeum + Ambient Rhodes + Groove Percussion',kr:'대금 + 그루브 중심 로즈 + 그루브 퍼커션',desc:'동양적 숨결감과 세련된 Soul Groove의 조화'},
   {en:'Gayageum + Funk Guitar + Live Drums',kr:'가야금 + 펑크 기타 + 라이브 드럼',desc:'몸이 반응하는 Funk 리듬 위에 한국적 리프를 배치'},
   {en:'Janggu + Jazz Drums + Neo Soul Bass',kr:'장구 + 재즈 드럼 + 네오소울 베이스',desc:'전통 장단을 현대 Groove 리듬으로 재해석'},
 ],
@@ -762,7 +763,7 @@ concepts:[
       num:'01',name:'몽환적이고 감성적인 한국 Lo-fi Soul',
       core:['Dreamy','Emotional','Chill'],sub:['Nostalgic','Introspective','Calm'],
       desc:'몽환적인 리버브와 빈티지 질감 위에 한국적인 감정선을 녹여낸 스타일. 야간 드라이브·새벽 감성·공부 플레이리스트 계열과 잘 어울림.',
-      genres:['Korean Lo-fi Soul','Neo Soul + Gayageum','Ambient Korean Fusion'],
+      genres:['Korean Lo-fi Soul','Neo Soul + Gayageum','Korean Groove Fusion'],
       inst:['가야금','해금','Neo Soul Rhodes','Lo-fi Vinyl Noise','Soft Jazz Piano','Ambient Pad','Lo-fi Drums']
     },
     {
@@ -776,7 +777,7 @@ concepts:[
       num:'03',name:'신비롭고 동양적인 Ambient Fusion',
       core:['Mysterious','Dreamy','Calm'],sub:['Nostalgic','Romantic'],
       desc:'동양적인 숨결감과 공간감 중심의 몽환적 스타일. 자연·밤·비·명상 같은 분위기와 잘 어울림.',
-      genres:['Dreamy + Ambient Korean Fusion','Oriental Ambient','Korean Chill Fusion'],
+      genres:['Dreamy + Korean Groove Fusion','Oriental Ambient','Korean Chill Fusion'],
       inst:['대금','해금','Ambient Pad','Soft Synth Texture','Wind FX','Minimal Percussion','Reverb Piano']
     },
     {
@@ -810,31 +811,22 @@ concepts:[
     {en:'Oriental Jazz Hip-hop',kr:'오리엔탈 재즈 힙합',gender:'both',tone:'힘 빼고 자연스럽게 흐르는 Chill 톤',tags:['Jazz Hip-hop','Lo-fi','Groovy','Nostalgic']},
     {en:'Lo-fi Jazz Gugak',kr:'로파이 재즈 국악',gender:'female',tone:'나른하고 속삭이는 로파이 톤',tags:['Lo-fi','Chill','Ambient','Calm']},
     {en:'Cinematic Soul Fusion',kr:'시네마틱 소울 퓨전',gender:'both',tone:'웅장하고 감정 고조가 가능한 드라마틱 톤',tags:['Cinematic','Soul','Epic','Dramatic']},
-    {en:'Ambient Jazz Korean Fusion',kr:'앰비언트 재즈 코리안 퓨전',gender:'female',tone:'숨결감 있고 몽환적인 에어리 톤',tags:['Ambient','Dreamy','Chill','Mysterious']},
+    {en:'Ambient Jazz Korean Fusion',kr:'그루브 중심 재즈 코리안 퓨전',gender:'female',tone:'숨결감 있고 몽환적인 에어리 톤',tags:['Ambient','Dreamy','Chill','Mysterious']},
     {en:'Korean Neo Soul',kr:'코리안 네오소울',gender:'female',tone:'부드럽고 세련된 R&B 스타일 톤',tags:['Neo Soul','R&B','Emotional','Smooth']},
   ],
-  vocalTones:[
-    {en:'Soft female vocals',kr:'부드러운 여성 보컬',gender:'female',desc:'로파이·Neo Soul·Ambient 계열과 가장 잘 어울림'},
-    {en:'Soft male vocals',kr:'부드러운 남성 보컬',gender:'male',desc:'따뜻하고 잔잔한 Korean Lo-fi Soul 분위기 표현 가능'},
-    {en:'Smooth female vocals',kr:'매끄러운 여성 보컬',gender:'female',desc:'Oriental Jazz·Korean Neo Soul 스타일에 적합'},
-    {en:'Smooth male vocals',kr:'매끄러운 남성 보컬',gender:'male',desc:'부드러운 Soul·Jazz·R&B 감성 표현에 적합'},
-    {en:'Soulful male vocals',kr:'소울 넘치는 남성 보컬',gender:'male',desc:'Korean Soul Fusion·Haegeum Blues에 강력 추천'},
-    {en:'Soulful female vocals',kr:'소울 넘치는 여성 보컬',gender:'female',desc:'Neo Soul·Soul Jazz 스타일의 깊은 감정 표현 가능'},
-    {en:'Raspy male vocals',kr:'거친 남성 보컬',gender:'male',desc:'Oriental Blues 스타일과 궁합이 뛰어남'},
-    {en:'Raspy female vocals',kr:'거친 여성 보컬',gender:'female',desc:'독특하고 빈티지한 Oriental Soul 분위기 형성'},
-    {en:'Whispered female vocals',kr:'속삭이는 여성 보컬',gender:'female',desc:'Ambient Korean Fusion·Dreamy 스타일 강화'},
-    {en:'Whispered male vocals',kr:'속삭이는 남성 보컬',gender:'male',desc:'몽환적이고 내면적인 Lo-fi 감성 표현 가능'},
-    {en:'Crooning',kr:'크루닝',gender:'both',desc:'낮고 부드러운 재즈 감성 표현에 적합'},
-    {en:'Emotional vocal delivery',kr:'감성적 표현',gender:'both',desc:"한국 특유의 '한(恨)' 감정을 자연스럽게 전달 가능"},
-    {en:'Airy vocal harmonies',kr:'공기 섞인 화음',gender:'female',desc:'몽환적이고 세련된 글로벌 감성 강화'},
-    {en:'Falsetto',kr:'가성',gender:'male',desc:'Neo Soul·R&B 계열의 감성적인 고음 표현'},
-    {en:'Spoken word style',kr:'말하듯 부르는 스타일',gender:'both',desc:'Oriental Jazz Hip-hop·Lo-fi 스타일과 잘 어울림'},
-    {en:'Breathy vocals',kr:'숨결감 있는 보컬',gender:'both',desc:'공기감과 감성적인 분위기를 강화하는 현대적 스타일'},
-    {en:'Layered vocal textures',kr:'다층 보컬',gender:'both',desc:'K-pop 감성과 시네마틱 국악 분위기를 동시에 표현 가능'},
-    {en:'Backing chorus',kr:'백코러스',gender:'both',desc:'후렴과 감정 고조를 풍성하게 만드는 화음 스타일'},
-  ],
-
-  textures:[
+  
+vocalTones:[
+  {en:'Smooth female vocals',kr:'매끄러운 여성 보컬',desc:'서울 밤 감성·Neo Soul·Jazz 계열에 적합'},
+  {en:'Soulful female vocals',kr:'소울풀한 여성 보컬',desc:'감정선과 Groove를 동시에 살리는 스타일'},
+  {en:'Breathy vocals',kr:'숨 섞인 보컬',desc:'늦은 밤 재즈바 같은 분위기 강화'},
+  {en:'Airy vocal harmonies',kr:'공기감 있는 화음',desc:'세련된 글로벌 감성 강화'},
+  {en:'Smoky blues baritone',kr:'스모키 블루스 바리톤',desc:'묵직한 재즈·블루스 저음 스타일'},
+  {en:'Deep soulful male vocals',kr:'깊은 소울 남성 보컬',desc:'몸을 울리는 저음 Soul/Blues 감성'},
+  {en:'Warm raspy male vocals',kr:'따뜻하고 거친 남성 보컬',desc:'인간적이고 빈티지한 질감 강화'},
+  {en:'Slow groove phrasing',kr:'느긋한 그루브 창법',desc:'박자를 뒤로 끌며 Groove를 살리는 스타일'},
+  {en:'Gospel-inspired vocals',kr:'가스펠 스타일 보컬',desc:'흑인 Soul 감성과 깊은 울림 강화'},
+],
+textures:[
     {en:'Warm analog texture',kr:'따뜻한 아날로그 질감',desc:'빈티지 Soul·Lo-fi 감성을 강화하는 따뜻한 사운드'},
     {en:'Vinyl crackle',kr:'바이닐 노이즈',desc:'로파이·추억·빈티지 감성 연출'},
     {en:'Tape saturation',kr:'테이프 질감',desc:'부드럽고 눌린 아날로그 사운드 표현'},
@@ -848,11 +840,13 @@ concepts:[
     {en:'Boom bap drums',kr:'붐뱁 드럼',desc:'재즈 힙합 스타일의 클래식 비트'},
     {en:'Brush jazz drums',kr:'브러쉬 재즈 드럼',desc:'재즈바 감성의 부드러운 드럼'},
     {en:'Humanized groove',kr:'사람 연주 같은 리듬',desc:'AI 느낌을 줄이고 자연스러운 연주감 강화'},
+    {en:'Tight drum pocket',kr:'타이트한 드럼 포켓',desc:'리듬을 단단하게 잡아주는 핵심 드럼감'},
+    {en:'Head-nodding groove',kr:'고개 끄덕이는 그루브',desc:'자연스럽게 몸이 반응하는 리듬감'},
     {en:'Syncopated rhythm',kr:'당김음 리듬',desc:'고급스럽고 세련된 재즈·소울 리듬'},
   ],
   spaces:[
     {en:'Small jazz club ambience',kr:'재즈바 공간감',desc:'늦은 밤 재즈 클럽 같은 분위기'},
-    {en:'Dreamy ambient reverb',kr:'몽환적 리버브',desc:'드림팝·앰비언트 공간감 강화'},
+    {en:'Warm soulful reverb',kr:'따뜻한 소울 리버브',desc:'드림팝·그루브 중심 공간감 강화'},
     {en:'Wide stereo atmosphere',kr:'넓은 스테레오 공간감',desc:'글로벌 감성의 넓은 사운드 연출'},
     {en:'Intimate vocal space',kr:'가까운 보컬 공간감',desc:'보컬 감정 몰입 강화'},
   ],
@@ -882,7 +876,7 @@ concepts:[
   ],
 
   bpmGuides:[
-    {range:'65–80',name:'Ambient Korean Fusion (앰비언트 코리안 퓨전)',mood:'Dreamy (몽환적인) · Calm (잔잔한) · Emotional (감성적인)',desc:'몽환적이고 여백감 있는 국악 감성 표현에 적합. 대금·해금의 숨결감 강조'},
+    {range:'65–80',name:'Korean Groove Fusion (그루브 중심 코리안 퓨전)',mood:'Dreamy (몽환적인) · Calm (잔잔한) · Emotional (감성적인)',desc:'몽환적이고 여백감 있는 국악 감성 표현에 적합. 대금·해금의 숨결감 강조'},
     {range:'70–85',name:'Korean Lo-fi Soul (코리안 로파이 소울)',mood:'Chill (차분한) · Nostalgic (향수를 불러일으키는) · Introspective (내면적인)',desc:'새벽 감성·드라이브·공부 플레이리스트 스타일에 최적'},
     {range:'75–90',name:'Haegeum Blues (해금 블루스)',mood:'Melancholic (우울한) · Sad (슬픈) · Emotional (감성적인)',desc:'해금과 블루스 감정을 깊게 살릴 수 있는 느린 그루브'},
     {range:'85–100',name:'Neo Soul + Gayageum (네오소울 + 가야금)',mood:'Smooth (부드러운) · Emotional (감성적인) · Groovy (리듬감 있는)',desc:'세련된 글로벌 Korean Soul 스타일 구현 가능'},
@@ -900,7 +894,19 @@ concepts:[
 ═══════════════════════════════════════════ */
 const STATE = {
   genre:null, moods:[], instr:null, concept:null,
-  vocalStyle:null, vocalTones:[], textures:[], grooves:[], spaces:[], koreanGrooves:[], bassStyles:[], koreanFeelings:[], bpm:95, gender:'all'
+  vocalStyle:null, 
+vocalTones:[
+  {en:'Smooth female vocals',kr:'매끄러운 여성 보컬',desc:'서울 밤 감성·Neo Soul·Jazz 계열에 적합'},
+  {en:'Soulful female vocals',kr:'소울풀한 여성 보컬',desc:'감정선과 Groove를 동시에 살리는 스타일'},
+  {en:'Breathy vocals',kr:'숨 섞인 보컬',desc:'늦은 밤 재즈바 같은 분위기 강화'},
+  {en:'Airy vocal harmonies',kr:'공기감 있는 화음',desc:'세련된 글로벌 감성 강화'},
+  {en:'Smoky blues baritone',kr:'스모키 블루스 바리톤',desc:'묵직한 재즈·블루스 저음 스타일'},
+  {en:'Deep soulful male vocals',kr:'깊은 소울 남성 보컬',desc:'몸을 울리는 저음 Soul/Blues 감성'},
+  {en:'Warm raspy male vocals',kr:'따뜻하고 거친 남성 보컬',desc:'인간적이고 빈티지한 질감 강화'},
+  {en:'Slow groove phrasing',kr:'느긋한 그루브 창법',desc:'박자를 뒤로 끌며 Groove를 살리는 스타일'},
+  {en:'Gospel-inspired vocals',kr:'가스펠 스타일 보컬',desc:'흑인 Soul 감성과 깊은 울림 강화'},
+],
+textures:[], grooves:[], spaces:[], koreanGrooves:[], bassStyles:[], koreanFeelings:[], bpm:95, gender:'all'
 };
 
 /* ═══════════════════════════════════════════
@@ -1174,7 +1180,7 @@ function buildPrompt(){
     parts.push(`[Vocal Tone] ${ts}`);
   }
   parts.push(`[BPM] ${STATE.bpm}`);
-  parts.push(`[Direction] Groove-driven Korean soul fusion with natural rhythm movement, emotional Korean atmosphere, and globally appealing jazz/soul energy`);
+  parts.push(`[Direction] Groove-driven Korean soul fusion with funky bass movement, rhythmic Korean instruments, soulful jazz energy, and natural head-nodding groove`);
 
   const box = document.getElementById('promptBox');
   box.textContent = parts.length > 1 ? parts.join('\n') : '← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
@@ -1272,7 +1278,7 @@ async function runAI(){
   const isYT = kw.includes('youtube.com') || kw.includes('youtu.be');
   const sysPrompt = `당신은 한국 전통음악 퓨전(국악 융합 음악) 전문 프롬프트 생성 AI입니다.
 다음 장르/분위기/악기 데이터를 기반으로 분석합니다:
-장르: Korean Lo-fi Soul, Oriental Jazz Hip-hop, Cinematic Gugak, Neo Soul+Gayageum, Trap+Korean Percussion, Ambient Korean Fusion
+장르: Korean Lo-fi Soul, Oriental Jazz Hip-hop, Cinematic Gugak, Neo Soul+Gayageum, Trap+Korean Percussion, Korean Groove Fusion
 악기: 가야금, 해금, 대금, 거문고, 장구, 북, 징
 분위기: Dreamy, Emotional, Melancholic, Chill, Dark, Dramatic, Groovy
 한국어와 영어로 간결하고 구체적인 분석 결과를 제공하세요.`;
@@ -1433,6 +1439,35 @@ function applyGroovePreset(){
   document.getElementById('bpmSlider').value=96;
   document.getElementById('bpmVal').textContent='96';
   updateBpmGuide(96);
+  buildPrompt();
+}
+
+
+function applyUltimateGroovePreset(){
+  resetAll();
+  STATE.genre = 0;
+  STATE.moods = [0,1,3];
+  STATE.instr = 0;
+  STATE.vocalTones = [1,2,5];
+  STATE.textures = [0,2];
+  STATE.grooves = [1,4,5,6,7];
+  STATE.spaces = [0,2];
+  STATE.koreanGrooves = [0,2,4];
+  STATE.bassStyles = [0,2,5];
+  STATE.koreanFeelings = [0,3,5];
+  STATE.bpm = 96;
+
+  renderGenres();
+  renderMoods();
+  renderInstruments();
+  renderTones('all');
+  renderTextures();
+  renderGrooves();
+  renderSpaces();
+  renderKoreanGrooves();
+  renderBassStyles();
+  renderKoreanFeelings();
+
   buildPrompt();
 }
 
