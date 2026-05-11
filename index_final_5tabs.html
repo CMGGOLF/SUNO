@@ -815,16 +815,20 @@ concepts:[
     {en:'Korean Neo Soul',kr:'코리안 네오소울',gender:'female',tone:'부드럽고 세련된 R&B 스타일 톤',tags:['Neo Soul','R&B','Emotional','Smooth']},
   ],
   
+
 vocalTones:[
-  {en:'Smooth female vocals',kr:'매끄러운 여성 보컬',desc:'서울 밤 감성·Neo Soul·Jazz 계열에 적합'},
-  {en:'Soulful female vocals',kr:'소울풀한 여성 보컬',desc:'감정선과 Groove를 동시에 살리는 스타일'},
-  {en:'Breathy vocals',kr:'숨 섞인 보컬',desc:'늦은 밤 재즈바 같은 분위기 강화'},
-  {en:'Airy vocal harmonies',kr:'공기감 있는 화음',desc:'세련된 글로벌 감성 강화'},
-  {en:'Smoky blues baritone',kr:'스모키 블루스 바리톤',desc:'묵직한 재즈·블루스 저음 스타일'},
-  {en:'Deep soulful male vocals',kr:'깊은 소울 남성 보컬',desc:'몸을 울리는 저음 Soul/Blues 감성'},
-  {en:'Warm raspy male vocals',kr:'따뜻하고 거친 남성 보컬',desc:'인간적이고 빈티지한 질감 강화'},
-  {en:'Slow groove phrasing',kr:'느긋한 그루브 창법',desc:'박자를 뒤로 끌며 Groove를 살리는 스타일'},
-  {en:'Gospel-inspired vocals',kr:'가스펠 스타일 보컬',desc:'흑인 Soul 감성과 깊은 울림 강화'},
+  {en:'Smooth female vocals',kr:'매끄러운 여성 보컬',gender:'female',desc:'서울 밤 감성·Neo Soul·Jazz 계열에 적합'},
+  {en:'Soulful female vocals',kr:'소울풀한 여성 보컬',gender:'female',desc:'감정선과 Groove를 동시에 살리는 스타일'},
+  {en:'Breathy female vocals',kr:'숨 섞인 여성 보컬',gender:'female',desc:'늦은 밤 재즈바 같은 부드러운 분위기 강화'},
+  {en:'Airy female harmonies',kr:'공기감 있는 여성 화음',gender:'female',desc:'세련된 글로벌 감성 강화'},
+  {en:'Smooth male vocals',kr:'매끄러운 남성 보컬',gender:'male',desc:'부드러운 Soul·Jazz 감성에 적합'},
+  {en:'Deep soulful male vocals',kr:'깊은 소울 남성 보컬',gender:'male',desc:'몸을 울리는 저음 Soul/Blues 감성'},
+  {en:'Smoky blues baritone',kr:'스모키 블루스 바리톤',gender:'male',desc:'묵직한 재즈·블루스 저음 스타일'},
+  {en:'Warm raspy male vocals',kr:'따뜻하고 거친 남성 보컬',gender:'male',desc:'인간적이고 빈티지한 질감 강화'},
+  {en:'Gospel-inspired male vocals',kr:'가스펠 스타일 남성 보컬',gender:'male',desc:'흑인 Soul 감성과 깊은 울림 강화'},
+  {en:'Slow groove phrasing',kr:'느긋한 그루브 창법',gender:'both',desc:'박자를 뒤로 끌며 Groove를 살리는 스타일'},
+  {en:'Emotional vocal delivery',kr:'감성적 표현',gender:'both',desc:'한국적 감정선과 Soul 표현을 자연스럽게 연결'},
+  {en:'Call and response vocals',kr:'콜 앤 리스폰스 보컬',gender:'both',desc:'Soul/Funk 특유의 주고받는 보컬 에너지'},
 ],
 textures:[
     {en:'Warm analog texture',kr:'따뜻한 아날로그 질감',desc:'빈티지 Soul·Lo-fi 감성을 강화하는 따뜻한 사운드'},
@@ -895,16 +899,20 @@ textures:[
 const STATE = {
   genre:null, moods:[], instr:null, concept:null,
   vocalStyle:null, 
+
 vocalTones:[
-  {en:'Smooth female vocals',kr:'매끄러운 여성 보컬',desc:'서울 밤 감성·Neo Soul·Jazz 계열에 적합'},
-  {en:'Soulful female vocals',kr:'소울풀한 여성 보컬',desc:'감정선과 Groove를 동시에 살리는 스타일'},
-  {en:'Breathy vocals',kr:'숨 섞인 보컬',desc:'늦은 밤 재즈바 같은 분위기 강화'},
-  {en:'Airy vocal harmonies',kr:'공기감 있는 화음',desc:'세련된 글로벌 감성 강화'},
-  {en:'Smoky blues baritone',kr:'스모키 블루스 바리톤',desc:'묵직한 재즈·블루스 저음 스타일'},
-  {en:'Deep soulful male vocals',kr:'깊은 소울 남성 보컬',desc:'몸을 울리는 저음 Soul/Blues 감성'},
-  {en:'Warm raspy male vocals',kr:'따뜻하고 거친 남성 보컬',desc:'인간적이고 빈티지한 질감 강화'},
-  {en:'Slow groove phrasing',kr:'느긋한 그루브 창법',desc:'박자를 뒤로 끌며 Groove를 살리는 스타일'},
-  {en:'Gospel-inspired vocals',kr:'가스펠 스타일 보컬',desc:'흑인 Soul 감성과 깊은 울림 강화'},
+  {en:'Smooth female vocals',kr:'매끄러운 여성 보컬',gender:'female',desc:'서울 밤 감성·Neo Soul·Jazz 계열에 적합'},
+  {en:'Soulful female vocals',kr:'소울풀한 여성 보컬',gender:'female',desc:'감정선과 Groove를 동시에 살리는 스타일'},
+  {en:'Breathy female vocals',kr:'숨 섞인 여성 보컬',gender:'female',desc:'늦은 밤 재즈바 같은 부드러운 분위기 강화'},
+  {en:'Airy female harmonies',kr:'공기감 있는 여성 화음',gender:'female',desc:'세련된 글로벌 감성 강화'},
+  {en:'Smooth male vocals',kr:'매끄러운 남성 보컬',gender:'male',desc:'부드러운 Soul·Jazz 감성에 적합'},
+  {en:'Deep soulful male vocals',kr:'깊은 소울 남성 보컬',gender:'male',desc:'몸을 울리는 저음 Soul/Blues 감성'},
+  {en:'Smoky blues baritone',kr:'스모키 블루스 바리톤',gender:'male',desc:'묵직한 재즈·블루스 저음 스타일'},
+  {en:'Warm raspy male vocals',kr:'따뜻하고 거친 남성 보컬',gender:'male',desc:'인간적이고 빈티지한 질감 강화'},
+  {en:'Gospel-inspired male vocals',kr:'가스펠 스타일 남성 보컬',gender:'male',desc:'흑인 Soul 감성과 깊은 울림 강화'},
+  {en:'Slow groove phrasing',kr:'느긋한 그루브 창법',gender:'both',desc:'박자를 뒤로 끌며 Groove를 살리는 스타일'},
+  {en:'Emotional vocal delivery',kr:'감성적 표현',gender:'both',desc:'한국적 감정선과 Soul 표현을 자연스럽게 연결'},
+  {en:'Call and response vocals',kr:'콜 앤 리스폰스 보컬',gender:'both',desc:'Soul/Funk 특유의 주고받는 보컬 에너지'},
 ],
 textures:[], grooves:[], spaces:[], koreanGrooves:[], bassStyles:[], koreanFeelings:[], bpm:95, gender:'all'
 };
@@ -980,9 +988,10 @@ function renderTones(gFilter){
   g.innerHTML = filtered.map((d,i)=>{
     const origIdx = DATA.vocalTones.indexOf(d);
     const sel = STATE.vocalTones.includes(origIdx);
+    const genderLabel = d.gender==='both' ? ' (남/여)' : d.gender==='male' ? ' (남성)' : ' (여성)';
     return `<div class="chip ${sel?'active':''}" id="tone_${origIdx}" onclick="toggleTone(${origIdx})">
       <span class="chip-en">${d.en}</span>
-      <span class="chip-kr">${d.kr}${d.gender==='both'?' (남/여)':d.gender==='male'?' (남성)':' (여성)'}</span>
+      <span class="chip-kr">${d.kr}${genderLabel}</span>
     </div>`;
   }).join('');
 }
@@ -1448,7 +1457,7 @@ function applyUltimateGroovePreset(){
   STATE.genre = 0;
   STATE.moods = [0,1,3];
   STATE.instr = 0;
-  STATE.vocalTones = [1,2,5];
+  STATE.vocalTones = [1,2,5]; // Soulful female, Breathy female, Deep soulful male
   STATE.textures = [0,2];
   STATE.grooves = [1,4,5,6,7];
   STATE.spaces = [0,2];
