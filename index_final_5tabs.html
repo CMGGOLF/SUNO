@@ -320,7 +320,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">BV 뮤직 프롬프트 메이커</div>
+        <div class="logo-text">BV 뮤직 프롬프트</div>
         <div class="logo-sub">Korean Fusion Music Prompt Maker</div>
       </div>
     </div>
@@ -1218,25 +1218,71 @@ async function runAI() {
   result.classList.remove('show');
 
   const isYT = kw.includes('youtube.com') || kw.includes('youtu.be');
-  const sysPrompt = `당신은 한국 전통음악 퓨전(국악 융합 음악) 전문 프롬프트 생성 AI입니다.
-다음 장르/분위기/악기 데이터를 기반으로 분석합니다:
-장르: Korean Lo-fi Soul, Oriental Jazz Hip-hop, Cinematic Gugak, Neo Soul+Gayageum, Trap+Korean Percussion, Korean Groove Fusion
-악기: 가야금, 해금, 대금, 거문고, 장구, 북, 징
-분위기: Dreamy, Emotional, Melancholic, Chill, Dark, Dramatic, Groovy
-한국어와 영어로 간결하고 구체적인 분석 결과를 제공하세요.`;
 
-  const userPrompt = isYT
-    ? `다음 YouTube 링크를 분석해서 음악 스타일을 추출하세요: ${kw}
-(링크에 직접 접근 불가 시, URL 패턴과 키워드로 추정)
-분석 결과를 다음 형식으로 제공:
-🎵 장르: 
-🌈 분위기: 
-🎸 악기 조합: 
-🎤 보컬 스타일: 
-⏱️ 추천 BPM: 
-🎭 무드 조합: 
-📝 완성 프롬프트 (영어): `
-    : `"${kw}" 키워드를 국악 퓨전 음악 프롬프트로 확장하세요.
+  if (isYT) {
+    // YouTube 링크 → 구조화된 분석 후 자동 적용
+    await analyzeYouTubeAndApply(kw, result, loading);
+  } else {
+    // 일반 키워드 → 기존 방식
+    await analyzeKeyword(kw, result, loading);
+  }
+}
+
+// YouTube 링크 전용: 구조화된 JSON 분석 → UI 자동 적용
+async function analyzeYouTubeAndApply(youtubeUrl, resultEl, loadingEl) {
+  const sysPrompt = `당신은 국악 퓨전 음악 분석 전문가입니다.
+사용자가 준 YouTube 링크의 음악 스타일을 분석해서, 아래 JSON 형식으로만 응답하세요. 다른 설명은 하지 마세요.
+
+반드시 다음 필드만 포함:
+{
+  "genre": "장르 이름 (예: Seoul Night Soul)",
+  "moods": ["분위기1", "분위기2"], 
+  "instruments": "악기 조합 이름",
+  "concept": "컨셉 번호 또는 이름 (예: 07 또는 부드러운 늦은 밤 한국 블루스)",
+  "vocalStyle": "보컬 스타일 이름",
+  "bpm": 숫자,
+  "textures": ["텍스처1", "텍스처2"],
+  "koreanGrooves": ["한국 그루브1"],
+  "koreanFeelings": ["한국 감성1", "한국 감성2"],
+  "summary": "한 줄 요약"
+}`;
+
+  const userPrompt = `다음 YouTube 링크의 음악을 분석해주세요: ${youtubeUrl}
+이 음악의 스타일을 한국 국악 퓨전 관점에서 분석하고, 위 JSON 형식으로 정확하게 작성해주세요.
+BPM은 실제 느낌에 가까운 숫자로 추정해주세요.`;
+
+  try {
+    const text = await callClaude(userPrompt, sysPrompt);
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    
+    if (!jsonMatch) {
+      throw new Error("AI가 JSON 형식으로 응답하지 않았습니다.");
+    }
+
+    const analysis = JSON.parse(jsonMatch[0]);
+    
+    // 결과 표시
+    resultEl.innerHTML = `
+      <div style="margin-bottom:12px; font-weight:600; color:var(--gold);">🎵 AI 분석 결과 (자동 적용됨)</div>
+      <pre style="white-space:pre-wrap; font-size:12px; line-height:1.7;">${JSON.stringify(analysis, null, 2)}</pre>
+    `;
+    resultEl.classList.add('show');
+
+    // UI에 자동 적용
+    applyAnalysisToUI(analysis);
+
+  } catch (e) {
+    resultEl.innerHTML = `<span style="color:var(--red)">분석 실패: ${e.message}</span>`;
+    resultEl.classList.add('show');
+  }
+  loadingEl.classList.remove('show');
+}
+
+// 일반 키워드 분석 (기존 방식 유지)
+async function analyzeKeyword(keyword, resultEl, loadingEl) {
+  const sysPrompt = `당신은 한국 전통음악 퓨전(국악 융합 음악) 전문 프롬프트 생성 AI입니다.`;
+
+  const userPrompt = `"${keyword}" 키워드를 국악 퓨전 음악 프롬프트로 확장하세요.
 다음 형식으로 제공:
 🎵 추천 장르: 
 🌈 분위기 태그: 
@@ -1249,13 +1295,109 @@ async function runAI() {
 
   try {
     const text = await callClaude(userPrompt, sysPrompt);
-    result.innerHTML = `<pre style="white-space:pre-wrap;font-family:'Noto Sans KR',sans-serif;font-size:12px;line-height:1.8;color:var(--text)">${text}</pre>`;
-    result.classList.add('show');
+    resultEl.innerHTML = `<pre style="white-space:pre-wrap;font-family:'Noto Sans KR',sans-serif;font-size:12px;line-height:1.8;color:var(--text)">${text}</pre>`;
+    resultEl.classList.add('show');
   } catch (e) {
-    result.innerHTML = `<span style="color:var(--red)">오류: ${e.message}</span>`;
-    result.classList.add('show');
+    resultEl.innerHTML = `<span style="color:var(--red)">오류: ${e.message}</span>`;
+    resultEl.classList.add('show');
   }
-  loading.classList.remove('show');
+  loadingEl.classList.remove('show');
+}
+
+// 분석 결과를 UI에 자동 적용하는 핵심 함수
+function applyAnalysisToUI(analysis) {
+  resetAll(false); // 기존 선택 초기화 (렌더는 마지막에 한 번)
+
+  // 1. Genre 매칭
+  if (analysis.genre) {
+    const genreIndex = DATA.genres.findIndex(g => 
+      g.en.toLowerCase().includes(analysis.genre.toLowerCase()) || 
+      g.kr.includes(analysis.genre)
+    );
+    if (genreIndex !== -1) STATE.genre = genreIndex;
+  }
+
+  // 2. Moods 매칭
+  if (analysis.moods && Array.isArray(analysis.moods)) {
+    analysis.moods.forEach(moodName => {
+      const idx = DATA.moods.findIndex(m => 
+        m.en.toLowerCase().includes(moodName.toLowerCase()) || 
+        m.kr.includes(moodName)
+      );
+      if (idx !== -1 && !STATE.moods.includes(idx)) {
+        STATE.moods.push(idx);
+      }
+    });
+  }
+
+  // 3. Instruments 매칭
+  if (analysis.instruments) {
+    const instrIndex = DATA.instruments.findIndex(i => 
+      i.en.toLowerCase().includes(analysis.instruments.toLowerCase()) || 
+      i.kr.includes(analysis.instruments)
+    );
+    if (instrIndex !== -1) STATE.instr = instrIndex;
+  }
+
+  // 4. Concept 매칭 (번호 또는 이름)
+  if (analysis.concept) {
+    let conceptIndex = -1;
+    // 숫자로 들어온 경우
+    if (!isNaN(analysis.concept)) {
+      conceptIndex = parseInt(analysis.concept) - 1;
+    } else {
+      conceptIndex = DATA.concepts.findIndex(c => 
+        c.name.includes(analysis.concept) || 
+        c.num === analysis.concept
+      );
+    }
+    if (conceptIndex >= 0 && conceptIndex < DATA.concepts.length) {
+      STATE.concept = conceptIndex;
+    }
+  }
+
+  // 5. BPM
+  if (analysis.bpm && analysis.bpm >= 65 && analysis.bpm <= 145) {
+    STATE.bpm = parseInt(analysis.bpm);
+  }
+
+  // 6. Korean Grooves 매칭
+  if (analysis.koreanGrooves && Array.isArray(analysis.koreanGrooves)) {
+    analysis.koreanGrooves.forEach(name => {
+      const idx = DATA.koreanGrooves.findIndex(k => 
+        k.en.toLowerCase().includes(name.toLowerCase()) || k.kr.includes(name)
+      );
+      if (idx !== -1 && !STATE.koreanGrooves.includes(idx)) STATE.koreanGrooves.push(idx);
+    });
+  }
+
+  // 7. Korean Feelings 매칭
+  if (analysis.koreanFeelings && Array.isArray(analysis.koreanFeelings)) {
+    analysis.koreanFeelings.forEach(name => {
+      const idx = DATA.koreanFeelings.findIndex(k => 
+        k.en.toLowerCase().includes(name.toLowerCase()) || k.kr.includes(name)
+      );
+      if (idx !== -1 && !STATE.koreanFeelings.includes(idx)) STATE.koreanFeelings.push(idx);
+    });
+  }
+
+  // UI 전체 갱신
+  renderAll();
+
+  // BPM 슬라이더 업데이트
+  const bpmSlider = document.getElementById('bpmSlider');
+  const bpmVal = document.getElementById('bpmVal');
+  if (bpmSlider && bpmVal) {
+    bpmSlider.value = STATE.bpm;
+    bpmVal.textContent = STATE.bpm;
+    updateBpmGuide(STATE.bpm);
+  }
+
+  // 프롬프트 자동 생성
+  buildPrompt();
+
+  // 성공 토스트
+  showToast("✅ 분석 결과가 자동으로 적용되었습니다!");
 }
 
 async function aiExpandPrompt() {
