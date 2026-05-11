@@ -3,337 +3,1180 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>수노 음악 프롬프트 생성기 v2</title>
+<title>국악 뮤직 프롬프트 메이커</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
-
 :root {
-  --bg: #0e0e10; --surface: #18181c; --surface2: #222228; --border: #2e2e38;
-  --accent: #7c6ff7; --accent2: #a78bfa; --text: #f0f0f4; --muted: #888896;
-  --chip-bg: #1e1e26; --error: #f87171; --success: #34d399; --radius: 10px;
+  --bg: #08080e;
+  --surface: #111118;
+  --surface2: #1a1a24;
+  --surface3: #22222f;
+  --border: #2a2a3a;
+  --gold: #c9a84c;
+  --gold2: #e8c96a;
+  --red: #c94040;
+  --teal: #3a8fa0;
+  --text: #e2ddd6;
+  --muted: #7a7590;
+  --dim: #44405a;
+  --selected-bg: rgba(201,168,76,0.12);
+  --selected-border: #c9a84c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:14px;
+  line-height:1.6;
+  min-height:100vh;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; padding: 2rem 1rem; }
-.container { max-width: 780px; margin: 0 auto; }
-
-header { text-align: center; margin-bottom: 1.8rem; }
-header h1 { font-family: 'Space Mono', monospace; font-size: 1.6rem; color: var(--accent2); }
-header p { font-size: 13px; color: var(--muted); }
-
-.api-section { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 1.4rem; }
-.api-row { display: flex; gap: 8px; }
-.api-row input { flex: 1; background: var(--surface2); border: 0.5px solid var(--border); border-radius: 6px; color: var(--text); padding: 8px 12px; font-family: 'Space Mono', monospace; }
-.api-row button { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; }
-
-.tabs { display: flex; border: 0.5px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 1.3rem; }
-.tab { flex: 1; padding: 11px 4px; background: var(--surface); border: none; border-right: 0.5px solid var(--border); cursor: pointer; font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; }
-.tab:last-child { border-right: none; }
-.tab.on { background: var(--accent); color: #fff; }
-
-.panel { display: none; }
-.panel.on { display: block; }
-
-.sec { margin-bottom: 1.1rem; }
-.sl { font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
-
-.chips { display: flex; flex-wrap: wrap; gap: 5px; }
-.chip {
-  padding: 6px 11px; border: 0.5px solid var(--border); border-radius: 18px; background: var(--chip-bg);
-  cursor: pointer; font-size: 12px; color: var(--muted); transition: all .15s;
-}
-.chip.on { border-color: var(--accent); background: rgba(124,111,247,.18); color: var(--accent2); }
-
-textarea, input[type=text] {
-  width: 100%; padding: 9px 12px; border: 0.5px solid var(--border); border-radius: 7px;
-  background: var(--surface); font-size: 13.5px; color: var(--text); resize: vertical;
-}
-textarea:focus, input:focus { border-color: var(--accent); }
-
-.tbtns { display: flex; gap: 8px; margin-bottom: 1rem; }
-.tbtn { flex: 1; padding: 9px; border: 0.5px solid var(--border); border-radius: 7px; background: var(--surface); cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); text-align: center; }
-.tbtn.on { border-color: var(--accent); background: rgba(124,111,247,.15); color: var(--accent2); }
-
-.gbtn {
-  width: 100%; padding: 13px; background: var(--accent); color: #fff; border: none; border-radius: 8px;
-  font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px;
+/* ─── NOISE OVERLAY ─── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:1000;opacity:.4;
 }
 
-.result-box { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-top: 1.3rem; }
-.result-title { font-size: 14px; font-weight: 700; color: var(--accent2); margin-bottom: 6px; }
-.result-content { background: var(--surface2); border: 0.5px solid var(--border); border-radius: 6px; padding: 11px 12px; font-size: 13.5px; line-height: 1.6; white-space: pre-wrap; }
-.copy-btn { font-size: 11px; padding: 3px 8px; border: 0.5px solid var(--border); border-radius: 4px; background: var(--surface2); cursor: pointer; color: var(--muted); margin-top: 5px; }
-.extra { margin-top: 1rem; padding-top: .9rem; border-top: 0.5px solid var(--border); }
-.err { color: var(--error); padding: 11px; border: 0.5px solid #7f1d1d; border-radius: 6px; background: rgba(248,113,113,.06); }
+/* ─── HEADER ─── */
+header{
+  background:linear-gradient(135deg,#0d0d16 0%,#12101a 100%);
+  border-bottom:1px solid var(--border);
+  padding:28px 40px 22px;
+  position:sticky;top:0;z-index:200;
+  backdrop-filter:blur(10px);
+}
+.header-inner{display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto}
+.logo-block{display:flex;align-items:center;gap:16px}
+.logo-symbol{
+  width:44px;height:44px;
+  background:var(--gold);
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:#08080e;font-weight:900;
+}
+.logo-text{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:22px;letter-spacing:2px;color:var(--text);
+}
+.logo-sub{font-size:11px;color:var(--muted);letter-spacing:4px;text-transform:uppercase;margin-top:2px}
+.header-badge{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:6px;padding:6px 14px;
+  font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;
+}
+
+/* ─── LAYOUT ─── */
+.app{max-width:1400px;margin:0 auto;padding:32px 40px 80px;display:grid;grid-template-columns:1fr;gap:32px}
+
+/* ─── SECTION WRAPPER ─── */
+.section{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+}
+.section-head{
+  display:flex;align-items:center;gap:12px;
+  padding:16px 24px;
+  background:var(--surface2);
+  border-bottom:1px solid var(--border);
+}
+.sec-num{
+  width:24px;height:24px;
+  background:var(--gold);
+  color:#08080e;
+  border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;font-family:'Space Mono',monospace;
+  flex-shrink:0;
+}
+.sec-title{font-family:'Noto Serif KR',serif;font-size:15px;font-weight:600;color:var(--text)}
+.sec-sub{font-size:11px;color:var(--muted);margin-left:auto}
+.section-body{padding:20px 24px}
+
+/* ─── CARD GRID ─── */
+.card-grid{display:grid;gap:10px}
+.card-grid.col2{grid-template-columns:repeat(2,1fr)}
+.card-grid.col3{grid-template-columns:repeat(3,1fr)}
+
+.selcard{
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:14px 16px;
+  cursor:pointer;
+  transition:all .2s ease;
+  background:var(--surface2);
+  position:relative;
+  overflow:hidden;
+}
+.selcard::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--gold) 0%,transparent 60%);
+  opacity:0;transition:opacity .2s;
+}
+.selcard:hover{border-color:var(--dim);transform:translateY(-1px)}
+.selcard.active{
+  border-color:var(--selected-border);
+  background:var(--selected-bg);
+}
+.selcard.active::before{opacity:.04}
+.card-en{font-family:'Space Mono',monospace;font-size:11px;color:var(--gold);margin-bottom:3px;font-weight:700}
+.card-kr{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;font-family:'Noto Serif KR',serif}
+.card-desc{font-size:11px;color:var(--muted);line-height:1.5}
+.check-dot{
+  position:absolute;top:10px;right:10px;
+  width:8px;height:8px;border-radius:50%;
+  background:var(--gold);
+  opacity:0;transition:opacity .2s;
+}
+.selcard.active .check-dot{opacity:1}
+
+/* ─── MOOD CHIPS ─── */
+.chip-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:6px 14px;
+  font-size:12px;
+  cursor:pointer;
+  transition:all .2s;
+  background:var(--surface2);
+  display:flex;flex-direction:column;align-items:flex-start;
+  gap:2px;
+}
+.chip-en{font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);font-weight:700}
+.chip-kr{font-size:12px;color:var(--text)}
+.chip-desc{font-size:10px;color:var(--muted);display:none}
+.chip:hover{border-color:var(--dim)}
+.chip.active{border-color:var(--gold);background:var(--selected-bg);color:var(--gold)}
+.chip.active .chip-kr{color:var(--gold)}
+
+/* ─── VOCAL GENDER TOGGLE ─── */
+.gender-row{display:flex;gap:8px;margin-bottom:14px;align-items:center}
+.gender-lbl{font-size:11px;color:var(--muted);margin-right:4px}
+.gender-btn{
+  padding:5px 16px;border-radius:20px;
+  border:1px solid var(--border);
+  background:var(--surface2);
+  color:var(--muted);font-size:12px;cursor:pointer;
+  transition:all .2s;font-family:'Noto Sans KR',sans-serif;
+}
+.gender-btn.active{background:var(--gold);border-color:var(--gold);color:#08080e;font-weight:700}
+
+/* ─── BPM SLIDER ─── */
+.bpm-wrap{display:flex;flex-direction:column;gap:16px}
+.bpm-display{
+  display:flex;align-items:flex-end;gap:8px;
+  justify-content:center;margin-bottom:4px;
+}
+.bpm-num{font-family:'Space Mono',monospace;font-size:56px;font-weight:700;color:var(--gold);line-height:1}
+.bpm-unit{font-size:16px;color:var(--muted);margin-bottom:10px}
+input[type=range]{
+  width:100%;height:6px;
+  -webkit-appearance:none;appearance:none;
+  background:linear-gradient(to right,var(--gold) 0%,var(--gold) var(--pct,30%),var(--surface3) var(--pct,30%));
+  border-radius:3px;cursor:pointer;outline:none;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:20px;height:20px;border-radius:50%;
+  background:var(--gold);
+  border:3px solid var(--bg);
+  box-shadow:0 0 0 2px var(--gold);
+  cursor:pointer;transition:transform .15s;
+}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+.bpm-guide-card{
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px 16px;
+  border-left:3px solid var(--gold);
+}
+.bpm-guide-range{font-family:'Space Mono',monospace;font-size:12px;color:var(--gold);margin-bottom:4px}
+.bpm-guide-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;font-family:'Noto Serif KR',serif}
+.bpm-guide-mood{font-size:11px;color:var(--teal);margin-bottom:4px}
+.bpm-guide-desc{font-size:11px;color:var(--muted)}
+
+/* ─── CONCEPT MOODS ─── */
+.concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.concept-card{
+  border:1px solid var(--border);border-radius:8px;padding:16px;cursor:pointer;
+  transition:all .2s;background:var(--surface2);
+}
+.concept-card:hover{border-color:var(--dim)}
+.concept-card.active{border-color:var(--gold);background:var(--selected-bg)}
+.concept-num{font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);margin-bottom:6px}
+.concept-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;font-family:'Noto Serif KR',serif}
+.concept-core{margin-bottom:4px}
+.concept-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.concept-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
+.ctag{font-size:10px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.25);color:var(--gold);border-radius:3px;padding:2px 7px}
+.concept-desc{font-size:11px;color:var(--muted);line-height:1.5}
+.concept-genres{font-size:11px;color:var(--teal);margin-top:6px}
+.concept-inst{font-size:11px;color:var(--dim);margin-top:4px}
+
+/* ─── PROMPT OUTPUT ─── */
+.prompt-box{
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  padding:16px;font-family:'Space Mono',monospace;font-size:12px;
+  color:var(--text);line-height:1.8;min-height:120px;
+  white-space:pre-wrap;word-break:break-word;
+  transition:border-color .2s;
+}
+.prompt-box:hover{border-color:var(--dim)}
+.prompt-actions{display:flex;gap:8px;margin-top:10px}
+
+/* ─── BUTTONS ─── */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 18px;border-radius:6px;border:1px solid;
+  font-size:12px;font-family:'Noto Sans KR',sans-serif;
+  cursor:pointer;transition:all .2s;font-weight:500;
+}
+.btn-gold{background:var(--gold);border-color:var(--gold);color:#08080e}
+.btn-gold:hover{background:var(--gold2);border-color:var(--gold2)}
+.btn-outline{background:transparent;border-color:var(--border);color:var(--muted)}
+.btn-outline:hover{border-color:var(--dim);color:var(--text)}
+.btn-teal{background:rgba(58,143,160,.15);border-color:var(--teal);color:var(--teal)}
+.btn-teal:hover{background:rgba(58,143,160,.25)}
+.btn-red{background:rgba(201,64,64,.15);border-color:var(--red);color:var(--red)}
+.btn-red:hover{background:rgba(201,64,64,.25)}
+
+/* ─── INPUT & TEXTAREA ─── */
+input[type=text],textarea{
+  width:100%;background:var(--surface2);
+  border:1px solid var(--border);border-radius:6px;
+  color:var(--text);padding:10px 14px;
+  font-family:'Noto Sans KR',sans-serif;font-size:13px;
+  transition:border-color .2s;outline:none;
+}
+input[type=text]:focus,textarea:focus{border-color:var(--gold)}
+input[type=text]::placeholder,textarea::placeholder{color:var(--dim)}
+textarea{resize:vertical;min-height:100px;line-height:1.7}
+
+/* ─── KEYWORD / AI ROW ─── */
+.ai-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start}
+.ai-block{display:flex;flex-direction:column;gap:10px}
+
+/* ─── TITLE GEN ─── */
+.title-out{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;
+}
+.title-card{
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;
+}
+.title-lang{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px}
+.title-val{font-size:16px;font-weight:700;color:var(--text);font-family:'Noto Serif KR',serif;min-height:26px}
+
+/* ─── LYRICS TABS ─── */
+.tab-row{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:16px}
+.tab{
+  padding:9px 20px;font-size:12px;cursor:pointer;color:var(--muted);
+  border-bottom:2px solid transparent;transition:all .2s;margin-bottom:-1px;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ─── YT ANALYSIS ─── */
+.yt-row{display:grid;grid-template-columns:1fr auto;gap:8px}
+.yt-result{
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  padding:14px 16px;margin-top:10px;font-size:12px;line-height:1.8;
+  display:none;
+}
+.yt-result.show{display:block}
+
+/* ─── RECOMMEND CARDS ─── */
+.rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.rec-card{
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;
+  cursor:pointer;transition:all .2s;
+}
+.rec-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.rec-rank{font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);margin-bottom:6px}
+.rec-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;font-family:'Noto Serif KR',serif}
+.rec-view{font-size:10px;color:var(--teal);margin-bottom:6px}
+.rec-tags{display:flex;flex-wrap:wrap;gap:4px}
+.rtag{font-size:10px;background:var(--surface3);border-radius:3px;padding:2px 6px;color:var(--muted)}
+
+/* ─── AI LOADING ─── */
+.ai-loading{
+  display:none;align-items:center;gap:8px;
+  font-size:12px;color:var(--muted);padding:10px 0;
+}
+.ai-loading.show{display:flex}
+.dot-anim{display:flex;gap:4px}
+.dot-anim span{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--gold);
+  animation:blink 1.2s infinite;
+}
+.dot-anim span:nth-child(2){animation-delay:.2s}
+.dot-anim span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+
+/* ─── INSTRUCTION INFO ─── */
+.info-bar{
+  background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);
+  border-radius:6px;padding:10px 14px;
+  font-size:11px;color:var(--muted);
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--dim)}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:900px){
+  .app{padding:20px 16px 60px}
+  header{padding:18px 16px}
+  .card-grid.col3{grid-template-columns:repeat(2,1fr)}
+  .concept-grid{grid-template-columns:1fr}
+  .rec-grid{grid-template-columns:repeat(2,1fr)}
+  .title-out{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .card-grid.col2,.card-grid.col3{grid-template-columns:1fr}
+  .rec-grid{grid-template-columns:1fr}
+}
+
+/* ─── SEPARATOR ─── */
+.sep{height:1px;background:var(--border);margin:16px 0}
+
+/* ─── COPY TOAST ─── */
+#toast{
+  position:fixed;bottom:30px;right:30px;z-index:9999;
+  background:var(--surface2);border:1px solid var(--gold);border-radius:8px;
+  padding:12px 20px;font-size:13px;color:var(--gold);
+  transform:translateY(20px);opacity:0;
+  transition:all .3s ease;pointer-events:none;
+}
+#toast.show{transform:translateY(0);opacity:1}
 </style>
 </head>
 <body>
-<div class="container">
 
 <header>
-  <h1>🎵 수노 음악 프롬프트 생성기 v2</h1>
-  <p>Suno AI 전용 • 가사 기능 제거 • 로딩 표시 적용</p>
+  <div class="header-inner">
+    <div class="logo-block">
+      <div class="logo-symbol">♪</div>
+      <div>
+        <div class="logo-text">국악 뮤직 프롬프트</div>
+        <div class="logo-sub">Korean Fusion Music Prompt Maker</div>
+      </div>
+    </div>
+    <div class="header-badge">AI POWERED · PERSONAL USE</div>
+  </div>
 </header>
 
-<!-- API Key -->
-<div class="api-section">
-  <label style="font-size:12px; color:#888; display:block; margin-bottom:5px;">🔑 OpenRouter API Key (필수)</label>
-  <div class="api-row">
-    <input type="password" id="api-key" placeholder="sk-or-...">
-    <button onclick="saveKey()">저장</button>
+<div class="app">
+
+<!-- ══════════════════════════════════════
+     SECTION 0 · 키워드 자동확장
+══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="sec-num">AI</div>
+    <div class="sec-title">키워드 자동 확장 / YouTube 링크 분석</div>
+    <div class="sec-sub">짧은 키워드나 YT 링크 → 전체 프롬프트 자동 생성</div>
   </div>
-  <div id="key-status" style="font-size:11px; margin-top:5px; color:#34d399;">API Key를 입력 후 저장하세요</div>
-</div>
-
-<!-- 5개 탭 -->
-<div class="tabs">
-  <button class="tab on" onclick="switchTab('full')">상세<br>Full</button>
-  <button class="tab" onclick="switchTab('quick')">키워드<br>Quick</button>
-  <button class="tab" onclick="switchTab('yt')">유튜브<br>YouTube</button>
-  <button class="tab" onclick="switchTab('shorts')">쇼츠<br>Shorts</button>
-  <button class="tab" onclick="switchTab('trend')">추천<br>Trending</button>
-</div>
-
-<!-- FULL MODE -->
-<div class="panel on" id="p-full">
-  <div class="sec"><div class="sl">장르</div><div class="chips" id="g-chips"></div></div>
-  <div class="sec"><div class="sl">무드</div><div class="chips" id="m-chips"></div></div>
-  <div class="sec"><div class="sl">악기</div><div class="chips" id="i-chips"></div></div>
-  <div class="sec"><div class="sl">보컬</div><div class="chips" id="v-chips"></div></div>
-  <div class="sec"><div class="sl">BPM</div><input type="range" min="50" max="160" value="95" step="5" id="bpm" oninput="document.getElementById('bv').innerText=this.value+' BPM'"><span id="bv">95 BPM</span></div>
-  <div class="sec"><div class="sl">추가 컨셉</div><input type="text" id="concept" placeholder="라흐마니노프 스타일..."></div>
-  <button class="gbtn" id="btn-full" onclick="genFull()">프롬프트 생성</button>
-  <div id="r-full"></div>
-</div>
-
-<!-- QUICK MODE -->
-<div class="panel" id="p-quick">
-  <div class="sec"><div class="sl">짧은 키워드</div><input type="text" id="kw-input" placeholder="슬픈 피아노 / epic cinematic..."></div>
-  <button class="gbtn" id="btn-quick" onclick="genQuick()">자동 확장 생성</button>
-  <div id="r-quick"></div>
-</div>
-
-<!-- YOUTUBE MODE -->
-<div class="panel" id="p-yt">
-  <div class="sec"><div class="sl">유튜브 링크</div><input type="text" id="yt-url" placeholder="https://www.youtube.com/watch?v=..."></div>
-  <button class="gbtn" id="btn-yt" onclick="genYT()">링크 분석 후 생성</button>
-  <div id="r-yt"></div>
-</div>
-
-<!-- SHORTS MODE -->
-<div class="panel" id="p-shorts">
-  <div class="sec"><div class="sl">쇼츠 컨셉</div><input type="text" id="sh-concept" placeholder="새벽 감성 브이로그..."></div>
-  <button class="gbtn" id="btn-shorts" onclick="genShorts()">쇼츠 프롬프트 생성</button>
-  <div id="r-sh"></div>
-</div>
-
-<!-- TRENDING MODE -->
-<div class="panel" id="p-trend">
-  <div class="sec"><div class="sl">콘텐츠 유형 선택</div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-      <button class="chip" onclick="selectTrend(this,'인생 사연 감동 스토리')">인생 사연 감동 스토리</button>
-      <button class="chip" onclick="selectTrend(this,'공부 집중 로파이')">공부 집중 로파이</button>
-      <button class="chip" onclick="selectTrend(this,'운동 에너지 힙합')">운동 에너지 힙합</button>
-      <button class="chip" onclick="selectTrend(this,'새벽 감성 발라드')">새벽 감성 발라드</button>
-      <button class="chip" onclick="selectTrend(this,'힐링 자연 앰비언트')">힐링 자연 앰비언트</button>
-      <button class="chip" onclick="selectTrend(this,'시네마틱 드라마')">시네마틱 드라마</button>
+  <div class="section-body">
+    <div class="ai-block">
+      <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center">
+        <input type="text" id="kwInput" placeholder='예) "슬픈 피아노", "몽환적 대금", YouTube URL 붙여넣기...'>
+        <button class="btn btn-gold" onclick="runAI()">✦ 자동 확장</button>
+      </div>
+      <div class="info-bar">💡 짧은 감성 키워드 또는 YouTube 링크를 넣으면 AI가 장르·분위기·악기·BPM·보컬 스타일까지 자동 분석합니다.</div>
+      <div class="ai-loading" id="kwLoading">
+        <div class="dot-anim"><span></span><span></span><span></span></div>
+        AI 분석 중...
+      </div>
+      <div id="kwResult" class="yt-result"></div>
     </div>
   </div>
-  <button class="gbtn" id="btn-trend" onclick="genTrend()">조회수형 스타일 생성</button>
-  <div id="r-tr"></div>
 </div>
 
+<!-- ══════════════════════════════════════
+     SECTION 1 · 장르
+══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="sec-num">01</div>
+    <div class="sec-title">장르 선택</div>
+    <div class="sec-sub">하나 선택</div>
+  </div>
+  <div class="section-body">
+    <div class="card-grid col3" id="genreGrid"></div>
+  </div>
 </div>
+
+<!-- ══════════════════════════════════════
+     SECTION 2 · 분위기
+══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="sec-num">02</div>
+    <div class="sec-title">분위기 선택</div>
+    <div class="sec-sub">복수 선택 가능</div>
+  </div>
+  <div class="section-body">
+    <div class="chip-wrap" id="moodGrid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 3 · 악기
+══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="sec-num">03</div>
+    <div class="sec-title">악기 조합</div>
+    <div class="sec-sub">하나 선택</div>
+  </div>
+  <div class="section-body">
+    <div class="card-grid col2" id="instrGrid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 4 · 곡 컨셉별 무드 조합
+══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="sec-num">04</div>
+    <div class="sec-title">곡 컨셉별 무드 조합 추천</div>
+    <div class="sec-sub">선택 시 관련 설정 자동 하이라이트</div>
+  </div>
+  <div class="section-body">
+    <div class="concept-grid" id="conceptGrid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 5 · 보컬 스타일
+══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="sec-num">05</div>
+    <div class="sec-title">보컬 스타일</div>
+    <div class="sec-sub">하나 선택</div>
+  </div>
+  <div class="section-body">
+    <div class="card-grid col2" id="vocalStyleGrid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 6 · 보컬 톤 스타일
+══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="sec-num">06</div>
+    <div class="sec-title">보컬 톤 스타일</div>
+    <div class="sec-sub">성별 필터 + 복수 선택</div>
+  </div>
+  <div class="section-body">
+    <div class="gender-row">
+      <span class="gender-lbl">성별 필터:</span>
+      <button class="gender-btn active" onclick="setGender('all')">전체</button>
+      <button class="gender-btn" onclick="setGender('male')">남성</button>
+      <button class="gender-btn" onclick="setGender('female')">여성</button>
+    </div>
+    <div class="chip-wrap" id="toneGrid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 7 · BPM
+══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="sec-num">07</div>
+    <div class="sec-title">BPM 설정</div>
+    <div class="sec-sub">65 – 145 BPM</div>
+  </div>
+  <div class="section-body">
+    <div class="bpm-wrap">
+      <div class="bpm-display">
+        <div class="bpm-num" id="bpmVal">95</div>
+        <div class="bpm-unit">BPM</div>
+      </div>
+      <input type="range" id="bpmSlider" min="65" max="145" value="95" oninput="updateBpm(this.value)">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;margin-top:4px">
+        <span>65</span><span>85</span><span>105</span><span>125</span><span>145</span>
+      </div>
+      <div class="bpm-guide-card" id="bpmGuide">
+        <div class="bpm-guide-range" id="bgRange">95–115 BPM</div>
+        <div class="bpm-guide-name" id="bgName">Korean Soul Fusion (코리안 소울 퓨전)</div>
+        <div class="bpm-guide-mood" id="bgMood">Emotional · Hopeful · Warm</div>
+        <div class="bpm-guide-desc" id="bgDesc">감성과 대중성을 동시에 살리기 좋은 범용 BPM</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 8 · 프롬프트 생성
+══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="sec-num">08</div>
+    <div class="sec-title">프롬프트 생성</div>
+    <div class="sec-sub">선택 사항 자동 조합 · AI 확장 가능</div>
+  </div>
+  <div class="section-body">
+    <div class="prompt-box" id="promptBox">← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.</div>
+    <div class="prompt-actions">
+      <button class="btn btn-gold" onclick="copyPrompt()">📋 복사</button>
+      <button class="btn btn-teal" onclick="aiExpandPrompt()">✦ AI 프롬프트 확장</button>
+      <button class="btn btn-outline" onclick="resetAll()">↺ 초기화</button>
+    </div>
+    <div class="ai-loading" id="promptLoading" style="margin-top:8px">
+      <div class="dot-anim"><span></span><span></span><span></span></div>
+      프롬프트 확장 중...
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 9 · 자동 제목 생성
+══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="sec-num">09</div>
+    <div class="sec-title">자동 제목 생성</div>
+    <div class="sec-sub">영어 + 한글 제목 AI 자동 생성</div>
+  </div>
+  <div class="section-body">
+    <button class="btn btn-gold" onclick="genTitle()">✦ 제목 생성</button>
+    <div class="ai-loading" id="titleLoading" style="margin-top:8px">
+      <div class="dot-anim"><span></span><span></span><span></span></div>
+      제목 생성 중...
+    </div>
+    <div class="title-out">
+      <div class="title-card">
+        <div class="title-lang">🇺🇸 English Title</div>
+        <div class="title-val" id="titleEn">—</div>
+      </div>
+      <div class="title-card">
+        <div class="title-lang">🇰🇷 한글 제목</div>
+        <div class="title-val" id="titleKr">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 10 · 가사
+══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="sec-num">10</div>
+    <div class="sec-title">가사 창</div>
+    <div class="sec-sub">영어 가사 / 한국어 가사 / 직접 입력</div>
+  </div>
+  <div class="section-body">
+    <div class="tab-row">
+      <div class="tab active" onclick="switchTab('lyricsEn',this)">🇺🇸 영어 가사 (AI 생성)</div>
+      <div class="tab" onclick="switchTab('lyricsKr',this)">🇰🇷 한국어 가사 (AI 생성)</div>
+      <div class="tab" onclick="switchTab('lyricsFree',this)">✏️ 직접 입력</div>
+    </div>
+
+    <div class="tab-panel active" id="lyricsEn">
+      <button class="btn btn-gold" onclick="genLyrics('en')">✦ 영어 가사 생성</button>
+      <div class="ai-loading" id="lyricsEnLoading" style="margin-top:8px">
+        <div class="dot-anim"><span></span><span></span><span></span></div>
+        영어 가사 생성 중...
+      </div>
+      <textarea id="lyricsEnOut" style="margin-top:12px;min-height:160px" placeholder="영어 가사가 여기 생성됩니다..."></textarea>
+      <div class="prompt-actions" style="margin-top:8px">
+        <button class="btn btn-outline" onclick="copyField('lyricsEnOut')">📋 복사</button>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="lyricsKr">
+      <button class="btn btn-gold" onclick="genLyrics('kr')">✦ 한국어 가사 생성</button>
+      <div class="ai-loading" id="lyricsKrLoading" style="margin-top:8px">
+        <div class="dot-anim"><span></span><span></span><span></span></div>
+        한국어 가사 생성 중...
+      </div>
+      <textarea id="lyricsKrOut" style="margin-top:12px;min-height:160px" placeholder="한국어 가사가 여기 생성됩니다..."></textarea>
+      <div class="prompt-actions" style="margin-top:8px">
+        <button class="btn btn-outline" onclick="copyField('lyricsKrOut')">📋 복사</button>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="lyricsFree">
+      <textarea id="lyricsFreeInput" style="min-height:200px" placeholder="여기에 직접 가사를 입력하세요..."></textarea>
+      <div class="prompt-actions" style="margin-top:8px">
+        <button class="btn btn-outline" onclick="copyField('lyricsFreeInput')">📋 복사</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 11 · 조회수형 스타일 추천
+══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="sec-num">11</div>
+    <div class="sec-title">조회수형 음악 스타일 추천</div>
+    <div class="sec-sub">AI 기반 인기 스타일 추천 · 클릭 시 자동 적용</div>
+  </div>
+  <div class="section-body">
+    <button class="btn btn-gold" onclick="genRec()">✦ 추천 받기</button>
+    <div class="ai-loading" id="recLoading" style="margin-top:8px">
+      <div class="dot-anim"><span></span><span></span><span></span></div>
+      스타일 분석 중...
+    </div>
+    <div class="rec-grid" id="recGrid" style="margin-top:14px"></div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<div id="toast">✓ 복사 완료!</div>
 
 <script>
-const GENRES = [{en:'Pop',kr:'팝'},{en:'K-pop',kr:'케이팝'},{en:'J-pop',kr:'제이팝'},{en:'Hip-hop',kr:'힙합'},{en:'Trap',kr:'트랩'},{en:'R&B',kr:'알앤비'},{en:'Soul',kr:'소울'},{en:'EDM',kr:'EDM'},{en:'House',kr:'하우스'},{en:'Synthwave',kr:'신스웨이브'},{en:'Electronic',kr:'일렉트로닉'},{en:'Rock',kr:'락'},{en:'Metal',kr:'메탈'},{en:'Blues',kr:'블루스'},{en:'Jazz',kr:'재즈'},{en:'Funk',kr:'펑크'},{en:'Reggae',kr:'레게'},{en:'Country',kr:'컨트리'},{en:'Indie',kr:'인디'},{en:'Lo-fi',kr:'로우파이'},{en:'Folk',kr:'포크'},{en:'Classical',kr:'클래식'},{en:'Ambient',kr:'앰비언트'},{en:'Cinematic',kr:'시네마틱'},{en:'Epic',kr:'에픽'}];
-const MOODS = [{en:'Emotional',kr:'감성적인'},{en:'Romantic',kr:'로맨틱한'},{en:'Sentimental',kr:'감상적인'},{en:'Melancholic',kr:'우울한'},{en:'Sad',kr:'슬픈'},{en:'Dark',kr:'어두운'},{en:'Nostalgic',kr:'향수를 불러일으키는'},{en:'Mysterious',kr:'신비로운'},{en:'Dreamy',kr:'몽환적인'},{en:'Calm',kr:'잔잔한'},{en:'Chill',kr:'차분한'},{en:'Uplifting',kr:'고양되는'},{en:'Energetic',kr:'에너지 넘치는'}];
-const INSTS = [{en:'Piano',kr:'피아노'},{en:'Acoustic guitar',kr:'어쿠스틱 기타'},{en:'Electric guitar',kr:'일렉 기타'},{en:'Synth bass',kr:'신스 베이스'},{en:'808 drums',kr:'808 드럼'},{en:'Strings section',kr:'스트링 섹션'},{en:'Brass section',kr:'브라스 섹션'},{en:'Saxophone',kr:'색소폰'},{en:'Lo-fi vinyl noise',kr:'로파이 바이닐 노이즈'},{en:'Percussion',kr:'타악기'},{en:'Reverb-heavy pads',kr:'리버브 강한 패드'},{en:'Ambient textures',kr:'앰비언트 배경음'}];
-const VOCALS = [{en:'Soft female vocals',kr:'부드러운 여성 보컬'},{en:'Powerful female vocals',kr:'파워풀한 여성 보컬'},{en:'Deep male voice',kr:'깊고 낮은 남성 보컬'},{en:'Soulful male vocals',kr:'소울 넘치는 남성 보컬'},{en:'Whispered vocals',kr:'속삭이는 보컬'},{en:'Emotional vocal delivery',kr:'감성적 표현'}];
+/* ═══════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════ */
 
-let currentTool = 'suno';
-let selections = {genres:[],moods:[],insts:[],vocals:[]};
-let apiKey = '';
-let currentTrend = '';
-
-window.onload = function() {
-  const saved = localStorage.getItem('openrouter_key');
-  if (saved) {
-    apiKey = saved;
-    document.getElementById('api-key').value = saved;
-    document.getElementById('key-status').textContent = '✓ API Key 설정 완료';
-    document.getElementById('key-status').style.color = '#34d399';
-  }
-  createChips('g-chips', GENRES, 'genres');
-  createChips('m-chips', MOODS, 'moods');
-  createChips('i-chips', INSTS, 'insts');
-  createChips('v-chips', VOCALS, 'vocals');
+const DATA = {
+  genres:[
+    {en:'Korean Lo-fi Soul',kr:'코리안 로파이 소울',desc:'가야금·해금 기반의 따뜻하고 빈티지한 감성. 공부·야간 드라이브·감성 플레이리스트에 적합'},
+    {en:'Oriental Jazz Hip-hop',kr:'오리엔탈 재즈 힙합',desc:'재즈 화성과 동양 멜로디, 붐뱁·로파이 비트가 결합된 세련된 한국 감성'},
+    {en:'Cinematic Gugak',kr:'시네마틱 국악',desc:'영화 OST 같은 웅장한 국악 사운드. 대금·북·민요 창법으로 드라마틱한 분위기 연출'},
+    {en:'Neo Soul + Gayageum',kr:'네오소울 + 가야금',desc:'부드러운 Neo Soul 코드와 한국 전통 현악기의 조화. 글로벌 감성 R&B 스타일'},
+    {en:'Trap + Korean Percussion',kr:'트랩 + 국악 퍼커션',desc:'808 베이스와 장구·북·징의 강렬한 리듬 결합. 현대적이고 강한 에너지'},
+    {en:'Ambient Korean Fusion',kr:'앰비언트 코리안 퓨전',desc:'대금·해금의 숨결감과 몽환적 패드 사운드가 어우러진 명상적 분위기'},
+  ],
+  moods:[
+    {en:'Dreamy + Ambient Korean Fusion',kr:'몽환적 + 앰비언트 국악 퓨전',desc:'대금·해금의 숨결감과 앰비언트 패드가 어우러진 몽환적이고 신비로운 분위기'},
+    {en:'Emotional + Neo Soul + Gayageum',kr:'감성적 + 네오소울 + 가야금',desc:'부드러운 Neo Soul 코드와 가야금의 한국적 감성이 결합된 깊은 여운의 스타일'},
+    {en:'Melancholic + Haegeum Blues',kr:'우울한 + 해금 블루스',desc:'해금 특유의 애절함과 블루스 감성이 섞인 한국적 소울 무드'},
+    {en:'Chill + Korean Lo-fi Soul',kr:'차분한 + 코리안 로파이 소울',desc:'빈티지 로파이 질감과 국악 감성이 결합된 편안하고 세련된 분위기'},
+    {en:'Dark + Trap + Korean Percussion',kr:'어두운 + 트랩 + 국악 퍼커션',desc:'808 베이스와 장구·북의 강렬한 타격감이 어우러진 다크 시네마틱 무드'},
+    {en:'Dramatic + Cinematic Gugak',kr:'극적인 + 시네마틱 국악',desc:'영화 OST 같은 웅장한 국악 사운드와 감정 고조가 특징인 드라마틱 스타일'},
+    {en:'Groovy + Oriental Jazz Hip-hop',kr:'그루비한 + 오리엔탈 재즈 힙합',desc:'재즈 화성과 힙합 비트, 동양적 멜로디가 결합된 리듬감 있는 글로벌 스타일'},
+  ],
+  instruments:[
+    {en:'Gayageum + Lo-fi Drums + Jazz Piano',kr:'가야금 + 로파이 드럼 + 재즈 피아노',desc:'한국적인 현악 감성과 재즈 화성이 어우러진 Chill·Lo-fi 스타일, 감성적이고 세련된 분위기'},
+    {en:'Haegeum + Blues Guitar + 808 Bass',kr:'해금 + 블루스 기타 + 808 베이스',desc:'애절한 동양 감성과 묵직한 현대 힙합 저역이 결합된 Korean Blues Soul 무드'},
+    {en:'Daegeum + Neo Soul Rhodes + Vinyl Noise',kr:'대금 + 네오소울 로즈 + 바이닐 노이즈',desc:'숨결감 있는 대금 사운드와 빈티지 Neo Soul 감성이 섞인 몽환적 분위기'},
+    {en:'Geomungo + Trap Beat + Ambient Pad',kr:'거문고 + 트랩 비트 + 앰비언트 패드',desc:'묵직한 국악 저음 리프와 현대 Trap 리듬이 결합된 어두운 시네마틱 무드'},
+    {en:'Minyo Vocal + Soul Choir + Cinematic Strings',kr:'민요 창법 + 소울 코러스 + 시네마틱 스트링',desc:'한국 전통 창법의 감정선과 웅장한 글로벌 OST 감성이 결합된 드라마틱 스타일'},
+  ],
+  concepts:[
+    {
+      num:'01',name:'몽환적이고 감성적인 한국 Lo-fi Soul',
+      core:['Dreamy','Emotional','Chill'],sub:['Nostalgic','Introspective','Calm'],
+      desc:'몽환적인 리버브와 빈티지 질감 위에 한국적인 감정선을 녹여낸 스타일. 야간 드라이브·새벽 감성·공부 플레이리스트 계열과 잘 어울림.',
+      genres:['Korean Lo-fi Soul','Neo Soul + Gayageum','Ambient Korean Fusion'],
+      inst:['가야금','해금','Neo Soul Rhodes','Lo-fi Vinyl Noise','Soft Jazz Piano','Ambient Pad','Lo-fi Drums']
+    },
+    {
+      num:'02',name:'애절하고 한국적인 Soul Blues',
+      core:['Melancholic','Emotional','Sad'],sub:['Sentimental','Introspective'],
+      desc:"한국 특유의 '한(恨)' 감성과 블루스의 소울풀한 감정 표현이 결합된 스타일. 깊은 감정 몰입과 진정성 있는 분위기를 강조.",
+      genres:['Melancholic + Haegeum Blues','Oriental Soul Blues','Emotional Korean R&B'],
+      inst:['해금','Blues Guitar','808 Bass','Soul Piano','Warm Strings','Vinyl Noise','Slow Trap Drums']
+    },
+    {
+      num:'03',name:'신비롭고 동양적인 Ambient Fusion',
+      core:['Mysterious','Dreamy','Calm'],sub:['Nostalgic','Romantic'],
+      desc:'동양적인 숨결감과 공간감 중심의 몽환적 스타일. 자연·밤·비·명상 같은 분위기와 잘 어울림.',
+      genres:['Dreamy + Ambient Korean Fusion','Oriental Ambient','Korean Chill Fusion'],
+      inst:['대금','해금','Ambient Pad','Soft Synth Texture','Wind FX','Minimal Percussion','Reverb Piano']
+    },
+    {
+      num:'04',name:'강렬하고 어두운 Korean Trap Fusion',
+      core:['Dark','Powerful','Aggressive'],sub:['Dramatic','Energetic'],
+      desc:'현대 Trap 사운드와 국악 타악기의 강렬한 타격감이 결합된 스타일. 영화 예고편·게임·다크 시네마틱 무드에 적합.',
+      genres:['Dark + Trap + Korean Percussion','Cinematic Trap Gugak','Korean Dark Fusion'],
+      inst:['장구','북','징','808 Bass','Trap Hi-hats','Dark Synth Bass','Cinematic Percussion']
+    },
+    {
+      num:'05',name:'웅장한 Cinematic Gugak',
+      core:['Dramatic','Powerful','Hopeful'],sub:['Emotional','Epic'],
+      desc:'영화 OST 같은 스케일과 감정 고조가 특징인 국악 기반 시네마틱 스타일. 전통과 현대가 결합된 글로벌 OST 느낌 연출 가능.',
+      genres:['Dramatic + Cinematic Gugak','Epic Korean Fusion','Korean OST Style'],
+      inst:['민요 창법','대금','북','스트링 섹션','Cinematic Brass','Choir','Epic Percussion']
+    },
+    {
+      num:'06',name:'리듬감 있는 Oriental Jazz Hip-hop',
+      core:['Groovy','Chill','Energetic'],sub:['Playful','Nostalgic'],
+      desc:'재즈 화성과 힙합 비트 위에 동양적 멜로디를 얹은 세련된 글로벌 스타일. 카페·패션·도심 감성 콘텐츠와 잘 어울림.',
+      genres:['Groovy + Oriental Jazz Hip-hop','Korean Jazz Lo-fi','Oriental Boom Bap'],
+      inst:['가야금','재즈 피아노','Upright Bass','Boom Bap Drums','Saxophone','Vinyl Noise','Soft Brass Section']
+    },
+  ],
+  vocalStyles:[
+    {en:'Korean Soul Fusion',kr:'코리안 소울 퓨전',gender:'both',tone:'감성적이고 따뜻한 Soul 톤, 깊은 호흡감',tags:['Soul','R&B','Korean Soul','Emotional','Hopeful']},
+    {en:'Oriental Blues',kr:'오리엔탈 블루스',gender:'male',tone:'거칠고 허스키한 저음, 애절한 블루스 톤',tags:['Blues','Dark Blues','Melancholic','Sad']},
+    {en:'Oriental Jazz',kr:'오리엔탈 재즈',gender:'female',tone:'부드럽고 공기감 있는 재즈 보컬',tags:['Jazz','Chill Jazz','Romantic','Groovy']},
+    {en:'Neo Soul + Gayageum',kr:'네오소울 + 가야금',gender:'female',tone:'매끄럽고 속삭이듯 부드러운 Neo Soul 톤',tags:['Neo Soul','R&B','Chill','Dreamy']},
+    {en:'Haegeum Blues',kr:'해금 블루스',gender:'male',tone:'거친 감정 표현과 낮은 Soul 톤',tags:['Blues','Soul Blues','Emotional','Melancholic']},
+    {en:'Oriental Jazz Hip-hop',kr:'오리엔탈 재즈 힙합',gender:'both',tone:'힘 빼고 자연스럽게 흐르는 Chill 톤',tags:['Jazz Hip-hop','Lo-fi','Groovy','Nostalgic']},
+    {en:'Lo-fi Jazz Gugak',kr:'로파이 재즈 국악',gender:'female',tone:'나른하고 속삭이는 로파이 톤',tags:['Lo-fi','Chill','Ambient','Calm']},
+    {en:'Cinematic Soul Fusion',kr:'시네마틱 소울 퓨전',gender:'both',tone:'웅장하고 감정 고조가 가능한 드라마틱 톤',tags:['Cinematic','Soul','Epic','Dramatic']},
+    {en:'Ambient Jazz Korean Fusion',kr:'앰비언트 재즈 코리안 퓨전',gender:'female',tone:'숨결감 있고 몽환적인 에어리 톤',tags:['Ambient','Dreamy','Chill','Mysterious']},
+    {en:'Korean Neo Soul',kr:'코리안 네오소울',gender:'female',tone:'부드럽고 세련된 R&B 스타일 톤',tags:['Neo Soul','R&B','Emotional','Smooth']},
+  ],
+  vocalTones:[
+    {en:'Soft female vocals',kr:'부드러운 여성 보컬',gender:'female',desc:'로파이·Neo Soul·Ambient 계열과 가장 잘 어울림'},
+    {en:'Soft male vocals',kr:'부드러운 남성 보컬',gender:'male',desc:'따뜻하고 잔잔한 Korean Lo-fi Soul 분위기 표현 가능'},
+    {en:'Smooth female vocals',kr:'매끄러운 여성 보컬',gender:'female',desc:'Oriental Jazz·Korean Neo Soul 스타일에 적합'},
+    {en:'Smooth male vocals',kr:'매끄러운 남성 보컬',gender:'male',desc:'부드러운 Soul·Jazz·R&B 감성 표현에 적합'},
+    {en:'Soulful male vocals',kr:'소울 넘치는 남성 보컬',gender:'male',desc:'Korean Soul Fusion·Haegeum Blues에 강력 추천'},
+    {en:'Soulful female vocals',kr:'소울 넘치는 여성 보컬',gender:'female',desc:'Neo Soul·Soul Jazz 스타일의 깊은 감정 표현 가능'},
+    {en:'Raspy male vocals',kr:'거친 남성 보컬',gender:'male',desc:'Oriental Blues 스타일과 궁합이 뛰어남'},
+    {en:'Raspy female vocals',kr:'거친 여성 보컬',gender:'female',desc:'독특하고 빈티지한 Oriental Soul 분위기 형성'},
+    {en:'Whispered female vocals',kr:'속삭이는 여성 보컬',gender:'female',desc:'Ambient Korean Fusion·Dreamy 스타일 강화'},
+    {en:'Whispered male vocals',kr:'속삭이는 남성 보컬',gender:'male',desc:'몽환적이고 내면적인 Lo-fi 감성 표현 가능'},
+    {en:'Crooning',kr:'크루닝',gender:'both',desc:'낮고 부드러운 재즈 감성 표현에 적합'},
+    {en:'Emotional vocal delivery',kr:'감성적 표현',gender:'both',desc:"한국 특유의 '한(恨)' 감정을 자연스럽게 전달 가능"},
+    {en:'Airy vocal harmonies',kr:'공기 섞인 화음',gender:'female',desc:'몽환적이고 세련된 글로벌 감성 강화'},
+    {en:'Falsetto',kr:'가성',gender:'male',desc:'Neo Soul·R&B 계열의 감성적인 고음 표현'},
+    {en:'Spoken word style',kr:'말하듯 부르는 스타일',gender:'both',desc:'Oriental Jazz Hip-hop·Lo-fi 스타일과 잘 어울림'},
+    {en:'Breathy vocals',kr:'숨결감 있는 보컬',gender:'both',desc:'공기감과 감성적인 분위기를 강화하는 현대적 스타일'},
+    {en:'Layered vocal textures',kr:'다층 보컬',gender:'both',desc:'K-pop 감성과 시네마틱 국악 분위기를 동시에 표현 가능'},
+    {en:'Backing chorus',kr:'백코러스',gender:'both',desc:'후렴과 감정 고조를 풍성하게 만드는 화음 스타일'},
+  ],
+  bpmGuides:[
+    {range:'65–80',name:'Ambient Korean Fusion (앰비언트 코리안 퓨전)',mood:'Dreamy (몽환적인) · Calm (잔잔한) · Emotional (감성적인)',desc:'몽환적이고 여백감 있는 국악 감성 표현에 적합. 대금·해금의 숨결감 강조'},
+    {range:'70–85',name:'Korean Lo-fi Soul (코리안 로파이 소울)',mood:'Chill (차분한) · Nostalgic (향수를 불러일으키는) · Introspective (내면적인)',desc:'새벽 감성·드라이브·공부 플레이리스트 스타일에 최적'},
+    {range:'75–90',name:'Haegeum Blues (해금 블루스)',mood:'Melancholic (우울한) · Sad (슬픈) · Emotional (감성적인)',desc:'해금과 블루스 감정을 깊게 살릴 수 있는 느린 그루브'},
+    {range:'85–100',name:'Neo Soul + Gayageum (네오소울 + 가야금)',mood:'Smooth (부드러운) · Emotional (감성적인) · Groovy (리듬감 있는)',desc:'세련된 글로벌 Korean Soul 스타일 구현 가능'},
+    {range:'88–102',name:'Oriental Jazz (오리엔탈 재즈)',mood:'Groovy (리듬감 있는) · Chill (차분한) · Romantic (로맨틱한)',desc:'재즈 스윙과 동양적 멜로디를 자연스럽게 연결하는 BPM'},
+    {range:'90–110',name:'Oriental Jazz Hip-hop (오리엔탈 재즈 힙합)',mood:'Groovy (리듬감 있는) · Laid-back (여유로운) · Nostalgic (향수를 불러일으키는)',desc:'붐뱁·재즈 힙합 기반의 편안한 리듬감 형성'},
+    {range:'95–115',name:'Korean Soul Fusion (코리안 소울 퓨전)',mood:'Emotional (감성적인) · Hopeful (희망적인) · Warm (따뜻한)',desc:'감성과 대중성을 동시에 살리기 좋은 범용 BPM'},
+    {range:'100–120',name:'Cinematic Soul Fusion (시네마틱 소울 퓨전)',mood:'Dramatic (극적인) · Powerful (강력한) · Emotional (감성적인)',desc:'영화 OST 같은 감정 고조와 웅장함 표현 가능'},
+    {range:'120–135',name:'Trap + Korean Percussion (트랩 + 국악 퍼커션)',mood:'Dark (어두운) · Powerful (강력한) · Aggressive (공격적인)',desc:'장구·북·808 기반의 강렬한 현대 퓨전 스타일'},
+    {range:'130–145',name:'Cinematic Gugak (시네마틱 국악)',mood:'Epic (장대한) · Dramatic (극적인) · Energetic (에너지 넘치는)',desc:'에픽 국악·시네마틱 스타일에 적합한 웅장한 전개 가능'},
+  ]
 };
 
-function createChips(id, data, type) {
-  const el = document.getElementById(id);
-  el.innerHTML = '';
-  data.forEach(item => {
-    const b = document.createElement('button');
-    b.className = 'chip';
-    b.innerHTML = `${item.kr} <span style="font-size:10px;opacity:0.6">(${item.en})</span>`;
-    b.onclick = () => {
-      b.classList.toggle('on');
-      const arr = selections[type];
-      const i = arr.indexOf(item.en);
-      if (i === -1) arr.push(item.en);
-      else arr.splice(i, 1);
-    };
-    el.appendChild(b);
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+const STATE = {
+  genre:null, moods:[], instr:null, concept:null,
+  vocalStyle:null, vocalTones:[], bpm:95, gender:'all'
+};
+
+/* ═══════════════════════════════════════════
+   RENDER FUNCTIONS
+═══════════════════════════════════════════ */
+
+function renderGenres(){
+  const g = document.getElementById('genreGrid');
+  g.innerHTML = DATA.genres.map((d,i)=>`
+    <div class="selcard" id="genre_${i}" onclick="selectGenre(${i})">
+      <div class="check-dot"></div>
+      <div class="card-en">${d.en}</div>
+      <div class="card-kr">${d.kr}</div>
+      <div class="card-desc">${d.desc}</div>
+    </div>`).join('');
+}
+
+function renderMoods(){
+  const g = document.getElementById('moodGrid');
+  g.innerHTML = DATA.moods.map((d,i)=>`
+    <div class="chip" id="mood_${i}" onclick="toggleMood(${i})">
+      <span class="chip-en">${d.en}</span>
+      <span class="chip-kr">${d.kr}</span>
+    </div>`).join('');
+}
+
+function renderInstruments(){
+  const g = document.getElementById('instrGrid');
+  g.innerHTML = DATA.instruments.map((d,i)=>`
+    <div class="selcard" id="instr_${i}" onclick="selectInstr(${i})">
+      <div class="check-dot"></div>
+      <div class="card-en">${d.en}</div>
+      <div class="card-kr">${d.kr}</div>
+      <div class="card-desc">${d.desc}</div>
+    </div>`).join('');
+}
+
+function renderConcepts(){
+  const g = document.getElementById('conceptGrid');
+  g.innerHTML = DATA.concepts.map((d,i)=>`
+    <div class="concept-card" id="concept_${i}" onclick="selectConcept(${i})">
+      <div class="concept-num">CONCEPT ${d.num}</div>
+      <div class="concept-name">${d.name}</div>
+      <div class="concept-label">핵심 무드</div>
+      <div class="concept-tags">${d.core.map(t=>`<span class="ctag">${t}</span>`).join('')}</div>
+      <div class="concept-label">보조 무드</div>
+      <div class="concept-tags">${d.sub.map(t=>`<span class="ctag" style="opacity:.7">${t}</span>`).join('')}</div>
+      <div class="concept-desc">${d.desc}</div>
+      <div class="concept-genres">▶ ${d.genres.join(' · ')}</div>
+      <div class="concept-inst">🎵 ${d.inst.join(' · ')}</div>
+    </div>`).join('');
+}
+
+function renderVocalStyles(){
+  const g = document.getElementById('vocalStyleGrid');
+  g.innerHTML = DATA.vocalStyles.map((d,i)=>`
+    <div class="selcard" id="vs_${i}" onclick="selectVocalStyle(${i})">
+      <div class="check-dot"></div>
+      <div class="card-en">${d.en}</div>
+      <div class="card-kr">${d.kr} · ${d.gender==='both'?'남/여':'남성'===d.gender?'남성':'여성'}</div>
+      <div class="card-desc" style="margin-bottom:6px">${d.tone}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">${d.tags.map(t=>`<span class="ctag">${t}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+function renderTones(gFilter){
+  const g = document.getElementById('toneGrid');
+  const filtered = DATA.vocalTones.filter(d=>
+    gFilter==='all' || d.gender===gFilter || d.gender==='both'
+  );
+  g.innerHTML = filtered.map((d,i)=>{
+    const origIdx = DATA.vocalTones.indexOf(d);
+    const sel = STATE.vocalTones.includes(origIdx);
+    return `<div class="chip ${sel?'active':''}" id="tone_${origIdx}" onclick="toggleTone(${origIdx})">
+      <span class="chip-en">${d.en}</span>
+      <span class="chip-kr">${d.kr}${d.gender==='both'?' (남/여)':d.gender==='male'?' (남성)':' (여성)'}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════
+   SELECTION HANDLERS
+═══════════════════════════════════════════ */
+function selectGenre(i){
+  document.querySelectorAll('#genreGrid .selcard').forEach(el=>el.classList.remove('active'));
+  STATE.genre = STATE.genre===i ? null : i;
+  if(STATE.genre!==null) document.getElementById('genre_'+i).classList.add('active');
+  buildPrompt();
+}
+function toggleMood(i){
+  const idx = STATE.moods.indexOf(i);
+  if(idx>=0) STATE.moods.splice(idx,1); else STATE.moods.push(i);
+  document.getElementById('mood_'+i)?.classList.toggle('active');
+  buildPrompt();
+}
+function selectInstr(i){
+  document.querySelectorAll('#instrGrid .selcard').forEach(el=>el.classList.remove('active'));
+  STATE.instr = STATE.instr===i ? null : i;
+  if(STATE.instr!==null) document.getElementById('instr_'+i).classList.add('active');
+  buildPrompt();
+}
+function selectConcept(i){
+  document.querySelectorAll('.concept-card').forEach(el=>el.classList.remove('active'));
+  STATE.concept = STATE.concept===i ? null : i;
+  if(STATE.concept!==null) document.getElementById('concept_'+i).classList.add('active');
+  buildPrompt();
+}
+function selectVocalStyle(i){
+  document.querySelectorAll('#vocalStyleGrid .selcard').forEach(el=>el.classList.remove('active'));
+  STATE.vocalStyle = STATE.vocalStyle===i ? null : i;
+  if(STATE.vocalStyle!==null) document.getElementById('vs_'+i).classList.add('active');
+  buildPrompt();
+}
+function toggleTone(i){
+  const idx = STATE.vocalTones.indexOf(i);
+  if(idx>=0) STATE.vocalTones.splice(idx,1); else STATE.vocalTones.push(i);
+  document.getElementById('tone_'+i)?.classList.toggle('active');
+  buildPrompt();
+}
+function setGender(g){
+  STATE.gender = g;
+  document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderTones(g);
+}
+function updateBpm(v){
+  STATE.bpm = parseInt(v);
+  document.getElementById('bpmVal').textContent = v;
+  const pct = ((v-65)/(145-65)*100).toFixed(1)+'%';
+  document.getElementById('bpmSlider').style.setProperty('--pct',pct);
+  updateBpmGuide(parseInt(v));
+  buildPrompt();
+}
+function updateBpmGuide(bpm){
+  // find the best matching range
+  const guide = DATA.bpmGuides.slice().reverse().find(g=>{
+    const [lo,hi] = g.range.split('–').map(Number);
+    return bpm >= lo;
+  }) || DATA.bpmGuides[0];
+  document.getElementById('bgRange').textContent = guide.range + ' BPM';
+  document.getElementById('bgName').textContent = guide.name;
+  document.getElementById('bgMood').textContent = guide.mood;
+  document.getElementById('bgDesc').textContent = guide.desc;
+}
+
+function switchTab(id,el){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+}
+
+/* ═══════════════════════════════════════════
+   PROMPT BUILDER
+═══════════════════════════════════════════ */
+function buildPrompt(){
+  const parts = [];
+  if(STATE.genre!==null){
+    const g = DATA.genres[STATE.genre];
+    parts.push(`[Genre] ${g.en} (${g.kr})`);
+  }
+  if(STATE.moods.length){
+    const ms = STATE.moods.map(i=>DATA.moods[i].en).join(', ');
+    parts.push(`[Mood] ${ms}`);
+  }
+  if(STATE.instr!==null){
+    const ins = DATA.instruments[STATE.instr];
+    parts.push(`[Instruments] ${ins.en}`);
+  }
+  if(STATE.concept!==null){
+    const c = DATA.concepts[STATE.concept];
+    parts.push(`[Concept] ${c.name}`);
+    parts.push(`[Core Mood] ${c.core.join(', ')}`);
+    parts.push(`[Instruments (Concept)] ${c.inst.join(', ')}`);
+  }
+  if(STATE.vocalStyle!==null){
+    const vs = DATA.vocalStyles[STATE.vocalStyle];
+    parts.push(`[Vocal Style] ${vs.en} (${vs.kr}) — ${vs.tone}`);
+  }
+  if(STATE.vocalTones.length){
+    const ts = STATE.vocalTones.map(i=>DATA.vocalTones[i].en).join(', ');
+    parts.push(`[Vocal Tone] ${ts}`);
+  }
+  parts.push(`[BPM] ${STATE.bpm}`);
+
+  const box = document.getElementById('promptBox');
+  box.textContent = parts.length > 1 ? parts.join('\n') : '← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
+}
+
+/* ═══════════════════════════════════════════
+   ANTHROPIC API HELPER
+═══════════════════════════════════════════ */
+async function callClaude(prompt, systemPrompt=''){
+  const body = {
+    model:'claude-sonnet-4-20250514',
+    max_tokens:1000,
+    messages:[{role:'user',content:prompt}]
+  };
+  if(systemPrompt) body.system = systemPrompt;
+  const res = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(body)
   });
+  const data = await res.json();
+  return data.content?.map(b=>b.text||'').join('\n') || '결과를 가져올 수 없습니다.';
 }
 
-function switchTab(tab) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
-  event.currentTarget.classList.add('on');
-  document.getElementById('p-' + tab).classList.add('on');
+/* ═══════════════════════════════════════════
+   AI FEATURES
+═══════════════════════════════════════════ */
+async function runAI(){
+  const kw = document.getElementById('kwInput').value.trim();
+  if(!kw) return;
+  const loading = document.getElementById('kwLoading');
+  const result = document.getElementById('kwResult');
+  loading.classList.add('show');
+  result.classList.remove('show');
+
+  const isYT = kw.includes('youtube.com') || kw.includes('youtu.be');
+  const sysPrompt = `당신은 한국 전통음악 퓨전(국악 융합 음악) 전문 프롬프트 생성 AI입니다.
+다음 장르/분위기/악기 데이터를 기반으로 분석합니다:
+장르: Korean Lo-fi Soul, Oriental Jazz Hip-hop, Cinematic Gugak, Neo Soul+Gayageum, Trap+Korean Percussion, Ambient Korean Fusion
+악기: 가야금, 해금, 대금, 거문고, 장구, 북, 징
+분위기: Dreamy, Emotional, Melancholic, Chill, Dark, Dramatic, Groovy
+한국어와 영어로 간결하고 구체적인 분석 결과를 제공하세요.`;
+
+  const userPrompt = isYT
+    ? `다음 YouTube 링크를 분석해서 음악 스타일을 추출하세요: ${kw}
+(링크에 직접 접근 불가 시, URL 패턴과 키워드로 추정)
+분석 결과를 다음 형식으로 제공:
+🎵 장르: 
+🌈 분위기: 
+🎸 악기 조합: 
+🎤 보컬 스타일: 
+⏱️ 추천 BPM: 
+🎭 무드 조합: 
+📝 완성 프롬프트 (영어): `
+    : `"${kw}" 키워드를 국악 퓨전 음악 프롬프트로 확장하세요.
+다음 형식으로 제공:
+🎵 추천 장르: 
+🌈 분위기 태그: 
+🎸 악기 조합: 
+🎤 보컬 스타일: 
+⏱️ 추천 BPM: 
+🎭 무드 키워드: 
+📝 완성 프롬프트 (영어): 
+📝 완성 프롬프트 (한국어): `;
+
+  try{
+    const text = await callClaude(userPrompt, sysPrompt);
+    result.innerHTML = `<pre style="white-space:pre-wrap;font-family:'Noto Sans KR',sans-serif;font-size:12px;line-height:1.8;color:var(--text)">${text}</pre>`;
+    result.classList.add('show');
+  }catch(e){
+    result.innerHTML = `<span style="color:var(--red)">오류: ${e.message}</span>`;
+    result.classList.add('show');
+  }
+  loading.classList.remove('show');
 }
 
-function saveKey() {
-  const v = document.getElementById('api-key').value.trim();
-  if (!v) return;
-  apiKey = v;
-  localStorage.setItem('openrouter_key', v);
-  document.getElementById('key-status').textContent = '✓ API Key 설정 완료';
-  document.getElementById('key-status').style.color = '#34d399';
+async function aiExpandPrompt(){
+  const current = document.getElementById('promptBox').textContent;
+  if(!current || current.includes('←')) return;
+  const loading = document.getElementById('promptLoading');
+  loading.classList.add('show');
+  try{
+    const text = await callClaude(
+      `다음 음악 프롬프트를 Suno AI / Udio / 음악 생성 AI에 최적화된 영어 프롬프트로 확장하세요:\n${current}\n\n자세하고 풍부한 영어 프롬프트를 생성하세요. 장르, 악기, 분위기, 보컬, 프로덕션 디테일 포함.`,
+      '당신은 음악 AI 프롬프트 전문가입니다. Suno AI, Udio 등에 최적화된 프롬프트를 생성합니다.'
+    );
+    document.getElementById('promptBox').textContent = text;
+  }catch(e){}
+  loading.classList.remove('show');
 }
 
-function setLoading(btnId, isLoading) {
-  const btn = document.getElementById(btnId);
-  if (!btn) return;
-  if (isLoading) {
-    btn.dataset.originalText = btn.innerHTML;
-    btn.innerHTML = '생성 중...';
-    btn.disabled = true;
+async function genTitle(){
+  const current = document.getElementById('promptBox').textContent;
+  const loading = document.getElementById('titleLoading');
+  loading.classList.add('show');
+  try{
+    const text = await callClaude(
+      `다음 음악 프롬프트를 기반으로 곡 제목을 생성하세요:\n${current}\n\n반드시 다음 JSON 형식으로만 응답하세요 (다른 텍스트 없이):\n{"en":"English Title Here","kr":"한글 제목 여기"}`,
+      '음악 제목 생성 전문가. JSON만 출력.'
+    );
+    const clean = text.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(clean);
+    document.getElementById('titleEn').textContent = parsed.en || '—';
+    document.getElementById('titleKr').textContent = parsed.kr || '—';
+  }catch(e){
+    document.getElementById('titleEn').textContent = '생성 실패';
+  }
+  loading.classList.remove('show');
+}
+
+async function genLyrics(lang){
+  const current = document.getElementById('promptBox').textContent;
+  const isEn = lang==='en';
+  const loading = document.getElementById(isEn?'lyricsEnLoading':'lyricsKrLoading');
+  const out = document.getElementById(isEn?'lyricsEnOut':'lyricsKrOut');
+  loading.classList.add('show');
+  try{
+    const text = await callClaude(
+      `다음 음악 스타일에 맞는 ${isEn?'영어':'한국어'} 가사를 작성하세요:\n${current}\n\n절(Verse) 2개 + 코러스(Chorus) 1개 형식으로. 한국 전통 감성 반영.`,
+      `${isEn?'영어':'한국어'} 음악 가사 전문 작사가. 국악 퓨전 음악 스타일.`
+    );
+    out.value = text;
+  }catch(e){out.value='오류 발생'}
+  loading.classList.remove('show');
+}
+
+async function genRec(){
+  const loading = document.getElementById('recLoading');
+  const grid = document.getElementById('recGrid');
+  loading.classList.add('show');
+  grid.innerHTML='';
+  try{
+    const text = await callClaude(
+      `국악 퓨전 음악에서 YouTube 조회수가 높을 것으로 예상되는 음악 스타일 6개를 추천하세요.
+반드시 다음 JSON 배열 형식만 출력하세요 (다른 텍스트 없이):
+[{"rank":1,"name":"스타일명","nameEn":"Style Name","views":"예상조회수","tags":["태그1","태그2","태그3"]},...]`,
+      '국악 퓨전 음악 시장 분석가. 트렌드와 조회수 데이터 전문가. JSON만 출력.'
+    );
+    const clean = text.replace(/```json|```/g,'').trim();
+    const items = JSON.parse(clean);
+    grid.innerHTML = items.map(item=>`
+      <div class="rec-card" onclick="applyRec('${item.nameEn}')">
+        <div class="rec-rank">#${item.rank} 추천</div>
+        <div class="rec-name">${item.name}</div>
+        <div class="rec-view">📈 예상 조회수: ${item.views}</div>
+        <div class="rec-tags">${item.tags.map(t=>`<span class="rtag">${t}</span>`).join('')}</div>
+      </div>`).join('');
+  }catch(e){grid.innerHTML=`<div style="color:var(--muted);font-size:12px">추천 생성 오류</div>`}
+  loading.classList.remove('show');
+}
+
+function applyRec(styleName){
+  document.getElementById('kwInput').value = styleName;
+  runAI();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ═══════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════ */
+function fallbackCopy(text){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try{ document.execCommand('copy'); showToast(); }catch(e){}
+  document.body.removeChild(ta);
+}
+function doCopy(text){
+  if(!text || !text.trim()) return;
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(()=>showToast()).catch(()=>fallbackCopy(text));
   } else {
-    btn.innerHTML = btn.dataset.originalText || '생성';
-    btn.disabled = false;
+    fallbackCopy(text);
   }
 }
-
-async function callAI(prompt, resultId) {
-  if (!apiKey) {
-    document.getElementById(resultId).innerHTML = `<div class="err">API Key를 먼저 저장해주세요.</div>`;
-    return null;
-  }
-  try {
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-      body: JSON.stringify({
-        model: 'nvidia/nemotron-3-super-120b-a12b:free',
-        max_tokens: 2000,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
-    return JSON.parse(data.choices[0].message.content.replace(/```json|```/g, '').trim());
-  } catch (e) {
-    document.getElementById(resultId).innerHTML = `<div class="err">${e.message}</div>`;
-    return null;
-  }
+function copyPrompt(){
+  doCopy(document.getElementById('promptBox').textContent);
+}
+function copyField(id){
+  const el = document.getElementById(id);
+  doCopy(el.value !== undefined ? el.value : el.textContent);
+}
+function showToast(){
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+function resetAll(){
+  STATE.genre=null;STATE.moods=[];STATE.instr=null;STATE.concept=null;
+  STATE.vocalStyle=null;STATE.vocalTones=[];STATE.bpm=95;STATE.gender='all';
+  document.querySelectorAll('.selcard,.concept-card').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.chip').forEach(el=>el.classList.remove('active'));
+  document.getElementById('bpmSlider').value=95;
+  document.getElementById('bpmVal').textContent='95';
+  updateBpmGuide(95);
+  document.getElementById('promptBox').textContent='← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
+  renderTones('all');
+  document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.gender-btn').classList.add('active');
 }
 
-function showResult(resultId, data) {
-  let html = `<div class="result-box">
-    <div class="result-title">[제목]</div><div class="result-content">${data.title || ''}</div>
-    <div class="result-title" style="margin-top:1rem;">[스타일 프롬프트]</div><div class="result-content">${data.style_prompt || ''}</div>`;
-  if (data.viral_reason) html += `<div class="extra"><div class="result-title">[조회수 추천 이유]</div><div class="result-content">${data.viral_reason}</div></div>`;
-  html += `</div>`;
-  document.getElementById(resultId).innerHTML = html;
-}
-
-// Full Mode
-async function genFull() {
-  const btn = document.getElementById('btn-full');
-  setLoading('btn-full', true);
-
-  const concept = document.getElementById('concept').value.trim();
-  const prompt = `수노음악 가이드 기반으로 프롬프트를 만들어줘.
-장르: ${selections.genres.join(', ')}
-무드: ${selections.moods.join(', ')}
-악기: ${selections.insts.join(', ')}
-보컬: ${selections.vocals.join(', ')}
-BPM: ${document.getElementById('bpm').value}
-컨셉: ${concept}
-
-JSON: {"title":"","style_prompt":""}`;
-
-  const result = await callAI(prompt, 'r-full');
-  setLoading('btn-full', false);
-  if (result) showResult('r-full', result);
-}
-
-// Quick Mode
-async function genQuick() {
-  const kw = document.getElementById('kw-input').value.trim();
-  if (!kw) return alert('키워드를 입력하세요');
-  setLoading('btn-quick', true);
-
-  const prompt = `키워드 "${kw}"를 분석해서 프롬프트 만들어줘.
-
-JSON: {"title":"","style_prompt":""}`;
-
-  const result = await callAI(prompt, 'r-quick');
-  setLoading('btn-quick', false);
-  if (result) showResult('r-quick', result);
-}
-
-// YouTube Mode
-async function genYT() {
-  const url = document.getElementById('yt-url').value.trim();
-  if (!url) return alert('유튜브 링크를 입력해주세요.');
-  setLoading('btn-yt', true);
-
-  const prompt = `유튜브 링크 분석 후 비슷한 스타일 프롬프트 만들어줘. URL: ${url}
-
-JSON: {"title":"","style_prompt":""}`;
-
-  const result = await callAI(prompt, 'r-yt');
-  setLoading('btn-yt', false);
-  if (result) showResult('r-yt', result);
-}
-
-// Shorts Mode
-async function genShorts() {
-  const concept = document.getElementById('sh-concept').value.trim();
-  setLoading('btn-shorts', true);
-
-  const prompt = `쇼츠용 음악 프롬프트 만들어줘. 컨셉: ${concept}
-
-JSON: {"title":"","style_prompt":""}`;
-
-  const result = await callAI(prompt, 'r-sh');
-  setLoading('btn-shorts', false);
-  if (result) showResult('r-sh', result);
-}
-
-// Trending Mode
-function selectTrend(el, text) {
-  currentTrend = text;
-  document.querySelectorAll('#p-trend .chip').forEach(c => c.classList.remove('on'));
-  el.classList.add('on');
-}
-
-async function genTrend() {
-  if (!currentTrend) return alert('콘텐츠 유형을 선택하세요');
-  setLoading('btn-trend', true);
-
-  const prompt = `조회수 최적화 음악 스타일 추천. 유형: ${currentTrend}
-
-JSON: {"title":"","style_prompt":"","viral_reason":""}`;
-
-  const result = await callAI(prompt, 'r-tr');
-  setLoading('btn-trend', false);
-  if (result) showResult('r-tr', result);
-}
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded',()=>{
+  renderGenres();
+  renderMoods();
+  renderInstruments();
+  renderConcepts();
+  renderVocalStyles();
+  renderTones('all');
+  updateBpmGuide(95);
+  // init slider fill
+  document.getElementById('bpmSlider').style.setProperty('--pct','37.5%');
+  // Enter key on keyword input
+  document.getElementById('kwInput').addEventListener('keydown',e=>{
+    if(e.key==='Enter') runAI();
+  });
+});
 </script>
 </body>
 </html>
