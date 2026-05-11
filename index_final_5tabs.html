@@ -1325,22 +1325,81 @@ async function runAI(){
   loading.classList.remove('show');
 }
 
+```js id="lz7v3h"
 async function aiExpandPrompt(){
+
   const current = document.getElementById('promptBox').textContent;
+
   if(!current || current.includes('←')) return;
+
   const loading = document.getElementById('promptLoading');
+
   loading.classList.add('show');
+
   try{
+
     const text = await callClaude(
-      `Create ONE Suno AI style prompt from the music settings below.\n\nRules:\n- English only\n- Maximum 230 characters total\n- One line only\n- No title, no explanation, no quotation marks\n- Include genre, Korean identity, groove, bass movement, key instruments, vocal tone, BPM
-- Make it groove-driven, rhythmic, head-nodding, and emotionally Korean — not ambient-only
-- Korean elements must feel natural: gayageum riffs, haegeum slides, janggu groove, Seoul night atmosphere\n\nSettings:\n${current}`,
-      'You are a Suno AI music prompt expert. Output only one concise English prompt under 230 characters.'
+
+`Create ONE Suno AI prompt.
+
+Rules:
+- English only
+- Maximum 220 characters
+- One line only
+- No explanation
+- No quotation marks
+- Groove and rhythm MUST come first
+- Make it rhythmic, funky, soulful, and head-nodding
+- Korean elements should feel subtle and modern
+
+Priority:
+deep groove bass,
+syncopated pocket drums,
+tight funk groove
+
+Use:
+genre,
+groove,
+bass movement,
+rhythm,
+key instruments,
+vocal tone,
+BPM
+
+Music settings:
+${current}`,
+
+'Output ONLY one short Suno prompt under 220 characters.'
+
     );
-    document.getElementById('promptBox').textContent = sanitizeSunoPrompt(text, 230);
-  }catch(e){ alert('오류: '+(e.message||'알 수 없는 오류')); }
+
+    let finalPrompt = sanitizeSunoPrompt(text,220);
+
+    // Groove boost
+    if(!finalPrompt.toLowerCase().includes('deep groove bass')){
+      finalPrompt =
+      'deep groove bass, syncopated pocket drums, tight funk groove, '
+      + finalPrompt;
+    }
+
+    // Final cut
+    if(finalPrompt.length > 220){
+      finalPrompt = finalPrompt.substring(0,220).trim();
+    }
+
+    document.getElementById('promptBox').textContent = finalPrompt;
+
+  }catch(e){
+
+    alert('오류: ' + (e.message || '알 수 없는 오류'));
+
+  }
+
   loading.classList.remove('show');
+
 }
+```
+
 
 async function genTitle(){
   const current = document.getElementById('promptBox').textContent;
