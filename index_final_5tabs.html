@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>수노 뮤직 프롬프트 메이커</title>
+<title>국악 뮤직 프롬프트 메이커</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -368,7 +368,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">수노 뮤직 프롬프트 메이커</div>
+        <div class="logo-text">국악 뮤직 프롬프트</div>
         <div class="logo-sub">Korean Fusion Music Prompt Maker</div>
       </div>
     </div>
@@ -513,6 +513,31 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     </div>
     <div class="chip-wrap" id="toneGrid"></div>
   </div>
+</div>
+
+
+<div class="section">
+  <div class="section-head">
+    <div class="sec-num">07A</div>
+    <div class="sec-title">사운드 질감 (Texture)</div>
+  </div>
+  <div class="section-body"><div class="chip-wrap" id="textureGrid"></div></div>
+</div>
+
+<div class="section">
+  <div class="section-head">
+    <div class="sec-num">07B</div>
+    <div class="sec-title">그루브 / 리듬 스타일</div>
+  </div>
+  <div class="section-body"><div class="chip-wrap" id="grooveGrid"></div></div>
+</div>
+
+<div class="section">
+  <div class="section-head">
+    <div class="sec-num">07C</div>
+    <div class="sec-title">공간감 / 리버브</div>
+  </div>
+  <div class="section-body"><div class="chip-wrap" id="spaceGrid"></div></div>
 </div>
 
 <!-- ══════════════════════════════════════
@@ -773,6 +798,30 @@ const DATA = {
     {en:'Layered vocal textures',kr:'다층 보컬',gender:'both',desc:'K-pop 감성과 시네마틱 국악 분위기를 동시에 표현 가능'},
     {en:'Backing chorus',kr:'백코러스',gender:'both',desc:'후렴과 감정 고조를 풍성하게 만드는 화음 스타일'},
   ],
+
+  textures:[
+    {en:'Warm analog texture',kr:'따뜻한 아날로그 질감',desc:'빈티지 Soul·Lo-fi 감성을 강화하는 따뜻한 사운드'},
+    {en:'Vinyl crackle',kr:'바이닐 노이즈',desc:'로파이·추억·빈티지 감성 연출'},
+    {en:'Tape saturation',kr:'테이프 질감',desc:'부드럽고 눌린 아날로그 사운드 표현'},
+    {en:'Dusty texture',kr:'먼지 낀 빈티지 질감',desc:'오래된 재즈 레코드 같은 분위기'},
+    {en:'Airy spacious mix',kr:'공기감 있는 공간 믹스',desc:'몽환적이고 넓은 공간감 강화'},
+    {en:'Dark cinematic texture',kr:'다크 시네마틱 질감',desc:'영화 OST 같은 깊고 어두운 분위기'},
+  ],
+  grooves:[
+    {en:'Swing groove',kr:'스윙 그루브',desc:'재즈 특유의 흔들리는 리듬감'},
+    {en:'Laid-back groove',kr:'여유로운 그루브',desc:'Neo Soul·Lo-fi 스타일의 느긋한 흐름'},
+    {en:'Boom bap drums',kr:'붐뱁 드럼',desc:'재즈 힙합 스타일의 클래식 비트'},
+    {en:'Brush jazz drums',kr:'브러쉬 재즈 드럼',desc:'재즈바 감성의 부드러운 드럼'},
+    {en:'Humanized groove',kr:'사람 연주 같은 리듬',desc:'AI 느낌을 줄이고 자연스러운 연주감 강화'},
+    {en:'Syncopated rhythm',kr:'당김음 리듬',desc:'고급스럽고 세련된 재즈·소울 리듬'},
+  ],
+  spaces:[
+    {en:'Small jazz club ambience',kr:'재즈바 공간감',desc:'늦은 밤 재즈 클럽 같은 분위기'},
+    {en:'Dreamy ambient reverb',kr:'몽환적 리버브',desc:'드림팝·앰비언트 공간감 강화'},
+    {en:'Wide stereo atmosphere',kr:'넓은 스테레오 공간감',desc:'글로벌 감성의 넓은 사운드 연출'},
+    {en:'Intimate vocal space',kr:'가까운 보컬 공간감',desc:'보컬 감정 몰입 강화'},
+  ],
+
   bpmGuides:[
     {range:'65–80',name:'Ambient Korean Fusion (앰비언트 코리안 퓨전)',mood:'Dreamy (몽환적인) · Calm (잔잔한) · Emotional (감성적인)',desc:'몽환적이고 여백감 있는 국악 감성 표현에 적합. 대금·해금의 숨결감 강조'},
     {range:'70–85',name:'Korean Lo-fi Soul (코리안 로파이 소울)',mood:'Chill (차분한) · Nostalgic (향수를 불러일으키는) · Introspective (내면적인)',desc:'새벽 감성·드라이브·공부 플레이리스트 스타일에 최적'},
@@ -792,7 +841,7 @@ const DATA = {
 ═══════════════════════════════════════════ */
 const STATE = {
   genre:null, moods:[], instr:null, concept:null,
-  vocalStyle:null, vocalTones:[], bpm:95, gender:'all'
+  vocalStyle:null, vocalTones:[], textures:[], grooves:[], spaces:[], bpm:95, gender:'all'
 };
 
 /* ═══════════════════════════════════════════
@@ -873,6 +922,21 @@ function renderTones(gFilter){
   }).join('');
 }
 
+
+function renderTextures(){
+  const g = document.getElementById('textureGrid');
+  g.innerHTML = DATA.textures.map((d,i)=>`<div class="chip ${STATE.textures.includes(i)?'active':''}" id="texture_${i}" onclick="toggleTexture(${i})"><span class="chip-en">${d.en}</span><span class="chip-kr">${d.kr}</span></div>`).join('');
+}
+function renderGrooves(){
+  const g = document.getElementById('grooveGrid');
+  g.innerHTML = DATA.grooves.map((d,i)=>`<div class="chip ${STATE.grooves.includes(i)?'active':''}" id="groove_${i}" onclick="toggleGroove(${i})"><span class="chip-en">${d.en}</span><span class="chip-kr">${d.kr}</span></div>`).join('');
+}
+function renderSpaces(){
+  const g = document.getElementById('spaceGrid');
+  g.innerHTML = DATA.spaces.map((d,i)=>`<div class="chip ${STATE.spaces.includes(i)?'active':''}" id="space_${i}" onclick="toggleSpace(${i})"><span class="chip-en">${d.en}</span><span class="chip-kr">${d.kr}</span></div>`).join('');
+}
+
+
 /* ═══════════════════════════════════════════
    SELECTION HANDLERS
 ═══════════════════════════════════════════ */
@@ -918,6 +982,27 @@ function setGender(g){
   event.target.classList.add('active');
   renderTones(g);
 }
+
+function toggleTexture(i){
+  const idx = STATE.textures.indexOf(i);
+  if(idx>=0) STATE.textures.splice(idx,1); else STATE.textures.push(i);
+  document.getElementById('texture_'+i)?.classList.toggle('active');
+  buildPrompt();
+}
+function toggleGroove(i){
+  const idx = STATE.grooves.indexOf(i);
+  if(idx>=0) STATE.grooves.splice(idx,1); else STATE.grooves.push(i);
+  document.getElementById('groove_'+i)?.classList.toggle('active');
+  buildPrompt();
+}
+function toggleSpace(i){
+  const idx = STATE.spaces.indexOf(i);
+  if(idx>=0) STATE.spaces.splice(idx,1); else STATE.spaces.push(i);
+  document.getElementById('space_'+i)?.classList.toggle('active');
+  buildPrompt();
+}
+
+
 function updateBpm(v){
   STATE.bpm = parseInt(v);
   document.getElementById('bpmVal').textContent = v;
@@ -971,6 +1056,15 @@ function buildPrompt(){
   if(STATE.vocalStyle!==null){
     const vs = DATA.vocalStyles[STATE.vocalStyle];
     parts.push(`[Vocal Style] ${vs.en} (${vs.kr}) — ${vs.tone}`);
+  }
+  if(STATE.textures.length){
+    parts.push(`[Texture] ${STATE.textures.map(i=>DATA.textures[i].en).join(', ')}`);
+  }
+  if(STATE.grooves.length){
+    parts.push(`[Groove] ${STATE.grooves.map(i=>DATA.grooves[i].en).join(', ')}`);
+  }
+  if(STATE.spaces.length){
+    parts.push(`[Space] ${STATE.spaces.map(i=>DATA.spaces[i].en).join(', ')}`);
   }
   if(STATE.vocalTones.length){
     const ts = STATE.vocalTones.map(i=>DATA.vocalTones[i].en).join(', ');
@@ -1246,6 +1340,9 @@ function resetAll(){
   updateBpmGuide(95);
   document.getElementById('promptBox').textContent='← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
   renderTones('all');
+renderTextures();
+renderGrooves();
+renderSpaces();
   document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active'));
   document.querySelector('.gender-btn').classList.add('active');
 }
@@ -1296,6 +1393,9 @@ window.addEventListener('DOMContentLoaded',()=>{
   renderConcepts();
   renderVocalStyles();
   renderTones('all');
+renderTextures();
+renderGrooves();
+renderSpaces();
   updateBpmGuide(95);
   // init slider fill
   document.getElementById('bpmSlider').style.setProperty('--pct','37.5%');
