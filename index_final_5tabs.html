@@ -600,6 +600,8 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       <button class="btn btn-teal" onclick="applyWorkoutPreset()">🏃 운동</button>
       <button class="btn btn-teal" onclick="applyHipHopPreset()">🎤 힙합</button>
       <button class="btn btn-teal" onclick="applyLaborPreset()">🔨 노동가</button>
+      <button class="btn btn-outline" onclick="saveCurrentPreset()">💾 프리셋 저장</button>
+      <button class="btn btn-outline" onclick="loadPresets()">📂 내 프리셋</button>
       <button class="btn btn-outline" onclick="resetAll()">↺ 초기화</button>
     </div>
     <div class="ai-loading" id="promptLoading" style="margin-top:8px">
@@ -1658,12 +1660,12 @@ async function genLyrics(lang) {
   loading.classList.add('show');
   try {
     const lyricPrompt = isEn
-      ? `Write deeply emotional, poetic, and soulful lyrics in ENGLISH ONLY for the following Korean fusion music style.\n\nIMPORTANT RULES:\n- NEVER mention any instrument names (haegeum, gayageum, daegeum, janggu, etc.)\n- Focus on emotion, imagery, atmosphere, and feeling\n- Use poetic and cinematic language\n- Make it suitable for late-night, melancholic, or soulful Korean fusion music\n- Include strong emotional depth and Korean sensibility (한, night atmosphere, longing, melancholy)\n\nMusic style:\n${current}\n\nFormat exactly:\n[Verse 1]\n...\n\n[Verse 2]\n...\n\n[Chorus]\n...\n\n[Bridge]\n...\n\nKeep it emotional, atmospheric, and high-quality.`
-      : `다음 한국 퓨전 음악 스타일에 맞는 **감성적이고 시적이며 영혼이 담긴** 한국어 가사를 작성하세요.\n\n중요 규칙:\n- 절대 악기 이름(해금, 가야금, 대금, 장구 등)을 가사에 넣지 마세요\n- 감정, 이미지, 분위기, 느낌에 집중하세요\n- 시적이고 영화적인 언어를 사용하세요\n- 늦은 밤, 애절함, 그리움, 한(恨) 등의 한국적 정서를 자연스럽게 녹이세요\n- 감정의 깊이와 여운이 강하게 느껴지도록 작성하세요\n\n음악 스타일:\n${current}\n\n형식은 반드시 아래처럼 작성하세요:\n[절 1]\n...\n\n[절 2]\n...\n\n[후렴]\n...\n\n[브릿지]\n...\n\n감성적이고 시적이며 고품질로 작성하세요.`;
+      ? `Write deeply emotional, poetic, cinematic, and soul-stirring lyrics in ENGLISH ONLY.\n\nSTRICT RULES:\n- NEVER mention instrument names (no haegeum, gayageum, daegeum, janggu, piano, guitar, etc.)\n- Focus purely on emotion, vivid imagery, atmosphere, memory, longing, and feeling\n- Use beautiful, poetic, and cinematic language\n- Strong Korean sensibility (한, night rain, empty streets, quiet longing, deep melancholy)\n- Make every line feel personal and emotional\n\nMusic style:\n${current}\n\nFormat exactly:\n[Verse 1]\n...\n\n[Verse 2]\n...\n\n[Chorus]\n...\n\n[Bridge]\n...\n\n[Outro]\n...\n\nWrite with soul and depth. High quality only.`
+      : `다음 한국 퓨전 음악 스타일에 맞는 **감성 깊고 시적이며 영혼이 느껴지는** 한국어 가사를 작성하세요.\n\n절대 지켜야 할 규칙:\n- 악기 이름 절대 금지 (해금, 가야금, 대금, 장구, 피아노, 기타 등 절대 언급 금지)\n- 감정, 이미지, 분위기, 추억, 그리움, 한(恨)에 집중\n- 아름답고 시적이며 영화적인 언어 사용\n- 한국적 정서(한, 밤비, 빈 거리, 조용한 그리움, 깊은 애절함)를 강하게 녹이기\n- 모든 줄이 개인적이고 감정적으로 느껴지게 작성\n\n음악 스타일:\n${current}\n\n형식은 반드시 아래처럼 작성하세요:\n[절 1]\n...\n\n[절 2]\n...\n\n[후렴]\n...\n\n[브릿지]\n...\n\n[아웃트로]\n...\n\n감정의 깊이와 시적 아름다움을 최우선으로 작성하세요.`;
 
     const systemPrompt = isEn
-      ? 'You are a world-class English lyricist specializing in emotional Korean fusion global music. Write poetic, soulful, and atmospheric lyrics with deep emotion. Never mention instruments.'
-      : '당신은 세계 최고 수준의 한국어 작사가로, 감성적이고 시적인 국악 퓨전 가사를 전문으로 합니다. 악기 이름은 절대 넣지 말고, 감정과 이미지를 중심으로 깊이 있고 여운이 있는 가사를 작성하세요.';
+      ? 'You are a world-class emotional lyricist for Korean fusion music. Write poetic, soulful, atmospheric lyrics with deep feeling. Never mention any instruments. Focus on emotion and imagery only.'
+      : '당신은 최고 수준의 감성 작사가입니다. 악기 이름은 절대 넣지 말고, 감정과 이미지를 중심으로 깊이 있고 시적이며 여운이 강한 한국어 가사를 작성하세요.';
 
     const text = await callClaude(lyricPrompt, systemPrompt);
     out.value = cleanModelText(text);
@@ -1939,6 +1941,83 @@ function applyRandomPreset() {
   
   buildPrompt();
   showToast("✨ 랜덤 추천이 적용되었습니다!");
+}
+
+// 내 프리셋 저장/불러오기
+function saveCurrentPreset() {
+  const name = prompt("프리셋 이름을 입력하세요:");
+  if (!name) return;
+
+  const preset = {
+    name: name,
+    state: { ...STATE },
+    timestamp: new Date().toISOString()
+  };
+
+  let presets = JSON.parse(localStorage.getItem('gugak_presets') || '[]');
+  presets.push(preset);
+  localStorage.setItem('gugak_presets', JSON.stringify(presets));
+
+  showToast("✅ 프리셋이 저장되었습니다!");
+}
+
+function loadPresets() {
+  let presets = JSON.parse(localStorage.getItem('gugak_presets') || '[]');
+  
+  if (presets.length === 0) {
+    alert("저장된 프리셋이 없습니다.");
+    return;
+  }
+
+  let html = "<div style='max-height:300px;overflow-y:auto'>";
+  presets.forEach((p, i) => {
+    html += `<div style="padding:8px;border-bottom:1px solid var(--border);cursor:pointer" onclick="loadPreset(${i})">
+      <strong>${p.name}</strong><br>
+      <span style="font-size:11px;color:var(--muted)">${new Date(p.timestamp).toLocaleString()}</span>
+    </div>`;
+  });
+  html += "</div>";
+
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999';
+  modal.innerHTML = `
+    <div style="background:var(--surface);padding:20px;border-radius:12px;width:400px;max-width:90%">
+      <h3 style="margin-bottom:15px">내 프리셋</h3>
+      ${html}
+      <button class="btn btn-outline" style="margin-top:15px;width:100%" onclick="this.closest('.modal').remove()">닫기</button>
+    </div>
+  `;
+  modal.className = 'modal';
+  document.body.appendChild(modal);
+}
+
+function loadPreset(index) {
+  let presets = JSON.parse(localStorage.getItem('gugak_presets') || '[]');
+  const preset = presets[index];
+  
+  if (!preset) return;
+
+  Object.assign(STATE, preset.state);
+  
+  renderAll();
+  document.getElementById('bpmSlider').value = STATE.bpm;
+  document.getElementById('bpmVal').textContent = STATE.bpm;
+  updateBpmGuide(STATE.bpm);
+  
+  const intensitySlider = document.getElementById('intensitySlider');
+  if (intensitySlider) intensitySlider.value = STATE.intensity;
+  document.getElementById('intensityValue').textContent = STATE.intensity;
+  
+  const label = document.getElementById('intensityLabel');
+  if (STATE.intensity <= 3) label.textContent = 'Chill';
+  else if (STATE.intensity <= 6) label.textContent = 'Emotional';
+  else label.textContent = 'Explosive Soul';
+  
+  buildPrompt();
+  showToast("✅ 프리셋이 불러와졌습니다!");
+  
+  // 모달 닫기
+  document.querySelector('.modal')?.remove();
 }
 
 /* ═══════════════════════════════════════════
