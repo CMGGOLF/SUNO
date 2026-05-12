@@ -428,38 +428,38 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
 </div>
 
-<!-- SECTION 04: 곡 컨셉 -->
+<!-- SECTION 04: 곡 컨셉 (접을 수 있음) -->
 <div class="section">
-  <div class="section-head">
+  <div class="section-head" onclick="toggleSection('conceptBody', 'conceptIcon')" style="cursor:pointer">
     <div class="sec-num">04</div>
-    <div class="sec-title">곡 컨셉별 무드 조합 추천</div>
-    <div class="sec-sub">선택 시 관련 설정 자동 하이라이트</div>
+    <div class="sec-title">곡 컨셉별 무드 조합 추천 <span id="conceptIcon" style="font-size:14px">▼</span></div>
+    <div class="sec-sub">선택 시 관련 설정 자동 하이라이트 (클릭하여 펼치기/접기)</div>
   </div>
-  <div class="section-body">
+  <div class="section-body" id="conceptBody" style="display:none">
     <div class="concept-grid" id="conceptGrid"></div>
   </div>
 </div>
 
-<!-- SECTION 05: 보컬 스타일 -->
+<!-- SECTION 05: 보컬 스타일 (접을 수 있음) -->
 <div class="section">
-  <div class="section-head">
+  <div class="section-head" onclick="toggleSection('vocalStyleBody', 'vocalStyleIcon')" style="cursor:pointer">
     <div class="sec-num">05</div>
-    <div class="sec-title">보컬 스타일</div>
-    <div class="sec-sub">하나 선택</div>
+    <div class="sec-title">보컬 스타일 <span id="vocalStyleIcon" style="font-size:14px">▼</span></div>
+    <div class="sec-sub">하나 선택 (클릭하여 펼치기/접기)</div>
   </div>
-  <div class="section-body">
+  <div class="section-body" id="vocalStyleBody" style="display:none">
     <div class="card-grid col2" id="vocalStyleGrid"></div>
   </div>
 </div>
 
-<!-- SECTION 06: 보컬 톤 -->
+<!-- SECTION 06: 보컬 톤 (접을 수 있음) -->
 <div class="section">
-  <div class="section-head">
+  <div class="section-head" onclick="toggleSection('toneBody', 'toneIcon')" style="cursor:pointer">
     <div class="sec-num">06</div>
-    <div class="sec-title">보컬 톤 스타일</div>
-    <div class="sec-sub">성별 필터 + 복수 선택</div>
+    <div class="sec-title">보컬 톤 스타일 <span id="toneIcon" style="font-size:14px">▼</span></div>
+    <div class="sec-sub">성별 필터 + 복수 선택 (클릭하여 펼치기/접기)</div>
   </div>
-  <div class="section-body">
+  <div class="section-body" id="toneBody" style="display:none">
     <div class="gender-row">
       <span class="gender-lbl">성별 필터:</span>
       <button class="gender-btn active" onclick="setGender('all')">전체</button>
@@ -1771,6 +1771,20 @@ function autoRecommendDuration(lang) {
 function toggleAdvancedSettings() {
   const body = document.getElementById('advancedSettingsBody');
   const icon = document.getElementById('advancedToggleIcon');
+  
+  if (body.style.display === 'none' || body.style.display === '') {
+    body.style.display = 'block';
+    icon.textContent = '▲';
+  } else {
+    body.style.display = 'none';
+    icon.textContent = '▼';
+  }
+}
+
+// 일반 섹션 접기/펼치기
+function toggleSection(bodyId, iconId) {
+  const body = document.getElementById(bodyId);
+  const icon = document.getElementById(iconId);
   
   if (body.style.display === 'none' || body.style.display === '') {
     body.style.display = 'block';
