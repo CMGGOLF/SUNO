@@ -571,9 +571,9 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         </div>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:'Space Mono',monospace">
-        <span>1 Chill</span>
-        <span>5 Emotional</span>
-        <span>10 Explosive</span>
+        <span>1 Chill (잔잔한)</span>
+        <span>5 Emotional (감성적인)</span>
+        <span>10 Explosive (폭발적인)</span>
       </div>
       <div class="info-bar" style="font-size:11px">
         슬라이더를 움직이면 보컬 강도, 드럼 에너지, 악기 밀도, 리버브, 다이내믹이 자동으로 조절됩니다.
@@ -1232,9 +1232,9 @@ function updateIntensity(v) {
   document.getElementById('intensityValue').textContent = v;
   
   const label = document.getElementById('intensityLabel');
-  if (v <= 3) label.textContent = 'Chill';
-  else if (v <= 6) label.textContent = 'Emotional';
-  else label.textContent = 'Explosive Soul';
+  if (v <= 3) label.textContent = 'Chill (잔잔한)';
+  else if (v <= 6) label.textContent = 'Emotional (감성적인)';
+  else label.textContent = 'Explosive Soul (폭발적인)';
   
   buildPrompt();
 }
@@ -2149,7 +2149,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (intensitySlider) {
     intensitySlider.value = 5;
     document.getElementById('intensityValue').textContent = '5';
-    document.getElementById('intensityLabel').textContent = 'Emotional';
+    document.getElementById('intensityLabel').textContent = 'Emotional (감성적인)';
   }
 
   document.getElementById('kwInput').addEventListener('keydown', e => {
