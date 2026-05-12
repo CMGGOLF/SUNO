@@ -1639,12 +1639,12 @@ async function genLyrics(lang) {
   loading.classList.add('show');
   try {
     const lyricPrompt = isEn
-      ? `Write lyrics in ENGLISH ONLY for the following music style. Do not use Korean words.\n\nMusic style:\n${current}\n\nFormat exactly:\n[Verse 1]\n...\n\n[Verse 2]\n...\n\n[Chorus]\n...\n\nKeep it emotional, poetic, and suitable for Korean fusion global music.`
-      : `다음 음악 스타일에 맞는 한국어 가사를 작성하세요. 영어 가사는 쓰지 마세요.\n\n음악 스타일:\n${current}\n\n형식은 반드시 아래처럼 작성하세요:\n[절 1]\n...\n\n[절 2]\n...\n\n[후렴]\n...\n\n국악 퓨전 글로벌 음악에 어울리게 감성적이고 시적으로 작성하세요.`;
+      ? `Write deeply emotional, poetic, and soulful lyrics in ENGLISH ONLY for the following Korean fusion music style.\n\nIMPORTANT RULES:\n- NEVER mention any instrument names (haegeum, gayageum, daegeum, janggu, etc.)\n- Focus on emotion, imagery, atmosphere, and feeling\n- Use poetic and cinematic language\n- Make it suitable for late-night, melancholic, or soulful Korean fusion music\n- Include strong emotional depth and Korean sensibility (한, night atmosphere, longing, melancholy)\n\nMusic style:\n${current}\n\nFormat exactly:\n[Verse 1]\n...\n\n[Verse 2]\n...\n\n[Chorus]\n...\n\n[Bridge]\n...\n\nKeep it emotional, atmospheric, and high-quality.`
+      : `다음 한국 퓨전 음악 스타일에 맞는 **감성적이고 시적이며 영혼이 담긴** 한국어 가사를 작성하세요.\n\n중요 규칙:\n- 절대 악기 이름(해금, 가야금, 대금, 장구 등)을 가사에 넣지 마세요\n- 감정, 이미지, 분위기, 느낌에 집중하세요\n- 시적이고 영화적인 언어를 사용하세요\n- 늦은 밤, 애절함, 그리움, 한(恨) 등의 한국적 정서를 자연스럽게 녹이세요\n- 감정의 깊이와 여운이 강하게 느껴지도록 작성하세요\n\n음악 스타일:\n${current}\n\n형식은 반드시 아래처럼 작성하세요:\n[절 1]\n...\n\n[절 2]\n...\n\n[후렴]\n...\n\n[브릿지]\n...\n\n감성적이고 시적이며 고품질로 작성하세요.`;
 
     const systemPrompt = isEn
-      ? 'You are a professional English lyricist for Korean fusion global music. Always output English lyrics only.'
-      : '당신은 국악 퓨전 글로벌 음악 전문 한국어 작사가입니다. 항상 한국어 가사만 출력합니다.';
+      ? 'You are a world-class English lyricist specializing in emotional Korean fusion global music. Write poetic, soulful, and atmospheric lyrics with deep emotion. Never mention instruments.'
+      : '당신은 세계 최고 수준의 한국어 작사가로, 감성적이고 시적인 국악 퓨전 가사를 전문으로 합니다. 악기 이름은 절대 넣지 말고, 감정과 이미지를 중심으로 깊이 있고 여운이 있는 가사를 작성하세요.';
 
     const text = await callClaude(lyricPrompt, systemPrompt);
     out.value = cleanModelText(text);
