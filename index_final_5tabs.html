@@ -652,7 +652,13 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     </div>
 
     <div class="tab-panel active" id="lyricsEn">
-      <button class="btn btn-gold" onclick="genLyrics('en')">✦ 영어 가사 생성</button>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+        <button class="btn btn-gold" onclick="genLyrics('en')">✦ 영어 가사 생성</button>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span style="font-size:12px;color:var(--muted)">곡 길이:</span>
+          <input type="text" id="lyricsDurationEn" value="3:00" style="width:70px;padding:4px 8px;font-size:12px" placeholder="3:00">
+        </div>
+      </div>
       <div class="ai-loading" id="lyricsEnLoading" style="margin-top:8px">
         <div class="dot-anim"><span></span><span></span><span></span></div>
         영어 가사 생성 중...
@@ -664,7 +670,14 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     </div>
 
     <div class="tab-panel" id="lyricsKr">
-      <button class="btn btn-gold" onclick="genLyrics('kr')">✦ 한국어 가사 생성</button>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+        <button class="btn btn-gold" onclick="genLyrics('kr')">✦ 한국어 가사 생성</button>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span style="font-size:12px;color:var(--muted)">곡 길이:</span>
+          <input type="text" id="lyricsDurationKr" value="3:00" style="width:70px;padding:4px 8px;font-size:12px" placeholder="3:00">
+          <button class="btn btn-outline" style="padding:4px 10px;font-size:11px" onclick="autoRecommendDuration('kr')">자동 추천</button>
+        </div>
+      </div>
       <div class="ai-loading" id="lyricsKrLoading" style="margin-top:8px">
         <div class="dot-anim"><span></span><span></span><span></span></div>
         한국어 가사 생성 중...
@@ -1657,15 +1670,20 @@ async function genLyrics(lang) {
   const isEn = lang === 'en';
   const loading = document.getElementById(isEn ? 'lyricsEnLoading' : 'lyricsKrLoading');
   const out = document.getElementById(isEn ? 'lyricsEnOut' : 'lyricsKrOut');
+  
+  // 곡 길이 가져오기
+  const durationInput = document.getElementById(isEn ? 'lyricsDurationEn' : 'lyricsDurationKr');
+  const duration = durationInput ? durationInput.value.trim() : '3:00';
+  
   loading.classList.add('show');
   try {
     const lyricPrompt = isEn
-      ? `Write deeply emotional, poetic, cinematic, and soul-stirring lyrics in ENGLISH ONLY.\n\nSTRICT RULES:\n- NEVER mention instrument names (no haegeum, gayageum, daegeum, janggu, piano, guitar, etc.)\n- Focus purely on emotion, vivid imagery, atmosphere, memory, longing, and feeling\n- Use beautiful, poetic, and cinematic language\n- Strong Korean sensibility (한, night rain, empty streets, quiet longing, deep melancholy)\n- Make every line feel personal and emotional\n\nMusic style:\n${current}\n\nFormat exactly:\n[Verse 1]\n...\n\n[Verse 2]\n...\n\n[Chorus]\n...\n\n[Bridge]\n...\n\n[Outro]\n...\n\nWrite with soul and depth. High quality only.`
-      : `다음 한국 퓨전 음악 스타일에 맞는 **감성 깊고 시적이며 영혼이 느껴지는** 한국어 가사를 작성하세요.\n\n절대 지켜야 할 규칙:\n- 악기 이름 절대 금지 (해금, 가야금, 대금, 장구, 피아노, 기타 등 절대 언급 금지)\n- 감정, 이미지, 분위기, 추억, 그리움, 한(恨)에 집중\n- 아름답고 시적이며 영화적인 언어 사용\n- 한국적 정서(한, 밤비, 빈 거리, 조용한 그리움, 깊은 애절함)를 강하게 녹이기\n- 모든 줄이 개인적이고 감정적으로 느껴지게 작성\n\n음악 스타일:\n${current}\n\n형식은 반드시 아래처럼 작성하세요:\n[절 1]\n...\n\n[절 2]\n...\n\n[후렴]\n...\n\n[브릿지]\n...\n\n[아웃트로]\n...\n\n감정의 깊이와 시적 아름다움을 최우선으로 작성하세요.`;
+      ? `Write deeply emotional, poetic, cinematic, and soul-stirring lyrics in ENGLISH ONLY for a ${duration} long track.\n\nSTRICT RULES:\n- NEVER mention instrument names\n- Focus purely on emotion, vivid imagery, atmosphere, memory, longing, and feeling\n- Use beautiful, poetic, and cinematic language\n- Strong Korean sensibility (한, night rain, empty streets, quiet longing, deep melancholy)\n- Adjust structure based on track length: shorter tracks = fewer verses, longer tracks = more verses + bridge\n\nMusic style:\n${current}\n\nFormat exactly:\n[Verse 1]\n...\n\n[Verse 2]\n...\n\n[Chorus]\n...\n\n[Bridge]\n...\n\n[Outro]\n...\n\nWrite with soul and depth. High quality only.`
+      : `다음 한국 퓨전 음악 스타일에 맞는 **감성 깊고 시적이며 영혼이 느껴지는** 한국어 가사를 ${duration} 길이 곡에 맞춰 작성하세요.\n\n절대 지켜야 할 규칙:\n- 악기 이름 절대 금지\n- 감정, 이미지, 분위기, 추억, 그리움, 한(恨)에 집중\n- 아름답고 시적이며 영화적인 언어 사용\n- 한국적 정서(한, 밤비, 빈 거리, 조용한 그리움, 깊은 애절함)를 강하게 녹이기\n- 곡 길이에 맞춰 구조 조정 (짧은 곡 = 적은 절, 긴 곡 = 절 + 브릿지 추가)\n\n음악 스타일:\n${current}\n\n형식은 반드시 아래처럼 작성하세요:\n[절 1]\n...\n\n[절 2]\n...\n\n[후렴]\n...\n\n[브릿지]\n...\n\n[아웃트로]\n...\n\n감정의 깊이와 시적 아름다움을 최우선으로 작성하세요.`;
 
     const systemPrompt = isEn
-      ? 'You are a world-class emotional lyricist for Korean fusion music. Write poetic, soulful, atmospheric lyrics with deep feeling. Never mention any instruments. Focus on emotion and imagery only.'
-      : '당신은 최고 수준의 감성 작사가입니다. 악기 이름은 절대 넣지 말고, 감정과 이미지를 중심으로 깊이 있고 시적이며 여운이 강한 한국어 가사를 작성하세요.';
+      ? 'You are a world-class emotional lyricist for Korean fusion music. Write poetic, soulful, atmospheric lyrics with deep feeling. Never mention any instruments. Focus on emotion and imagery only. Adjust structure to fit the track length.'
+      : '당신은 최고 수준의 감성 작사가입니다. 악기 이름은 절대 넣지 말고, 감정과 이미지를 중심으로 깊이 있고 시적이며 여운이 강한 한국어 가사를 작성하세요. 곡 길이에 맞춰 구조를 조정하세요.';
 
     const text = await callClaude(lyricPrompt, systemPrompt);
     out.value = cleanModelText(text);
@@ -1704,6 +1722,48 @@ function applyRec(styleName) {
   document.getElementById('kwInput').value = styleName;
   runAI();
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 곡 길이 자동 추천
+function autoRecommendDuration(lang) {
+  const bpm = STATE.bpm || 95;
+  const intensity = STATE.intensity || 5;
+  const concept = STATE.concept !== null ? DATA.concepts[STATE.concept] : null;
+
+  let baseMinutes = 3.0;
+
+  // BPM에 따른 조정
+  if (bpm > 125) baseMinutes += 0.5;
+  else if (bpm < 85) baseMinutes -= 0.3;
+
+  // 감정 강도에 따른 조정
+  if (intensity >= 8) baseMinutes += 0.4;
+  else if (intensity <= 3) baseMinutes -= 0.3;
+
+  // 컨셉에 따른 조정
+  if (concept) {
+    const core = concept.core.join(' ').toLowerCase();
+    if (core.includes('energetic') || core.includes('powerful') || core.includes('aggressive')) {
+      baseMinutes += 0.3;
+    }
+    if (core.includes('chill') || core.includes('calm') || core.includes('dreamy')) {
+      baseMinutes -= 0.2;
+    }
+  }
+
+  // 2:20 ~ 4:30 사이로 제한
+  baseMinutes = Math.max(2.3, Math.min(4.5, baseMinutes));
+
+  const minutes = Math.floor(baseMinutes);
+  const seconds = Math.round((baseMinutes - minutes) * 60);
+  const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+  const inputId = lang === 'en' ? 'lyricsDurationEn' : 'lyricsDurationKr';
+  const input = document.getElementById(inputId);
+  if (input) {
+    input.value = timeString;
+    showToast(`✅ 추천 길이: ${timeString}`);
+  }
 }
 
 function applyGroovePreset() {
