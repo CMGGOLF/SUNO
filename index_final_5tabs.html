@@ -470,14 +470,14 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
 </div>
 
-<!-- SECTION 07: 고급 사운드 설정 -->
+<!-- SECTION 07: 고급 사운드 설정 (접을 수 있음) -->
 <div class="section">
-  <div class="section-head">
+  <div class="section-head" onclick="toggleAdvancedSettings()" style="cursor:pointer">
     <div class="sec-num">07</div>
-    <div class="sec-title">고급 사운드 설정</div>
-    <div class="sec-sub">텍스처 · 그루브 · 공간감 · 한국적 요소</div>
+    <div class="sec-title">고급 사운드 설정 <span id="advancedToggleIcon" style="font-size:14px">▼</span></div>
+    <div class="sec-sub">텍스처 · 그루브 · 공간감 · 한국적 요소 (클릭하여 펼치기/접기)</div>
   </div>
-  <div class="section-body">
+  <div class="section-body" id="advancedSettingsBody" style="display:none">
 
     <div style="margin-bottom:20px">
       <div style="font-size:12px;color:var(--gold);margin-bottom:8px;font-weight:600">07A. 사운드 질감 (Texture)</div>
@@ -1764,6 +1764,20 @@ function autoRecommendDuration(lang) {
   if (input) {
     input.value = timeString;
     showToast(`✅ 추천 길이: ${timeString}`);
+  }
+}
+
+// 고급 사운드 설정 접기/펼치기
+function toggleAdvancedSettings() {
+  const body = document.getElementById('advancedSettingsBody');
+  const icon = document.getElementById('advancedToggleIcon');
+  
+  if (body.style.display === 'none' || body.style.display === '') {
+    body.style.display = 'block';
+    icon.textContent = '▲';
+  } else {
+    body.style.display = 'none';
+    icon.textContent = '▼';
   }
 }
 
