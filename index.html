@@ -585,6 +585,20 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       <button class="btn btn-outline" onclick="saveCurrentPreset()">💾 프리셋 저장</button>
       <button class="btn btn-outline" onclick="loadPresets()">📂 내 프리셋</button>
       <button class="btn btn-outline" onclick="resetAll()">↺ 초기화</button>
+      <!-- Suno 버튼 -->
+<button onclick="openSunoWithEverything()" 
+        style="background: linear-gradient(135deg, #ff4d4d, #ff6b6b); 
+               color: white; 
+               font-size: 17px; 
+               padding: 15px 32px; 
+               border: none; 
+               border-radius: 14px; 
+               cursor: pointer; 
+               margin-top: 10px; 
+               font-weight: bold;
+               box-shadow: 0 5px 18px rgba(255, 77, 77, 0.4);">
+    🎵 Suno로 바로 만들기 (제목 + 프롬프트 + 가사)
+</button>
     </div>
     <div class="ai-loading" id="promptLoading" style="margin-top:8px">
       <div class="dot-anim"><span></span><span></span><span></span></div>프롬프트 확장 중...
