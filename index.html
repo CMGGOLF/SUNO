@@ -331,14 +331,17 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="sec-sub">선택하면 3:7 비율 자동 세팅</div>
   </div>
   <div class="section-body">
-    <div style="margin-bottom:10px;font-size:11px;color:var(--korean2);font-weight:600">🎯 3:7 최적화 프리셋</div>
     <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">
-      <button class="btn btn-korean" onclick="apply37Preset('standard')">🎵 3:7 Standard</button>
-      <button class="btn btn-korean" onclick="apply37Preset('groove')">🥁 3:7 Groove</button>
-      <button class="btn btn-korean" onclick="apply37Preset('soul')">🎷 3:7 Soul Blues</button>
-      <button class="btn btn-korean" onclick="apply37Preset('ambient')">🌙 3:7 Ambient</button>
-      <button class="btn btn-korean" onclick="apply37Preset('cinematic')">🎬 3:7 Cinematic</button>
-    </div>
+  <button class="btn btn-korean" onclick="apply37Preset('standard')">🎵 3:7 Standard <span style="font-size:11px;opacity:0.8">(표준)</span></button>
+  
+  <button class="btn btn-korean" onclick="apply37Preset('groove')">🥁 3:7 Groove <span style="font-size:11px;opacity:0.8">(그루브)</span></button>
+  
+  <button class="btn btn-korean" onclick="apply37Preset('soul')">🎷 3:7 Soul Blues <span style="font-size:11px;opacity:0.8">(소울 블루스)</span></button>
+  
+  <button class="btn btn-korean" onclick="apply37Preset('ambient')">🌙 3:7 Ambient <span style="font-size:11px;opacity:0.8">(앰비언트)</span></button>
+  
+  <button class="btn btn-korean" onclick="apply37Preset('cinematic')">🎬 3:7 Cinematic <span style="font-size:11px;opacity:0.8">(시네마틱)</span></button>
+</div>
     <div style="margin-bottom:10px;font-size:11px;color:var(--gold);font-weight:600">⚡ 용도별 시작</div>
     <div style="display:flex;flex-wrap:wrap;gap:10px">
       <button class="btn btn-gold" onclick="applyQuickStart('drive')">🚗 드라이브</button>
