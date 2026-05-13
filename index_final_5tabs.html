@@ -1902,7 +1902,7 @@ function applyGroovePreset() {
   document.getElementById('bpmVal').textContent = '96';
   updateBpmGuide(96);
   updateIntensity(6);
-  buildPrompt();                    // ← 여기 추가!
+  buildPrompt();
   showToast("✅ 한국 그루브 추천 세팅이 적용되었습니다!");
 }
 // 다목적 프리셋 추가
@@ -2031,14 +2031,13 @@ function applyQuickStart(type) {
     STATE.intensity = 5;
   }
 
-  // ==================== 핵심 수정 ====================
   renderAll();
   document.getElementById('bpmSlider').value = STATE.bpm;
   document.getElementById('bpmVal').textContent = STATE.bpm;
   updateBpmGuide(STATE.bpm);
   
   updateIntensity(STATE.intensity);
-  buildPrompt();                    // ← 이 줄이 프롬프트 생성 핵심
+  buildPrompt();
   
   let message = "✅ 세팅이 적용되었습니다!";
   if (type === 'drive') message = "✅ 드라이브 세팅이 적용되었습니다!";
