@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* 전체 스타일 (기존 디자인 유지) */
 :root {
   --bg: #08080e;
   --surface: #111118;
@@ -206,7 +205,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
   transition:border-color .2s;
 }
 .prompt-box:hover{border-color:var(--dim)}
-.prompt-actions{display:flex;gap:8px;margin-top:10px}
+.prompt-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .btn{
   display:inline-flex;align-items:center;gap:6px;
   padding:9px 18px;border-radius:6px;border:1px solid;
@@ -479,51 +478,40 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="sec-sub">텍스처 · 그루브 · 공간감 · 한국적 요소 (클릭하여 펼치기/접기)</div>
   </div>
   <div class="section-body" id="advancedSettingsBody" style="display:none">
-
     <div style="margin-bottom:20px">
       <div style="font-size:12px;color:var(--gold);margin-bottom:8px;font-weight:600">07A. 사운드 질감 (Texture)</div>
       <div class="chip-wrap" id="textureGrid"></div>
     </div>
-
     <div style="margin-bottom:20px">
       <div style="font-size:12px;color:var(--gold);margin-bottom:8px;font-weight:600">07B. 그루브 / 리듬 스타일</div>
       <div class="chip-wrap" id="grooveGrid"></div>
     </div>
-
     <div style="margin-bottom:20px">
       <div style="font-size:12px;color:var(--gold);margin-bottom:8px;font-weight:600">07C. 공간감 / 리버브</div>
       <div class="chip-wrap" id="spaceGrid"></div>
     </div>
-
     <div style="margin-bottom:20px">
       <div style="font-size:12px;color:var(--gold);margin-bottom:8px;font-weight:600">07D. 한국적 그루브 요소</div>
       <div class="chip-wrap" id="koreanGrooveGrid"></div>
     </div>
-
     <div style="margin-bottom:20px">
       <div style="font-size:12px;color:var(--gold);margin-bottom:8px;font-weight:600">07E. 베이스 움직임</div>
       <div class="chip-wrap" id="bassStyleGrid"></div>
     </div>
-
     <div>
       <div style="font-size:12px;color:var(--gold);margin-bottom:8px;font-weight:600">07F. 한국적 감성 / 분위기</div>
       <div class="chip-wrap" id="koreanFeelingGrid"></div>
     </div>
-
-    <!-- 07G Black Soul / Blues Elements -->
     <div style="margin-top:24px; padding-top:20px; border-top:1px solid var(--border)">
       <div style="font-size:12px;color:#e07070;margin-bottom:8px;font-weight:600">07G. 흑인 블루스 / 소울 요소 (Black Soul/Blues)</div>
       <div class="chip-wrap" id="blackSoulGrid"></div>
       <div style="font-size:10px;color:var(--muted);margin-top:6px">Gospel, Chicago Blues, Soul의 원형적인 에너지와 그릿을 추가합니다.</div>
     </div>
-
-    <!-- 07H Human Feel / Live Elements -->
     <div style="margin-top:24px; padding-top:20px; border-top:1px solid var(--border)">
       <div style="font-size:12px;color:#6aa0e0;margin-bottom:8px;font-weight:600">07H. 인간미 / 라이브 느낌 (Human Feel / Live Elements)</div>
       <div class="chip-wrap" id="humanFeelGrid"></div>
       <div style="font-size:10px;color:var(--muted);margin-top:6px">AI 음악 티를 크게 줄여주는 인간적이고 라이브한 요소들입니다.</div>
     </div>
-
   </div>
 </div>
 
@@ -564,7 +552,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   <div class="section-body">
     <div style="display:flex;flex-direction:column;gap:12px">
       <div style="display:flex;align-items:center;gap:12px">
-        <input type="range" id="intensitySlider" min="1" max="10" value="5" step="1" 
+        <input type="range" id="intensitySlider" min="1" max="10" value="5" step="1"
                style="flex:1" oninput="updateIntensity(this.value)">
         <div style="min-width:120px;text-align:center">
           <div id="intensityValue" style="font-size:28px;font-weight:700;color:var(--gold);font-family:'Space Mono',monospace">5</div>
@@ -647,7 +635,6 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       <div class="tab" onclick="switchTab('lyricsKr',this)">🇰🇷 한국어 가사 (AI 생성)</div>
       <div class="tab" onclick="switchTab('lyricsFree',this)">✏️ 직접 입력</div>
     </div>
-
     <div class="tab-panel active" id="lyricsEn">
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
         <button class="btn btn-gold" onclick="genLyrics('en')">✦ 영어 가사 생성</button>
@@ -666,7 +653,6 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <button class="btn btn-outline" onclick="copyField('lyricsEnOut')">📋 복사</button>
       </div>
     </div>
-
     <div class="tab-panel" id="lyricsKr">
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
         <button class="btn btn-gold" onclick="genLyrics('kr')">✦ 한국어 가사 생성</button>
@@ -685,7 +671,6 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <button class="btn btn-outline" onclick="copyField('lyricsKrOut')">📋 복사</button>
       </div>
     </div>
-
     <div class="tab-panel" id="lyricsFree">
       <textarea id="lyricsFreeInput" style="min-height:200px" placeholder="여기에 직접 가사를 입력하세요..."></textarea>
       <div class="prompt-actions" style="margin-top:8px">
@@ -718,7 +703,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 
 <script>
 /* ═══════════════════════════════════════════
-   DATA (전체 유지)
+   DATA
 ═══════════════════════════════════════════ */
 const DATA = {
   genres: [
@@ -732,23 +717,23 @@ const DATA = {
     {en:'Korean Rhythm Fusion',kr:'코리안 리듬 퓨전',desc:'한국적 장단과 현대 Soul·Hip-hop·Jazz 리듬을 자연스럽게 결합한 글로벌 Fusion 사운드'},
   ],
   moods: [
-    {en:'Head-Nodding Groove',kr:'고개 끄덕이는 그루브',desc:'자연스럽게 몸이 반응하는 리듬 중심 무드'},
-    {en:'Seoul Night Atmosphere',kr:'서울 밤 감성',desc:'도시적이고 세련된 한국 심야 분위기'},
-    {en:'Dreamy Korean Soul',kr:'몽환적 코리안 소울',desc:'몽환적인 공간감과 한국적 감정선의 결합'},
-    {en:'Funky Korean Rhythm',kr:'펑키한 한국 리듬',desc:'장구·가야금 리듬이 살아있는 Funk 스타일'},
-    {en:'Emotional Seoul Jazz',kr:'감성적인 서울 재즈',desc:'재즈바 감성과 한국적 여백감이 공존하는 무드'},
-    {en:'Late-night Korean Lounge',kr:'심야 한국 라운지',desc:'늦은 밤 서울 라운지 감성의 Chill Groove'},
-    {en:'Groovy Oriental Fusion',kr:'그루비 오리엔탈 퓨전',desc:'동양적 감성과 Groove 중심 리듬의 세련된 결합'},
-    {en:'Modern Korean Melancholy',kr:'현대적 한국 애절함',desc:'한(恨) 감성을 현대 Soul/R&B로 표현한 분위기'},
-    {en:'Late Night Melancholic Blues',kr:'늦은 밤 애절한 블루스',desc:'고독하고 부드러운 심야 블루스 감성, 시카고 블루스 + 한국적 한(恨) 결합'},
-    {en:'Whiskey Bar Atmosphere',kr:'위스키 바 감성',desc:'늦은 밤 조용한 바, 위스키 한 잔과 함께하는 쓸쓸하고 세련된 분위기'},
-    {en:'Lonely Midnight Reflection',kr:'고독한 심야 사색',desc:'혼자 있는 늦은 밤, 조용히 곱씹는 감정선과 여백'},
-    {en:'Energetic & Driving',kr:'에너지 넘치는 드라이브',desc:'고속도로를 달리며 듣기 좋은 활기찬 분위기'},
-    {en:'Motivational Workout',kr:'운동 동기부여',desc:'운동할 때 힘이 나는 에너지와 리듬감'},
-    {en:'Focused Labor',kr:'집중 노동',desc:'작업에 집중할 수 있게 해주는 안정적이고 리드미컬한 무드'},
-    {en:'Chill Drive',kr:'편안한 드라이브',desc:'여유롭고 감성적인 드라이브 분위기'},
-    {en:'Aggressive Hip-hop',kr:'공격적인 힙합',desc:'강렬하고 파워풀한 힙합 에너지'},
-    {en:'Uplifting & Positive',kr:'밝고 긍정적인',desc:'기분을 좋게 만들어주는 상쾌한 분위기'},
+    {en:'Head-Nodding Groove',kr:'고개 끄덕이는 그루브',desc:'자연스럽게 몸이 반응하는 리듬 중심 무드'},        // 0
+    {en:'Seoul Night Atmosphere',kr:'서울 밤 감성',desc:'도시적이고 세련된 한국 심야 분위기'},               // 1
+    {en:'Dreamy Korean Soul',kr:'몽환적 코리안 소울',desc:'몽환적인 공간감과 한국적 감정선의 결합'},          // 2
+    {en:'Funky Korean Rhythm',kr:'펑키한 한국 리듬',desc:'장구·가야금 리듬이 살아있는 Funk 스타일'},         // 3
+    {en:'Emotional Seoul Jazz',kr:'감성적인 서울 재즈',desc:'재즈바 감성과 한국적 여백감이 공존하는 무드'},    // 4
+    {en:'Late-night Korean Lounge',kr:'심야 한국 라운지',desc:'늦은 밤 서울 라운지 감성의 Chill Groove'},    // 5
+    {en:'Groovy Oriental Fusion',kr:'그루비 오리엔탈 퓨전',desc:'동양적 감성과 Groove 중심 리듬의 세련된 결합'},// 6
+    {en:'Modern Korean Melancholy',kr:'현대적 한국 애절함',desc:'한(恨) 감성을 현대 Soul/R&B로 표현한 분위기'},// 7
+    {en:'Late Night Melancholic Blues',kr:'늦은 밤 애절한 블루스',desc:'고독하고 부드러운 심야 블루스 감성'},  // 8
+    {en:'Whiskey Bar Atmosphere',kr:'위스키 바 감성',desc:'늦은 밤 조용한 바, 쓸쓸하고 세련된 분위기'},       // 9
+    {en:'Lonely Midnight Reflection',kr:'고독한 심야 사색',desc:'혼자 있는 늦은 밤, 조용히 곱씹는 감정선'},    // 10
+    {en:'Energetic & Driving',kr:'에너지 넘치는 드라이브',desc:'고속도로를 달리며 듣기 좋은 활기찬 분위기'},  // 11
+    {en:'Motivational Workout',kr:'운동 동기부여',desc:'운동할 때 힘이 나는 에너지와 리듬감'},               // 12
+    {en:'Focused Labor',kr:'집중 노동',desc:'작업에 집중할 수 있게 해주는 안정적이고 리드미컬한 무드'},         // 13
+    {en:'Chill Drive',kr:'편안한 드라이브',desc:'여유롭고 감성적인 드라이브 분위기'},                         // 14
+    {en:'Aggressive Hip-hop',kr:'공격적인 힙합',desc:'강렬하고 파워풀한 힙합 에너지'},                       // 15
+    {en:'Uplifting & Positive',kr:'밝고 긍정적인',desc:'기분을 좋게 만들어주는 상쾌한 분위기'},               // 16
   ],
   instruments: [
     {en:'Gayageum + Neo Soul Drums + Rhodes',kr:'가야금 + 네오소울 드럼 + 로즈 피아노',desc:'몸을 움직이게 만드는 Neo Soul Groove 위에 한국적 감성을 결합'},
@@ -759,132 +744,24 @@ const DATA = {
     {en:'Janggu + Jazz Drums + Neo Soul Bass',kr:'장구 + 재즈 드럼 + 네오소울 베이스',desc:'전통 장단을 현대 Groove 리듬으로 재해석'},
   ],
   concepts: [
-    {
-      num:'01',name:'몽환적이고 감성적인 한국 Lo-fi Soul',
-      core:['Dreamy','Emotional','Chill'],sub:['Nostalgic','Introspective','Calm'],
-      desc:'몽환적인 리버브와 빈티지 질감 위에 한국적인 감정선을 녹여낸 스타일. 야간 드라이브·새벽 감성·공부 플레이리스트 계열과 잘 어울림.',
-      genres:['Korean Lo-fi Soul','Neo Soul + Gayageum','Korean Groove Fusion'],
-      inst:['가야금','해금','Neo Soul Rhodes','Lo-fi Vinyl Noise','Soft Jazz Piano','Ambient Pad','Lo-fi Drums']
-    },
-    {
-      num:'02',name:'애절하고 한국적인 Soul Blues',
-      core:['Melancholic','Emotional','Sad'],sub:['Sentimental','Introspective'],
-      desc:"한국 특유의 '한(恨)' 감성과 블루스의 소울풀한 감정 표현이 결합된 스타일. 깊은 감정 몰입과 진정성 있는 분위기를 강조.",
-      genres:['Melancholic + Haegeum Blues','Oriental Soul Blues','Emotional Korean R&B'],
-      inst:['해금','Blues Guitar','808 Bass','Soul Piano','Warm Strings','Vinyl Noise','Slow Trap Drums']
-    },
-    {
-      num:'03',name:'신비롭고 동양적인 Ambient Fusion',
-      core:['Mysterious','Dreamy','Calm'],sub:['Nostalgic','Romantic'],
-      desc:'동양적인 숨결감과 공간감 중심의 몽환적 스타일. 자연·밤·비·명상 같은 분위기와 잘 어울림.',
-      genres:['Dreamy + Korean Groove Fusion','Oriental Ambient','Korean Chill Fusion'],
-      inst:['대금','해금','Ambient Pad','Soft Synth Texture','Wind FX','Minimal Percussion','Reverb Piano']
-    },
-    {
-      num:'04',name:'강렬하고 어두운 Korean Trap Fusion',
-      core:['Dark','Powerful','Aggressive'],sub:['Dramatic','Energetic'],
-      desc:'현대 Trap 사운드와 국악 타악기의 강렬한 타격감이 결합된 스타일. 영화 예고편·게임·다크 시네마틱 무드에 적합.',
-      genres:['Dark + Trap + Korean Percussion','Cinematic Trap Gugak','Korean Dark Fusion'],
-      inst:['장구','북','징','808 Bass','Trap Hi-hats','Dark Synth Bass','Cinematic Percussion']
-    },
-    {
-      num:'05',name:'웅장한 Cinematic Gugak',
-      core:['Dramatic','Powerful','Hopeful'],sub:['Emotional','Epic'],
-      desc:'영화 OST 같은 스케일과 감정 고조가 특징인 국악 기반 시네마틱 스타일. 전통과 현대가 결합된 글로벌 OST 느낌 연출 가능.',
-      genres:['Dramatic + Cinematic Gugak','Epic Korean Fusion','Korean OST Style'],
-      inst:['민요 창법','대금','북','스트링 섹션','Cinematic Brass','Choir','Epic Percussion']
-    },
-    {
-      num:'06',name:'리듬감 있는 Oriental Jazz Hip-hop',
-      core:['Groovy','Chill','Energetic'],sub:['Playful','Nostalgic'],
-      desc:'재즈 화성과 힙합 비트 위에 동양적 멜로디를 얹은 세련된 글로벌 스타일. 카페·패션·도심 감성 콘텐츠와 잘 어울림.',
-      genres:['Groovy + Oriental Jazz Hip-hop','Korean Jazz Lo-fi','Oriental Boom Bap'],
-      inst:['가야금','재즈 피아노','Upright Bass','Boom Bap Drums','Saxophone','Vinyl Noise','Soft Brass Section']
-    },
-    {
-      num:'07',name:'부드러운 늦은 밤 한국 블루스',
-      core:['Melancholic','Emotional','Smooth'],sub:['Lonely','Introspective','Atmospheric'],
-      desc:'시카고 블루스와 소울 재즈의 부드러운 감성을 바탕으로, 해금과 대금의 애절한 한국적 한(恨)을 자연스럽게 녹인 스타일. 늦은 밤, 고독하고 세련된 분위기에 최적.',
-      genres:['Smooth Late-Night Korean Blues','Seoul Whiskey Jazz','Melancholic Korean Soul'],
-      inst:['해금','대금','Jazz Piano','Upright Bass','Warm Rhodes','Soft Brush Drums','Ambient Pad']
-    },
-    {
-      num:'08',name:'서울 위스키 재즈',
-      core:['Smooth','Melancholic','Romantic'],sub:['Late-night','Intimate','Nostalgic'],
-      desc:'늦은 밤 서울의 조용한 재즈바에서 위스키를 마시며 듣는 듯한 감성. 한국 전통 악기의 여백과 애절함이 부드러운 재즈와 어우러지는 스타일.',
-      genres:['Seoul Late-Night Jazz','Korean Whiskey Blues','Intimate Korean Jazz'],
-      inst:['해금','가야금','Jazz Piano','Double Bass','Brush Drums','Warm Vinyl Texture','Soft Reverb']
-    },
-    {
-      num:'09',name:'한국 드라이브 퓨전',
-      core:['Groovy','Chill','Driving'],sub:['Nostalgic','Uplifting','Atmospheric'],
-      desc:'고속도로를 달리며 듣기 좋은 한국적 감성과 부드러운 그루브가 결합된 드라이브 전용 스타일. 가야금과 해금이 리듬을 부드럽게 이끄는 느낌.',
-      genres:['Korean Drive Fusion','Chill Korean Cruise','Oriental Road Trip'],
-      inst:['가야금','해금','Warm Rhodes','Driving Bass','Soft Brush Drums','Ambient Pad']
-    },
-    {
-      num:'10',name:'한국 운동 그루브',
-      core:['Energetic','Motivational','Powerful'],sub:['Rhythmic','Uplifting','Aggressive'],
-      desc:'조깅과 운동에 최적화된 에너지 넘치는 스타일. 장구와 가야금 리듬이 운동 리듬을 이끌며 한국적 흥을 더하는 그루브.',
-      genres:['Korean Workout Groove','Motivational Gugak','Energetic Korean Hip-hop'],
-      inst:['장구','가야금','Energetic Drums','Driving Bass','Brass Hits','Percussive Elements']
-    },
-    {
-      num:'11',name:'한국 힙합 그루브',
-      core:['Groovy','Rhythmic','Modern'],sub:['Chill','Aggressive','Nostalgic'],
-      desc:'한국적 리듬감과 현대 힙합 비트가 결합된 스타일. 거문고와 장구가 힙합 그루브의 중심이 되는 독특한 퓨전.',
-      genres:['Korean Hip-hop Fusion','Gugak Boom Bap','Oriental Trap'],
-      inst:['거문고','장구','Boom Bap Drums','808 Bass','Vinyl Noise','Melodic Gayageum']
-    },
-    {
-      num:'12',name:'한국 노동 리듬',
-      core:['Steady','Focused','Rhythmic'],sub:['Motivational','Grounded','Persistent'],
-      desc:'작업할 때 듣기 좋은 안정적이고 리드미컬한 스타일. 장구와 대금이 리듬을 안정적으로 이끌며 집중력을 높여주는 그루브.',
-      genres:['Korean Labor Rhythm','Focus Gugak','Steady Korean Groove'],
-      inst:['장구','대금','Steady Drums','Walking Bass','Subtle Gayageum','Ambient Texture']
-    },
-    {
-      num:'13',name:'한국 모티베이셔널 퓨전',
-      core:['Energetic','Uplifting','Powerful'],sub:['Motivational','Epic','Driving'],
-      desc:'운동, 드라이브, 작업 등에서 동기부여를 주는 에너지 넘치는 스타일. 국악 타악기와 현대 그루브가 강렬하게 결합.',
-      genres:['Motivational Korean Fusion','Epic Gugak','Uplifting Korean Groove'],
-      inst:['북','징','장구','Powerful Drums','Brass Section','Epic Bass']
-    },
-    {
-      num:'14',name:'한(恨) 블루스 퓨전',
-      core:['Melancholic','Emotional','Deep'],sub:['Soulful','Introspective','Atmospheric'],
-      desc:'한국의 깊은 한(恨)과 블루스의 소울이 완벽하게 결합된 스타일. 해금과 가야금이 블루스 리프를 연주하며 애절함을 극대화.',
-      genres:['Han Blues Fusion','Korean Soul Blues','Emotional Gugak Blues'],
-      inst:['해금','가야금','Blues Guitar','Soul Piano','Warm Bass','Vinyl Noise']
-    },
-    {
-      num:'15',name:'코리안 소울 블루스',
-      core:['Smooth','Emotional','Groovy'],sub:['Warm','Nostalgic','Soulful'],
-      desc:'부드럽고 따뜻한 소울 블루스에 한국적 감성을 더한 스타일. 가야금과 로즈 피아노가 어우러지며 늦은 밤 감성을 극대화.',
-      genres:['Korean Soul Blues','Smooth Gugak Blues','Oriental Soul'],
-      inst:['가야금','해금','Rhodes Piano','Warm Bass','Brush Drums','Ambient Pad']
-    },
-    {
-      num:'16',name:'서울 미드나잇 펑크',
-      core:['Groovy','Funky','Night'],sub:['Driving','Energetic','Chill'],
-      desc:'서울 밤거리를 달리는 펑키한 그루브에 한국적 리듬을 더한 스타일. 장구와 가야금이 펑크 리듬을 이끄는 독특한 퓨전.',
-      genres:['Seoul Midnight Funk','Korean Funk Fusion','Night Drive Funk'],
-      inst:['장구','가야금','Funk Bass','Electric Guitar','Tight Drums','Percussive Elements']
-    },
-    {
-      num:'17',name:'코리안 재즈 느와르',
-      core:['Dark','Mysterious','Sophisticated'],sub:['Atmospheric','Melancholic','Cool'],
-      desc:'어둡고 세련된 재즈 느와르 분위기에 한국적 여백과 애절함을 더한 스타일. 해금과 대금이 재즈 멜로디를 연주하며 분위기를 이끔.',
-      genres:['Korean Jazz Noir','Seoul Noir','Dark Gugak Jazz'],
-      inst:['해금','대금','Jazz Piano','Upright Bass','Brush Drums','Dark Pad']
-    },
-    {
-      num:'18',name:'서울 델타 블루스',
-      core:['Raw','Emotional','Traditional'],sub:['Gritty','Soulful','Deep'],
-      desc:'델타 블루스의 원초적인 감성과 한국의 한(恨)이 결합된 스타일. 해금 슬라이드와 가야금이 블루스 기타처럼 사용되는 독독한 퓨전.',
-      genres:['Seoul Delta Blues','Korean Raw Blues','Gugak Delta'],
-      inst:['해금','가야금','Slide Guitar','Harmonica','Raw Drums','Foot Stomp']
-    },
+    {num:'01',name:'몽환적이고 감성적인 한국 Lo-fi Soul',core:['Dreamy','Emotional','Chill'],sub:['Nostalgic','Introspective','Calm'],desc:'몽환적인 리버브와 빈티지 질감 위에 한국적인 감정선을 녹여낸 스타일.',genres:['Korean Lo-fi Soul','Neo Soul + Gayageum','Korean Groove Fusion'],inst:['가야금','해금','Neo Soul Rhodes','Lo-fi Vinyl Noise','Soft Jazz Piano','Ambient Pad','Lo-fi Drums']},
+    {num:'02',name:'애절하고 한국적인 Soul Blues',core:['Melancholic','Emotional','Sad'],sub:['Sentimental','Introspective'],desc:"한국 특유의 '한(恨)' 감성과 블루스의 소울풀한 감정 표현이 결합된 스타일.",genres:['Melancholic + Haegeum Blues','Oriental Soul Blues','Emotional Korean R&B'],inst:['해금','Blues Guitar','808 Bass','Soul Piano','Warm Strings','Vinyl Noise','Slow Trap Drums']},
+    {num:'03',name:'신비롭고 동양적인 Ambient Fusion',core:['Mysterious','Dreamy','Calm'],sub:['Nostalgic','Romantic'],desc:'동양적인 숨결감과 공간감 중심의 몽환적 스타일.',genres:['Dreamy + Korean Groove Fusion','Oriental Ambient','Korean Chill Fusion'],inst:['대금','해금','Ambient Pad','Soft Synth Texture','Wind FX','Minimal Percussion','Reverb Piano']},
+    {num:'04',name:'강렬하고 어두운 Korean Trap Fusion',core:['Dark','Powerful','Aggressive'],sub:['Dramatic','Energetic'],desc:'현대 Trap 사운드와 국악 타악기의 강렬한 타격감이 결합된 스타일.',genres:['Dark + Trap + Korean Percussion','Cinematic Trap Gugak','Korean Dark Fusion'],inst:['장구','북','징','808 Bass','Trap Hi-hats','Dark Synth Bass','Cinematic Percussion']},
+    {num:'05',name:'웅장한 Cinematic Gugak',core:['Dramatic','Powerful','Hopeful'],sub:['Emotional','Epic'],desc:'영화 OST 같은 스케일과 감정 고조가 특징인 국악 기반 시네마틱 스타일.',genres:['Dramatic + Cinematic Gugak','Epic Korean Fusion','Korean OST Style'],inst:['민요 창법','대금','북','스트링 섹션','Cinematic Brass','Choir','Epic Percussion']},
+    {num:'06',name:'리듬감 있는 Oriental Jazz Hip-hop',core:['Groovy','Chill','Energetic'],sub:['Playful','Nostalgic'],desc:'재즈 화성과 힙합 비트 위에 동양적 멜로디를 얹은 세련된 글로벌 스타일.',genres:['Groovy + Oriental Jazz Hip-hop','Korean Jazz Lo-fi','Oriental Boom Bap'],inst:['가야금','재즈 피아노','Upright Bass','Boom Bap Drums','Saxophone','Vinyl Noise','Soft Brass Section']},
+    {num:'07',name:'부드러운 늦은 밤 한국 블루스',core:['Melancholic','Emotional','Smooth'],sub:['Lonely','Introspective','Atmospheric'],desc:'시카고 블루스와 소울 재즈의 부드러운 감성을 바탕으로, 해금과 대금의 애절한 한국적 한(恨)을 자연스럽게 녹인 스타일.',genres:['Smooth Late-Night Korean Blues','Seoul Whiskey Jazz','Melancholic Korean Soul'],inst:['해금','대금','Jazz Piano','Upright Bass','Warm Rhodes','Soft Brush Drums','Ambient Pad']},
+    {num:'08',name:'서울 위스키 재즈',core:['Smooth','Melancholic','Romantic'],sub:['Late-night','Intimate','Nostalgic'],desc:'늦은 밤 서울의 조용한 재즈바에서 위스키를 마시며 듣는 듯한 감성.',genres:['Seoul Late-Night Jazz','Korean Whiskey Blues','Intimate Korean Jazz'],inst:['해금','가야금','Jazz Piano','Double Bass','Brush Drums','Warm Vinyl Texture','Soft Reverb']},
+    {num:'09',name:'한국 드라이브 퓨전',core:['Groovy','Chill','Driving'],sub:['Nostalgic','Uplifting','Atmospheric'],desc:'고속도로를 달리며 듣기 좋은 한국적 감성과 부드러운 그루브가 결합된 드라이브 전용 스타일.',genres:['Korean Drive Fusion','Chill Korean Cruise','Oriental Road Trip'],inst:['가야금','해금','Warm Rhodes','Driving Bass','Soft Brush Drums','Ambient Pad']},
+    {num:'10',name:'한국 운동 그루브',core:['Energetic','Motivational','Powerful'],sub:['Rhythmic','Uplifting','Aggressive'],desc:'조깅과 운동에 최적화된 에너지 넘치는 스타일.',genres:['Korean Workout Groove','Motivational Gugak','Energetic Korean Hip-hop'],inst:['장구','가야금','Energetic Drums','Driving Bass','Brass Hits','Percussive Elements']},
+    {num:'11',name:'한국 힙합 그루브',core:['Groovy','Rhythmic','Modern'],sub:['Chill','Aggressive','Nostalgic'],desc:'한국적 리듬감과 현대 힙합 비트가 결합된 스타일.',genres:['Korean Hip-hop Fusion','Gugak Boom Bap','Oriental Trap'],inst:['거문고','장구','Boom Bap Drums','808 Bass','Vinyl Noise','Melodic Gayageum']},
+    {num:'12',name:'한국 노동 리듬',core:['Steady','Focused','Rhythmic'],sub:['Motivational','Grounded','Persistent'],desc:'작업할 때 듣기 좋은 안정적이고 리드미컬한 스타일.',genres:['Korean Labor Rhythm','Focus Gugak','Steady Korean Groove'],inst:['장구','대금','Steady Drums','Walking Bass','Subtle Gayageum','Ambient Texture']},
+    {num:'13',name:'한국 모티베이셔널 퓨전',core:['Energetic','Uplifting','Powerful'],sub:['Motivational','Epic','Driving'],desc:'운동, 드라이브, 작업 등에서 동기부여를 주는 에너지 넘치는 스타일.',genres:['Motivational Korean Fusion','Epic Gugak','Uplifting Korean Groove'],inst:['북','징','장구','Powerful Drums','Brass Section','Epic Bass']},
+    {num:'14',name:'한(恨) 블루스 퓨전',core:['Melancholic','Emotional','Deep'],sub:['Soulful','Introspective','Atmospheric'],desc:'한국의 깊은 한(恨)과 블루스의 소울이 완벽하게 결합된 스타일.',genres:['Han Blues Fusion','Korean Soul Blues','Emotional Gugak Blues'],inst:['해금','가야금','Blues Guitar','Soul Piano','Warm Bass','Vinyl Noise']},
+    {num:'15',name:'코리안 소울 블루스',core:['Smooth','Emotional','Groovy'],sub:['Warm','Nostalgic','Soulful'],desc:'부드럽고 따뜻한 소울 블루스에 한국적 감성을 더한 스타일.',genres:['Korean Soul Blues','Smooth Gugak Blues','Oriental Soul'],inst:['가야금','해금','Rhodes Piano','Warm Bass','Brush Drums','Ambient Pad']},
+    {num:'16',name:'서울 미드나잇 펑크',core:['Groovy','Funky','Night'],sub:['Driving','Energetic','Chill'],desc:'서울 밤거리를 달리는 펑키한 그루브에 한국적 리듬을 더한 스타일.',genres:['Seoul Midnight Funk','Korean Funk Fusion','Night Drive Funk'],inst:['장구','가야금','Funk Bass','Electric Guitar','Tight Drums','Percussive Elements']},
+    {num:'17',name:'코리안 재즈 느와르',core:['Dark','Mysterious','Sophisticated'],sub:['Atmospheric','Melancholic','Cool'],desc:'어둡고 세련된 재즈 느와르 분위기에 한국적 여백과 애절함을 더한 스타일.',genres:['Korean Jazz Noir','Seoul Noir','Dark Gugak Jazz'],inst:['해금','대금','Jazz Piano','Upright Bass','Brush Drums','Dark Pad']},
+    {num:'18',name:'서울 델타 블루스',core:['Raw','Emotional','Traditional'],sub:['Gritty','Soulful','Deep'],desc:'델타 블루스의 원초적인 감성과 한국의 한(恨)이 결합된 스타일.',genres:['Seoul Delta Blues','Korean Raw Blues','Gugak Delta'],inst:['해금','가야금','Slide Guitar','Harmonica','Raw Drums','Foot Stomp']},
   ],
   vocalStyles: [
     {en:'Korean Soul Fusion',kr:'코리안 소울 퓨전',gender:'both',tone:'감성적이고 따뜻한 Soul 톤, 깊은 호흡감',tags:['Soul','R&B','Korean Soul','Emotional','Hopeful']},
@@ -899,18 +776,18 @@ const DATA = {
     {en:'Korean Neo Soul',kr:'코리안 네오소울',gender:'female',tone:'부드럽고 세련된 R&B 스타일 톤',tags:['Neo Soul','R&B','Emotional','Smooth']},
   ],
   vocalTones: [
-    {en:'Smooth female vocals',kr:'매끄러운 여성 보컬',gender:'female',desc:'서울 밤 감성·Neo Soul·Jazz 계열에 적합'},
-    {en:'Soulful female vocals',kr:'소울풀한 여성 보컬',gender:'female',desc:'감정선과 Groove를 동시에 살리는 스타일'},
-    {en:'Breathy female vocals',kr:'숨 섞인 여성 보컬',gender:'female',desc:'늦은 밤 재즈바 같은 부드러운 분위기 강화'},
-    {en:'Airy female harmonies',kr:'공기감 있는 여성 화음',gender:'female',desc:'세련된 글로벌 감성 강화'},
-    {en:'Smooth male vocals',kr:'매끄러운 남성 보컬',gender:'male',desc:'부드러운 Soul·Jazz 감성에 적합'},
-    {en:'Deep soulful male vocals',kr:'깊은 소울 남성 보컬',gender:'male',desc:'몸을 울리는 저음 Soul/Blues 감성'},
-    {en:'Smoky blues baritone',kr:'스모키 블루스 바리톤',gender:'male',desc:'묵직한 재즈·블루스 저음 스타일'},
-    {en:'Warm raspy male vocals',kr:'따뜻하고 거친 남성 보컬',gender:'male',desc:'인간적이고 빈티지한 질감 강화'},
-    {en:'Gospel-inspired male vocals',kr:'가스펠 스타일 남성 보컬',gender:'male',desc:'흑인 Soul 감성과 깊은 울림 강화'},
-    {en:'Slow groove phrasing',kr:'느긋한 그루브 창법',gender:'both',desc:'박자를 뒤로 끌며 Groove를 살리는 스타일'},
-    {en:'Emotional vocal delivery',kr:'감성적 표현',gender:'both',desc:'한국적 감정선과 Soul 표현을 자연스럽게 연결'},
-    {en:'Call and response vocals',kr:'콜 앤 리스폰스 보컬',gender:'both',desc:'Soul/Funk 특유의 주고받는 보컬 에너지'},
+    {en:'Smooth female vocals',kr:'매끄러운 여성 보컬',gender:'female',desc:'서울 밤 감성·Neo Soul·Jazz 계열에 적합'},      // 0
+    {en:'Soulful female vocals',kr:'소울풀한 여성 보컬',gender:'female',desc:'감정선과 Groove를 동시에 살리는 스타일'},         // 1
+    {en:'Breathy female vocals',kr:'숨 섞인 여성 보컬',gender:'female',desc:'늦은 밤 재즈바 같은 부드러운 분위기 강화'},        // 2
+    {en:'Airy female harmonies',kr:'공기감 있는 여성 화음',gender:'female',desc:'세련된 글로벌 감성 강화'},                   // 3
+    {en:'Smooth male vocals',kr:'매끄러운 남성 보컬',gender:'male',desc:'부드러운 Soul·Jazz 감성에 적합'},                   // 4
+    {en:'Deep soulful male vocals',kr:'깊은 소울 남성 보컬',gender:'male',desc:'몸을 울리는 저음 Soul/Blues 감성'},           // 5
+    {en:'Smoky blues baritone',kr:'스모키 블루스 바리톤',gender:'male',desc:'묵직한 재즈·블루스 저음 스타일'},                 // 6
+    {en:'Warm raspy male vocals',kr:'따뜻하고 거친 남성 보컬',gender:'male',desc:'인간적이고 빈티지한 질감 강화'},              // 7
+    {en:'Gospel-inspired male vocals',kr:'가스펠 스타일 남성 보컬',gender:'male',desc:'흑인 Soul 감성과 깊은 울림 강화'},       // 8
+    {en:'Slow groove phrasing',kr:'느긋한 그루브 창법',gender:'both',desc:'박자를 뒤로 끌며 Groove를 살리는 스타일'},          // 9
+    {en:'Emotional vocal delivery',kr:'감성적 표현',gender:'both',desc:'한국적 감정선과 Soul 표현을 자연스럽게 연결'},          // 10
+    {en:'Call and response vocals',kr:'콜 앤 리스폰스 보컬',gender:'both',desc:'Soul/Funk 특유의 주고받는 보컬 에너지'},       // 11
   ],
   textures: [
     {en:'Warm analog texture',kr:'따뜻한 아날로그 질감',desc:'빈티지 Soul·Lo-fi 감성을 강화하는 따뜻한 사운드'},
@@ -939,15 +816,15 @@ const DATA = {
     {en:'Intimate vocal space',kr:'가까운 보컬 공간감',desc:'보컬 감정 몰입 강화'},
   ],
   koreanGrooves: [
-    {en:'Rhythmic gayageum riffs',kr:'리듬감 있는 가야금 리프',desc:'가야금을 멜로디보다 리듬적으로 활용해 한국적 그루브 형성'},
-    {en:'Percussive geomungo plucks',kr:'타격감 있는 거문고 플럭',desc:'저역 리듬감과 한국적 질감을 동시에 강화'},
-    {en:'Subtle janggu groove',kr:'은은한 장구 그루브',desc:'전통 장단을 현대 Soul/Funk 리듬 안에 자연스럽게 배치'},
-    {en:'Breathing daegeum phrases',kr:'숨결감 있는 대금 프레이즈',desc:'한국적인 호흡감과 여백을 리듬 사이에 삽입'},
-    {en:'Haegeum emotional slides',kr:'해금 감성 슬라이드',desc:'해금의 애절한 슬라이드로 한국적 감정선 강화'},
-    {en:'Korean call-and-response accents',kr:'한국식 주고받는 악센트',desc:'가야금·해금·장구가 짧게 주고받는 훅성 포인트'},
-    {en:'Haegeum crying slides',kr:'해금이 우는 듯한 슬라이드',desc:'해금의 애절하고 쓸쓸한 슬라이드로 늦은 밤 블루스 감성 강화'},
-    {en:'Daegeum lonely breathing',kr:'대금의 외로운 호흡',desc:'대금의 길고 여린 프레이즈로 고독하고 공간감 있는 분위기 연출'},
-    {en:'Gayageum melancholic arpeggio',kr:'가야금의 애절한 아르페지오',desc:'가야금으로 쓸쓸하고 서정적인 멜로디 라인을 만드는 스타일'},
+    {en:'Rhythmic gayageum riffs',kr:'리듬감 있는 가야금 리프',desc:'가야금을 멜로디보다 리듬적으로 활용해 한국적 그루브 형성'},   // 0
+    {en:'Percussive geomungo plucks',kr:'타격감 있는 거문고 플럭',desc:'저역 리듬감과 한국적 질감을 동시에 강화'},                // 1
+    {en:'Subtle janggu groove',kr:'은은한 장구 그루브',desc:'전통 장단을 현대 Soul/Funk 리듬 안에 자연스럽게 배치'},            // 2
+    {en:'Breathing daegeum phrases',kr:'숨결감 있는 대금 프레이즈',desc:'한국적인 호흡감과 여백을 리듬 사이에 삽입'},              // 3
+    {en:'Haegeum emotional slides',kr:'해금 감성 슬라이드',desc:'해금의 애절한 슬라이드로 한국적 감정선 강화'},                   // 4
+    {en:'Korean call-and-response accents',kr:'한국식 주고받는 악센트',desc:'가야금·해금·장구가 짧게 주고받는 훅성 포인트'},       // 5
+    {en:'Haegeum crying slides',kr:'해금이 우는 듯한 슬라이드',desc:'해금의 애절하고 쓸쓸한 슬라이드로 늦은 밤 블루스 감성 강화'}, // 6
+    {en:'Daegeum lonely breathing',kr:'대금의 외로운 호흡',desc:'대금의 길고 여린 프레이즈로 고독하고 공간감 있는 분위기 연출'}, // 7
+    {en:'Gayageum melancholic arpeggio',kr:'가야금의 애절한 아르페지오',desc:'가야금으로 쓸쓸하고 서정적인 멜로디 라인을 만드는 스타일'}, // 8
   ],
   bassStyles: [
     {en:'Funky bassline',kr:'펑키 베이스라인',desc:'몸을 움직이게 만드는 핵심 저역 그루브'},
@@ -958,15 +835,15 @@ const DATA = {
     {en:'Syncopated bass movement',kr:'당김음 베이스 움직임',desc:'예상 밖의 액센트로 몸이 자연스럽게 반응하는 리듬'},
   ],
   koreanFeelings: [
-    {en:'Seoul night atmosphere',kr:'서울 밤 감성',desc:'도시적이고 세련된 한국적 밤 분위기'},
-    {en:'Korean melancholy',kr:'한국적 애절함',desc:'한(恨)에 가까운 깊은 감정선'},
-    {en:'Rainy Seoul ambience',kr:'비 오는 서울 분위기',desc:'촉촉하고 감성적인 도시 무드'},
-    {en:'Late-night Korean jazz bar',kr:'심야 한국 재즈바 감성',desc:'한국적 정서와 재즈 클럽 분위기 결합'},
-    {en:'Traditional Korean breathing space',kr:'한국 전통 여백감',desc:'동양적인 호흡과 비어 있는 공간의 미학'},
-    {en:'Modern Korean soul mood',kr:'현대적인 한국 소울 무드',desc:'전통적 정서를 현대 Soul/R&B로 세련되게 표현'},
-    {en:'Midnight Han atmosphere',kr:'심야의 한(恨) 감성',desc:'깊고 쓸쓸한 한국적 한(恨)이 배어있는 늦은 밤 분위기'},
-    {en:'Quiet Seoul jazz bar',kr:'조용한 서울 재즈바',desc:'사람이 적은 늦은 밤 재즈바, 위스키와 함께하는 고요하고 애절한 무드'},
-    {en:'Lonely Korean night walk',kr:'고독한 한국의 밤 산책',desc:'혼자 걉는 서울 밤거리 같은 쓸쓸하고 서정적인 감성'},
+    {en:'Seoul night atmosphere',kr:'서울 밤 감성',desc:'도시적이고 세련된 한국적 밤 분위기'},          // 0
+    {en:'Korean melancholy',kr:'한국적 애절함',desc:'한(恨)에 가까운 깊은 감정선'},                    // 1
+    {en:'Rainy Seoul ambience',kr:'비 오는 서울 분위기',desc:'촉촉하고 감성적인 도시 무드'},            // 2
+    {en:'Late-night Korean jazz bar',kr:'심야 한국 재즈바 감성',desc:'한국적 정서와 재즈 클럽 분위기 결합'},// 3
+    {en:'Traditional Korean breathing space',kr:'한국 전통 여백감',desc:'동양적인 호흡과 비어 있는 공간의 미학'},// 4
+    {en:'Modern Korean soul mood',kr:'현대적인 한국 소울 무드',desc:'전통적 정서를 현대 Soul/R&B로 세련되게 표현'},// 5
+    {en:'Midnight Han atmosphere',kr:'심야의 한(恨) 감성',desc:'깊고 쓸쓸한 한국적 한(恨)이 배어있는 늦은 밤 분위기'},// 6
+    {en:'Quiet Seoul jazz bar',kr:'조용한 서울 재즈바',desc:'사람이 적은 늦은 밤 재즈바, 위스키와 함께하는 고요하고 애절한 무드'},// 7
+    {en:'Lonely Korean night walk',kr:'고독한 한국의 밤 산책',desc:'혼자 걷는 서울 밤거리 같은 쓸쓸하고 서정적인 감성'},// 8
   ],
   blackSoulElements: [
     {en:'Gospel choir swells',kr:'가스펠 코러스 스웰',desc:'감정 고조를 위한 강렬한 가스펠 합창 swell'},
@@ -988,16 +865,16 @@ const DATA = {
     {en:'Spontaneous fills',kr:'즉흥적인 필인',desc:'드럼, 기타 등에서 나오는 즉흥적인 필인'},
   ],
   bpmGuides: [
-    {range:'65–80',name:'Korean Groove Fusion (그루브 중심 코리안 퓨전)',mood:'Dreamy (몽환적인) · Calm (잔잔한) · Emotional (감성적인)',desc:'몽환적이고 여백감 있는 국악 감성 표현에 적합. 대금·해금의 숨결감 강조'},
-    {range:'70–85',name:'Korean Lo-fi Soul (코리안 로파이 소울)',mood:'Chill (차분한) · Nostalgic (향수를 불러일으키는) · Introspective (내면적인)',desc:'새벽 감성·드라이브·공부 플레이리스트 스타일에 최적'},
-    {range:'75–90',name:'Haegeum Blues (해금 블루스)',mood:'Melancholic (우울한) · Sad (슬픈) · Emotional (감성적인)',desc:'해금과 블루스 감정을 깊게 살릴 수 있는 느린 그루브'},
-    {range:'85–100',name:'Neo Soul + Gayageum (네오소울 + 가야금)',mood:'Smooth (부드러운) · Emotional (감성적인) · Groovy (리듬감 있는)',desc:'세련된 글로벌 Korean Soul 스타일 구현 가능'},
-    {range:'88–102',name:'Oriental Jazz (오리엔탈 재즈)',mood:'Groovy (리듬감 있는) · Chill (차분한) · Romantic (로맨틱한)',desc:'재즈 스윙과 동양적 멜로디를 자연스럽게 연결하는 BPM'},
-    {range:'90–110',name:'Oriental Jazz Hip-hop (오리엔탈 재즈 힙합)',mood:'Groovy (리듬감 있는) · Laid-back (여유로운) · Nostalgic (향수를 불러일으키는)',desc:'붐뱁·재즈 힙합 기반의 편안한 리듬감 형성'},
-    {range:'95–115',name:'Korean Soul Fusion (코리안 소울 퓨전)',mood:'Emotional (감성적인) · Hopeful (희망적인) · Warm (따뜻한)',desc:'감성과 대중성을 동시에 살리기 좋은 범용 BPM'},
-    {range:'100–120',name:'Cinematic Soul Fusion (시네마틱 소울 퓨전)',mood:'Dramatic (극적인) · Powerful (강력한) · Emotional (감성적인)',desc:'영화 OST 같은 감정 고조와 웅장함 표현 가능'},
-    {range:'120–135',name:'Trap + Korean Percussion (트랩 + 국악 퍼커션)',mood:'Dark (어두운) · Powerful (강력한) · Aggressive (공격적인)',desc:'장구·북·808 기반의 강렬한 현대 퓨전 스타일'},
-    {range:'130–145',name:'Cinematic Gugak (시네마틱 국악)',mood:'Epic (장대한) · Dramatic (극적인) · Energetic (에너지 넘치는)',desc:'에픽 국악·시네마틱 스타일에 적합한 웅장한 전개 가능'},
+    {range:'65–80',name:'Korean Groove Fusion (그루브 중심 코리안 퓨전)',mood:'Dreamy · Calm · Emotional',desc:'몽환적이고 여백감 있는 국악 감성 표현에 적합'},
+    {range:'70–85',name:'Korean Lo-fi Soul (코리안 로파이 소울)',mood:'Chill · Nostalgic · Introspective',desc:'새벽 감성·드라이브·공부 플레이리스트 스타일에 최적'},
+    {range:'75–90',name:'Haegeum Blues (해금 블루스)',mood:'Melancholic · Sad · Emotional',desc:'해금과 블루스 감정을 깊게 살릴 수 있는 느린 그루브'},
+    {range:'85–100',name:'Neo Soul + Gayageum (네오소울 + 가야금)',mood:'Smooth · Emotional · Groovy',desc:'세련된 글로벌 Korean Soul 스타일 구현 가능'},
+    {range:'88–102',name:'Oriental Jazz (오리엔탈 재즈)',mood:'Groovy · Chill · Romantic',desc:'재즈 스윙과 동양적 멜로디를 자연스럽게 연결하는 BPM'},
+    {range:'90–110',name:'Oriental Jazz Hip-hop (오리엔탈 재즈 힙합)',mood:'Groovy · Laid-back · Nostalgic',desc:'붐뱁·재즈 힙합 기반의 편안한 리듬감 형성'},
+    {range:'95–115',name:'Korean Soul Fusion (코리안 소울 퓨전)',mood:'Emotional · Hopeful · Warm',desc:'감성과 대중성을 동시에 살리기 좋은 범용 BPM'},
+    {range:'100–120',name:'Cinematic Soul Fusion (시네마틱 소울 퓨전)',mood:'Dramatic · Powerful · Emotional',desc:'영화 OST 같은 감정 고조와 웅장함 표현 가능'},
+    {range:'120–135',name:'Trap + Korean Percussion (트랩 + 국악 퍼커션)',mood:'Dark · Powerful · Aggressive',desc:'장구·북·808 기반의 강렬한 현대 퓨전 스타일'},
+    {range:'130–145',name:'Cinematic Gugak (시네마틱 국악)',mood:'Epic · Dramatic · Energetic',desc:'에픽 국악·시네마틱 스타일에 적합한 웅장한 전개 가능'},
   ]
 };
 
@@ -1005,48 +882,36 @@ const DATA = {
    STATE
 ═══════════════════════════════════════════ */
 const STATE = {
-  genre: null,
-  moods: [],
-  instr: null,
-  concept: null,
-  vocalStyle: null,
-  vocalTones: [],
-  textures: [],
-  grooves: [],
-  spaces: [],
-  koreanGrooves: [],
-  bassStyles: [],
-  koreanFeelings: [],
-  blackSoulElements: [],
-  humanFeelElements: [],
-  bpm: 95,
-  intensity: 5,
-  gender: 'all'
+  genre: null, moods: [], instr: null, concept: null,
+  vocalStyle: null, vocalTones: [], textures: [], grooves: [],
+  spaces: [], koreanGrooves: [], bassStyles: [], koreanFeelings: [],
+  blackSoulElements: [], humanFeelElements: [],
+  bpm: 95, intensity: 5, gender: 'all'
 };
 
 /* ═══════════════════════════════════════════
    HELPER FUNCTIONS
 ═══════════════════════════════════════════ */
+function safeGet(arr, idx) {
+  if (!arr || idx == null || idx < 0 || idx >= arr.length) return null;
+  return arr[idx];
+}
 
 function renderChipGroup(containerId, dataArray, stateArray, toggleFn, idPrefix) {
   const container = document.getElementById(containerId);
   if (!container) return;
-
   container.innerHTML = dataArray.map((item, index) => {
     const isActive = stateArray.includes(index);
-    return `
-      <div class="chip ${isActive ? 'active' : ''}" id="${idPrefix}_${index}" onclick="${toggleFn.name}(${index})">
-        <span class="chip-en">${item.en}</span>
-        <span class="chip-kr">${item.kr}</span>
-      </div>
-    `;
+    return `<div class="chip ${isActive ? 'active' : ''}" id="${idPrefix}_${index}" onclick="${toggleFn.name}(${index})">
+      <span class="chip-en">${item.en}</span>
+      <span class="chip-kr">${item.kr}</span>
+    </div>`;
   }).join('');
 }
 
 function updateChipActiveStates(containerId, stateArray, idPrefix) {
   const container = document.getElementById(containerId);
   if (!container) return;
-
   container.querySelectorAll('.chip').forEach(chip => {
     const id = parseInt(chip.id.split('_')[1]);
     chip.classList.toggle('active', stateArray.includes(id));
@@ -1057,11 +922,7 @@ function createToggleFunction(stateKey, containerId, idPrefix) {
   return function(index) {
     const arr = STATE[stateKey];
     const idx = arr.indexOf(index);
-    if (idx >= 0) {
-      arr.splice(idx, 1);
-    } else {
-      arr.push(index);
-    }
+    if (idx >= 0) arr.splice(idx, 1); else arr.push(index);
     updateChipActiveStates(containerId, arr, idPrefix);
     buildPrompt();
   };
@@ -1070,7 +931,6 @@ function createToggleFunction(stateKey, containerId, idPrefix) {
 /* ═══════════════════════════════════════════
    RENDER FUNCTIONS
 ═══════════════════════════════════════════ */
-
 function renderGenres() {
   const g = document.getElementById('genreGrid');
   g.innerHTML = DATA.genres.map((d, i) => `
@@ -1132,9 +992,7 @@ function renderVocalStyles() {
 
 function renderTones(gFilter) {
   const g = document.getElementById('toneGrid');
-  const filtered = DATA.vocalTones.filter(d =>
-    gFilter === 'all' || d.gender === gFilter || d.gender === 'both'
-  );
+  const filtered = DATA.vocalTones.filter(d => gFilter === 'all' || d.gender === gFilter || d.gender === 'both');
   g.innerHTML = filtered.map((d) => {
     const origIdx = DATA.vocalTones.indexOf(d);
     const sel = STATE.vocalTones.includes(origIdx);
@@ -1163,7 +1021,7 @@ function renderAdvancedChips() {
 function selectGenre(i) {
   document.querySelectorAll('#genreGrid .selcard').forEach(el => el.classList.remove('active'));
   STATE.genre = STATE.genre === i ? null : i;
-  if (STATE.genre !== null) document.getElementById('genre_' + i).classList.add('active');
+  if (STATE.genre !== null) document.getElementById('genre_' + i)?.classList.add('active');
   buildPrompt();
 }
 
@@ -1177,21 +1035,21 @@ function toggleMood(i) {
 function selectInstr(i) {
   document.querySelectorAll('#instrGrid .selcard').forEach(el => el.classList.remove('active'));
   STATE.instr = STATE.instr === i ? null : i;
-  if (STATE.instr !== null) document.getElementById('instr_' + i).classList.add('active');
+  if (STATE.instr !== null) document.getElementById('instr_' + i)?.classList.add('active');
   buildPrompt();
 }
 
 function selectConcept(i) {
   document.querySelectorAll('.concept-card').forEach(el => el.classList.remove('active'));
   STATE.concept = STATE.concept === i ? null : i;
-  if (STATE.concept !== null) document.getElementById('concept_' + i).classList.add('active');
+  if (STATE.concept !== null) document.getElementById('concept_' + i)?.classList.add('active');
   buildPrompt();
 }
 
 function selectVocalStyle(i) {
   document.querySelectorAll('#vocalStyleGrid .selcard').forEach(el => el.classList.remove('active'));
   STATE.vocalStyle = STATE.vocalStyle === i ? null : i;
-  if (STATE.vocalStyle !== null) document.getElementById('vs_' + i).classList.add('active');
+  if (STATE.vocalStyle !== null) document.getElementById('vs_' + i)?.classList.add('active');
   buildPrompt();
 }
 
@@ -1229,7 +1087,7 @@ function updateBpm(v) {
 
 function updateBpmGuide(bpm) {
   const guide = DATA.bpmGuides.slice().reverse().find(g => {
-    const [lo, hi] = g.range.split('–').map(Number);
+    const [lo] = g.range.split('–').map(Number);
     return bpm >= lo;
   }) || DATA.bpmGuides[0];
   document.getElementById('bgRange').textContent = guide.range + ' BPM';
@@ -1241,12 +1099,10 @@ function updateBpmGuide(bpm) {
 function updateIntensity(v) {
   STATE.intensity = parseInt(v);
   document.getElementById('intensityValue').textContent = v;
-  
   const label = document.getElementById('intensityLabel');
   if (v <= 3) label.textContent = 'Chill (잔잔한)';
   else if (v <= 6) label.textContent = 'Emotional (감성적인)';
   else label.textContent = 'Explosive Soul (폭발적인)';
-  
   buildPrompt();
 }
 
@@ -1258,67 +1114,80 @@ function switchTab(id, el) {
 }
 
 /* ═══════════════════════════════════════════
-   PROMPT BUILDER
+   PROMPT BUILDER  ← 버그 수정: null 안전 처리
 ═══════════════════════════════════════════ */
 function buildPrompt() {
-  const parts = [];
-  if (STATE.genre !== null) {
-    const g = DATA.genres[STATE.genre];
-    parts.push(`[Genre] ${g.en} (${g.kr})`);
-  }
-  if (STATE.moods.length) {
-    const ms = STATE.moods.map(i => DATA.moods[i].en).join(', ');
-    parts.push(`[Mood] ${ms}`);
-  }
-  if (STATE.instr !== null) {
-    const ins = DATA.instruments[STATE.instr];
-    parts.push(`[Instruments] ${ins.en}`);
-  }
-  if (STATE.concept !== null) {
-    const c = DATA.concepts[STATE.concept];
-    parts.push(`[Concept] ${c.name}`);
-    parts.push(`[Core Mood] ${c.core.join(', ')}`);
-    parts.push(`[Instruments (Concept)] ${c.inst.join(', ')}`);
-  }
-  if (STATE.vocalStyle !== null) {
-    const vs = DATA.vocalStyles[STATE.vocalStyle];
-    parts.push(`[Vocal Style] ${vs.en} (${vs.kr}) — ${vs.tone}`);
-  }
-  if (STATE.textures.length) {
-    parts.push(`[Texture] ${STATE.textures.map(i => DATA.textures[i].en).join(', ')}`);
-  }
-  if (STATE.grooves.length) {
-    parts.push(`[Groove] ${STATE.grooves.map(i => DATA.grooves[i].en).join(', ')}`);
-  }
-  if (STATE.spaces.length) {
-    parts.push(`[Space] ${STATE.spaces.map(i => DATA.spaces[i].en).join(', ')}`);
-  }
-  if (STATE.koreanGrooves.length) {
-    parts.push(`[Korean Groove] ${STATE.koreanGrooves.map(i => DATA.koreanGrooves[i].en).join(', ')}`);
-  }
-  if (STATE.bassStyles.length) {
-    parts.push(`[Bass Movement] ${STATE.bassStyles.map(i => DATA.bassStyles[i].en).join(', ')}`);
-  }
-  if (STATE.koreanFeelings.length) {
-    parts.push(`[Korean Feeling] ${STATE.koreanFeelings.map(i => DATA.koreanFeelings[i].en).join(', ')}`);
-  }
-  if (STATE.blackSoulElements.length) {
-    parts.push(`[Black Soul/Blues Elements] ${STATE.blackSoulElements.map(i => DATA.blackSoulElements[i].en).join(', ')}`);
-  }
-  if (STATE.humanFeelElements.length) {
-    parts.push(`[Human Feel / Live Elements] ${STATE.humanFeelElements.map(i => DATA.humanFeelElements[i].en).join(', ')}`);
-  }
-  if (STATE.vocalTones.length) {
-    const ts = STATE.vocalTones.map(i => DATA.vocalTones[i].en).join(', ');
-    parts.push(`[Vocal Tone] ${ts}`);
-  }
-  parts.push(`[BPM] ${STATE.bpm}`);
-  parts.push(`[Emotional Intensity] ${STATE.intensity}/10 (${STATE.intensity <= 3 ? 'Chill' : STATE.intensity <= 6 ? 'Emotional' : 'Explosive Soul'})`);
-  parts.push(`[Direction] Groove-driven Korean soul fusion with funky bass movement, rhythmic Korean instruments, soulful jazz energy, and natural head-nodding groove`);
-  parts.push(`[Structure] Include tasteful breakdown, dynamic lift around 1:20-1:40, emotional climax, strategic instrument dropout for tension, powerful final ensemble explosion, and well-placed silence moments for maximum impact`);
+  try {
+    const parts = [];
+    if (STATE.genre !== null && DATA.genres[STATE.genre]) {
+      const g = DATA.genres[STATE.genre];
+      parts.push(`[Genre] ${g.en} (${g.kr})`);
+    }
+    if (STATE.moods.length) {
+      const ms = STATE.moods.filter(i => DATA.moods[i]).map(i => DATA.moods[i].en).join(', ');
+      if (ms) parts.push(`[Mood] ${ms}`);
+    }
+    if (STATE.instr !== null && DATA.instruments[STATE.instr]) {
+      const ins = DATA.instruments[STATE.instr];
+      parts.push(`[Instruments] ${ins.en}`);
+    }
+    if (STATE.concept !== null && DATA.concepts[STATE.concept]) {
+      const c = DATA.concepts[STATE.concept];
+      parts.push(`[Concept] ${c.name}`);
+      parts.push(`[Core Mood] ${c.core.join(', ')}`);
+      parts.push(`[Instruments (Concept)] ${c.inst.join(', ')}`);
+    }
+    if (STATE.vocalStyle !== null && DATA.vocalStyles[STATE.vocalStyle]) {
+      const vs = DATA.vocalStyles[STATE.vocalStyle];
+      parts.push(`[Vocal Style] ${vs.en} (${vs.kr}) — ${vs.tone}`);
+    }
+    if (STATE.textures.length) {
+      const ts = STATE.textures.filter(i => DATA.textures[i]).map(i => DATA.textures[i].en).join(', ');
+      if (ts) parts.push(`[Texture] ${ts}`);
+    }
+    if (STATE.grooves.length) {
+      const gs = STATE.grooves.filter(i => DATA.grooves[i]).map(i => DATA.grooves[i].en).join(', ');
+      if (gs) parts.push(`[Groove] ${gs}`);
+    }
+    if (STATE.spaces.length) {
+      const ss = STATE.spaces.filter(i => DATA.spaces[i]).map(i => DATA.spaces[i].en).join(', ');
+      if (ss) parts.push(`[Space] ${ss}`);
+    }
+    if (STATE.koreanGrooves.length) {
+      const kgs = STATE.koreanGrooves.filter(i => DATA.koreanGrooves[i]).map(i => DATA.koreanGrooves[i].en).join(', ');
+      if (kgs) parts.push(`[Korean Groove] ${kgs}`);
+    }
+    if (STATE.bassStyles.length) {
+      const bs = STATE.bassStyles.filter(i => DATA.bassStyles[i]).map(i => DATA.bassStyles[i].en).join(', ');
+      if (bs) parts.push(`[Bass Movement] ${bs}`);
+    }
+    if (STATE.koreanFeelings.length) {
+      const kfs = STATE.koreanFeelings.filter(i => DATA.koreanFeelings[i]).map(i => DATA.koreanFeelings[i].en).join(', ');
+      if (kfs) parts.push(`[Korean Feeling] ${kfs}`);
+    }
+    if (STATE.blackSoulElements.length) {
+      const bse = STATE.blackSoulElements.filter(i => DATA.blackSoulElements[i]).map(i => DATA.blackSoulElements[i].en).join(', ');
+      if (bse) parts.push(`[Black Soul/Blues Elements] ${bse}`);
+    }
+    if (STATE.humanFeelElements.length) {
+      const hfe = STATE.humanFeelElements.filter(i => DATA.humanFeelElements[i]).map(i => DATA.humanFeelElements[i].en).join(', ');
+      if (hfe) parts.push(`[Human Feel / Live Elements] ${hfe}`);
+    }
+    if (STATE.vocalTones.length) {
+      const vts = STATE.vocalTones.filter(i => DATA.vocalTones[i]).map(i => DATA.vocalTones[i].en).join(', ');
+      if (vts) parts.push(`[Vocal Tone] ${vts}`);
+    }
+    parts.push(`[BPM] ${STATE.bpm}`);
+    parts.push(`[Emotional Intensity] ${STATE.intensity}/10 (${STATE.intensity <= 3 ? 'Chill' : STATE.intensity <= 6 ? 'Emotional' : 'Explosive Soul'})`);
+    parts.push(`[Direction] Groove-driven Korean soul fusion with funky bass movement, rhythmic Korean instruments, soulful jazz energy, and natural head-nodding groove`);
+    parts.push(`[Structure] Include tasteful breakdown, dynamic lift around 1:20-1:40, emotional climax, strategic instrument dropout for tension, powerful final ensemble explosion, and well-placed silence moments for maximum impact`);
 
-  const box = document.getElementById('promptBox');
-  box.textContent = parts.length > 1 ? parts.join('\n') : '← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
+    const box = document.getElementById('promptBox');
+    box.textContent = parts.length > 2 ? parts.join('\n') : '← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
+  } catch (e) {
+    console.error('buildPrompt error:', e);
+    document.getElementById('promptBox').textContent = '← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
+  }
 }
 
 /* ═══════════════════════════════════════════
@@ -1330,42 +1199,18 @@ function getApiKey() {
 
 async function callClaude(prompt, systemPrompt = '') {
   const apiKey = getApiKey();
-  if (!apiKey) {
-    document.getElementById('apiKeyInput')?.focus();
-    throw new Error('OpenRouter API 키를 먼저 입력해 주세요.');
-  }
-  if (!apiKey.startsWith('sk-or-v1-')) {
-    throw new Error('OpenRouter 키 형식이 아닙니다. sk-or-v1- 로 시작하는 키를 입력하세요.');
-  }
-
+  if (!apiKey) { document.getElementById('apiKeyInput')?.focus(); throw new Error('OpenRouter API 키를 먼저 입력해 주세요.'); }
+  if (!apiKey.startsWith('sk-or-v1-')) throw new Error('OpenRouter 키 형식이 아닙니다. sk-or-v1- 로 시작하는 키를 입력하세요.');
   const messages = [];
-  if (systemPrompt) {
-    messages.push({ role: 'system', content: systemPrompt });
-  }
+  if (systemPrompt) messages.push({ role: 'system', content: systemPrompt });
   messages.push({ role: 'user', content: prompt });
-
-  const body = {
-    model: 'openrouter/free',
-    messages: messages,
-    max_tokens: 2500,
-    temperature: 0.8
-  };
-
   const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-      'HTTP-Referer': window.location.href || 'http://localhost',
-      'X-Title': 'Gugak Prompt Maker'
-    },
-    body: JSON.stringify(body)
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`, 'HTTP-Referer': window.location.href || 'http://localhost', 'X-Title': 'Gugak Prompt Maker' },
+    body: JSON.stringify({ model: 'openrouter/free', messages, max_tokens: 2500, temperature: 0.8 })
   });
-
   const data = await res.json().catch(() => ({}));
-
   if (!res.ok) {
-    console.error('OpenRouter error:', data);
     let msg = data?.error?.message || `OpenRouter API 오류 (${res.status})`;
     if (res.status === 401) msg = '401 인증 오류 - OpenRouter API 키 확인';
     if (res.status === 402) msg = '402 결제/크레딧 부족 - OpenRouter 크레딧 확인';
@@ -1373,26 +1218,16 @@ async function callClaude(prompt, systemPrompt = '') {
     if (res.status === 429) msg = '429 사용량 제한 - 요청 제한 또는 크레딧 확인';
     throw new Error(msg);
   }
-
   return data.choices?.[0]?.message?.content || '결과를 가져올 수 없습니다.';
 }
 
 function cleanModelText(text) {
-  return (text || '')
-    .replace(/```(?:json)?/g, '')
-    .replace(/```/g, '')
-    .trim();
+  return (text || '').replace(/```(?:json)?/g, '').replace(/```/g, '').trim();
 }
 
 function sanitizeSunoPrompt(text, maxLen = 230) {
-  let t = cleanModelText(text)
-    .replace(/^[-•\s]*(Suno prompt|Prompt|프롬프트)\s*[:：-]\s*/i, '')
-    .replace(/[\r\n]+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-  if (t.length > maxLen) {
-    t = t.slice(0, maxLen).replace(/[,;:\-\s]+$/, '').trim();
-  }
+  let t = cleanModelText(text).replace(/^[-•\s]*(Suno prompt|Prompt|프롬프트)\s*[:：-]\s*/i, '').replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim();
+  if (t.length > maxLen) t = t.slice(0, maxLen).replace(/[,;:\-\s]+$/, '').trim();
   return t;
 }
 
@@ -1406,66 +1241,23 @@ async function runAI() {
   const result = document.getElementById('kwResult');
   loading.classList.add('show');
   result.classList.remove('show');
-
   const isYT = kw.includes('youtube.com') || kw.includes('youtu.be');
-
-  if (isYT) {
-    await analyzeYouTubeAndApply(kw, result, loading);
-  } else {
-    await analyzeKeywordAndApply(kw, result, loading);
-  }
+  if (isYT) await analyzeYouTubeAndApply(kw, result, loading);
+  else await analyzeKeywordAndApply(kw, result, loading);
 }
 
 async function analyzeYouTubeAndApply(youtubeUrl, resultEl, loadingEl) {
-  const sysPrompt = `당신은 세계 최고 수준의 음악 분석가이자 국악 퓨전 전문가입니다.
-사용자가 준 YouTube 링크의 음악을 **음악적으로 깊이 있게** 분석해야 합니다.
-
-분석 시 반드시 아래 항목을 중점으로 분석하세요:
-- 그루브의 종류와 느낌 (funky, laid-back, driving, shuffle, swing, half-time 등)
-- 리듬의 특징과 복잡도
-- 악기들의 역할, 밀도, 배치
-- 다이내믹 변화와 에너지 흐름
-- 보컬의 감정 표현 방식과 강도
-- 전체적인 분위기, 공간감, 질감
-- 한국적 요소(해금, 가야금, 대금, 장구 등)가 있다면 어떤 방식으로 사용되었는지
-- 곡의 구조적 특징 (breakdown, climax, drop 등)
-
-분석 결과를 아래 JSON 형식으로만 정확하게 응답하세요. 다른 설명은 절대 하지 마세요.
-
-{
-  "genre": "가장 적합한 장르 (예: Seoul Night Soul, Korean Hip-hop Groove, Korean Drive Fusion)",
-  "moods": ["가장 강한 분위기 2~3개"],
-  "instruments": "주요 악기 조합 (예: Haegeum + Funk Bass + Jazz Piano)",
-  "concept": "가장 잘 맞는 컨셉 번호 또는 이름 (예: 07 또는 한(恨) 블루스 퓨전)",
-  "vocalStyle": "보컬 스타일 (예: Smoky blues baritone, Soulful female vocals)",
-  "bpm": 실제 음악 느낌에 가장 가까운 숫자 (정확히 추정),
-  "textures": ["가장 잘 맞는 텍스처 1~2개"],
-  "koreanGrooves": ["한국 그루브 요소 1~2개 (해금 슬라이드, 장구 그루브 등)"],
-  "koreanFeelings": ["한국적 감성 1~2개"],
-  "summary": "음악의 핵심 특징을 한 줄로 요약 (그루브, 감정, 구조 중심)"
-}`;
-
-  const userPrompt = `다음 YouTube 링크의 음악을 **음악적으로 매우 자세하게** 분석해주세요: ${youtubeUrl}
-
-위 시스템 프롬프트의 지침에 따라 깊이 있게 분석하고, JSON 형식으로 정확하게 작성해주세요.
-BPM은 실제 음악을 들었을 때 느껴지는 정확한 숫자로 추정해주세요.`;
-
+  const sysPrompt = `당신은 세계 최고 수준의 음악 분석가이자 국악 퓨전 전문가입니다. 반드시 다음 JSON 형식만 정확하게 응답하세요:
+{"genre":"","moods":[],"instruments":"","concept":"","vocalStyle":"","bpm":95,"textures":[],"koreanGrooves":[],"koreanFeelings":[],"summary":""}`;
+  const userPrompt = `다음 YouTube 링크의 음악을 분석해주세요: ${youtubeUrl}\nJSON 형식으로만 정확하게 작성해주세요.`;
   try {
     const text = await callClaude(userPrompt, sysPrompt);
     const jsonMatch = text.match(/\{[\s\S]*\}/);
-    
     if (!jsonMatch) throw new Error("AI가 JSON 형식으로 응답하지 않았습니다.");
-
     const analysis = JSON.parse(jsonMatch[0]);
-    
-    resultEl.innerHTML = `
-      <div style="margin-bottom:12px; font-weight:600; color:var(--gold);">🎵 AI 분석 결과 (자동 적용됨)</div>
-      <pre style="white-space:pre-wrap; font-size:12px; line-height:1.7;">${JSON.stringify(analysis, null, 2)}</pre>
-    `;
+    resultEl.innerHTML = `<div style="margin-bottom:12px;font-weight:600;color:var(--gold)">🎵 AI 분석 결과 (자동 적용됨)</div><pre style="white-space:pre-wrap;font-size:12px;line-height:1.7">${JSON.stringify(analysis, null, 2)}</pre>`;
     resultEl.classList.add('show');
-
     applyAnalysisToUI(analysis);
-
   } catch (e) {
     resultEl.innerHTML = `<span style="color:var(--red)">분석 실패: ${e.message}</span>`;
     resultEl.classList.add('show');
@@ -1474,48 +1266,17 @@ BPM은 실제 음악을 들었을 때 느껴지는 정확한 숫자로 추정해
 }
 
 async function analyzeKeywordAndApply(keyword, resultEl, loadingEl) {
-  const sysPrompt = `당신은 세계 최고 수준의 음악 분석가이자 국악 퓨전 전문가입니다.
-사용자가 입력한 키워드(음악 설명, 가수 이름, 노래 제목 등)를 분석해서, 아래 JSON 형식으로만 응답하세요.
-
-분석 시 반드시 아래 항목을 중점으로 고려하세요:
-- 키워드에서 느껴지는 그루브, 분위기, 에너지
-- 가장 잘 맞는 장르와 스타일
-- 적합한 악기 조합
-- 감정 강도와 분위기
-- 한국적 요소가 잘 어울리는지
-
-반드시 다음 JSON 형식만 정확하게 응답하세요:
-{
-  "genre": "가장 적합한 장르 이름",
-  "moods": ["분위기1", "분위기2"],
-  "instruments": "주요 악기 조합",
-  "concept": "가장 잘 맞는 컨셉 이름 또는 번호",
-  "vocalStyle": "보컬 스타일",
-  "bpm": 숫자,
-  "textures": ["텍스처1"],
-  "koreanGrooves": ["한국 그루브1"],
-  "koreanFeelings": ["한국 감성1"],
-  "summary": "한 줄 요약"
-}`;
-
-  const userPrompt = `"${keyword}" 키워드를 분석해서 가장 적합한 국악 퓨전 스타일을 추천해주세요. 위 JSON 형식으로 정확하게 작성해주세요.`;
-
+  const sysPrompt = `당신은 세계 최고 수준의 음악 분석가이자 국악 퓨전 전문가입니다. 반드시 다음 JSON 형식만 정확하게 응답하세요:
+{"genre":"","moods":[],"instruments":"","concept":"","vocalStyle":"","bpm":95,"textures":[],"koreanGrooves":[],"koreanFeelings":[],"summary":""}`;
+  const userPrompt = `"${keyword}" 키워드를 분석해서 가장 적합한 국악 퓨전 스타일을 추천해주세요. JSON 형식으로만 작성해주세요.`;
   try {
     const text = await callClaude(userPrompt, sysPrompt);
     const jsonMatch = text.match(/\{[\s\S]*\}/);
-    
     if (!jsonMatch) throw new Error("AI가 JSON 형식으로 응답하지 않았습니다.");
-
     const analysis = JSON.parse(jsonMatch[0]);
-    
-    resultEl.innerHTML = `
-      <div style="margin-bottom:12px; font-weight:600; color:var(--gold);">🎵 AI 분석 결과 (자동 적용됨)</div>
-      <pre style="white-space:pre-wrap; font-size:12px; line-height:1.7;">${JSON.stringify(analysis, null, 2)}</pre>
-    `;
+    resultEl.innerHTML = `<div style="margin-bottom:12px;font-weight:600;color:var(--gold)">🎵 AI 분석 결과 (자동 적용됨)</div><pre style="white-space:pre-wrap;font-size:12px;line-height:1.7">${JSON.stringify(analysis, null, 2)}</pre>`;
     resultEl.classList.add('show');
-
     applyAnalysisToUI(analysis);
-
   } catch (e) {
     resultEl.innerHTML = `<span style="color:var(--red)">분석 실패: ${e.message}</span>`;
     resultEl.classList.add('show');
@@ -1525,74 +1286,43 @@ async function analyzeKeywordAndApply(keyword, resultEl, loadingEl) {
 
 function applyAnalysisToUI(analysis) {
   resetAll(false);
-
   if (analysis.genre) {
-    const genreIndex = DATA.genres.findIndex(g => 
-      g.en.toLowerCase().includes(analysis.genre.toLowerCase()) || g.kr.includes(analysis.genre)
-    );
+    const genreIndex = DATA.genres.findIndex(g => g.en.toLowerCase().includes(analysis.genre.toLowerCase()) || g.kr.includes(analysis.genre));
     if (genreIndex !== -1) STATE.genre = genreIndex;
   }
-
   if (analysis.moods && Array.isArray(analysis.moods)) {
     analysis.moods.forEach(moodName => {
-      const idx = DATA.moods.findIndex(m => 
-        m.en.toLowerCase().includes(moodName.toLowerCase()) || m.kr.includes(moodName)
-      );
+      const idx = DATA.moods.findIndex(m => m.en.toLowerCase().includes(moodName.toLowerCase()) || m.kr.includes(moodName));
       if (idx !== -1 && !STATE.moods.includes(idx)) STATE.moods.push(idx);
     });
   }
-
   if (analysis.instruments) {
-    const instrIndex = DATA.instruments.findIndex(i => 
-      i.en.toLowerCase().includes(analysis.instruments.toLowerCase()) || i.kr.includes(analysis.instruments)
-    );
+    const instrIndex = DATA.instruments.findIndex(i => i.en.toLowerCase().includes(analysis.instruments.toLowerCase()) || i.kr.includes(analysis.instruments));
     if (instrIndex !== -1) STATE.instr = instrIndex;
   }
-
   if (analysis.concept) {
     let conceptIndex = -1;
-    if (!isNaN(analysis.concept)) {
-      conceptIndex = parseInt(analysis.concept) - 1;
-    } else {
-      conceptIndex = DATA.concepts.findIndex(c => 
-        c.name.includes(analysis.concept) || c.num === analysis.concept
-      );
-    }
+    if (!isNaN(analysis.concept)) conceptIndex = parseInt(analysis.concept) - 1;
+    else conceptIndex = DATA.concepts.findIndex(c => c.name.includes(analysis.concept) || c.num === analysis.concept);
     if (conceptIndex >= 0 && conceptIndex < DATA.concepts.length) STATE.concept = conceptIndex;
   }
-
-  if (analysis.bpm && analysis.bpm >= 65 && analysis.bpm <= 145) {
-    STATE.bpm = parseInt(analysis.bpm);
-  }
-
+  if (analysis.bpm && analysis.bpm >= 65 && analysis.bpm <= 145) STATE.bpm = parseInt(analysis.bpm);
   if (analysis.koreanGrooves && Array.isArray(analysis.koreanGrooves)) {
     analysis.koreanGrooves.forEach(name => {
-      const idx = DATA.koreanGrooves.findIndex(k => 
-        k.en.toLowerCase().includes(name.toLowerCase()) || k.kr.includes(name)
-      );
+      const idx = DATA.koreanGrooves.findIndex(k => k.en.toLowerCase().includes(name.toLowerCase()) || k.kr.includes(name));
       if (idx !== -1 && !STATE.koreanGrooves.includes(idx)) STATE.koreanGrooves.push(idx);
     });
   }
-
   if (analysis.koreanFeelings && Array.isArray(analysis.koreanFeelings)) {
     analysis.koreanFeelings.forEach(name => {
-      const idx = DATA.koreanFeelings.findIndex(k => 
-        k.en.toLowerCase().includes(name.toLowerCase()) || k.kr.includes(name)
-      );
+      const idx = DATA.koreanFeelings.findIndex(k => k.en.toLowerCase().includes(name.toLowerCase()) || k.kr.includes(name));
       if (idx !== -1 && !STATE.koreanFeelings.includes(idx)) STATE.koreanFeelings.push(idx);
     });
   }
-
   renderAll();
-
   const bpmSlider = document.getElementById('bpmSlider');
   const bpmVal = document.getElementById('bpmVal');
-  if (bpmSlider && bpmVal) {
-    bpmSlider.value = STATE.bpm;
-    bpmVal.textContent = STATE.bpm;
-    updateBpmGuide(STATE.bpm);
-  }
-
+  if (bpmSlider && bpmVal) { bpmSlider.value = STATE.bpm; bpmVal.textContent = STATE.bpm; updateBpmGuide(STATE.bpm); }
   buildPrompt();
   showToast("✅ 분석 결과가 자동으로 적용되었습니다!");
 }
@@ -1604,8 +1334,7 @@ async function aiExpandPrompt() {
   loading.classList.add('show');
   try {
     const text = await callClaude(
-      `Create ONE Suno AI style prompt from the music settings below.\n\nRules:\n- English only\n- Maximum 230 characters total\n- One line only\n- No title, no explanation, no quotation marks\n- Include genre, Korean identity, groove, bass movement, key instruments, vocal tone, BPM
-- Make it groove-driven, rhythmic, head-nodding, and emotionally Korean\n- Korean elements must feel natural: gayageum riffs, haegeum slides, janggu groove, Seoul night atmosphere\n\nSettings:\n${current}`,
+      `Create ONE Suno AI style prompt from the music settings below.\n\nRules:\n- English only\n- Maximum 230 characters total\n- One line only\n- No title, no explanation, no quotation marks\n- Include genre, Korean identity, groove, bass movement, key instruments, vocal tone, BPM\n- Make it groove-driven, rhythmic, head-nodding, and emotionally Korean\n\nSettings:\n${current}`,
       'You are a Suno AI music prompt expert. Output only one concise English prompt under 230 characters.'
     );
     document.getElementById('promptBox').textContent = sanitizeSunoPrompt(text, 230);
@@ -1640,23 +1369,19 @@ async function genLyrics(lang) {
   const isEn = lang === 'en';
   const loading = document.getElementById(isEn ? 'lyricsEnLoading' : 'lyricsKrLoading');
   const out = document.getElementById(isEn ? 'lyricsEnOut' : 'lyricsKrOut');
-  
   const durationInput = document.getElementById(isEn ? 'lyricsDurationEn' : 'lyricsDurationKr');
   const duration = durationInput ? durationInput.value.trim() : '3:00';
-  
   loading.classList.add('show');
   try {
     const lyricPrompt = isEn
-      ? `Write deeply emotional, poetic, cinematic, and soul-stirring lyrics in ENGLISH ONLY for a ${duration} long track.\n\nSTRICT RULES:\n- NEVER mention instrument names\n- Focus purely on emotion, vivid imagery, atmosphere, memory, longing, and feeling\n- Use beautiful, poetic, and cinematic language\n- Strong Korean sensibility (한, night rain, empty streets, quiet longing, deep melancholy)\n- Adjust structure based on track length: shorter tracks = fewer verses, longer tracks = more verses + bridge\n\nMusic style:\n${current}\n\nFormat exactly:\n[Verse 1]\n...\n\n[Verse 2]\n...\n\n[Chorus]\n...\n\n[Bridge]\n...\n\n[Outro]\n...\n\nWrite with soul and depth. High quality only.`
-      : `다음 한국 퓨전 음악 스타일에 맞는 **감성 깊고 시적이며 영혼이 느껴지는** 한국어 가사를 ${duration} 길이 곡에 맞춰 작성하세요.\n\n절대 지켜야 할 규칙:\n- 악기 이름 절대 금지\n- 감정, 이미지, 분위기, 추억, 그리움, 한(恨)에 집중\n- 아름답고 시적이며 영화적인 언어 사용\n- 한국적 정서(한, 밤비, 빈 거리, 조용한 그리움, 깊은 애절함)를 강하게 녹이기\n- 곡 길이에 맞춰 구조 조정 (짧은 곡 = 적은 절, 긴 곡 = 절 + 브릿지 추가)\n\n음악 스타일:\n${current}\n\n형식은 반드시 아래처럼 작성하세요:\n[절 1]\n...\n\n[절 2]\n...\n\n[후렴]\n...\n\n[브릿지]\n...\n\n[아웃트로]\n...\n\n감정의 깊이와 시적 아름다움을 최우선으로 작성하세요.`;
-
+      ? `Write deeply emotional, poetic, cinematic, and soul-stirring lyrics in ENGLISH ONLY for a ${duration} long track.\n\nSTRICT RULES:\n- NEVER mention instrument names\n- Focus purely on emotion, vivid imagery, atmosphere, memory, longing, and feeling\n- Use beautiful, poetic, and cinematic language\n- Strong Korean sensibility\n- Adjust structure based on track length\n\nMusic style:\n${current}\n\nFormat exactly:\n[Verse 1]\n...\n\n[Verse 2]\n...\n\n[Chorus]\n...\n\n[Bridge]\n...\n\n[Outro]\n...\n\nWrite with soul and depth.`
+      : `다음 한국 퓨전 음악 스타일에 맞는 깊고 시적인 한국어 가사를 ${duration} 길이 곡에 맞춰 작성하세요.\n\n규칙:\n- 악기 이름 절대 금지\n- 감정, 이미지, 분위기에 집중\n- 한국적 정서(한, 밤비, 빈 거리, 그리움)를 강하게 녹이기\n\n음악 스타일:\n${current}\n\n형식:\n[절 1]\n...\n\n[절 2]\n...\n\n[후렴]\n...\n\n[브릿지]\n...\n\n[아웃트로]\n...`;
     const systemPrompt = isEn
-      ? 'You are a world-class emotional lyricist for Korean fusion music. Write poetic, soulful, atmospheric lyrics with deep feeling. Never mention any instruments. Focus on emotion and imagery only. Adjust structure to fit the track length.'
-      : '당신은 최고 수준의 감성 작사가입니다. 악기 이름은 절대 넣지 말고, 감정과 이미지를 중심으로 깊이 있고 시적이며 여운이 강한 한국어 가사를 작성하세요. 곡 길이에 맞춰 구조를 조정하세요.';
-
+      ? 'You are a world-class emotional lyricist for Korean fusion music. Never mention any instruments. Focus on emotion and imagery only.'
+      : '당신은 최고 수준의 감성 작사가입니다. 악기 이름은 절대 넣지 말고, 감정과 이미지를 중심으로 깊이 있는 한국어 가사를 작성하세요.';
     const text = await callClaude(lyricPrompt, systemPrompt);
     out.value = cleanModelText(text);
-  } catch (e) { out.value = '오류: ' + (e.message || '알 수 없는 오류') }
+  } catch (e) { out.value = '오류: ' + (e.message || '알 수 없는 오류'); }
   loading.classList.remove('show');
 }
 
@@ -1667,19 +1392,8 @@ async function genRec() {
   grid.innerHTML = '';
   try {
     const text = await callClaude(
-      `국악 퓨전 음악에서 YouTube 조회수가 높을 것으로 예상되는 음악 스타일 6개를 추천하세요.
-각 스타일에 대해 다음 정보를 포함하세요:
-- 스타일명 (한국어)
-- 영문명
-- 예상 조회수
-- 주요 분위기 2~3개
-- 추천 BPM 범위
-- 주요 악기 조합
-- 왜 조회수가 잘 나올지 한 줄 이유
-
-반드시 다음 JSON 배열 형식만 출력하세요:
-[{"rank":1,"name":"스타일명","nameEn":"Style Name","views":"예상조회수","moods":["분위기1","분위기2"],"bpm":"85-105","instruments":"주요 악기","reason":"조회수 이유"},...]`,
-      '국악 퓨전 음악 시장 분석가. 트렌드와 조회수 데이터 전문가. JSON만 출력.'
+      `국악 퓨전 음악에서 YouTube 조회수가 높을 것으로 예상되는 음악 스타일 6개를 추천하세요.\n반드시 다음 JSON 배열 형식만 출력하세요:\n[{"rank":1,"name":"스타일명","nameEn":"Style Name","views":"예상조회수","moods":["분위기1","분위기2"],"bpm":"85-105","instruments":"주요 악기","reason":"조회수 이유"},...]`,
+      '국악 퓨전 음악 시장 분석가. JSON만 출력.'
     );
     const clean = text.replace(/```json|```/g, '').trim();
     const match = clean.match(/\[[\s\S]*\]/);
@@ -1694,122 +1408,74 @@ async function genRec() {
         <div class="rec-tags">${item.moods.map(t => `<span class="rtag">${t}</span>`).join('')}</div>
         <div style="font-size:10px;color:var(--muted);margin-top:6px;line-height:1.3">${item.reason}</div>
       </div>`).join('');
-  } catch (e) { grid.innerHTML = `<div style="color:var(--muted);font-size:12px">추천 생성 오류: ${e.message || '알 수 없는 오류'}</div>` }
+  } catch (e) { grid.innerHTML = `<div style="color:var(--muted);font-size:12px">추천 생성 오류: ${e.message || '알 수 없는 오류'}</div>`; }
   loading.classList.remove('show');
 }
 
 function applyRecStyle(item) {
   resetAll(false);
-  
-  const conceptMatch = DATA.concepts.findIndex(c => 
-    c.name.includes(item.name) || 
-    c.genres.some(g => g.toLowerCase().includes(item.nameEn.toLowerCase()))
-  );
+  const conceptMatch = DATA.concepts.findIndex(c => c.name.includes(item.name) || c.genres.some(g => g.toLowerCase().includes(item.nameEn.toLowerCase())));
   if (conceptMatch !== -1) STATE.concept = conceptMatch;
-  
   if (item.moods && Array.isArray(item.moods)) {
     item.moods.forEach(moodName => {
-      const moodIndex = DATA.moods.findIndex(m => 
-        m.kr.includes(moodName) || m.en.toLowerCase().includes(moodName.toLowerCase())
-      );
-      if (moodIndex !== -1 && !STATE.moods.includes(moodIndex)) {
-        STATE.moods.push(moodIndex);
-      }
+      const moodIndex = DATA.moods.findIndex(m => m.kr.includes(moodName) || m.en.toLowerCase().includes(moodName.toLowerCase()));
+      if (moodIndex !== -1 && !STATE.moods.includes(moodIndex)) STATE.moods.push(moodIndex);
     });
   }
-  
-  if (item.bpm) {
-    const bpmMatch = item.bpm.match(/(\d+)-(\d+)/);
-    if (bpmMatch) {
-      STATE.bpm = parseInt(bpmMatch[1]) + 5;
-    }
-  }
-  
+  if (item.bpm) { const bpmMatch = item.bpm.match(/(\d+)-(\d+)/); if (bpmMatch) STATE.bpm = parseInt(bpmMatch[1]) + 5; }
   if (item.instruments) {
-    const instrIndex = DATA.instruments.findIndex(i => 
-      i.kr.includes(item.instruments.split(' ')[0]) || 
-      i.en.toLowerCase().includes(item.instruments.toLowerCase().split(' ')[0])
-    );
+    const instrIndex = DATA.instruments.findIndex(i => i.kr.includes(item.instruments.split(' ')[0]) || i.en.toLowerCase().includes(item.instruments.toLowerCase().split(' ')[0]));
     if (instrIndex !== -1) STATE.instr = instrIndex;
   }
-  
   renderAll();
-  
-  if (STATE.bpm) {
-    document.getElementById('bpmSlider').value = STATE.bpm;
-    document.getElementById('bpmVal').textContent = STATE.bpm;
-    updateBpmGuide(STATE.bpm);
-  }
-  
+  if (STATE.bpm) { document.getElementById('bpmSlider').value = STATE.bpm; document.getElementById('bpmVal').textContent = STATE.bpm; updateBpmGuide(STATE.bpm); }
   buildPrompt();
   showToast("✅ 추천 스타일이 자동 적용되었습니다!");
-  
-  document.querySelector('.section:nth-child(9)').scrollIntoView({ behavior: 'smooth' });
+  document.querySelector('.section:nth-child(9)')?.scrollIntoView({ behavior: 'smooth' });
 }
 
 function autoRecommendDuration(lang) {
   const bpm = STATE.bpm || 95;
   const intensity = STATE.intensity || 5;
   const concept = STATE.concept !== null ? DATA.concepts[STATE.concept] : null;
-
   let baseMinutes = 3.0;
-
-  if (bpm > 125) baseMinutes += 0.5;
-  else if (bpm < 85) baseMinutes -= 0.3;
-
-  if (intensity >= 8) baseMinutes += 0.4;
-  else if (intensity <= 3) baseMinutes -= 0.3;
-
+  if (bpm > 125) baseMinutes += 0.5; else if (bpm < 85) baseMinutes -= 0.3;
+  if (intensity >= 8) baseMinutes += 0.4; else if (intensity <= 3) baseMinutes -= 0.3;
   if (concept) {
     const core = concept.core.join(' ').toLowerCase();
-    if (core.includes('energetic') || core.includes('powerful') || core.includes('aggressive')) {
-      baseMinutes += 0.3;
-    }
-    if (core.includes('chill') || core.includes('calm') || core.includes('dreamy')) {
-      baseMinutes -= 0.2;
-    }
+    if (core.includes('energetic') || core.includes('powerful') || core.includes('aggressive')) baseMinutes += 0.3;
+    if (core.includes('chill') || core.includes('calm') || core.includes('dreamy')) baseMinutes -= 0.2;
   }
-
   baseMinutes = Math.max(2.3, Math.min(4.5, baseMinutes));
-
   const minutes = Math.floor(baseMinutes);
   const seconds = Math.round((baseMinutes - minutes) * 60);
   const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-
   const inputId = lang === 'en' ? 'lyricsDurationEn' : 'lyricsDurationKr';
   const input = document.getElementById(inputId);
-  if (input) {
-    input.value = timeString;
-    showToast(`✅ 추천 길이: ${timeString}`);
-  }
+  if (input) { input.value = timeString; showToast(`✅ 추천 길이: ${timeString}`); }
 }
 
 function toggleAdvancedSettings() {
   const body = document.getElementById('advancedSettingsBody');
   const icon = document.getElementById('advancedToggleIcon');
-  
-  if (body.style.display === 'none' || body.style.display === '') {
-    body.style.display = 'block';
-    icon.textContent = '▲';
-  } else {
-    body.style.display = 'none';
-    icon.textContent = '▼';
-  }
+  if (body.style.display === 'none' || body.style.display === '') { body.style.display = 'block'; icon.textContent = '▲'; }
+  else { body.style.display = 'none'; icon.textContent = '▼'; }
 }
 
 function toggleSection(bodyId, iconId) {
   const body = document.getElementById(bodyId);
   const icon = document.getElementById(iconId);
-  
-  if (body.style.display === 'none' || body.style.display === '') {
-    body.style.display = 'block';
-    icon.textContent = '▲';
-  } else {
-    body.style.display = 'none';
-    icon.textContent = '▼';
-  }
+  if (body.style.display === 'none' || body.style.display === '') { body.style.display = 'block'; icon.textContent = '▲'; }
+  else { body.style.display = 'none'; icon.textContent = '▼'; }
 }
 
+/* ═══════════════════════════════════════════
+   PRESET FUNCTIONS  ← 버그 수정된 구간
+═══════════════════════════════════════════ */
+
+// 🔥 FIX: 한국 그루브 추천 세팅
+// vocalTones [5,15] → [5,9]  (15는 존재하지 않는 인덱스)
+// koreanFeelings [0,3,5] 유지 (정상 범위)
 function applyGroovePreset() {
   resetAll(false);
   STATE.genre = 3;
@@ -1817,7 +1483,7 @@ function applyGroovePreset() {
   STATE.instr = 0;
   STATE.concept = 5;
   STATE.vocalStyle = 0;
-  STATE.vocalTones = [5, 15];
+  STATE.vocalTones = [5, 9];       // ✅ 수정: 15 → 9 (Slow groove phrasing)
   STATE.textures = [0, 2];
   STATE.grooves = [1, 4, 5];
   STATE.spaces = [0, 2];
@@ -1826,16 +1492,18 @@ function applyGroovePreset() {
   STATE.koreanFeelings = [0, 3, 5];
   STATE.bpm = 96;
   STATE.intensity = 6;
-
   renderAll();
   document.getElementById('bpmSlider').value = 96;
   document.getElementById('bpmVal').textContent = '96';
   updateBpmGuide(96);
+  document.getElementById('intensitySlider').value = 6;
   updateIntensity(6);
   buildPrompt();
   showToast("✅ 한국 그루브 추천 세팅이 적용되었습니다!");
 }
 
+// 🔥 FIX: Ultimate Groove
+// vocalTones [5,15] → [5,9]  (동일 수정)
 function applyUltimateGroovePreset() {
   resetAll(false);
   STATE.genre = 3;
@@ -1843,7 +1511,7 @@ function applyUltimateGroovePreset() {
   STATE.instr = 0;
   STATE.concept = 5;
   STATE.vocalStyle = 0;
-  STATE.vocalTones = [5, 15];
+  STATE.vocalTones = [5, 9];       // ✅ 수정: 15 → 9 (Slow groove phrasing)
   STATE.textures = [0, 2];
   STATE.grooves = [1, 4, 5];
   STATE.spaces = [0, 2];
@@ -1852,28 +1520,32 @@ function applyUltimateGroovePreset() {
   STATE.koreanFeelings = [0, 3, 5];
   STATE.bpm = 100;
   STATE.intensity = 7;
-
   renderAll();
   document.getElementById('bpmSlider').value = 100;
   document.getElementById('bpmVal').textContent = '100';
   updateBpmGuide(100);
+  document.getElementById('intensitySlider').value = 7;
   updateIntensity(7);
   buildPrompt();
   showToast("✅ Ultimate Groove 적용 완료!");
 }
 
+// 🔥 FIX: 용도별 빠른 시작
+// drive: moods [10,13] → [11,14] (Energetic & Driving + Chill Drive)
+//        koreanFeelings [0,12] → [0,5]  (12는 범위 초과)
+// night: koreanFeelings [0,6,12] → [0,6,8]  (12는 범위 초과)
 function applyQuickStart(type) {
   resetAll(false);
- 
+
   if (type === 'drive') {
     STATE.genre = 2;
-    STATE.moods = [10, 13];
+    STATE.moods = [11, 14];        // ✅ 수정: [10,13] → [11,14] (Energetic & Driving + Chill Drive)
     STATE.instr = 0;
     STATE.concept = 8;
     STATE.textures = [0, 6];
     STATE.grooves = [1, 6];
     STATE.koreanGrooves = [0, 4];
-    STATE.koreanFeelings = [0, 12];
+    STATE.koreanFeelings = [0, 5]; // ✅ 수정: [0,12] → [0,5] (Seoul night + Modern Korean soul mood)
     STATE.bpm = 98;
     STATE.intensity = 6;
   }
@@ -1885,13 +1557,13 @@ function applyQuickStart(type) {
     STATE.textures = [0, 6];
     STATE.grooves = [1, 4];
     STATE.koreanGrooves = [4, 7];
-    STATE.koreanFeelings = [0, 6, 12];
+    STATE.koreanFeelings = [0, 6, 8]; // ✅ 수정: [0,6,12] → [0,6,8] (Seoul night + Midnight Han + Lonely night walk)
     STATE.bpm = 82;
     STATE.intensity = 6;
   }
   else if (type === 'workout') {
     STATE.genre = 3;
-    STATE.moods = [11, 15];
+    STATE.moods = [11, 12];
     STATE.instr = 5;
     STATE.concept = 9;
     STATE.bpm = 128;
@@ -1899,7 +1571,7 @@ function applyQuickStart(type) {
   }
   else if (type === 'hiphop') {
     STATE.genre = 4;
-    STATE.moods = [0, 14];
+    STATE.moods = [0, 15];
     STATE.instr = 2;
     STATE.concept = 10;
     STATE.bpm = 92;
@@ -1907,7 +1579,7 @@ function applyQuickStart(type) {
   }
   else if (type === 'labor') {
     STATE.genre = 7;
-    STATE.moods = [12];
+    STATE.moods = [13];
     STATE.instr = 5;
     STATE.concept = 11;
     STATE.bpm = 95;
@@ -1918,20 +1590,16 @@ function applyQuickStart(type) {
   document.getElementById('bpmSlider').value = STATE.bpm;
   document.getElementById('bpmVal').textContent = STATE.bpm;
   updateBpmGuide(STATE.bpm);
-  
+  document.getElementById('intensitySlider').value = STATE.intensity;
   updateIntensity(STATE.intensity);
   buildPrompt();
-  
-  let message = "✅ 세팅이 적용되었습니다!";
-  if (type === 'drive') message = "✅ 드라이브 세팅이 적용되었습니다!";
-  else if (type === 'night') message = "✅ 늦은 밤 감성 세팅이 적용되었습니다!";
 
-  showToast(message);
+  const messages = { drive: "✅ 드라이브 세팅이 적용되었습니다!", night: "✅ 늦은 밤 감성 세팅이 적용되었습니다!", workout: "✅ 운동 세팅이 적용되었습니다!", hiphop: "✅ 힙합 세팅이 적용되었습니다!", labor: "✅ 노동가 세팅이 적용되었습니다!" };
+  showToast(messages[type] || "✅ 세팅이 적용되었습니다!");
 }
 
 function applyRandomPreset() {
   resetAll(false);
-  
   STATE.genre = Math.floor(Math.random() * DATA.genres.length);
   STATE.moods = [Math.floor(Math.random() * DATA.moods.length)];
   STATE.instr = Math.floor(Math.random() * DATA.instruments.length);
@@ -1939,26 +1607,20 @@ function applyRandomPreset() {
   STATE.vocalStyle = Math.floor(Math.random() * DATA.vocalStyles.length);
   STATE.bpm = 75 + Math.floor(Math.random() * 50);
   STATE.intensity = 3 + Math.floor(Math.random() * 6);
-  
   if (Math.random() > 0.5) STATE.textures.push(Math.floor(Math.random() * DATA.textures.length));
   if (Math.random() > 0.5) STATE.grooves.push(Math.floor(Math.random() * DATA.grooves.length));
   if (Math.random() > 0.5) STATE.koreanGrooves.push(Math.floor(Math.random() * DATA.koreanGrooves.length));
   if (Math.random() > 0.5) STATE.koreanFeelings.push(Math.floor(Math.random() * DATA.koreanFeelings.length));
-  
   renderAll();
   document.getElementById('bpmSlider').value = STATE.bpm;
   document.getElementById('bpmVal').textContent = STATE.bpm;
   updateBpmGuide(STATE.bpm);
-  
-  const intensitySlider = document.getElementById('intensitySlider');
-  if (intensitySlider) intensitySlider.value = STATE.intensity;
+  document.getElementById('intensitySlider').value = STATE.intensity;
   document.getElementById('intensityValue').textContent = STATE.intensity;
-  
   const label = document.getElementById('intensityLabel');
   if (STATE.intensity <= 3) label.textContent = 'Chill';
   else if (STATE.intensity <= 6) label.textContent = 'Emotional';
   else label.textContent = 'Explosive Soul';
-  
   buildPrompt();
   showToast("✨ 랜덤 추천이 적용되었습니다!");
 }
@@ -1966,46 +1628,23 @@ function applyRandomPreset() {
 function saveCurrentPreset() {
   const name = prompt("프리셋 이름을 입력하세요:");
   if (!name) return;
-
-  const preset = {
-    name: name,
-    state: { ...STATE },
-    timestamp: new Date().toISOString()
-  };
-
+  const preset = { name, state: { ...STATE, moods: [...STATE.moods], vocalTones: [...STATE.vocalTones], textures: [...STATE.textures], grooves: [...STATE.grooves], spaces: [...STATE.spaces], koreanGrooves: [...STATE.koreanGrooves], bassStyles: [...STATE.bassStyles], koreanFeelings: [...STATE.koreanFeelings], blackSoulElements: [...STATE.blackSoulElements], humanFeelElements: [...STATE.humanFeelElements] }, timestamp: new Date().toISOString() };
   let presets = JSON.parse(localStorage.getItem('gugak_presets') || '[]');
   presets.push(preset);
   localStorage.setItem('gugak_presets', JSON.stringify(presets));
-
   showToast("✅ 프리셋이 저장되었습니다!");
 }
 
 function loadPresets() {
   let presets = JSON.parse(localStorage.getItem('gugak_presets') || '[]');
-  
-  if (presets.length === 0) {
-    alert("저장된 프리셋이 없습니다.");
-    return;
-  }
-
-  let html = "<div style='max-height:300px;overflow-y:auto'>";
-  presets.forEach((p, i) => {
-    html += `<div style="padding:8px;border-bottom:1px solid var(--border);cursor:pointer" onclick="loadPreset(${i})">
-      <strong>${p.name}</strong><br>
-      <span style="font-size:11px;color:var(--muted)">${new Date(p.timestamp).toLocaleString()}</span>
-    </div>`;
-  });
-  html += "</div>";
-
+  if (presets.length === 0) { alert("저장된 프리셋이 없습니다."); return; }
   const modal = document.createElement('div');
   modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999';
-  modal.innerHTML = `
-    <div style="background:var(--surface);padding:20px;border-radius:12px;width:400px;max-width:90%">
-      <h3 style="margin-bottom:15px">내 프리셋</h3>
-      ${html}
-      <button class="btn btn-outline" style="margin-top:15px;width:100%" onclick="this.closest('.modal').remove()">닫기</button>
-    </div>
-  `;
+  modal.innerHTML = `<div style="background:var(--surface);padding:20px;border-radius:12px;width:400px;max-width:90%">
+    <h3 style="margin-bottom:15px">내 프리셋</h3>
+    <div style="max-height:300px;overflow-y:auto">${presets.map((p, i) => `<div style="padding:8px;border-bottom:1px solid var(--border);cursor:pointer" onclick="loadPreset(${i})"><strong>${p.name}</strong><br><span style="font-size:11px;color:var(--muted)">${new Date(p.timestamp).toLocaleString()}</span></div>`).join('')}</div>
+    <button class="btn btn-outline" style="margin-top:15px;width:100%" onclick="this.closest('.modal').remove()">닫기</button>
+  </div>`;
   modal.className = 'modal';
   document.body.appendChild(modal);
 }
@@ -2013,28 +1652,20 @@ function loadPresets() {
 function loadPreset(index) {
   let presets = JSON.parse(localStorage.getItem('gugak_presets') || '[]');
   const preset = presets[index];
-  
   if (!preset) return;
-
   Object.assign(STATE, preset.state);
-  
   renderAll();
   document.getElementById('bpmSlider').value = STATE.bpm;
   document.getElementById('bpmVal').textContent = STATE.bpm;
   updateBpmGuide(STATE.bpm);
-  
-  const intensitySlider = document.getElementById('intensitySlider');
-  if (intensitySlider) intensitySlider.value = STATE.intensity;
+  document.getElementById('intensitySlider').value = STATE.intensity;
   document.getElementById('intensityValue').textContent = STATE.intensity;
-  
   const label = document.getElementById('intensityLabel');
   if (STATE.intensity <= 3) label.textContent = 'Chill';
   else if (STATE.intensity <= 6) label.textContent = 'Emotional';
   else label.textContent = 'Explosive Soul';
-  
   buildPrompt();
   showToast("✅ 프리셋이 불러와졌습니다!");
-  
   document.querySelector('.modal')?.remove();
 }
 
@@ -2043,71 +1674,54 @@ function fallbackCopy(text) {
   ta.value = text;
   ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
   document.body.appendChild(ta);
-  ta.focus();
-  ta.select();
-  try { document.execCommand('copy'); showToast(); } catch (e) { }
+  ta.focus(); ta.select();
+  try { document.execCommand('copy'); showToast(); } catch (e) {}
   document.body.removeChild(ta);
 }
 
 function doCopy(text) {
   if (!text || !text.trim()) return;
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(text).then(() => showToast()).catch(() => fallbackCopy(text));
-  } else {
-    fallbackCopy(text);
-  }
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(() => showToast()).catch(() => fallbackCopy(text));
+  else fallbackCopy(text);
 }
 
-function copyPrompt() {
-  doCopy(document.getElementById('promptBox').textContent);
-}
-
-function copyField(id) {
-  const el = document.getElementById(id);
-  doCopy(el.value !== undefined ? el.value : el.textContent);
-}
+function copyPrompt() { doCopy(document.getElementById('promptBox').textContent); }
+function copyField(id) { const el = document.getElementById(id); doCopy(el.value !== undefined ? el.value : el.textContent); }
 
 function showToast(msg = "✅ 세팅 완료!") {
   const t = document.getElementById('toast');
-  if (t) {
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2500);
-  }
+  if (t) { t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
 }
 
+// 🔥 FIX: resetAll에 blackSoulElements, humanFeelElements 추가
 function resetAll(doRender = true) {
   STATE.genre = null; STATE.moods = []; STATE.instr = null; STATE.concept = null;
   STATE.vocalStyle = null; STATE.vocalTones = []; STATE.textures = []; STATE.grooves = [];
   STATE.spaces = []; STATE.koreanGrooves = []; STATE.bassStyles = []; STATE.koreanFeelings = [];
-  STATE.bpm = 95; STATE.gender = 'all';
-
+  STATE.blackSoulElements = []; STATE.humanFeelElements = []; // ✅ 수정: 누락됐던 두 항목 추가
+  STATE.bpm = 95; STATE.intensity = 5; STATE.gender = 'all';
   if (doRender) {
     renderAll();
     document.getElementById('bpmSlider').value = 95;
     document.getElementById('bpmVal').textContent = '95';
     updateBpmGuide(95);
+    document.getElementById('intensitySlider').value = 5;
+    document.getElementById('intensityValue').textContent = '5';
+    document.getElementById('intensityLabel').textContent = 'Emotional (감성적인)';
     document.getElementById('promptBox').textContent = '← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
   }
 }
 
 function renderAll() {
-  renderGenres();
-  renderMoods();
-  renderInstruments();
-  renderConcepts();
-  renderVocalStyles();
-  renderTones(STATE.gender);
-  renderAdvancedChips();
-
+  renderGenres(); renderMoods(); renderInstruments(); renderConcepts();
+  renderVocalStyles(); renderTones(STATE.gender); renderAdvancedChips();
   if (STATE.genre !== null) document.getElementById('genre_' + STATE.genre)?.classList.add('active');
   STATE.moods.forEach(i => document.getElementById('mood_' + i)?.classList.add('active'));
   if (STATE.instr !== null) document.getElementById('instr_' + STATE.instr)?.classList.add('active');
   if (STATE.concept !== null) document.getElementById('concept_' + STATE.concept)?.classList.add('active');
   if (STATE.vocalStyle !== null) document.getElementById('vs_' + STATE.vocalStyle)?.classList.add('active');
-
   document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
-  const activeGenderBtn = [...document.querySelectorAll('.gender-btn')].find(b => 
+  const activeGenderBtn = [...document.querySelectorAll('.gender-btn')].find(b =>
     (STATE.gender === 'all' && b.textContent.includes('전체')) ||
     (STATE.gender === 'male' && b.textContent.includes('남성')) ||
     (STATE.gender === 'female' && b.textContent.includes('여성'))
@@ -2130,11 +1744,8 @@ function clearApiKey() {
 
 function onApiKeyInput(v) {
   const key = v.trim();
-  if (key.startsWith('sk-or-v1-')) {
-    showApiStatus('✔ OpenRouter 키 형식 확인됨.', 'var(--teal)');
-  } else if (key.length > 0) {
-    showApiStatus('⚠️ OpenRouter 키는 sk-or-v1- 로 시작해야 합니다.', 'var(--red)');
-  }
+  if (key.startsWith('sk-or-v1-')) showApiStatus('✔ OpenRouter 키 형식 확인됨.', 'var(--teal)');
+  else if (key.length > 0) showApiStatus('⚠️ OpenRouter 키는 sk-or-v1- 로 시작해야 합니다.', 'var(--red)');
 }
 
 function showApiStatus(msg, color) {
@@ -2144,10 +1755,7 @@ function showApiStatus(msg, color) {
 
 function loadSavedKey() {
   const k = localStorage.getItem('gugak_api_key');
-  if (k) {
-    document.getElementById('apiKeyInput').value = k;
-    showApiStatus('✅ 저장된 OpenRouter API 키가 불러와졌습니다.', 'var(--teal)');
-  }
+  if (k) { document.getElementById('apiKeyInput').value = k; showApiStatus('✅ 저장된 OpenRouter API 키가 불러와졌습니다.', 'var(--teal)'); }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -2155,17 +1763,10 @@ window.addEventListener('DOMContentLoaded', () => {
   renderAll();
   updateBpmGuide(95);
   document.getElementById('bpmSlider').style.setProperty('--pct', '37.5%');
-
-  const intensitySlider = document.getElementById('intensitySlider');
-  if (intensitySlider) {
-    intensitySlider.value = 5;
-    document.getElementById('intensityValue').textContent = '5';
-    document.getElementById('intensityLabel').textContent = 'Emotional (감성적인)';
-  }
-
-  document.getElementById('kwInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') runAI();
-  });
+  document.getElementById('intensitySlider').value = 5;
+  document.getElementById('intensityValue').textContent = '5';
+  document.getElementById('intensityLabel').textContent = 'Emotional (감성적인)';
+  document.getElementById('kwInput').addEventListener('keydown', e => { if (e.key === 'Enter') runAI(); });
 });
 </script>
 </body>
