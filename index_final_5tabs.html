@@ -1987,42 +1987,6 @@ function applyQuickStart(type) {
     STATE.bpm = 98;
     STATE.intensity = 6;
   }
-  else if (type === 'workout') {
-    STATE.genre = 3;
-    STATE.moods = [11, 15];
-    STATE.instr = 5;
-    STATE.concept = 9;
-    STATE.textures = [0];
-    STATE.grooves = [6, 7];
-    STATE.koreanGrooves = [0, 2];
-    STATE.bassStyles = [0, 5];
-    STATE.bpm = 128;
-    STATE.intensity = 8;
-  }
-  else if (type === 'hiphop') {
-    STATE.genre = 4;
-    STATE.moods = [0, 14];
-    STATE.instr = 2;
-    STATE.concept = 10;
-    STATE.textures = [1, 3];
-    STATE.grooves = [2, 7];
-    STATE.koreanGrooves = [1, 5];
-    STATE.bassStyles = [3];
-    STATE.bpm = 92;
-    STATE.intensity = 7;
-  }
-  else if (type === 'labor') {
-    STATE.genre = 7;
-    STATE.moods = [12];
-    STATE.instr = 5;
-    STATE.concept = 11;
-    STATE.textures = [0, 4];
-    STATE.grooves = [1, 5];
-    STATE.koreanGrooves = [2];
-    STATE.bassStyles = [4];
-    STATE.bpm = 95;
-    STATE.intensity = 5;
-  }
   else if (type === 'night') {
     STATE.genre = 2;
     STATE.moods = [1, 5, 8];
@@ -2035,25 +1999,47 @@ function applyQuickStart(type) {
     STATE.bpm = 82;
     STATE.intensity = 6;
   }
+  else if (type === 'workout') {
+    STATE.genre = 3;
+    STATE.moods = [11, 15];
+    STATE.instr = 5;
+    STATE.concept = 9;
+    STATE.bpm = 128;
+    STATE.intensity = 8;
+  }
+  else if (type === 'hiphop') {
+    STATE.genre = 4;
+    STATE.moods = [0, 14];
+    STATE.instr = 2;
+    STATE.concept = 10;
+    STATE.bpm = 92;
+    STATE.intensity = 7;
+  }
+  else if (type === 'labor') {
+    STATE.genre = 7;
+    STATE.moods = [12];
+    STATE.instr = 5;
+    STATE.concept = 11;
+    STATE.bpm = 95;
+    STATE.intensity = 5;
+  }
 
-  // ==================== 핵심 수정 부분 ====================
+  // ==================== 핵심 수정 ====================
   renderAll();
   document.getElementById('bpmSlider').value = STATE.bpm;
   document.getElementById('bpmVal').textContent = STATE.bpm;
   updateBpmGuide(STATE.bpm);
   
-  updateIntensity(STATE.intensity);   // 감정 강도 슬라이더 + 라벨 업데이트
-  buildPrompt();                      // ← 프롬프트 생성 (이 줄이 중요!)
+  updateIntensity(STATE.intensity);   // 감정 강도 업데이트
+  buildPrompt();                      // 프롬프트 생성 (필수!)
 
   // 토스트 메시지
   let message = "✅ 세팅이 적용되었습니다!";
   if (type === 'drive') message = "✅ 드라이브 세팅이 적용되었습니다!";
   else if (type === 'night') message = "✅ 늦은 밤 감성 세팅이 적용되었습니다!";
-  else if (type === 'workout') message = "✅ 운동 세팅이 적용되었습니다!";
 
   showToast(message);
 }
-
 // 랜덤 추천
 function applyRandomPreset() {
   resetAll(false);
@@ -2199,11 +2185,13 @@ function copyField(id) {
   doCopy(el.value !== undefined ? el.value : el.textContent);
 }
 
-function showToast(msg = "✅ 추천완료!") {
+function showToast(msg = "✅ 세팅 완료!") {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
+  if (t) {
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
 }
 
 function resetAll(doRender = true) {
