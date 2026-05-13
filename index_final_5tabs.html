@@ -41,13 +41,13 @@ button:hover { background:#e8c96a; }
 </div>
 
 <script>
-// ==================== 완전 수정된 버전 ====================
-
+// ==================== STATE ====================
 let STATE = {
   genre: null, moods: [], instr: null, concept: null,
   bpm: 95, intensity: 5
 };
 
+// ==================== 프리셋 함수 (완전 수정됨) ====================
 function applyQuickStart(type) {
   resetAll(false);
  
@@ -109,6 +109,7 @@ function applyRandomPreset() {
   showToast("✨ 랜덤 추천이 적용되었습니다!");
 }
 
+// ==================== 기본 함수 ====================
 function buildPrompt() {
   let text = "";
   if (STATE.genre !== null) text += `[Genre] ${STATE.genre}\n`;
