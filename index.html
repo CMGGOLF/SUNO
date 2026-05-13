@@ -1656,7 +1656,55 @@ function clearApiKey(){localStorage.removeItem('gugak_api_key');document.getElem
 function onApiKeyInput(v){const key=v.trim();if(key.startsWith('sk-or-v1-'))showApiStatus('✔ OpenRouter 키 형식 확인됨.','var(--teal)');else if(key.length>0)showApiStatus('⚠️ sk-or-v1- 로 시작해야 합니다.','var(--red)');}
 function showApiStatus(msg,color){document.getElementById('apiKeyStatus').innerHTML=`<span style="color:${color}">${msg}</span>`;}
 function loadSavedKey(){const k=localStorage.getItem('gugak_api_key');if(k){document.getElementById('apiKeyInput').value=k;showApiStatus('✅ 저장된 API 키가 불러와졌습니다.','var(--teal)');}}
+function openSunoWithEverything() {
+    // 제목
+    let title = "";
+    const titleEn = document.getElementById('titleEn');
+    const titleKr = document.getElementById('titleKr');
+    if (titleEn && titleEn.textContent !== '—') title = titleEn.textContent.trim();
+    else if (titleKr && titleKr.textContent !== '—') title = titleKr.textContent.trim();
 
+    // 프롬프트
+    let prompt = "";
+    const promptBox = document.getElementById('promptBox');
+    if (promptBox) prompt = promptBox.textContent.trim();
+
+    // 가사
+    let lyrics = "";
+    const lyricsEn = document.getElementById('lyricsEnOut');
+    const lyricsKr = document.getElementById('lyricsKrOut');
+    const lyricsFree = document.getElementById('lyricsFreeInput');
+
+    if (lyricsEn && lyricsEn.value.trim()) lyrics = lyricsEn.value.trim();
+    else if (lyricsKr && lyricsKr.value.trim()) lyrics = lyricsKr.value.trim();
+    else if (lyricsFree && lyricsFree.value.trim()) lyrics = lyricsFree.value.trim();
+
+    // 최종 텍스트
+    let fullText = "";
+    if (title) fullText += `Title: ${title}\n\n`;
+    if (prompt) fullText += `${prompt}\n\n`;
+    if (lyrics) fullText += `Lyrics:\n${lyrics}`;
+
+    if (!fullText.trim()) {
+        alert("복사할 내용이 없습니다!");
+        return;
+    }
+
+    // 복사 + Suno 열기
+    navigator.clipboard.writeText(fullText)
+        .then(() => {
+            window.open('https://suno.com/create', '_blank');
+            setTimeout(() => {
+                alert("✅ 복사 완료!\nSuno에서 Ctrl + V 눌러 붙여넣기 해주세요!");
+            }, 800);
+        })
+        .catch(() => {
+            alert("복사 실패\n\n" + fullText);
+            window.open('https://suno.com/create', '_blank');
+        });
+}
+
+  
 window.addEventListener('DOMContentLoaded',()=>{
   loadSavedKey(); renderAll(); syncSliders();
   document.getElementById('kwInput').addEventListener('keydown',e=>{if(e.key==='Enter')runAI();});
