@@ -415,14 +415,14 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
 </div>
 
-<!-- SECTION 03: 악기 — 3:7 최적화 -->
+<!-- SECTION 03: 악기 - 3:7 최적화 -->
 <div class="section">
-  <div class="section-head">
+  <div class="section-head" onclick="toggleSection('instrBody','instrIcon')" style="cursor:pointer">
     <div class="sec-num korean">03</div>
-    <div class="sec-title">악기 조합 <span style="font-size:11px;color:var(--korean2)">(국악기 확장판)</span></div>
-    <div class="sec-sub">하나 선택 · 🔶 = 국악 강조 조합</div>
+    <div class="sec-title">악기 조합 <span style="font-size:11px;color:var(--korean2)">(국악기 확장판)</span> <span id="instrIcon" style="font-size:14px">▼</span></div>
+    <div class="sec-sub">클릭하여 펼치기/접기</div>
   </div>
-  <div class="section-body">
+  <div class="section-body" id="instrBody" style="display:none">
     <div class="info-bar korean-info" style="margin-bottom:14px">🎵 국악기가 멜로디·리듬 정체성(30%)을 담당하고, 현대 사운드가 그루브 기반(70%)을 형성합니다.</div>
     <div class="section-divider">🎻 현악기 중심 조합 (가야금·해금·아쟁·거문고·양금)</div>
     <div class="card-grid col2" id="instrGridString" style="margin-bottom:16px"></div>
@@ -589,18 +589,18 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 <button onclick="openSunoWithEverything()" 
         style="background: #1a1a24;
                color: #c9a84c;
-               font-size: 16px;
-               padding: 14px 28px;
+               font-size: 15px;
+               padding: 10px 20px;
                border: 1.5px solid #c9a84c;
-               border-radius: 10px;
+               border-radius: 8px;
                cursor: pointer;
-               margin-top: 12px;
+               margin-top: 8px;
                font-weight: 600;
                display: flex;
                align-items: center;
-               gap: 8px;
-               box-shadow: 0 4px 15px rgba(201, 168, 76, 0.15);">
-    <span style="font-size: 19px;">🎵</span>
+               gap: 6px;
+               box-shadow: 0 3px 10px rgba(201, 168, 76, 0.15);">
+    <span style="font-size: 16px;">🎵</span>
     <span>Suno로 바로 만들기</span>
 </button>
     </div>
