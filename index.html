@@ -571,19 +571,43 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
 </div>
 
+<!-- SECTION 08B: 국악기 강조 강도 (중요!) -->
+<div class="section" style="border-color:rgba(160,90,58,.5);background:rgba(160,90,58,.05)">
+  <div class="section-head" style="background:rgba(160,90,58,.12)">
+    <div class="sec-num" style="background:var(--korean2)">08B</div>
+    <div class="sec-title">국악기 강조 강도 <span style="color:var(--korean2)">(가장 중요!)</span></div>
+    <div class="sec-sub">60 = 보통 ~ 95 = 국악기 완전 주도</div>
+  </div>
+  <div class="section-body">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <input type="range" id="koreanDomSlider" min="60" max="95" value="80" step="5" style="flex:1" oninput="updateKoreanDominance(this.value)">
+        <div style="min-width:120px;text-align:center">
+          <div id="koreanDomValue" style="font-size:28px;font-weight:700;color:var(--korean2);font-family:'Space Mono',monospace">80</div>
+          <div id="koreanDomLabel" style="font-size:12px;color:var(--muted)">강한 국악기 주도</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:'Space Mono',monospace">
+        <span>60 보통</span><span>80 강한 주도</span><span>95 압도적</span>
+      </div>
+      <div style="font-size:11px;color:#d4845a">💡 이 값을 높일수록 가야금·대금·해금·피리 소리가 훨씬 더 크게, 명확하게 나옵니다.</div>
+    </div>
+  </div>
+</div>
+
 <!-- SECTION 09: 프롬프트 생성 -->
 <div class="section">
   <div class="section-head">
     <div class="sec-num">09</div>
     <div class="sec-title">프롬프트 생성</div>
-    <div class="sec-sub">3:7 비율 최적화 · Suno 230자 이하</div>
+    <div class="sec-sub">7:3 정통화 · 국악기 강도 조절 가능 · Suno 230자 이하</div>
   </div>
   <div class="section-body">
     <div class="prompt-box" id="promptBox">← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.</div>
     <div class="prompt-actions">
       <button class="btn btn-gold" onclick="copyPrompt()">📋 복사</button>
       <button class="btn btn-teal" onclick="aiExpandPrompt()">✦ Suno 프롬프트 생성</button>
-      <button class="btn btn-korean" onclick="apply37Preset('standard')">🎵 3:7 최적화 적용</button>
+      <button class="btn btn-korean" onclick="apply73Preset('joseon')">🎵 7:3 Joseon Core 적용</button>
       <button class="btn btn-outline" onclick="applyUltimateGroovePreset()">🔥 Ultimate Groove</button>
       <button class="btn btn-outline" onclick="saveCurrentPreset()">💾 프리셋 저장</button>
       <button class="btn btn-outline" onclick="loadPresets()">📂 내 프리셋</button>
@@ -895,7 +919,8 @@ const STATE = {
   concept: null, vocalStyle: null, vocalTones: [],
   textures: [], grooves: [], spaces: [], koreanGrooves: [],
   bassStyles: [], koreanFeelings: [], blackSoulElements: [], humanFeelElements: [],
-  bpm: 95, intensity: 5, gender: 'all'
+  bpm: 95, intensity: 5, gender: 'all',
+  koreanDominance: 82   // 60~95 : 국악기 강조 강도 (%)
 };
 
 /* ═══════════════════════════════════════════
@@ -1133,6 +1158,16 @@ function updateIntensity(v) {
   else label.textContent='Explosive Soul (폭발적인)';
   buildPrompt();
 }
+
+function updateKoreanDominance(v) {
+  STATE.koreanDominance = parseInt(v);
+  document.getElementById('koreanDomValue').textContent = v;
+  const label = document.getElementById('koreanDomLabel');
+  if (v >= 90) label.textContent = '압도적 국악기';
+  else if (v >= 80) label.textContent = '강한 국악기 주도';
+  else label.textContent = '명확한 국악기';
+  buildPrompt();
+}
 function switchTab(id,el) {
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -1146,7 +1181,9 @@ function switchTab(id,el) {
 function buildPrompt() {
   try {
     const parts = [];
-    parts.push(`[Ratio] Korean traditional instruments 70% identity + Modern jazz/blues/soul elevation 30%`);
+    const dom = STATE.koreanDominance || 80;
+    parts.push(`[Ratio] Korean traditional instruments ${dom}% lead (melody + rhythm + emotion) + Modern elements only ${100-dom}% subtle elevation/background`);
+    parts.push(`[Korean Lead Instruction] Korean instruments (Gayageum, Daegeum, Haegeum, Piri, Janggu, Ajaeng) MUST dominate the mix. Modern jazz/blues/soul elements are only soft background color. Never let Western groove overpower Korean instruments.`);
     if (STATE.genre !== null && DATA.genres[STATE.genre]) {
       const g = DATA.genres[STATE.genre];
       parts.push(`[Genre] ${g.en} (${g.kr})`);
@@ -1182,7 +1219,7 @@ function buildPrompt() {
     }
     if (STATE.koreanGrooves.length) {
       const kgs = STATE.koreanGrooves.filter(i=>DATA.koreanGrooves[i]).map(i=>DATA.koreanGrooves[i].en).join(', ');
-      if (kgs) parts.push(`[Korean Identity (30%)] ${kgs}`);
+      if (kgs) parts.push(`[Korean Traditional Techniques] ${kgs} (use authentic Korean phrasing, 시김새, 농현, 추성)`);
     }
     if (STATE.bassStyles.length) {
       const bs = STATE.bassStyles.filter(i=>DATA.bassStyles[i]).map(i=>DATA.bassStyles[i].en).join(', ');
@@ -1207,7 +1244,7 @@ function buildPrompt() {
     parts.push(`[BPM] ${STATE.bpm}`);
     parts.push(`[Emotional Intensity] ${STATE.intensity}/10 (${STATE.intensity<=3?'Chill':STATE.intensity<=6?'Emotional':'Explosive Soul'})`);
     // 3:7 최적화 Direction
-    parts.push(`[Direction] 7:3 Joseon Core Elevation — Korean traditional music (court, sanjo, pansori, minyo) carries 70% melodic, rhythmic, and emotional core; modern jazz/blues/soul elements serve as elegant elevation and subtle color (30%). Authentic Korean sensibility elevated for global audiences.`);
+    parts.push(`[Direction] ${dom}% Korean traditional dominance — Gayageum/Daegeum/Haegeum/Piri/Janggu lead the entire track with authentic Korean techniques (시김새, 농현, 정간보). Modern elements are strictly background only. Korean instruments must be clearly audible and emotionally dominant.`);
     parts.push(`[Structure] Tasteful breakdown, dynamic lift at 1:20–1:40, emotional climax, strategic instrument dropout for tension, Korean instrument spotlight moment, powerful final ensemble, well-placed silence for maximum impact.`);
 
     const box = document.getElementById('promptBox');
@@ -1623,6 +1660,17 @@ function syncSliders() {
   if(STATE.intensity<=3)label.textContent='Chill (잔잔한)';
   else if(STATE.intensity<=6)label.textContent='Emotional (감성적인)';
   else label.textContent='Explosive Soul (폭발적인)';
+
+  // 새 국악기 강조 슬라이더 동기화
+  if (document.getElementById('koreanDomSlider')) {
+    document.getElementById('koreanDomSlider').value = STATE.koreanDominance || 80;
+    document.getElementById('koreanDomValue').textContent = STATE.koreanDominance || 80;
+    const klabel = document.getElementById('koreanDomLabel');
+    const v = STATE.koreanDominance || 80;
+    if (v >= 90) klabel.textContent = '압도적 국악기';
+    else if (v >= 80) klabel.textContent = '강한 국악기 주도';
+    else klabel.textContent = '명확한 국악기';
+  }
 }
 
 /* ═══════════════════════════════════════════
@@ -1686,7 +1734,7 @@ function resetAll(doRender=true) {
   STATE.concept=null;STATE.vocalStyle=null;STATE.vocalTones=[];STATE.textures=[];
   STATE.grooves=[];STATE.spaces=[];STATE.koreanGrooves=[];STATE.bassStyles=[];
   STATE.koreanFeelings=[];STATE.blackSoulElements=[];STATE.humanFeelElements=[];
-  STATE.bpm=95;STATE.intensity=5;STATE.gender='all';
+  STATE.bpm=95;STATE.intensity=5;STATE.gender='all'; STATE.koreanDominance=82;
   if(doRender){
     renderAll();syncSliders();
     document.getElementById('promptBox').textContent='← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
