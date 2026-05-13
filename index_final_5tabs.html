@@ -1869,12 +1869,15 @@ function applyGroovePreset() {
   STATE.bassStyles = [0, 2, 5];
   STATE.koreanFeelings = [0, 3, 5];
   STATE.bpm = 96;
+  STATE.intensity = 6;
 
   renderAll();
   document.getElementById('bpmSlider').value = 96;
   document.getElementById('bpmVal').textContent = '96';
   updateBpmGuide(96);
-  buildPrompt();
+  updateIntensity(6);
+  buildPrompt();                    // ← 이 줄 추가 (프롬프트 생성)
+  showToast("✅ 한국 그루브 추천 세팅이 적용되었습니다!");
 }
 
 function applyGroovePreset() {
@@ -2034,9 +2037,9 @@ function applyQuickStart(type) {
   document.getElementById('bpmVal').textContent = STATE.bpm;
   updateBpmGuide(STATE.bpm);
   
-  updateIntensity(STATE.intensity);   // 감정 강도 업데이트
-  buildPrompt();                      // ← 프롬프트 생성 (이 줄이 핵심!)
-
+  updateIntensity(STATE.intensity);
+  buildPrompt();                    // ← 이 줄이 프롬프트 생성 핵심
+  
   let message = "✅ 세팅이 적용되었습니다!";
   if (type === 'drive') message = "✅ 드라이브 세팅이 적용되었습니다!";
   else if (type === 'night') message = "✅ 늦은 밤 감성 세팅이 적용되었습니다!";
