@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 - Korean Fusion Prompt Maker (3:7 최적화)</title>
+<title>BV 뮤직 프롬프트 메이커 v3 - Joseon Core (7:3 정통화)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -300,47 +300,47 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v2</span></div>
-        <div class="logo-sub">Korean Fusion Music Prompt Maker · 3:7 Global Optimized</div>
+        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v3</span></div>
+        <div class="logo-sub">Joseon Core · 7:3 정통화 (Korean Traditional 70% + Modern Elevation 30%)</div>
       </div>
     </div>
-    <div class="header-badge">AI POWERED · PERSONAL USE</div>
+    <div class="header-badge">JOSEON CORE v3 · 7:3 정통화</div>
   </div>
 </header>
 
-<!-- 3:7 비율 표시 바 -->
-<div class="ratio-bar">
+<!-- 7:3 비율 표시 바 (Joseon Core) -->
+<div class="ratio-bar" style="background:rgba(160,90,58,0.15);border-bottom:1px solid rgba(160,90,58,0.5)">
   <span class="ratio-label">🎵 국악:현대 비율</span>
   <div class="ratio-track">
-    <div class="ratio-korean"></div>
-    <div class="ratio-modern"></div>
+    <div class="ratio-korean" style="width:70%;background:linear-gradient(90deg,var(--korean),var(--korean2));border-radius:4px 0 0 4px"></div>
+    <div class="ratio-modern" style="width:30%;background:linear-gradient(90deg,var(--teal),#4abcd4);border-radius:0 4px 4px 0"></div>
   </div>
-  <span class="ratio-korean-text">국악 30%</span>
+  <span class="ratio-korean-text" style="font-weight:700">국악 70%</span>
   <span style="color:var(--dim)">|</span>
-  <span class="ratio-modern-text">현대 70%</span>
-  <span style="color:var(--dim);margin-left:8px;font-size:10px">글로벌 채널 최적화</span>
+  <span class="ratio-modern-text">현대 30%</span>
+  <span style="color:var(--dim);margin-left:8px;font-size:10px">조선 미학 정통화 · 글로벌 승화</span>
 </div>
 
 <div class="app">
 
 <!-- 용도별 빠른 시작 -->
-<div class="section" style="background:rgba(201,168,76,.06);border-color:rgba(201,168,76,.3)">
-  <div class="section-head" style="background:rgba(201,168,76,.1)">
-    <div class="sec-num">⚡</div>
-    <div class="sec-title">용도별 빠른 시작</div>
-    <div class="sec-sub">선택하면 3:7 비율 자동 세팅</div>
+<div class="section" style="background:rgba(160,90,58,.08);border-color:rgba(160,90,58,.4)">
+  <div class="section-head" style="background:rgba(160,90,58,.15)">
+    <div class="sec-num" style="background:var(--korean2)">⚡</div>
+    <div class="sec-title">용도별 빠른 시작 (7:3 Joseon Core)</div>
+    <div class="sec-sub">선택하면 국악 70% 정통화 자동 세팅</div>
   </div>
   <div class="section-body">
     <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">
-  <button class="btn btn-korean" onclick="apply37Preset('standard')">🎵 3:7 Standard <span style="font-size:11px;opacity:0.8">(표준)</span></button>
+  <button class="btn btn-korean" onclick="apply73Preset('joseon')">🎵 7:3 Joseon Court <span style="font-size:11px;opacity:0.8">(조선 궁중)</span></button>
   
-  <button class="btn btn-korean" onclick="apply37Preset('groove')">🥁 3:7 Groove <span style="font-size:11px;opacity:0.8">(그루브)</span></button>
+  <button class="btn btn-korean" onclick="apply73Preset('sanjo')">🥁 7:3 Sanjo Jazz <span style="font-size:11px;opacity:0.8">(산조 재즈)</span></button>
   
-  <button class="btn btn-korean" onclick="apply37Preset('soul')">🎷 3:7 Soul Blues <span style="font-size:11px;opacity:0.8">(소울 블루스)</span></button>
+  <button class="btn btn-korean" onclick="apply73Preset('pansori')">🎷 7:3 Pansori Soul <span style="font-size:11px;opacity:0.8">(판소리 소울)</span></button>
   
-  <button class="btn btn-korean" onclick="apply37Preset('ambient')">🌙 3:7 Ambient <span style="font-size:11px;opacity:0.8">(앰비언트)</span></button>
+  <button class="btn btn-korean" onclick="apply73Preset('minyo')">🌙 7:3 Minyo Blues <span style="font-size:11px;opacity:0.8">(민요 블루스)</span></button>
   
-  <button class="btn btn-korean" onclick="apply37Preset('cinematic')">🎬 3:7 Cinematic <span style="font-size:11px;opacity:0.8">(시네마틱)</span></button>
+  <button class="btn btn-korean" onclick="apply73Preset('court')">🎬 7:3 Court Elevation <span style="font-size:11px;opacity:0.8">(궁중 격상)</span></button>
 </div>
     <div style="margin-bottom:10px;font-size:11px;color:var(--gold);font-weight:600">⚡ 용도별 시작</div>
     <div style="display:flex;flex-wrap:wrap;gap:10px">
@@ -422,11 +422,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 <div class="section">
   <div class="section-head" onclick="toggleSection('instrBody','instrIcon')" style="cursor:pointer">
     <div class="sec-num korean">03</div>
-    <div class="sec-title">악기 조합 <span style="font-size:11px;color:var(--korean2)">(국악기 확장판)</span> <span id="instrIcon" style="font-size:14px">▼</span></div>
+    <div class="sec-title">악기 조합 <span style="font-size:11px;color:var(--korean2)">(국악 70% 주인공 · 현대 30% 승화)</span> <span id="instrIcon" style="font-size:14px">▼</span></div>
     <div class="sec-sub">클릭하여 펼치기/접기</div>
   </div>
   <div class="section-body" id="instrBody" style="display:none">
-    <div class="info-bar korean-info" style="margin-bottom:14px">🎵 국악기가 멜로디·리듬 정체성(30%)을 담당하고, 현대 사운드가 그루브 기반(70%)을 형성합니다.</div>
+    <div class="info-bar korean-info" style="margin-bottom:14px">🎵 국악기(가야금·대금·해금·피리·장구)가 멜로디·리듬·감정선 70%를 담당하고, 현대 사운드가 우아한 승화(30%)를 더합니다.</div>
     <div class="section-divider">🎻 현악기 중심 조합 (가야금·해금·아쟁·거문고·양금)</div>
     <div class="card-grid col2" id="instrGridString" style="margin-bottom:16px"></div>
     <div class="section-divider">🪘 타악기 중심 조합 (장구·꽹과리·북)</div>
@@ -701,14 +701,14 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 ═══════════════════════════════════════════ */
 const DATA = {
   genres: [
-    {en:'Korean Groove Soul',kr:'코리안 그루브 소울',desc:'가야금·해금 멜로디 아이덴티티(30%) + Neo Soul 드럼·펑키 베이스 그루브(70%)'},
-    {en:'Oriental Jazz Funk',kr:'오리엔탈 재즈 펑크',desc:'아쟁·대금 동양 색깔(30%) + 재즈 스윙·Funk 그루브(70%)의 글로벌 스타일'},
-    {en:'Seoul Night Soul',kr:'서울 나이트 소울',desc:'해금·가야금 한국적 감성(30%) + 심야 Neo Soul·재즈바 무드(70%)'},
-    {en:'Korean Neo Groove',kr:'코리안 네오 그루브',desc:'장구·가야금 리듬 정체성(30%) + Neo Soul·R&B 현대 그루브(70%)'},
-    {en:'Groove Jazz Gugak',kr:'그루브 재즈 국악',desc:'가야금·장구 국악 리듬(30%) + 재즈 힙합·라이브 그루브(70%)'},
-    {en:'Korean Jazz Lounge',kr:'코리안 재즈 라운지',desc:'해금·양금 한국 색깔(30%) + 서울 밤 재즈 라운지 감성(70%)'},
-    {en:'Soul Funk Gugak',kr:'소울 펑크 국악',desc:'피리·장구 토속 에너지(30%) + Soul·Funk 리듬 기반(70%)'},
-    {en:'Korean Rhythm Fusion',kr:'코리안 리듬 퓨전',desc:'꽹과리·장구 전통 장단(30%) + 현대 Soul·Hip-hop·Jazz(70%)'},
+    {en:'Joseon Court Soul',kr:'조선 궁중 소울',desc:'가야금·대금·해금 궁중 정악(70%) + 은은한 Neo Soul·재즈 화성(30%) — 조선 미학의 현대적 격상'},
+    {en:'Sanjo Jazz Elevation',kr:'산조 재즈 격상',desc:'산조 즉흥 + 장단 리듬(70%) + 서양 재즈 스윙·화성(30%) — 즉흥성과 여백의 극대화'},
+    {en:'Pansori Soul',kr:'판소리 소울',desc:'판소리 창법·한(恨) 정서(70%) + 소울 그루브·블루스 베이스(30%) — 가장 깊은 한국적 감정'},
+    {en:'Minyo Blues',kr:'민요 블루스',desc:'육자배기·남도민요 선율(70%) + 델타 블루스·소울 그루브(30%) — 한(恨)의 보편화'},
+    {en:'Gugak Court HipHop',kr:'국악 궁중 힙합',desc:'정간보 리듬 + 가야금·피리(70%) + Boom Bap·808(30%) — 조선 힙합의 탄생'},
+    {en:'Daegeum Ambient Elevation',kr:'대금 앰비언트 격상',desc:'대금 호흡·여백·시김새(70%) + 몽환적 Ambient Pad·리버브(30%) — 전통의 현대적 확장'},
+    {en:'Ajaeng Deep Soul',kr:'아쟁 딥 소울',desc:'아쟁 찰현 저음·농현(70%) + 소울·블루스 그루브(30%) — 첼로를 넘어선 깊이'},
+    {en:'NeoJoseon Fusion',kr:'네오조선 퓨전',desc:'조선 궁중 + 민속 리듬(70%) + 현대 재즈·소울·힙합 승화(30%) — 글로벌 채널 최적화'},
   ],
   moods: [
     {en:'Head-Nodding Groove',kr:'고개 끄덕이는 그루브',desc:'자연스럽게 몸이 반응하는 리듬 중심 무드'},
@@ -731,50 +731,36 @@ const DATA = {
   ],
   // 악기 조합 — 카테고리별로 분리 (string / percussion / wind)
   instrumentsString: [
-    {en:'Gayageum + Neo Soul Drums + Rhodes',kr:'가야금 + 네오소울 드럼 + 로즈',desc:'가야금 멜로디 리프(30%) + Neo Soul Groove 기반(70%)',ratio:'3:7'},
-    {en:'Haegeum + Funk Bass + Jazz Piano',kr:'해금 + 펑키 베이스 + 재즈 피아노',desc:'해금의 애절한 울림(30%) + 움직이는 재즈·펑크 그루브(70%)',ratio:'3:7'},
-    {en:'Ajaeng + Neo Soul Drums + Warm Rhodes',kr:'아쟁 + 네오소울 드럼 + 웜 로즈',desc:'아쟁 찰현 저음 깊이(30%) + 소울 그루브 기반(70%) — 첼로 대체 한국색',ratio:'3:7'},
-    {en:'Geomungo + Boom Bap Drums + Upright Bass',kr:'거문고 + 붐뱁 드럼 + 업라이트 베이스',desc:'거문고 타격감 있는 저역 리프(30%) + 힙합 재즈 그루브(70%)',ratio:'3:7'},
-    {en:'Yanggeum + Jazz Drums + Upright Bass',kr:'양금 + 재즈 드럼 + 업라이트 베이스',desc:'양금 청아한 피아노형 화성(30%) + 스윙 재즈 그루브(70%)',ratio:'3:7'},
-    {en:'Gayageum + Haegeum + Neo Soul Groove',kr:'가야금 + 해금 + 네오소울 그루브',desc:'가야금·해금 이중 국악 멜로디(30%) + 현대 Neo Soul 사운드(70%)',ratio:'3:7'},
-    {en:'Ajaeng + Gayageum + Jazz Funk',kr:'아쟁 + 가야금 + 재즈 펑크',desc:'아쟁 저음·가야금 중음 국악 레이어(30%) + 재즈 펑크 그루브(70%)',ratio:'3:7'},
+    {en:'Gayageum Main + Subtle Rhodes + Warm Bass',kr:'가야금 주인공 + 은은한 로즈 + 웜 베이스',desc:'가야금 멜로디·리프·아르페지오(70%) + 현대 로즈·베이스 승화(30%)',ratio:'7:3'},
+    {en:'Haegeum Lead + Gentle Jazz Piano + Upright Bass',kr:'해금 리드 + 부드러운 재즈 피아노 + 업라이트 베이스',desc:'해금 애절한 울림·슬라이드·농현(70%) + 재즈 피아노·베이스 컬러(30%)',ratio:'7:3'},
+    {en:'Ajaeng Deep Lead + Subtle Hammond + Soul Bass',kr:'아쟁 딥 리드 + 은은한 해먼드 + 소울 베이스',desc:'아쟁 찰현 저음·지속음·울림(70%) + 소울 그루브 승화(30%) — 가장 깊은 한국색',ratio:'7:3'},
+    {en:'Geomungo Rhythmic Core + Brush Drums + Warm Rhodes',kr:'거문고 리듬 코어 + 브러쉬 드럼 + 웜 로즈',desc:'거문고 타격감 리듬·저역(70%) + 재즈 드럼·로즈(30%)',ratio:'7:3'},
+    {en:'Yanggeum Harmonic Core + Upright Bass + Light Drums',kr:'양금 화성 코어 + 업라이트 베이스 + 라이트 드럼',desc:'양금 청아한 화성·멜로디(70%) + 재즈 베이스·드럼 승화(30%)',ratio:'7:3'},
   ],
   instrumentsPercussion: [
-    {en:'Janggu + Jazz Drums + Neo Soul Bass',kr:'장구 + 재즈 드럼 + 네오소울 베이스',desc:'장구 전통 장단 리듬 포인트(30%) + 현대 Groove 기반(70%)',ratio:'3:7'},
-    {en:'Kkwaenggwari + Janggu + 808 Bass',kr:'꽹과리 + 장구 + 808 베이스',desc:'꽹과리·장구 타악 에너지(30%) + 현대 저음 808 기반(70%)',ratio:'3:7'},
-    {en:'Janggu + Gayageum + Funk Bass + Live Drums',kr:'장구 + 가야금 + 펑크 베이스 + 라이브 드럼',desc:'장구 리듬·가야금 리프 국악 조합(30%) + Funk 라이브 그루브(70%)',ratio:'3:7'},
-    {en:'Buk + Janggu + Cinematic Brass',kr:'북 + 장구 + 시네마틱 브라스',desc:'북·장구 타악 파워(30%) + 시네마틱 오케스트레이션(70%)',ratio:'3:7'},
+    {en:'Janggu Core + Subtle Brush Drums + Warm Bass',kr:'장구 코어 + 은은한 브러쉬 드럼 + 웜 베이스',desc:'장구 전통 장단·리듬(70%) + 현대 드럼·베이스 승화(30%)',ratio:'7:3'},
+    {en:'Kkwaenggwari Accent + Janggu Groove + Deep Sub',kr:'꽹과리 악센트 + 장구 그루브 + 딥 서브',desc:'꽹과리 날카로운 타격·악센트(70%) + 현대 그루브(30%)',ratio:'7:3'},
+    {en:'Buk Power + Janggu Rhythm + Cinematic Pad',kr:'북 파워 + 장구 리듬 + 시네마틱 패드',desc:'북·장구 타악 파워(70%) + 현대 패드·브라스 컬러(30%)',ratio:'7:3'},
   ],
   instrumentsWind: [
-    {en:'Daegeum + Ambient Rhodes + Groove Percussion',kr:'대금 + 앰비언트 로즈 + 그루브 퍼커션',desc:'대금 호흡·여백감(30%) + Soul Groove 현대 기반(70%)',ratio:'3:7'},
-    {en:'Piri + Groove Bass + Live Drums',kr:'피리 + 그루브 베이스 + 라이브 드럼',desc:'피리 토속적 비음 정체성(30%) + Funk 라이브 리듬(70%) — 가장 한국적 색깔',ratio:'3:7'},
-    {en:'Danso + Ambient Rhodes + Soft Drums',kr:'단소 + 앰비언트 로즈 + 소프트 드럼',desc:'단소 맑고 가냘픈 솔로(30%) + 몽환적 앰비언트 기반(70%)',ratio:'3:7'},
-    {en:'Saenghwang + Dreamy Pad + Neo Soul',kr:'생황 + 드리미 패드 + 네오소울',desc:'생황 독특한 화성·동양 화음(30%) + 드림팝 Neo Soul 기반(70%)',ratio:'3:7'},
-    {en:'Daegeum + Haegeum + Seoul Night Jazz',kr:'대금 + 해금 + 서울 나이트 재즈',desc:'대금·해금 이중 관현 국악(30%) + 서울 밤 재즈 감성(70%)',ratio:'3:7'},
+    {en:'Daegeum Lead + Gentle Ambient Pad + Light Reverb',kr:'대금 리드 + 부드러운 앰비언트 패드 + 라이트 리버브',desc:'대금 호흡·여백·시김새·농현(70%) + Ambient 승화(30%)',ratio:'7:3'},
+    {en:'Piri Traditional Lead + Subtle Funk Bass + Light Drums',kr:'피리 전통 리드 + 은은한 펑크 베이스 + 라이트 드럼',desc:'피리 토속 비음·프레이즈(70%) + 현대 그루브 승화(30%) — 가장 한국적',ratio:'7:3'},
+    {en:'Danso Solo + Dreamy Pad + Soft Texture',kr:'단소 솔로 + 드리미 패드 + 소프트 텍스처',desc:'단소 맑고 여린 솔로·호흡(70%) + 몽환적 Ambient(30%)',ratio:'7:3'},
+    {en:'Saenghwang Harmonic Core + Ethereal Pad',kr:'생황 화성 코어 + 에테리얼 패드',desc:'생황 독특한 화성·동양 음색(70%) + 현대 패드 승화(30%)',ratio:'7:3'},
   ],
   // 통합 악기 (기존 코드 호환용)
   get instruments() {
     return [...this.instrumentsString, ...this.instrumentsPercussion, ...this.instrumentsWind];
   },
   concepts: [
-    {num:'01',name:'몽환적이고 감성적인 한국 Lo-fi Soul',core:['Dreamy','Emotional','Chill'],sub:['Nostalgic','Introspective'],desc:'몽환적인 리버브와 빈티지 질감 위에 한국적 감정선 (가야금·해금 30%, Lo-fi Soul 70%)',genres:['Korean Lo-fi Soul','Neo Soul + Gayageum'],inst:['가야금','해금','Neo Soul Rhodes','Lo-fi Vinyl Noise','Soft Jazz Piano','Lo-fi Drums']},
-    {num:'02',name:'애절하고 한국적인 Soul Blues',core:['Melancholic','Emotional','Sad'],sub:['Sentimental','Introspective'],desc:"해금·아쟁 한국적 한(恨)(30%) + 블루스 소울 그루브(70%)",genres:['Melancholic + Haegeum Blues','Oriental Soul Blues'],inst:['해금','아쟁','Blues Guitar','808 Bass','Soul Piano','Vinyl Noise']},
-    {num:'03',name:'신비롭고 동양적인 Ambient Fusion',core:['Mysterious','Dreamy','Calm'],sub:['Nostalgic','Romantic'],desc:'대금·생황 동양 숨결감(30%) + 몽환적 앰비언트 기반(70%)',genres:['Dreamy + Korean Groove Fusion','Oriental Ambient'],inst:['대금','생황','Ambient Pad','Soft Synth Texture','Reverb Piano']},
-    {num:'04',name:'강렬하고 어두운 Korean Trap Fusion',core:['Dark','Powerful','Aggressive'],sub:['Dramatic','Energetic'],desc:'장구·꽹과리·북 타악 에너지(30%) + Trap 현대 기반(70%)',genres:['Dark + Trap + Korean Percussion'],inst:['장구','꽹과리','북','808 Bass','Trap Hi-hats','Dark Synth Bass']},
-    {num:'05',name:'웅장한 Cinematic Gugak',core:['Dramatic','Powerful','Hopeful'],sub:['Emotional','Epic'],desc:'대금·북·징 국악 스케일(30%) + 시네마틱 오케스트레이션(70%)',genres:['Dramatic + Cinematic Gugak','Epic Korean Fusion'],inst:['대금','북','징','스트링 섹션','Cinematic Brass','Choir']},
-    {num:'06',name:'리듬감 있는 Oriental Jazz Hip-hop',core:['Groovy','Chill','Energetic'],sub:['Playful','Nostalgic'],desc:'가야금·양금 동양 멜로디(30%) + 재즈 힙합 그루브(70%)',genres:['Groovy + Oriental Jazz Hip-hop','Korean Jazz Lo-fi'],inst:['가야금','양금','재즈 피아노','Upright Bass','Boom Bap Drums','Vinyl Noise']},
-    {num:'07',name:'부드러운 늦은 밤 한국 블루스',core:['Melancholic','Smooth','Emotional'],sub:['Lonely','Introspective'],desc:'해금·아쟁 찰현 애절함(30%) + 시카고 블루스·소울 재즈(70%)',genres:['Smooth Late-Night Korean Blues','Seoul Whiskey Jazz'],inst:['해금','아쟁','Jazz Piano','Upright Bass','Warm Rhodes','Brush Drums']},
-    {num:'08',name:'서울 위스키 재즈',core:['Smooth','Melancholic','Romantic'],sub:['Late-night','Intimate'],desc:'해금·가야금 한국 감성(30%) + 재즈바 분위기(70%)',genres:['Seoul Late-Night Jazz','Korean Whiskey Blues'],inst:['해금','가야금','Jazz Piano','Double Bass','Brush Drums','Warm Vinyl Texture']},
-    {num:'09',name:'한국 드라이브 퓨전',core:['Groovy','Chill','Driving'],sub:['Nostalgic','Uplifting'],desc:'가야금·해금 드라이브 색깔(30%) + 부드러운 Groove 기반(70%)',genres:['Korean Drive Fusion','Chill Korean Cruise'],inst:['가야금','해금','Warm Rhodes','Driving Bass','Soft Brush Drums']},
-    {num:'10',name:'한국 운동 그루브',core:['Energetic','Motivational','Powerful'],sub:['Rhythmic','Uplifting'],desc:'장구·꽹과리 타악 에너지(30%) + 강렬한 현대 드럼·브라스(70%)',genres:['Korean Workout Groove','Motivational Gugak'],inst:['장구','꽹과리','Energetic Drums','Driving Bass','Brass Hits']},
-    {num:'11',name:'한국 힙합 그루브',core:['Groovy','Rhythmic','Modern'],sub:['Chill','Aggressive'],desc:'거문고·장구 힙합 색깔(30%) + Boom Bap·808 기반(70%)',genres:['Korean Hip-hop Fusion','Gugak Boom Bap'],inst:['거문고','장구','Boom Bap Drums','808 Bass','Vinyl Noise']},
-    {num:'12',name:'한국 노동 리듬',core:['Steady','Focused','Rhythmic'],sub:['Motivational','Grounded'],desc:'장구·대금 안정 리듬(30%) + 워킹 베이스·스테디 드럼(70%)',genres:['Korean Labor Rhythm','Focus Gugak'],inst:['장구','대금','Steady Drums','Walking Bass','Subtle Gayageum']},
-    {num:'13',name:'한(恨) 블루스 퓨전',core:['Melancholic','Emotional','Deep'],sub:['Soulful','Introspective'],desc:'해금·가야금 한(恨) 깊이(30%) + 블루스 소울 그루브(70%)',genres:['Han Blues Fusion','Korean Soul Blues'],inst:['해금','아쟁','가야금','Blues Guitar','Soul Piano','Warm Bass']},
-    {num:'14',name:'아쟁 소울 블루스',core:['Deep','Soulful','Emotional'],sub:['Raw','Warm','Gritty'],desc:'아쟁 찰현 저음 파워(30%) + 소울 블루스 현대 감성(70%) — 첼로보다 깊은 한국색',genres:['Ajaeng Soul Blues','Korean Deep Blues'],inst:['아쟁','해금','Blues Guitar','Hammond Organ','Warm Bass','Brush Drums']},
-    {num:'15',name:'피리 펑크 소울',core:['Funky','Energetic','Korean'],sub:['Playful','Groovy'],desc:'피리 토속 비음 정체성(30%) + Funk Soul 리듬 에너지(70%) — 가장 한국적',genres:['Piri Funk Soul','Korean Funk Fusion'],inst:['피리','장구','Funk Bass','Electric Guitar','Tight Drums']},
-    {num:'16',name:'양금 재즈 퓨전',core:['Smooth','Jazz','Sophisticated'],sub:['Groovy','Warm'],desc:'양금 동양 피아노 화성(30%) + 재즈 업라이트 그루브(70%)',genres:['Yanggeum Jazz Fusion','Korean Jazz Neo Soul'],inst:['양금','가야금','Jazz Piano','Upright Bass','Brush Drums']},
-    {num:'17',name:'단소 앰비언트 Lo-fi',core:['Dreamy','Chill','Mysterious'],sub:['Nostalgic','Calm'],desc:'단소 맑은 독주 라인(30%) + 몽환적 Lo-fi·앰비언트(70%)',genres:['Danso Ambient Lo-fi','Korean Chill Ambient'],inst:['단소','생황','Ambient Pad','Lo-fi Drums','Vinyl Noise']},
-    {num:'18',name:'서울 델타 블루스',core:['Raw','Emotional','Traditional'],sub:['Gritty','Soulful'],desc:'해금·아쟁 원초적 찰현(30%) + 델타 블루스 에너지(70%)',genres:['Seoul Delta Blues','Korean Raw Blues'],inst:['해금','아쟁','Slide Guitar','Harmonica','Raw Drums']},
+    {num:'01',name:'조선 궁중 소울 (Joseon Court Soul)',core:['Elegant','Emotional','Noble'],sub:['Han','Graceful'],desc:'가야금·대금·해금 궁중 정악(70%) + 은은한 Neo Soul·재즈 화성(30%) — 조선 미학의 현대적 격상',genres:['Joseon Court Soul','Elevated Gugak'],inst:['가야금','대금','해금','Warm Rhodes','Upright Bass','Brush Drums']},
+    {num:'02',name:'산조 재즈 격상 (Sanjo Jazz Elevation)',core:['Improvisational','Free','Emotional'],sub:['Expressive','Nostalgic'],desc:'산조 즉흥 + 장단 리듬(70%) + 서양 재즈 스윙·화성(30%) — 즉흥성과 여백의 극대화',genres:['Sanjo Jazz','Korean Improvisation'],inst:['가야금','해금','Jazz Piano','Upright Bass','Brush Drums','Light Reverb']},
+    {num:'03',name:'판소리 소울 (Pansori Soul)',core:['Deep Han','Soulful','Raw'],sub:['Emotional','Powerful'],desc:'판소리 창법·한(恨) 정서(70%) + 소울 그루브·블루스 베이스(30%) — 가장 깊은 한국적 감정',genres:['Pansori Soul','Korean Deep Soul'],inst:['해금','아쟁','Soul Piano','Warm Bass','Brush Drums','Vinyl Texture']},
+    {num:'04',name:'민요 블루스 (Minyo Blues)',core:['Melancholic','Traditional','Soulful'],sub:['Han','Gritty'],desc:'육자배기·남도민요 선율(70%) + 델타 블루스·소울 그루브(30%) — 한(恨)의 보편화',genres:['Minyo Blues','Korean Folk Blues'],inst:['해금','가야금','Blues Guitar','Warm Bass','Brush Drums']},
+    {num:'05',name:'국악 궁중 힙합 (Gugak Court HipHop)',core:['Rhythmic','Noble','Modern'],sub:['Groovy','Powerful'],desc:'정간보 리듬 + 가야금·피리(70%) + Boom Bap·808(30%) — 조선 힙합의 탄생',genres:['Court HipHop','Joseon Boom Bap'],inst:['가야금','피리','장구','808 Bass','Boom Bap Drums','Vinyl Noise']},
+    {num:'06',name:'대금 앰비언트 격상 (Daegeum Ambient Elevation)',core:['Breathy','Mysterious','Calm'],sub:['Ethereal','Nostalgic'],desc:'대금 호흡·여백·시김새(70%) + 몽환적 Ambient Pad·리버브(30%) — 전통의 현대적 확장',genres:['Daegeum Ambient','Korean Ethereal'],inst:['대금','생황','Ambient Pad','Soft Reverb','Light Texture']},
+    {num:'07',name:'아쟁 딥 소울 (Ajaeng Deep Soul)',core:['Deep','Emotional','Gritty'],sub:['Raw','Powerful'],desc:'아쟁 찰현 저음·농현(70%) + 소울·블루스 그루브(30%) — 첼로를 넘어선 깊이',genres:['Ajaeng Soul','Korean Deep Blues'],inst:['아쟁','해금','Hammond Organ','Warm Bass','Brush Drums']},
+    {num:'08',name:'네오조선 퓨전 (NeoJoseon Fusion)',core:['Noble','Groovy','Emotional'],sub:['Modern','Traditional'],desc:'조선 궁중 + 민속 리듬(70%) + 현대 재즈·소울·힙합 승화(30%) — 글로벌 채널 최적화',genres:['NeoJoseon','Elevated Gugak'],inst:['가야금','대금','장구','Warm Rhodes','Upright Bass','Light Drums']},
   ],
   vocalStyles: [
     {en:'Korean Soul Fusion',kr:'코리안 소울 퓨전',gender:'both',tone:'감성적이고 따뜻한 Soul 톤, 깊은 호흡감',tags:['Soul','R&B','Korean Soul','Emotional']},
@@ -980,7 +966,7 @@ function renderInstruments() {
       <div class="card-en">${d.en}</div>
       <div class="card-kr">${d.kr}</div>
       <div class="card-desc">${d.desc}</div>
-      <div class="card-ratio r37">🔶 3:7 최적화</div>
+      <div class="card-ratio r37" style="background:rgba(160,90,58,0.25);color:var(--korean2);border:1px solid rgba(160,90,58,0.4)">🔶 7:3 정통화</div>
     </div>`;
   }).join('');
 
@@ -992,7 +978,7 @@ function renderInstruments() {
       <div class="card-en">${d.en}</div>
       <div class="card-kr">${d.kr}</div>
       <div class="card-desc">${d.desc}</div>
-      <div class="card-ratio r37">🔶 3:7 최적화</div>
+      <div class="card-ratio r37" style="background:rgba(160,90,58,0.25);color:var(--korean2);border:1px solid rgba(160,90,58,0.4)">🔶 7:3 정통화</div>
     </div>`).join('');
 
   // 관악기
@@ -1003,7 +989,7 @@ function renderInstruments() {
       <div class="card-en">${d.en}</div>
       <div class="card-kr">${d.kr}</div>
       <div class="card-desc">${d.desc}</div>
-      <div class="card-ratio r37">🔶 3:7 최적화</div>
+      <div class="card-ratio r37" style="background:rgba(160,90,58,0.25);color:var(--korean2);border:1px solid rgba(160,90,58,0.4)">🔶 7:3 정통화</div>
     </div>`).join('');
 }
 
@@ -1160,7 +1146,7 @@ function switchTab(id,el) {
 function buildPrompt() {
   try {
     const parts = [];
-    parts.push(`[Ratio] Korean traditional instruments 30% identity + Modern soul/jazz/groove foundation 70%`);
+    parts.push(`[Ratio] Korean traditional instruments 70% identity + Modern jazz/blues/soul elevation 30%`);
     if (STATE.genre !== null && DATA.genres[STATE.genre]) {
       const g = DATA.genres[STATE.genre];
       parts.push(`[Genre] ${g.en} (${g.kr})`);
@@ -1221,7 +1207,7 @@ function buildPrompt() {
     parts.push(`[BPM] ${STATE.bpm}`);
     parts.push(`[Emotional Intensity] ${STATE.intensity}/10 (${STATE.intensity<=3?'Chill':STATE.intensity<=6?'Emotional':'Explosive Soul'})`);
     // 3:7 최적화 Direction
-    parts.push(`[Direction] 3:7 Korean-Global Fusion — Korean traditional instruments carry melodic and rhythmic identity (30%); modern soul/jazz/funk groove forms the accessible foundation (70%). Head-nodding groove with authentic Korean soul character designed for global listeners and replay channel.`);
+    parts.push(`[Direction] 7:3 Joseon Core Elevation — Korean traditional music (court, sanjo, pansori, minyo) carries 70% melodic, rhythmic, and emotional core; modern jazz/blues/soul elements serve as elegant elevation and subtle color (30%). Authentic Korean sensibility elevated for global audiences.`);
     parts.push(`[Structure] Tasteful breakdown, dynamic lift at 1:20–1:40, emotional climax, strategic instrument dropout for tension, Korean instrument spotlight moment, powerful final ensemble, well-placed silence for maximum impact.`);
 
     const box = document.getElementById('promptBox');
@@ -1276,10 +1262,10 @@ async function runAI() {
   const result = document.getElementById('kwResult');
   loading.classList.add('show'); result.classList.remove('show');
   const isYT = kw.includes('youtube.com')||kw.includes('youtu.be');
-  const sysPrompt = `당신은 3:7 비율 국악 퓨전 전문가입니다 (국악 30% 정체성 + 현대 Soul/Jazz/Funk 70% 기반). 반드시 다음 JSON 형식만 정확하게 응답하세요:\n{"genre":"","moods":[],"instruments":"","concept":"","vocalStyle":"","bpm":95,"textures":[],"koreanGrooves":[],"koreanFeelings":[],"summary":""}`;
+  const sysPrompt = `당신은 7:3 Joseon Core 정통화 전문가입니다 (국악 70% 정체성 + 현대 Jazz/Blues/Soul 30% 승화). 반드시 다음 JSON 형식만 정확하게 응답하세요:\n{"genre":"","moods":[],"instruments":"","concept":"","vocalStyle":"","bpm":85,"textures":[],"koreanGrooves":[],"koreanFeelings":[],"summary":""}`;
   const userPrompt = isYT
     ? `다음 YouTube 링크의 음악을 분석해 3:7 국악 퓨전 스타일로 추천해주세요: ${kw}\nJSON 형식으로만 작성해주세요.`
-    : `"${kw}" 키워드를 분석해서 3:7 비율 국악 퓨전 스타일을 추천해주세요. JSON 형식으로만 작성해주세요.`;
+    : `"${kw}" 키워드를 분석해서 7:3 Joseon Core (국악 70% 정통화) 스타일을 추천해주세요. JSON 형식으로만 작성해주세요.`;
   try {
     const text = await callClaude(userPrompt, sysPrompt);
     const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -1323,8 +1309,8 @@ async function aiExpandPrompt() {
   loading.classList.add('show');
   try {
     const text = await callClaude(
-      `Create ONE Suno AI style prompt from the 3:7 Korean fusion music settings below.\n\nRules:\n- English only, maximum 230 characters, one line only\n- No title, no explanation, no quotation marks\n- Korean traditional instruments carry melodic identity (30%); modern soul/jazz/funk is the foundation (70%)\n- Include Korean instrument name, groove type, BPM, emotional tone\n- Make it feel both globally accessible and authentically Korean\n\nSettings:\n${current}`,
-      'You are a Suno AI music prompt expert for 3:7 Korean fusion. Output only one concise English prompt under 230 characters.'
+      `Create ONE Suno AI style prompt from the 7:3 Joseon Core settings below.\n\nRules:\n- English only, maximum 230 characters, one line only\n- No title, no explanation, no quotation marks\n- Korean traditional music (court/sanjo/pansori/minyo) carries 70% melodic & emotional core; modern jazz/blues/soul elements serve as elegant elevation (30%)\n- Include Korean instrument name, traditional phrasing, BPM, emotional tone\n- Make it feel authentically Korean yet globally elevated\n\nSettings:\n${current}`,
+      'You are a Suno AI music prompt expert for 7:3 Joseon Core elevation. Output only one concise English prompt under 230 characters.'
     );
     document.getElementById('promptBox').textContent = sanitizeSunoPrompt(text,230);
   } catch(e) { alert('오류: '+(e.message||'알 수 없는 오류')); }
@@ -1374,7 +1360,7 @@ async function genRec() {
   loading.classList.add('show'); grid.innerHTML='';
   try {
     const text = await callClaude(
-      `글로벌 리플레이 채널을 위한 3:7 비율 국악 퓨전 음악 스타일 6개를 추천하세요 (국악 30% + 현대 70%).\n반드시 다음 JSON 배열 형식만 출력하세요:\n[{"rank":1,"name":"스타일명","nameEn":"Style Name","views":"예상조회수","moods":["분위기1"],"bpm":"85-105","instruments":"주요 악기","reason":"조회수 이유"},...]`,
+      `글로벌 리플레이 채널을 위한 7:3 Joseon Core 음악 스타일 6개를 추천하세요 (국악 70% + 현대 30% 승화).\n반드시 다음 JSON 배열 형식만 출력하세요:\n[{"rank":1,"name":"스타일명","nameEn":"Style Name","views":"예상조회수","moods":["분위기1"],"bpm":"78-95","instruments":"주요 악기","reason":"조회수 이유"},...]`,
       '글로벌 채널 3:7 국악 퓨전 전략가. JSON만 출력.'
     );
     const clean = text.replace(/```json|```/g,'').trim();
@@ -1495,79 +1481,80 @@ function toggleSection(bodyId,iconId) {
 /* ═══════════════════════════════════════════
    3:7 PRESETS
 ═══════════════════════════════════════════ */
-function apply37Preset(type) {
+function apply73Preset(type) {
   resetAll(false);
 
-  if (type==='standard') {
-    // 가야금+해금 현악 중심, 서울 밤 Neo Soul
-    STATE.genre=0; STATE.moods=[1,6]; STATE.concept=0;
-    STATE.vocalStyle=0; STATE.vocalTones=[0,9];
-    STATE.textures=[0,1]; STATE.grooves=[1,4,6];
-    STATE.spaces=[0]; STATE.koreanGrooves=[0,4,9]; // 가야금리프+해금슬라이드+아쟁울림
-    STATE.bassStyles=[2,5]; STATE.koreanFeelings=[0,5];
-    STATE.bpm=93; STATE.intensity=6;
+  if (type==='joseon') {
+    // 조선 궁중 소울 — 가야금·대금·해금 중심
+    STATE.genre=0; STATE.moods=[0,3]; STATE.concept=0;
+    STATE.vocalStyle=0; STATE.vocalTones=[0,5];
+    STATE.textures=[0,6]; STATE.grooves=[3,6];
+    STATE.spaces=[0]; STATE.koreanGrooves=[0,4,9,10];
+    STATE.bassStyles=[2,4]; STATE.koreanFeelings=[0,3,6];
+    STATE.bpm=82; STATE.intensity=6;
     selectInstrByCategory('string',0);
   }
-  else if (type==='groove') {
-    // 장구+꽹과리 타악 중심, Funk 그루브
-    STATE.genre=3; STATE.moods=[0,3];STATE.concept=3;
-    STATE.vocalStyle=5; STATE.vocalTones=[5,10];
-    STATE.textures=[0,2]; STATE.grooves=[0,5,6];
-    STATE.spaces=[2]; STATE.koreanGrooves=[2,13,14]; // 장구+꽹과리+양금
-    STATE.bassStyles=[0,5]; STATE.koreanFeelings=[0,3];
-    STATE.bpm=100; STATE.intensity=7;
-    selectInstrByCategory('percussion',1); // 꽹과리+장구
+  else if (type==='sanjo') {
+    // 산조 재즈 — 즉흥성과 여백
+    STATE.genre=1; STATE.moods=[2,5]; STATE.concept=1;
+    STATE.vocalStyle=2; STATE.vocalTones=[2,9];
+    STATE.textures=[4,6]; STATE.grooves=[0,6];
+    STATE.spaces=[2]; STATE.koreanGrooves=[0,3,7];
+    STATE.bassStyles=[1,5]; STATE.koreanFeelings=[4,7];
+    STATE.bpm=88; STATE.intensity=5;
+    selectInstrByCategory('string',1);
   }
-  else if (type==='soul') {
-    // 아쟁+해금 찰현 중심, Soul Blues
-    STATE.genre=1; STATE.moods=[7,8];STATE.concept=13;
-    STATE.vocalStyle=8; STATE.vocalTones=[5,6,8];
-    STATE.textures=[0,1,6]; STATE.grooves=[1,3,4];
-    STATE.spaces=[0,3]; STATE.koreanGrooves=[4,9,10]; // 해금슬라이드+아쟁울림+아쟁지속음
+  else if (type==='pansori') {
+    // 판소리 소울 — 가장 깊은 한(恨)
+    STATE.genre=2; STATE.moods=[2,7]; STATE.concept=2;
+    STATE.vocalStyle=2; STATE.vocalTones=[5,6,8];
+    STATE.textures=[0,1,6]; STATE.grooves=[1,3];
+    STATE.spaces=[0,3]; STATE.koreanGrooves=[4,9,10];
     STATE.bassStyles=[1,2]; STATE.koreanFeelings=[1,6,7];
+    STATE.blackSoulElements=[1,5];
+    STATE.bpm=78; STATE.intensity=7;
+    selectInstrByCategory('string',2);
+  }
+  else if (type==='minyo') {
+    // 민요 블루스
+    STATE.genre=3; STATE.moods=[7,8]; STATE.concept=3;
+    STATE.vocalStyle=1; STATE.vocalTones=[5,6];
+    STATE.textures=[0,1]; STATE.grooves=[1,4];
+    STATE.spaces=[0]; STATE.koreanGrooves=[4,8];
+    STATE.bassStyles=[2]; STATE.koreanFeelings=[1,6];
     STATE.blackSoulElements=[1,5,6];
-    STATE.bpm=80; STATE.intensity=6;
-    selectInstrByCategory('string',2); // 아쟁
+    STATE.bpm=75; STATE.intensity=6;
+    selectInstrByCategory('string',0);
   }
-  else if (type==='ambient') {
-    // 단소+생황 관악 중심, 드리미 앰비언트
-    STATE.genre=5; STATE.moods=[2,9];STATE.concept=16;
-    STATE.vocalStyle=6; STATE.vocalTones=[2,3];
-    STATE.textures=[3,4,6]; STATE.grooves=[1,3];
-    STATE.spaces=[1,3]; STATE.koreanGrooves=[3,7,14,15,16]; // 대금+단소+생황
-    STATE.bassStyles=[4]; STATE.koreanFeelings=[4,7,8];
-    STATE.bpm=75; STATE.intensity=4;
-    selectInstrByCategory('wind',2); // 단소
-  }
-  else if (type==='cinematic') {
-    // 대금+피리 관악, 시네마틱
-    STATE.genre=4; STATE.moods=[0,6];STATE.concept=4;
+  else if (type==='court') {
+    // 궁중 격상 — 웅장하고 고귀한
+    STATE.genre=7; STATE.moods=[0,5]; STATE.concept=7;
     STATE.vocalStyle=7; STATE.vocalTones=[9,10];
-    STATE.textures=[5]; STATE.grooves=[5,7];
-    STATE.spaces=[1,2]; STATE.koreanGrooves=[3,11,12]; // 대금+피리+꽹과리
+    STATE.textures=[5,6]; STATE.grooves=[5,7];
+    STATE.spaces=[1,2]; STATE.koreanGrooves=[0,3,11];
     STATE.bassStyles=[3,4]; STATE.koreanFeelings=[0,5];
-    STATE.bpm=110; STATE.intensity=8;
-    selectInstrByCategory('wind',4); // 대금+해금
+    STATE.bpm=95; STATE.intensity=7;
+    selectInstrByCategory('wind',0);
   }
 
   syncSliders();
   renderAll();
   buildPrompt();
-  showToast(`✅ 3:7 ${type.toUpperCase()} 프리셋 적용 완료!`);
+  showToast(`✅ 7:3 ${type.toUpperCase()} Joseon Core 프리셋 적용 완료!`);
 }
 
 function applyUltimateGroovePreset() {
   resetAll(false);
-  STATE.genre=3; STATE.moods=[0,1,6]; STATE.concept=5;
+  STATE.genre=7; STATE.moods=[0,1,5]; STATE.concept=7;
   STATE.vocalStyle=0; STATE.vocalTones=[5,9];
-  STATE.textures=[0,2]; STATE.grooves=[1,4,5,6];
-  STATE.spaces=[0,2]; STATE.koreanGrooves=[0,2,4,9,13]; // +아쟁+꽹과리
-  STATE.bassStyles=[0,2,5]; STATE.koreanFeelings=[0,3,5];
+  STATE.textures=[0,6]; STATE.grooves=[3,6];
+  STATE.spaces=[0,2]; STATE.koreanGrooves=[0,2,4,9,10];
+  STATE.bassStyles=[0,2,4]; STATE.koreanFeelings=[0,3,5];
   STATE.humanFeelElements=[0,1,4];
-  STATE.bpm=100; STATE.intensity=7;
+  STATE.bpm=90; STATE.intensity=6;
   selectInstrByCategory('string',0);
   syncSliders(); renderAll(); buildPrompt();
-  showToast("🔥 Ultimate 3:7 Groove 적용 완료!");
+  showToast("🔥 Ultimate 7:3 Joseon Groove 적용 완료!");
 }
 
 function applyQuickStart(type) {
