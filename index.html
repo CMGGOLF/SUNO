@@ -1381,20 +1381,92 @@ async function genRec() {
     const match = clean.match(/\[[\s\S]*\]/);
     if (!match) throw new Error('JSON 배열 응답 형식 오류');
     const items = JSON.parse(match[0]);
-    grid.innerHTML = items.map(item=>`
-      <div class="rec-card">
+    window._recItems = items;
+    grid.innerHTML = items.map((item,idx)=>`
+      <div class="rec-card" onclick="applyRecCard(${idx})" style="position:relative">
         <div class="rec-rank">#${item.rank} 추천</div>
         <div class="rec-name">${item.name}</div>
         <div class="rec-view">📈 ${item.views}</div>
         <div style="font-size:11px;color:var(--teal);margin:4px 0">BPM: ${item.bpm} | ${item.instruments}</div>
         <div class="rec-tags">${item.moods.map(t=>`<span class="rtag">${t}</span>`).join('')}</div>
         <div style="font-size:10px;color:var(--muted);margin-top:6px;line-height:1.3">${item.reason}</div>
+        <div style="font-size:10px;color:var(--gold);margin-top:8px;text-align:center;letter-spacing:1px">▶ 클릭하여 자동 적용</div>
       </div>`).join('');
   } catch(e) { grid.innerHTML=`<div style="color:var(--muted);font-size:12px">추천 생성 오류: ${e.message||'알 수 없는 오류'}</div>`; }
   loading.classList.remove('show');
 }
 
-function autoRecommendDuration(lang) {
+function applyRecCard(idx) {
+  const item = window._recItems && window._recItems[idx];
+  if (!item) return;
+
+  resetAll(false);
+
+  // BPM: "85-105" 또는 "90" 형태 처리
+  const bpmStr = String(item.bpm);
+  const bpmMatch = bpmStr.match(/(\d+)[-–~](\d+)/);
+  if (bpmMatch) {
+    STATE.bpm = Math.round((parseInt(bpmMatch[1]) + parseInt(bpmMatch[2])) / 2);
+  } else {
+    const single = parseInt(bpmStr);
+    if (single >= 65 && single <= 145) STATE.bpm = single;
+  }
+
+  // 무드 매핑
+  if (Array.isArray(item.moods)) {
+    item.moods.forEach(m => {
+      const mi = DATA.moods.findIndex(d =>
+        d.en.toLowerCase().includes(m.toLowerCase()) || d.kr.includes(m)
+      );
+      if (mi !== -1 && !STATE.moods.includes(mi)) STATE.moods.push(mi);
+    });
+    if (STATE.moods.length === 0) STATE.moods = [0, 1];
+  }
+
+  // 장르 매핑
+  const nameEn = (item.nameEn || '').toLowerCase();
+  const nameKr = (item.name || '');
+  const gi = DATA.genres.findIndex(g =>
+    g.en.toLowerCase().split(' ').some(w => w.length > 3 && nameEn.includes(w)) ||
+    nameKr.includes(g.kr.substring(0, 3))
+  );
+  STATE.genre = gi !== -1 ? gi : 0;
+
+  // 악기 문자열에서 한국 그루브 요소 매핑
+  const instrText = (item.instruments || '').toLowerCase();
+  const instrKr = item.instruments || '';
+  DATA.koreanGrooves.forEach((kg, i) => {
+    const keyword = kg.en.split(' ')[0].toLowerCase();
+    const keywordKr = kg.kr.substring(0, 2);
+    if (instrText.includes(keyword) || instrKr.includes(keywordKr)) {
+      if (!STATE.koreanGrooves.includes(i)) STATE.koreanGrooves.push(i);
+    }
+  });
+  if (STATE.koreanGrooves.length === 0) STATE.koreanGrooves = [0, 4];
+
+  // 기본 분위기/질감 설정
+  STATE.textures = [0];
+  STATE.grooves = [1, 6];
+  STATE.spaces = [0];
+  STATE.koreanFeelings = [0];
+  STATE.intensity = 6;
+
+  // 선택된 카드 하이라이트
+  document.querySelectorAll('#recGrid .rec-card').forEach((c, i) => {
+    c.style.borderColor = i === idx ? 'var(--gold)' : '';
+    c.style.background = i === idx ? 'var(--selected-bg)' : '';
+  });
+
+  syncSliders();
+  renderAll();
+  buildPrompt();
+
+  // 프롬프트 섹션으로 스크롤
+  document.getElementById('promptBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  showToast(`✅ "${item.name}" 스타일이 자동 적용되었습니다!`);
+}
+
+
   const bpm = STATE.bpm||95; const intensity = STATE.intensity||5;
   let baseMinutes = 3.0;
   if (bpm>125) baseMinutes+=0.5; else if (bpm<85) baseMinutes-=0.3;
