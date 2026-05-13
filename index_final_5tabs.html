@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커</title>
+<title>Gugak Pulse - Korean Fusion Prompt Maker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -320,7 +320,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">BV 뮤직 프롬프트</div>
+        <div class="logo-text">Gugak Pulse</div>
         <div class="logo-sub">Korean Fusion Music Prompt Maker</div>
       </div>
     </div>
@@ -582,7 +582,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
 </div>
 
-<!-- SECTION 09: 프롬프트 생성 -->
+<!-- SECTION 09: 프롬프트 생성 (중복 버튼 삭제 후 정리) -->
 <div class="section">
   <div class="section-head">
     <div class="sec-num">09</div>
@@ -596,10 +596,6 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       <button class="btn btn-teal" onclick="aiExpandPrompt()">✦ Suno 프롬프트 생성</button>
       <button class="btn btn-outline" onclick="applyGroovePreset()">⚡ 한국 그루브 추천 세팅</button>
       <button class="btn btn-outline" onclick="applyUltimateGroovePreset()">🔥 Ultimate Groove</button>
-      <button class="btn btn-teal" onclick="applyDrivingPreset()">🚗 드라이브</button>
-      <button class="btn btn-teal" onclick="applyWorkoutPreset()">🏃 운동</button>
-      <button class="btn btn-teal" onclick="applyHipHopPreset()">🎤 힙합</button>
-      <button class="btn btn-teal" onclick="applyLaborPreset()">🔨 노동가</button>
       <button class="btn btn-outline" onclick="saveCurrentPreset()">💾 프리셋 저장</button>
       <button class="btn btn-outline" onclick="loadPresets()">📂 내 프리셋</button>
       <button class="btn btn-outline" onclick="resetAll()">↺ 초기화</button>
@@ -932,7 +928,7 @@ const DATA = {
     {en:'Brush jazz drums',kr:'브러쉬 재즈 드럼',desc:'재즈바 감성의 부드러운 드럼'},
     {en:'Humanized groove',kr:'사람 연주 같은 리듬',desc:'AI 느낌을 줄이고 자연스러운 연주감 강화'},
     {en:'Tight drum pocket',kr:'타이트한 드럼 포켓',desc:'리듬을 단단하게 잡아주는 핵심 드럼감'},
-    {en:'Head-nodding groove',kr:'고개 끄덕이는 그루브',desc:'자연스럽게 몸이 반응하는 리듬감'},
+    {en:'Head-nodding groove',kr:'고개 끄덕이는 그루브',desc:'자동으로 몸이 반응하는 리듬감'},
     {en:'Syncopated rhythm',kr:'당김음 리듬',desc:'고급스럽고 세련된 재즈·소울 리듬'},
   ],
   spaces: [
@@ -969,7 +965,7 @@ const DATA = {
     {en:'Modern Korean soul mood',kr:'현대적인 한국 소울 무드',desc:'전통적 정서를 현대 Soul/R&B로 세련되게 표현'},
     {en:'Midnight Han atmosphere',kr:'심야의 한(恨) 감성',desc:'깊고 쓸쓸한 한국적 한(恨)이 배어있는 늦은 밤 분위기'},
     {en:'Quiet Seoul jazz bar',kr:'조용한 서울 재즈바',desc:'사람이 적은 늦은 밤 재즈바, 위스키와 함께하는 고요하고 애절한 무드'},
-    {en:'Lonely Korean night walk',kr:'고독한 한국의 밤 산책',desc:'혼자 걷는 서울 밤거리 같은 쓸쓸하고 서정적인 감성'},
+    {en:'Lonely Korean night walk',kr:'고독한 한국의 밤 산책',desc:'혼자 걉는 서울 밤거리 같은 쓸쓸하고 서정적인 감성'},
   ],
   blackSoulElements: [
     {en:'Gospel choir swells',kr:'가스펠 코러스 스웰',desc:'감정 고조를 위한 강렬한 가스펠 합창 swell'},
@@ -1415,7 +1411,6 @@ async function runAI() {
   if (isYT) {
     await analyzeYouTubeAndApply(kw, result, loading);
   } else {
-    // 일반 키워드도 자동 적용
     await analyzeKeywordAndApply(kw, result, loading);
   }
 }
@@ -1544,7 +1539,6 @@ async function analyzeKeywordAndApply(keyword, resultEl, loadingEl) {
     `;
     resultEl.classList.add('show');
 
-    // UI에 자동 적용
     applyAnalysisToUI(analysis);
 
   } catch (e) {
@@ -1672,7 +1666,6 @@ async function genLyrics(lang) {
   const loading = document.getElementById(isEn ? 'lyricsEnLoading' : 'lyricsKrLoading');
   const out = document.getElementById(isEn ? 'lyricsEnOut' : 'lyricsKrOut');
   
-  // 곡 길이 가져오기
   const durationInput = document.getElementById(isEn ? 'lyricsDurationEn' : 'lyricsDurationKr');
   const duration = durationInput ? durationInput.value.trim() : '3:00';
   
@@ -1730,18 +1723,15 @@ async function genRec() {
   loading.classList.remove('show');
 }
 
-// 추천 스타일 클릭 시 자동 적용
 function applyRecStyle(item) {
   resetAll(false);
   
-  // Concept 매칭 시도
   const conceptMatch = DATA.concepts.findIndex(c => 
     c.name.includes(item.name) || 
     c.genres.some(g => g.toLowerCase().includes(item.nameEn.toLowerCase()))
   );
   if (conceptMatch !== -1) STATE.concept = conceptMatch;
   
-  // Mood 매칭
   if (item.moods && Array.isArray(item.moods)) {
     item.moods.forEach(moodName => {
       const moodIndex = DATA.moods.findIndex(m => 
@@ -1753,7 +1743,6 @@ function applyRecStyle(item) {
     });
   }
   
-  // BPM 설정
   if (item.bpm) {
     const bpmMatch = item.bpm.match(/(\d+)-(\d+)/);
     if (bpmMatch) {
@@ -1761,7 +1750,6 @@ function applyRecStyle(item) {
     }
   }
   
-  // 악기 매칭 시도
   if (item.instruments) {
     const instrIndex = DATA.instruments.findIndex(i => 
       i.kr.includes(item.instruments.split(' ')[0]) || 
@@ -1784,7 +1772,6 @@ function applyRecStyle(item) {
   document.querySelector('.section:nth-child(9)').scrollIntoView({ behavior: 'smooth' });
 }
 
-// 곡 길이 자동 추천
 function autoRecommendDuration(lang) {
   const bpm = STATE.bpm || 95;
   const intensity = STATE.intensity || 5;
@@ -1792,15 +1779,12 @@ function autoRecommendDuration(lang) {
 
   let baseMinutes = 3.0;
 
-  // BPM에 따른 조정
   if (bpm > 125) baseMinutes += 0.5;
   else if (bpm < 85) baseMinutes -= 0.3;
 
-  // 감정 강도에 따른 조정
   if (intensity >= 8) baseMinutes += 0.4;
   else if (intensity <= 3) baseMinutes -= 0.3;
 
-  // 컨셉에 따른 조정
   if (concept) {
     const core = concept.core.join(' ').toLowerCase();
     if (core.includes('energetic') || core.includes('powerful') || core.includes('aggressive')) {
@@ -1811,7 +1795,6 @@ function autoRecommendDuration(lang) {
     }
   }
 
-  // 2:20 ~ 4:30 사이로 제한
   baseMinutes = Math.max(2.3, Math.min(4.5, baseMinutes));
 
   const minutes = Math.floor(baseMinutes);
@@ -1826,7 +1809,6 @@ function autoRecommendDuration(lang) {
   }
 }
 
-// 고급 사운드 설정 접기/펼치기
 function toggleAdvancedSettings() {
   const body = document.getElementById('advancedSettingsBody');
   const icon = document.getElementById('advancedToggleIcon');
@@ -1840,7 +1822,6 @@ function toggleAdvancedSettings() {
   }
 }
 
-// 일반 섹션 접기/펼치기
 function toggleSection(bodyId, iconId) {
   const body = document.getElementById(bodyId);
   const icon = document.getElementById(iconId);
@@ -1876,36 +1857,10 @@ function applyGroovePreset() {
   document.getElementById('bpmVal').textContent = '96';
   updateBpmGuide(96);
   updateIntensity(6);
-  buildPrompt();                    // ← 이 줄 추가 (프롬프트 생성)
-  showToast("✅ 한국 그루브 추천 세팅이 적용되었습니다!");
-}
-
-function applyGroovePreset() {
-  resetAll(false);
-  STATE.genre = 3;
-  STATE.moods = [1, 6];
-  STATE.instr = 0;
-  STATE.concept = 5;
-  STATE.vocalStyle = 0;
-  STATE.vocalTones = [5, 15];
-  STATE.textures = [0, 2];
-  STATE.grooves = [1, 4, 5];
-  STATE.spaces = [0, 2];
-  STATE.koreanGrooves = [0, 2, 4];
-  STATE.bassStyles = [0, 2, 5];
-  STATE.koreanFeelings = [0, 3, 5];
-  STATE.bpm = 96;
-  STATE.intensity = 6;
-
-  renderAll();
-  document.getElementById('bpmSlider').value = 96;
-  document.getElementById('bpmVal').textContent = '96';
-  updateBpmGuide(96);
-  updateIntensity(6);
   buildPrompt();
   showToast("✅ 한국 그루브 추천 세팅이 적용되었습니다!");
 }
-// 다목적 프리셋 추가
+
 function applyDrivingPreset() {
   resetAll(false);
   STATE.genre = 2;
@@ -1978,7 +1933,6 @@ function applyLaborPreset() {
   buildPrompt();
 }
 
-// 용도별 빠른 시작
 function applyQuickStart(type) {
   resetAll(false);
  
@@ -2045,7 +1999,7 @@ function applyQuickStart(type) {
 
   showToast(message);
 }
-// 랜덤 추천
+
 function applyRandomPreset() {
   resetAll(false);
   
@@ -2057,7 +2011,6 @@ function applyRandomPreset() {
   STATE.bpm = 75 + Math.floor(Math.random() * 50);
   STATE.intensity = 3 + Math.floor(Math.random() * 6);
   
-  // 랜덤으로 몇 개 추가
   if (Math.random() > 0.5) STATE.textures.push(Math.floor(Math.random() * DATA.textures.length));
   if (Math.random() > 0.5) STATE.grooves.push(Math.floor(Math.random() * DATA.grooves.length));
   if (Math.random() > 0.5) STATE.koreanGrooves.push(Math.floor(Math.random() * DATA.koreanGrooves.length));
@@ -2081,7 +2034,6 @@ function applyRandomPreset() {
   showToast("✨ 랜덤 추천이 적용되었습니다!");
 }
 
-// 내 프리셋 저장/불러오기
 function saveCurrentPreset() {
   const name = prompt("프리셋 이름을 입력하세요:");
   if (!name) return;
@@ -2154,13 +2106,9 @@ function loadPreset(index) {
   buildPrompt();
   showToast("✅ 프리셋이 불러와졌습니다!");
   
-  // 모달 닫기
   document.querySelector('.modal')?.remove();
 }
 
-/* ═══════════════════════════════════════════
-   UTILS
-═══════════════════════════════════════════ */
 function fallbackCopy(text) {
   const ta = document.createElement('textarea');
   ta.value = text;
@@ -2238,9 +2186,6 @@ function renderAll() {
   if (activeGenderBtn) activeGenderBtn.classList.add('active');
 }
 
-/* ═══════════════════════════════════════════
-   API KEY MANAGEMENT
-═══════════════════════════════════════════ */
 function saveApiKey() {
   const k = document.getElementById('apiKeyInput').value.trim();
   if (!k) { alert('API 키를 입력해 주세요.'); return; }
@@ -2276,16 +2221,12 @@ function loadSavedKey() {
   }
 }
 
-/* ═══════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════ */
 window.addEventListener('DOMContentLoaded', () => {
   loadSavedKey();
   renderAll();
   updateBpmGuide(95);
   document.getElementById('bpmSlider').style.setProperty('--pct', '37.5%');
 
-  // 감정 강도 슬라이더 초기화
   const intensitySlider = document.getElementById('intensitySlider');
   if (intensitySlider) {
     intensitySlider.value = 5;
