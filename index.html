@@ -588,7 +588,17 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <button class="gueum-gender-btn" id="ggender_female" onclick="selectGueumGender('female')">🎵 여성 구음 <span style="font-size:10px;opacity:.8">(청아·애절)</span></button>
       </div>
     </div>
-
+    </div>
+    <!-- 구음 강도 (NEW) -->
+    <div style="margin-bottom:20px">
+      <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">⑤ 구음 강도 (Suno 반영 강도)</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="gueum-gender-btn" id="gstrength_normal" onclick="selectGueumStrength('normal')">보통</button>
+        <button class="gueum-gender-btn active" id="gstrength_strong" onclick="selectGueumStrength('strong')">강하게 ★</button>
+        <button class="gueum-gender-btn" id="gstrength_maximum" onclick="selectGueumStrength('maximum')">최대 ★★★</button>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px">※ 강하게 / 최대 로 설정할수록 Suno가 구음을 더 잘 인식합니다.</div>
+    </div>
     <!-- 구음 스타일 프리셋 -->
     <div>
       <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">④ 구음 스타일 <span style="font-size:10px;color:var(--muted)">(하나 선택)</span></div>
@@ -1080,7 +1090,8 @@ const STATE = {
   gueumPitch: 'midhigh', // 'high','midhigh','midlow','low'
   gueumGender: 'both',   // 'both','male','female'
   gueumStyle: null,      // index
-  hanSoulStyle: null,    // index
+hanSoulStyle: null,    // index
+gueumStrength: 'strong', // 'normal' | 'strong' | 'maximum'   ← 추가
 };
 
 /* ═══════════════════════════════════════════
@@ -1402,7 +1413,14 @@ function selectGueumGender(g) {
   document.getElementById('ggender_' + g)?.classList.add('active');
   buildPrompt();
 }
-
+  
+function selectGueumStrength(level) {
+  STATE.gueumStrength = level;
+  document.querySelectorAll('[id^="gstrength_"]').forEach(b => b.classList.remove('active'));
+  document.getElementById('gstrength_' + level)?.classList.add('active');
+  buildPrompt();
+}
+  
 function selectGueumStyle(i) {
   STATE.gueumStyle = STATE.gueumStyle === i ? null : i;
   document.querySelectorAll('[id^="gueum_"]').forEach(el => el.classList.remove('active'));
@@ -1527,17 +1545,39 @@ function buildPrompt() {
       if (vts) parts.push(`[Vocal Tone] ${vts}`);
     }
 
-    // 구음 설정
+       // 구음 설정 (강화 버전 - 구음 강도 반영)
     if (STATE.gueumPositions.length || STATE.gueumStyle !== null) {
-      const posMap = {start:'Intro/Opening',mid:'Middle/Bridge',end:'Outro/Closing'};
-      const posText = STATE.gueumPositions.map(p=>posMap[p]).join(', ') || 'any';
-      const pitchMap = {high:'high register',midhigh:'mid-high register',midlow:'mid-low register',low:'deep low register'};
-      const genderMap = {both:'male & female',male:'male voice (deep, gravelly)',female:'female voice (clear, mournful)'};
+      const posMap = {start:'at the very beginning (intro)', mid:'in the middle (bridge)', end:'at the end (outro)'};
+      const posText = STATE.gueumPositions.map(p => posMap[p]).join(' and ') || 'prominently throughout';
+
+      const pitchMap = {high:'high register', midhigh:'mid-high register', midlow:'mid-low register', low:'deep low register'};
+      const genderMap = {both:'male and female voices', male:'male voice (deep, gritty, powerful)', female:'female voice (clear, mournful)'};
       const styleInfo = STATE.gueumStyle !== null && DATA.gueumStyles[STATE.gueumStyle] ? DATA.gueumStyles[STATE.gueumStyle] : null;
-      const gueumDesc = styleInfo
-        ? `[Gueum 구음] Traditional Korean vocal sound imitation — Style: "${styleInfo.en}" (${styleInfo.en2}) — Position: ${posText} — Pitch: ${pitchMap[STATE.gueumPitch]} — Voice: ${genderMap[STATE.gueumGender]}. Use authentic Korean traditional vocal onomatopoeia, not Western scat.`
-        : `[Gueum 구음] Traditional Korean vocal sound imitation — Position: ${posText} — Pitch: ${pitchMap[STATE.gueumPitch]} — Voice: ${genderMap[STATE.gueumGender]}`;
-      parts.push(gueumDesc);
+
+      const strength = STATE.gueumStrength || 'strong';
+      let strengthPrefix = '';
+      if (strength === 'maximum') {
+        strengthPrefix = 'CRITICAL INSTRUCTION: ';
+      } else if (strength === 'strong') {
+        strengthPrefix = 'IMPORTANT: ';
+      }
+
+      let gueumText = '';
+
+      if (styleInfo) {
+        gueumText = `${strengthPrefix}Forcefully include authentic traditional Korean gueum (구음) vocalization using real Korean onomatopoeia sounds such as "${styleInfo.en2}". ` +
+          `Style: ${styleInfo.kr}. ` +
+          `Place the gueum ${posText}. ` +
+          `Use ${pitchMap[STATE.gueumPitch]} with ${genderMap[STATE.gueumGender]}. ` +
+          `The gueum must be clearly audible, emotionally powerful, and stand out in the mix. ` +
+          `Do NOT replace with Western scat singing — only use authentic Korean traditional vocal sounds and phrasing.`;
+      } else {
+        gueumText = `${strengthPrefix}Forcefully include traditional Korean gueum vocalization ${posText}. ` +
+          `Use authentic Korean onomatopoeia in ${pitchMap[STATE.gueumPitch]} with ${genderMap[STATE.gueumGender]}. ` +
+          `Make the gueum clearly audible and emotionally dominant in the track.`;
+      }
+
+      parts.push(`[GUEUM] ${gueumText}`);
     }
 
     // 한(恨) 소울 스타일
