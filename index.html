@@ -773,21 +773,31 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
   <div class="section-body" id="refBody" style="display:none">
     <div class="info-bar" style="margin-bottom:16px">
-      🎤 Suno는 아티스트 이름에 매우 민감하게 반응합니다. 복수 선택 가능 (최대 3명 권장)
+      🎤 아티스트명 또는 곡명을 직접 입력하세요. <b>Enter</b> 또는 <b>추가 버튼</b>으로 태그 추가 · 최대 3개 권장
     </div>
-    <!-- 한국 아티스트 -->
+
+    <!-- 자유 입력 -->
     <div style="margin-bottom:20px">
-      <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">① 한국 아티스트</div>
-      <div class="chip-wrap" id="refArtistKrGrid"></div>
+      <div style="font-size:12px;color:var(--gold);font-weight:600;margin-bottom:10px">
+        ① 아티스트 / 곡명 입력
+        <span style="font-size:10px;color:var(--muted);font-weight:400;margin-left:8px">예) D'Angelo · "Brown Sugar" by D'Angelo · 이날치</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="text" id="refInput" placeholder="아티스트명 또는 곡명 입력 후 Enter..."
+          style="flex:1"
+          onkeydown="if(event.key==='Enter')addRefTag()">
+        <button class="btn btn-gold" style="padding:8px 16px;white-space:nowrap" onclick="addRefTag()">+ 추가</button>
+      </div>
+      <!-- 태그 표시 영역 -->
+      <div id="refTagWrap" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;min-height:36px"></div>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px">
+        💡 <b>아티스트만:</b> D'Angelo &nbsp;|&nbsp; <b>곡+아티스트:</b> "Brown Sugar" by D'Angelo &nbsp;|&nbsp; <b>느낌 묘사:</b> late night jazz bar vibes
+      </div>
     </div>
-    <!-- 서양 아티스트 -->
-    <div style="margin-bottom:20px">
-      <div style="font-size:12px;color:var(--gold);font-weight:600;margin-bottom:10px">② 서양 아티스트</div>
-      <div class="chip-wrap" id="refArtistWestGrid"></div>
-    </div>
+
     <!-- 프로덕션 시대 -->
     <div style="padding-top:16px;border-top:1px solid var(--border)">
-      <div style="font-size:12px;color:var(--teal);font-weight:600;margin-bottom:10px">③ 프로덕션 시대 &amp; 녹음 질감</div>
+      <div style="font-size:12px;color:var(--teal);font-weight:600;margin-bottom:10px">② 프로덕션 시대 &amp; 녹음 질감</div>
       <div class="card-grid col2" id="productionEraGrid"></div>
     </div>
   </div>
@@ -1402,26 +1412,7 @@ function renderEnergyArcs() {
     </div>`).join('');
 }
 function renderRefArtists() {
-  const kr = DATA.refArtists.filter(d=>d.type==='korean');
-  const west = DATA.refArtists.filter(d=>d.type==='western');
-  const krGrid = document.getElementById('refArtistKrGrid');
-  const westGrid = document.getElementById('refArtistWestGrid');
-  if (krGrid) krGrid.innerHTML = kr.map((d,i) => {
-    const origIdx = DATA.refArtists.indexOf(d);
-    const sel = STATE.refArtists.includes(origIdx);
-    return `<div class="chip korean-chip ${sel?'active':''}" id="ref_${origIdx}" onclick="toggleRefArtist(${origIdx})">
-      <span class="chip-en">${d.en}</span>
-      <span class="chip-kr" style="font-size:10px;color:var(--muted)">${d.desc}</span>
-    </div>`;
-  }).join('');
-  if (westGrid) westGrid.innerHTML = west.map((d,i) => {
-    const origIdx = DATA.refArtists.indexOf(d);
-    const sel = STATE.refArtists.includes(origIdx);
-    return `<div class="chip ${sel?'active':''}" id="ref_${origIdx}" onclick="toggleRefArtist(${origIdx})">
-      <span class="chip-en">${d.en}</span>
-      <span class="chip-kr" style="font-size:10px;color:var(--muted)">${d.desc}</span>
-    </div>`;
-  }).join('');
+  renderRefTags();
 }
 function renderProductionEras() {
   const g = document.getElementById('productionEraGrid');
@@ -1577,12 +1568,35 @@ function selectEnergyArc(i) {
   if (STATE.energyArc!==null) document.getElementById('arc_'+i)?.classList.add('active');
   buildPrompt();
 }
-function toggleRefArtist(i) {
-  const idx = STATE.refArtists.indexOf(i);
-  if (idx>=0) STATE.refArtists.splice(idx,1);
-  else { if(STATE.refArtists.length>=3){showToast('⚠️ 레퍼런스는 최대 3명까지 선택 가능합니다.');return;} STATE.refArtists.push(i); }
-  document.getElementById('ref_'+i)?.classList.toggle('active', STATE.refArtists.includes(i));
+function addRefTag() {
+  const input = document.getElementById('refInput');
+  const val = (input.value||'').trim();
+  if (!val) return;
+  if (STATE.refArtists.length >= 3) { showToast('⚠️ 최대 3개까지 추가 가능합니다.'); return; }
+  if (STATE.refArtists.includes(val)) { showToast('⚠️ 이미 추가된 항목입니다.'); input.value=''; return; }
+  STATE.refArtists.push(val);
+  input.value = '';
+  renderRefTags();
   buildPrompt();
+}
+function removeRefTag(val) {
+  const idx = STATE.refArtists.indexOf(val);
+  if (idx >= 0) STATE.refArtists.splice(idx, 1);
+  renderRefTags();
+  buildPrompt();
+}
+function renderRefTags() {
+  const wrap = document.getElementById('refTagWrap');
+  if (!wrap) return;
+  if (!STATE.refArtists.length) {
+    wrap.innerHTML = '<span style="font-size:11px;color:var(--dim)">아직 추가된 레퍼런스가 없습니다.</span>';
+    return;
+  }
+  wrap.innerHTML = STATE.refArtists.map(v => `
+    <div style="display:flex;align-items:center;gap:6px;background:var(--selected-bg);border:1px solid var(--selected-border);border-radius:20px;padding:5px 12px;">
+      <span style="font-size:12px;color:var(--gold)">${v}</span>
+      <span onclick="removeRefTag('${v.replace(/'/g,"\\'")}'')" style="cursor:pointer;color:var(--muted);font-size:14px;line-height:1;margin-left:2px">×</span>
+    </div>`).join('');
 }
 function selectProductionEra(i) {
   STATE.productionEra = STATE.productionEra===i ? null : i;
@@ -1692,7 +1706,7 @@ function buildPrompt() {
     }
     /* ── 신규: 레퍼런스 아티스트 ── */
     if (STATE.refArtists.length) {
-      const names=STATE.refArtists.filter(i=>DATA.refArtists[i]).map(i=>DATA.refArtists[i].en).join(', ');
+      const names = STATE.refArtists.join(', ');
       parts.push(`[Reference] In the style of: ${names} — blend their emotional sensibility with Korean traditional core`);
     }
     /* ── 신규: 프로덕션 시대 ── */
