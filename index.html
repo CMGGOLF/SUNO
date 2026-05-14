@@ -1386,6 +1386,7 @@ function renderMusicKeys() {
       <div style="font-size:10px;color:var(--teal);margin-bottom:4px">${d.mood}</div>
       <div class="card-desc">${d.desc}</div>
     </div>`).join('');
+  if(STATE.musicKey!==null) document.getElementById('mkey_'+STATE.musicKey)?.classList.add('active');
 }
 function renderKoreanScales() {
   const g = document.getElementById('koreanScaleGrid');
@@ -1398,6 +1399,7 @@ function renderKoreanScales() {
       <div style="font-size:10px;color:var(--teal);margin-bottom:4px">${d.feel}</div>
       <div class="card-desc">${d.desc}</div>
     </div>`).join('');
+  if(STATE.koreanScale!==null) document.getElementById('kscale_'+STATE.koreanScale)?.classList.add('active');
 }
 function renderEnergyArcs() {
   const g = document.getElementById('energyArcGrid');
@@ -1410,6 +1412,7 @@ function renderEnergyArcs() {
       <div style="font-size:11px;color:var(--muted)">${d.en}</div>
       <div class="card-desc" style="margin-top:4px">${d.desc}</div>
     </div>`).join('');
+  if(STATE.energyArc!==null) document.getElementById('arc_'+STATE.energyArc)?.classList.add('active');
 }
 function renderRefArtists() {
   renderRefTags();
@@ -1424,6 +1427,7 @@ function renderProductionEras() {
       <div style="font-family:'Noto Serif KR',serif;font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">${d.kr}</div>
       <div class="card-desc">${d.desc}</div>
     </div>`).join('');
+  if(STATE.productionEra!==null) document.getElementById('era_'+STATE.productionEra)?.classList.add('active');
 }
 
 /* ═══════════════════════════════════════════
