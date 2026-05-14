@@ -423,24 +423,24 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 
 <!-- SECTION 01: 장르 -->
 <div class="section">
-  <div class="section-head">
+  <div class="section-head" onclick="toggleSection('genreBody','genreIcon')" style="cursor:pointer">
     <div class="sec-num">01</div>
-    <div class="sec-title">장르 선택</div>
-    <div class="sec-sub">하나 선택</div>
+    <div class="sec-title">장르 선택 <span id="genreIcon" style="font-size:14px">▲</span></div>
+    <div class="sec-sub">하나 선택 (클릭하여 펼치기/접기)</div>
   </div>
-  <div class="section-body">
+  <div class="section-body" id="genreBody">
     <div class="card-grid col3" id="genreGrid"></div>
   </div>
 </div>
 
 <!-- SECTION 02: 분위기 -->
 <div class="section">
-  <div class="section-head">
+  <div class="section-head" onclick="toggleSection('moodBody','moodIcon')" style="cursor:pointer">
     <div class="sec-num">02</div>
-    <div class="sec-title">분위기 선택</div>
-    <div class="sec-sub">복수 선택 가능</div>
+    <div class="sec-title">분위기 선택 <span id="moodIcon" style="font-size:14px">▲</span></div>
+    <div class="sec-sub">복수 선택 가능 (클릭하여 펼치기/접기)</div>
   </div>
-  <div class="section-body">
+  <div class="section-body" id="moodBody">
     <div class="chip-wrap" id="moodGrid"></div>
   </div>
 </div>
