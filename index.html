@@ -2064,6 +2064,32 @@ function applyRandomPreset() {
   selectInstrByCategory(cat,Math.floor(Math.random()*catData.length));
   for(let i=0;i<3;i++){const r=Math.floor(Math.random()*DATA.koreanGrooves.length);if(!STATE.koreanGrooves.includes(r))STATE.koreanGrooves.push(r);}
   if(Math.random()>0.5)STATE.koreanFeelings.push(Math.floor(Math.random()*DATA.koreanFeelings.length));
+
+  /* [FIX v6] 08B: 국악기 강조 강도 60~95 랜덤 */
+  const domSteps=[60,65,70,75,80,85,90,95];
+  STATE.koreanDominance=domSteps[Math.floor(Math.random()*domSteps.length)];
+
+  /* [FIX v6] 08C: 국악:정통 비율 10~95 랜덤 */
+  STATE.koreanRatio=10+Math.floor(Math.random()*86);
+
+  /* [FIX v6] 09A: 서양 조성 랜덤 */
+  STATE.musicKey=Math.floor(Math.random()*DATA.musicKeys.length);
+
+  /* [FIX v6] 09A: 국악 음계 랜덤 */
+  STATE.koreanScale=Math.floor(Math.random()*DATA.koreanScales.length);
+
+  /* [FIX v6] 09B: 에너지 아크 랜덤 */
+  STATE.energyArc=Math.floor(Math.random()*DATA.energyArcs.length);
+
+  /* [FIX v6] 09C: 레퍼런스 아티스트 1~2명 랜덤 */
+  STATE.refArtists=[];
+  const shuffledArtists=[...DATA.refArtists].sort(()=>Math.random()-.5);
+  const artistCount=1+Math.floor(Math.random()*2);
+  shuffledArtists.slice(0,artistCount).forEach(a=>STATE.refArtists.push(a.en));
+
+  /* [FIX v6] 09C: 프로덕션 시대 랜덤 */
+  STATE.productionEra=Math.floor(Math.random()*DATA.productionEras.length);
+
   syncSliders();renderAll();buildPrompt();showToast("✨ 랜덤 3:7 프리셋 적용!");
 }
 
