@@ -788,8 +788,9 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <button class="btn btn-gold" onclick="genLyrics('en')">✦ 영어 가사 생성</button>
         <div style="display:flex;align-items:center;gap:4px">
           <span style="font-size:12px;color:var(--muted)">곡 길이:</span>
-          <input type="text" id="lyricsDurationEn" value="3:00" style="width:70px;padding:4px 8px;font-size:12px">
+          <input type="text" id="lyricsDurationEn" value="3:00" style="width:70px;padding:4px 8px;font-size:12px" onblur="enforceDuration(this)" placeholder="3:00">
           <button class="btn btn-outline" style="padding:4px 10px;font-size:11px" onclick="autoRecommendDuration('en')">자동 추천</button>
+          <span style="font-size:10px;color:var(--muted)">최소 3:00</span>
         </div>
       </div>
       <div class="ai-loading" id="lyricsEnLoading"><div class="dot-anim"><span></span><span></span><span></span></div>영어 가사 생성 중...</div>
@@ -801,8 +802,9 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <button class="btn btn-gold" onclick="genLyrics('kr')">✦ 한국어 가사 생성</button>
         <div style="display:flex;align-items:center;gap:4px">
           <span style="font-size:12px;color:var(--muted)">곡 길이:</span>
-          <input type="text" id="lyricsDurationKr" value="3:00" style="width:70px;padding:4px 8px;font-size:12px">
+          <input type="text" id="lyricsDurationKr" value="3:00" style="width:70px;padding:4px 8px;font-size:12px" onblur="enforceDuration(this)" placeholder="3:00">
           <button class="btn btn-outline" style="padding:4px 10px;font-size:11px" onclick="autoRecommendDuration('kr')">자동 추천</button>
+          <span style="font-size:10px;color:var(--muted)">최소 3:00</span>
         </div>
       </div>
       <div class="ai-loading" id="lyricsKrLoading"><div class="dot-anim"><span></span><span></span><span></span></div>한국어 가사 생성 중...</div>
@@ -1585,12 +1587,24 @@ function applyRecCard(idx) {
   document.getElementById('promptBox').scrollIntoView({behavior:'smooth',block:'center'});
   showToast(`✅ "${item.name}" 스타일이 자동 적용되었습니다!`);
 }
+function enforceDuration(input) {
+  const val = (input.value||'').trim();
+  const match = val.match(/^(\d+):(\d{1,2})$/);
+  if (!match) { input.value='3:00'; showToast('⚠️ 최소 3:00으로 설정되었습니다.'); return; }
+  const totalSec = parseInt(match[1])*60 + parseInt(match[2]);
+  if (totalSec < 180) {
+    input.value='3:00';
+    input.style.borderColor='var(--red)';
+    setTimeout(()=>input.style.borderColor='',1500);
+    showToast('⚠️ 최소 길이는 3:00 입니다!');
+  }
+}
 function autoRecommendDuration(lang) {
   const bpm=STATE.bpm||95; const intensity=STATE.intensity||5;
   let baseMinutes=3.0;
   if(bpm>125)baseMinutes+=0.5; else if(bpm<85)baseMinutes-=0.3;
   if(intensity>=8)baseMinutes+=0.4; else if(intensity<=3)baseMinutes-=0.3;
-  baseMinutes=Math.max(2.3,Math.min(4.5,baseMinutes));
+  baseMinutes=Math.max(3.0,Math.min(4.5,baseMinutes));
   const minutes=Math.floor(baseMinutes); const seconds=Math.round((baseMinutes-minutes)*60);
   const timeString=`${minutes}:${seconds.toString().padStart(2,'0')}`;
   const inputId=lang==='en'?'lyricsDurationEn':'lyricsDurationKr';
