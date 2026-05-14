@@ -2054,43 +2054,128 @@ function applyGueumPreset(type) {
 
 function applyRandomPreset() {
   resetAll(false);
+
+  /* ── 🟢 항상 랜덤: 필수 뼈대 ── */
   STATE.genre=Math.floor(Math.random()*DATA.genres.length);
   STATE.moods=[Math.floor(Math.random()*DATA.moods.length)];
+  if(Math.random()>0.4)STATE.moods.push((STATE.moods[0]+1+Math.floor(Math.random()*(DATA.moods.length-1)))%DATA.moods.length);
   STATE.concept=Math.floor(Math.random()*DATA.concepts.length);
   STATE.vocalStyle=Math.floor(Math.random()*DATA.vocalStyles.length);
-  STATE.bpm=75+Math.floor(Math.random()*50);STATE.intensity=3+Math.floor(Math.random()*6);
+  STATE.bpm=75+Math.floor(Math.random()*50);
+  STATE.intensity=3+Math.floor(Math.random()*6);
+
+  /* 성별 필터 랜덤 */
+  const genders=['all','male','female'];
+  STATE.gender=genders[Math.floor(Math.random()*3)];
+
+  /* 악기 */
   const cats=['string','percussion','wind'];const cat=cats[Math.floor(Math.random()*3)];
   const catData=cat==='string'?DATA.instrumentsString:cat==='percussion'?DATA.instrumentsPercussion:DATA.instrumentsWind;
   selectInstrByCategory(cat,Math.floor(Math.random()*catData.length));
-  for(let i=0;i<3;i++){const r=Math.floor(Math.random()*DATA.koreanGrooves.length);if(!STATE.koreanGrooves.includes(r))STATE.koreanGrooves.push(r);}
-  if(Math.random()>0.5)STATE.koreanFeelings.push(Math.floor(Math.random()*DATA.koreanFeelings.length));
 
-  /* [FIX v6] 08B: 국악기 강조 강도 60~95 랜덤 */
+  /* 보컬 톤 1~2개 */
+  const vtCount=1+Math.floor(Math.random()*2);
+  const vtShuffled=[...Array(DATA.vocalTones.length).keys()].sort(()=>Math.random()-.5);
+  STATE.vocalTones=vtShuffled.slice(0,vtCount);
+
+  /* 텍스처 1~2개 */
+  const txCount=1+Math.floor(Math.random()*2);
+  const txShuffled=[...Array(DATA.textures.length).keys()].sort(()=>Math.random()-.5);
+  STATE.textures=txShuffled.slice(0,txCount);
+
+  /* 그루브 1~2개 */
+  const grCount=1+Math.floor(Math.random()*2);
+  const grShuffled=[...Array(DATA.grooves.length).keys()].sort(()=>Math.random()-.5);
+  STATE.grooves=grShuffled.slice(0,grCount);
+
+  /* 공간감 1개 */
+  STATE.spaces=[Math.floor(Math.random()*DATA.spaces.length)];
+
+  /* 베이스 스타일 1개 */
+  STATE.bassStyles=[Math.floor(Math.random()*DATA.bassStyles.length)];
+
+  /* 국악 그루브 2~3개 */
+  for(let i=0;i<3;i++){const r=Math.floor(Math.random()*DATA.koreanGrooves.length);if(!STATE.koreanGrooves.includes(r))STATE.koreanGrooves.push(r);}
+
+  /* 국악 감성 1개 */
+  STATE.koreanFeelings=[Math.floor(Math.random()*DATA.koreanFeelings.length)];
+
+  /* 08B: 국악기 강조 강도 */
   const domSteps=[60,65,70,75,80,85,90,95];
   STATE.koreanDominance=domSteps[Math.floor(Math.random()*domSteps.length)];
 
-  /* [FIX v6] 08C: 국악:정통 비율 10~95 랜덤 */
+  /* 08C: 국악:정통 비율 */
   STATE.koreanRatio=10+Math.floor(Math.random()*86);
 
-  /* [FIX v6] 09A: 서양 조성 랜덤 */
+  /* 09A: 서양 조성 + 국악 음계 */
   STATE.musicKey=Math.floor(Math.random()*DATA.musicKeys.length);
-
-  /* [FIX v6] 09A: 국악 음계 랜덤 */
   STATE.koreanScale=Math.floor(Math.random()*DATA.koreanScales.length);
 
-  /* [FIX v6] 09B: 에너지 아크 랜덤 */
+  /* 09B: 에너지 아크 */
   STATE.energyArc=Math.floor(Math.random()*DATA.energyArcs.length);
 
-  /* [FIX v6] 09C: 레퍼런스 아티스트 1~2명 랜덤 */
-  STATE.refArtists=[];
+  /* 09C: 레퍼런스 아티스트 1~2명 + 프로덕션 시대 */
   const shuffledArtists=[...DATA.refArtists].sort(()=>Math.random()-.5);
   const artistCount=1+Math.floor(Math.random()*2);
   shuffledArtists.slice(0,artistCount).forEach(a=>STATE.refArtists.push(a.en));
-
-  /* [FIX v6] 09C: 프로덕션 시대 랜덤 */
   STATE.productionEra=Math.floor(Math.random()*DATA.productionEras.length);
 
-  syncSliders();renderAll();buildPrompt();showToast("✨ 랜덤 3:7 프리셋 적용!");
+  /* ── 🟡 50% 확률: 선택적 레이어 ── */
+  if(Math.random()<0.5){
+    const bsCount=1+Math.floor(Math.random()*2);
+    const bsShuffled=[...Array(DATA.blackSoulElements.length).keys()].sort(()=>Math.random()-.5);
+    STATE.blackSoulElements=bsShuffled.slice(0,bsCount);
+  }
+  if(Math.random()<0.5){
+    const hfCount=1+Math.floor(Math.random()*2);
+    const hfShuffled=[...Array(DATA.humanFeelElements.length).keys()].sort(()=>Math.random()-.5);
+    STATE.humanFeelElements=hfShuffled.slice(0,hfCount);
+  }
+
+  /* ── 🔵 30% 확률: 구음 스페셜 ── */
+  if(Math.random()<0.3){
+    const positions=['start','mid','end'];
+    const posCount=1+Math.floor(Math.random()*2);
+    STATE.gueumPositions=[...positions].sort(()=>Math.random()-.5).slice(0,posCount);
+    STATE.gueumPitch=['high','midhigh','midlow','low'][Math.floor(Math.random()*4)];
+    STATE.gueumGender=['both','male','female'][Math.floor(Math.random()*3)];
+    STATE.gueumStyle=Math.floor(Math.random()*DATA.gueumStyles.length);
+    STATE.gueumStrength=['normal','strong','maximum'][Math.floor(Math.random()*3)];
+  }
+
+  /* ── 🔵 30% 확률: 한소울 스페셜 ── */
+  if(Math.random()<0.3){
+    STATE.hanSoulStyle=Math.floor(Math.random()*DATA.hanSoulStyles.length);
+  }
+
+  syncSliders();renderAll();
+
+  /* ── 구음 버튼 UI 동기화 ── */
+  document.querySelectorAll('.gueum-pos-btn').forEach(b=>b.classList.remove('active'));
+  STATE.gueumPositions.forEach(p=>document.getElementById('gpos_'+p)?.classList.add('active'));
+  document.querySelectorAll('.gueum-pitch-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('gpitch_'+STATE.gueumPitch)?.classList.add('active');
+  const rndPitchVal={high:4,midhigh:3,midlow:2,low:1}[STATE.gueumPitch]||3;
+  const rndPs=document.getElementById('gueumPitchSlider');
+  if(rndPs){rndPs.value=rndPitchVal;updateGueumPitchSlider(rndPitchVal);}
+  document.querySelectorAll('.gueum-gender-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('ggender_'+STATE.gueumGender)?.classList.add('active');
+
+  /* ── 구음 강도 버튼 UI 동기화 ── */
+  document.querySelectorAll('[id^="gstrength_"]').forEach(b=>{
+    const isActive=b.id==='gstrength_'+STATE.gueumStrength;
+    b.style.borderColor=isActive?(STATE.gueumStrength==='maximum'?'#c85050':'var(--korean2)'):'var(--border)';
+    b.style.background=isActive?(STATE.gueumStrength==='maximum'?'rgba(200,80,80,0.2)':'rgba(160,90,58,0.25)'):'var(--surface2)';
+    b.style.color=isActive?(STATE.gueumStrength==='maximum'?'#e07070':'var(--korean2)'):'var(--muted)';
+    b.style.fontWeight=isActive?'700':'400';
+  });
+
+  /* ── 성별 버튼 UI 동기화 ── */
+  document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active'));
+  const rndGBtn=[...document.querySelectorAll('.gender-btn')].find(b=>(STATE.gender==='all'&&b.textContent.includes('전체'))||(STATE.gender==='male'&&b.textContent.includes('남성'))||(STATE.gender==='female'&&b.textContent.includes('여성')));
+  if(rndGBtn)rndGBtn.classList.add('active');
+
+  buildPrompt();showToast("✨ 랜덤 3:7 프리셋 적용!");
 }
 
 function syncSliders() {
@@ -2199,6 +2284,11 @@ function renderAll() {
   document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active'));
   const activeGBtn=[...document.querySelectorAll('.gender-btn')].find(b=>(STATE.gender==='all'&&b.textContent.includes('전체'))||(STATE.gender==='male'&&b.textContent.includes('남성'))||(STATE.gender==='female'&&b.textContent.includes('여성')));
   if(activeGBtn)activeGBtn.classList.add('active');
+  /* ✅ [FIX v6] 09A/09B 자동조합 후 active 클래스 명시 적용 */
+  if(STATE.musicKey!==null){document.querySelectorAll('[id^="mkey_"]').forEach(el=>el.classList.remove('active'));document.getElementById('mkey_'+STATE.musicKey)?.classList.add('active');}
+  if(STATE.koreanScale!==null){document.querySelectorAll('[id^="kscale_"]').forEach(el=>el.classList.remove('active'));document.getElementById('kscale_'+STATE.koreanScale)?.classList.add('active');}
+  if(STATE.energyArc!==null){document.querySelectorAll('[id^="arc_"]').forEach(el=>el.classList.remove('active'));document.getElementById('arc_'+STATE.energyArc)?.classList.add('active');}
+  if(STATE.productionEra!==null){document.querySelectorAll('[id^="era_"]').forEach(el=>el.classList.remove('active'));document.getElementById('era_'+STATE.productionEra)?.classList.add('active');}
 }
 
 /* ═══════════════════════════════════════════
