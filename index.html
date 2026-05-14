@@ -590,12 +590,24 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     </div>
     </div>
     <!-- 구음 강도 (NEW) -->
-    <div style="margin-bottom:20px">
+   <div style="margin-bottom:24px; padding-top:8px; border-top:1px solid var(--border)">
       <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">⑤ 구음 강도 (Suno 반영 강도)</div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="gueum-gender-btn" id="gstrength_normal" onclick="selectGueumStrength('normal')">보통</button>
-        <button class="gueum-gender-btn active" id="gstrength_strong" onclick="selectGueumStrength('strong')">강하게 ★</button>
-        <button class="gueum-gender-btn" id="gstrength_maximum" onclick="selectGueumStrength('maximum')">최대 ★★★</button>
+      <div style="display:flex; gap:8px; flex-wrap:wrap">
+        <button onclick="selectGueumStrength('normal')" id="gstrength_normal"
+                style="padding:8px 16px; border-radius:6px; border:1px solid var(--border); background:var(--surface2); color:var(--muted); font-size:12px; cursor:pointer;">
+          보통
+        </button>
+        <button onclick="selectGueumStrength('strong')" id="gstrength_strong"
+                style="padding:8px 16px; border-radius:6px; border:1px solid var(--korean2); background:rgba(160,90,58,0.25); color:var(--korean2); font-size:12px; cursor:pointer; font-weight:700;">
+          강하게 ★
+        </button>
+        <button onclick="selectGueumStrength('maximum')" id="gstrength_maximum"
+                style="padding:8px 16px; border-radius:6px; border:1px solid #c85050; background:rgba(200,80,80,0.2); color:#e07070; font-size:12px; cursor:pointer; font-weight:700;">
+          최대 ★★★
+        </button>
+      </div>
+      <div style="font-size:10px; color:var(--muted); margin-top:6px;">
+        ※ 강하게 / 최대 로 설정할수록 Suno가 구음을 더 잘 인식합니다.
       </div>
       <div style="font-size:10px;color:var(--muted);margin-top:6px">※ 강하게 / 최대 로 설정할수록 Suno가 구음을 더 잘 인식합니다.</div>
     </div>
