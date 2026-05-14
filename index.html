@@ -868,7 +868,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <button class="btn btn-gold" onclick="genLyrics('en')">✦ 영어 가사 생성</button>
         <div style="display:flex;align-items:center;gap:4px">
           <span style="font-size:12px;color:var(--muted)">곡 길이:</span>
-          <input type="text" id="lyricsDurationEn" value="3:00" style="width:70px;padding:4px 8px;font-size:12px" onblur="enforceDuration(this)" placeholder="3:00">
+          <input type="text" id="lyricsDurationEn" value="3:00" style="width:70px;padding:4px 8px;font-size:12px" onblur="enforceDuration(this)" oninput="softCheckDuration(this)" placeholder="3:00">
           <button class="btn btn-outline" style="padding:4px 10px;font-size:11px" onclick="autoRecommendDuration('en')">자동 추천</button>
           <span style="font-size:10px;color:var(--muted)">최소 3:00</span>
         </div>
@@ -882,7 +882,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <button class="btn btn-gold" onclick="genLyrics('kr')">✦ 한국어 가사 생성</button>
         <div style="display:flex;align-items:center;gap:4px">
           <span style="font-size:12px;color:var(--muted)">곡 길이:</span>
-          <input type="text" id="lyricsDurationKr" value="3:00" style="width:70px;padding:4px 8px;font-size:12px" onblur="enforceDuration(this)" placeholder="3:00">
+          <input type="text" id="lyricsDurationKr" value="3:00" style="width:70px;padding:4px 8px;font-size:12px" onblur="enforceDuration(this)" oninput="softCheckDuration(this)" placeholder="3:00">
           <button class="btn btn-outline" style="padding:4px 10px;font-size:11px" onclick="autoRecommendDuration('kr')">자동 추천</button>
           <span style="font-size:10px;color:var(--muted)">최소 3:00</span>
         </div>
@@ -1810,7 +1810,10 @@ async function genLyrics(lang) {
   const isEn=lang==='en';
   const loading=document.getElementById(isEn?'lyricsEnLoading':'lyricsKrLoading');
   const out=document.getElementById(isEn?'lyricsEnOut':'lyricsKrOut');
-  const duration=document.getElementById(isEn?'lyricsDurationEn':'lyricsDurationKr')?.value||'3:00';
+  /* ✅ [FIX v6] 가사 생성 직전 duration 강제 검증 — onblur 미발생 케이스 대응 */
+  const durationInput=document.getElementById(isEn?'lyricsDurationEn':'lyricsDurationKr');
+  if(durationInput) enforceDuration(durationInput);
+  const duration=durationInput?.value||'3:00';
   loading.classList.add('show');
   try {
     const lyricPrompt=isEn
@@ -1867,13 +1870,45 @@ function applyRecCard(idx) {
 function enforceDuration(input) {
   const val = (input.value||'').trim();
   const match = val.match(/^(\d+):(\d{1,2})$/);
-  if (!match) { input.value='3:00'; showToast('⚠️ 최소 3:00으로 설정되었습니다.'); return; }
-  const totalSec = parseInt(match[1])*60 + parseInt(match[2]);
+  if (!match) {
+    input.value='3:00';
+    input.style.borderColor='var(--red)';
+    setTimeout(()=>input.style.borderColor='',1500);
+    showToast('⚠️ 최소 3:00으로 설정되었습니다.');
+    return;
+  }
+  const mins = parseInt(match[1]);
+  const secs = parseInt(match[2]);
+  /* ✅ [FIX v6] 초 범위 검증 (60초 이상 입력 방지) */
+  if (secs >= 60) {
+    input.value = `${mins+1}:00`;
+    input.style.borderColor='var(--red)';
+    setTimeout(()=>input.style.borderColor='',1500);
+    showToast('⚠️ 초(秒)는 00~59 사이여야 합니다.');
+    return;
+  }
+  const totalSec = mins*60 + secs;
   if (totalSec < 180) {
     input.value='3:00';
     input.style.borderColor='var(--red)';
     setTimeout(()=>input.style.borderColor='',1500);
     showToast('⚠️ 최소 길이는 3:00 입니다!');
+  } else {
+    /* ✅ [FIX v6] 정상 값이면 테두리 초록으로 잠깐 표시 */
+    input.style.borderColor='var(--teal)';
+    setTimeout(()=>input.style.borderColor='',1200);
+  }
+}
+/* ✅ [FIX v6] 실시간 입력 중 포맷 완성되면 즉시 소프트 체크 (빨간 테두리만, toast 없음) */
+function softCheckDuration(input) {
+  const val = (input.value||'').trim();
+  const match = val.match(/^(\d+):(\d{1,2})$/);
+  if (!match) return; // 아직 입력 중이면 무시
+  const totalSec = parseInt(match[1])*60 + parseInt(match[2]);
+  if (totalSec < 180) {
+    input.style.borderColor='var(--red)';
+  } else {
+    input.style.borderColor='var(--teal)';
   }
 }
 function autoRecommendDuration(lang) {
