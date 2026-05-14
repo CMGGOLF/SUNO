@@ -1376,7 +1376,7 @@ function renderMusicKeys() {
   const g = document.getElementById('musicKeyGrid');
   if (!g) return;
   g.innerHTML = DATA.musicKeys.map((d,i) => `
-    <div class="selcard ${STATE.musicKey===i?'active':''}" id="mkey_${i}" onclick="selectMusicKey(${i})" style="${d.recommend?'border-left:3px solid var(--gold)':''}">
+    <div class="selcard" id="mkey_${i}" onclick="selectMusicKey(${i})" style="${d.recommend?'border-left:3px solid var(--gold)':''}">
       <div class="check-dot"></div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
         <span style="font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--gold)">${d.short}</span>
@@ -1391,7 +1391,7 @@ function renderKoreanScales() {
   const g = document.getElementById('koreanScaleGrid');
   if (!g) return;
   g.innerHTML = DATA.koreanScales.map((d,i) => `
-    <div class="selcard korean-card ${STATE.koreanScale===i?'active':''}" id="kscale_${i}" onclick="selectKoreanScale(${i})">
+    <div class="selcard korean-card" id="kscale_${i}" onclick="selectKoreanScale(${i})">
       <div class="check-dot"></div>
       <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--korean2);margin-bottom:3px">${d.en}</div>
       <div style="font-family:'Noto Serif KR',serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">${d.kr}</div>
@@ -1403,7 +1403,7 @@ function renderEnergyArcs() {
   const g = document.getElementById('energyArcGrid');
   if (!g) return;
   g.innerHTML = DATA.energyArcs.map((d,i) => `
-    <div class="selcard ${STATE.energyArc===i?'active':''}" id="arc_${i}" onclick="selectEnergyArc(${i})">
+    <div class="selcard" id="arc_${i}" onclick="selectEnergyArc(${i})">
       <div class="check-dot"></div>
       <div style="font-family:'Noto Serif KR',serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">${d.kr}</div>
       <div style="font-family:'Space Mono',monospace;font-size:16px;letter-spacing:3px;color:var(--gold);margin-bottom:6px">${d.curve}</div>
@@ -1418,7 +1418,7 @@ function renderProductionEras() {
   const g = document.getElementById('productionEraGrid');
   if (!g) return;
   g.innerHTML = DATA.productionEras.map((d,i) => `
-    <div class="selcard ${STATE.productionEra===i?'active':''}" id="era_${i}" onclick="selectProductionEra(${i})">
+    <div class="selcard" id="era_${i}" onclick="selectProductionEra(${i})">
       <div class="check-dot"></div>
       <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--teal);margin-bottom:4px">${d.en}</div>
       <div style="font-family:'Noto Serif KR',serif;font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">${d.kr}</div>
@@ -1930,8 +1930,14 @@ function toggleAdvancedSettings() {
 }
 function toggleSection(bodyId,iconId) {
   const body=document.getElementById(bodyId); const icon=document.getElementById(iconId);
-  if(body.style.display==='none'||body.style.display===''){body.style.display='block';icon.textContent='▲';}
-  else{body.style.display='none';icon.textContent='▼';}
+  if(body.style.display==='none'||body.style.display===''){
+    body.style.display='block';icon.textContent='▲';
+    /* ✅ [FIX v6] 섹션 열릴 때 active 상태 재동기화 */
+    if(STATE.musicKey!==null){document.querySelectorAll('[id^="mkey_"]').forEach(el=>el.classList.remove('active'));document.getElementById('mkey_'+STATE.musicKey)?.classList.add('active');}
+    if(STATE.koreanScale!==null){document.querySelectorAll('[id^="kscale_"]').forEach(el=>el.classList.remove('active'));document.getElementById('kscale_'+STATE.koreanScale)?.classList.add('active');}
+    if(STATE.energyArc!==null){document.querySelectorAll('[id^="arc_"]').forEach(el=>el.classList.remove('active'));document.getElementById('arc_'+STATE.energyArc)?.classList.add('active');}
+    if(STATE.productionEra!==null){document.querySelectorAll('[id^="era_"]').forEach(el=>el.classList.remove('active'));document.getElementById('era_'+STATE.productionEra)?.classList.add('active');}
+  } else{body.style.display='none';icon.textContent='▼';}
 }
 
 /* ═══════════════════════════════════════════
