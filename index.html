@@ -723,6 +723,76 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
 </div>
 
+<!-- SECTION 09A: 조성 & 국악 음계 -->
+<div class="section" style="border-color:rgba(58,143,160,.4);background:rgba(58,143,160,.03)">
+  <div class="section-head" onclick="toggleSection('scaleBody','scaleIcon')" style="cursor:pointer;background:rgba(58,143,160,.08)">
+    <div class="sec-num" style="background:var(--teal)">09A</div>
+    <div class="sec-title">조성 &amp; 국악 음계 <span style="color:var(--teal);font-size:12px">Key · Scale</span> <span id="scaleIcon" style="font-size:14px">▼</span></div>
+    <div class="sec-sub">음악의 감정 색채를 결정하는 핵심 설정 (클릭하여 펼치기/접기)</div>
+  </div>
+  <div class="section-body" id="scaleBody" style="display:none">
+    <div class="info-bar" style="margin-bottom:16px;border-color:rgba(58,143,160,.3);background:rgba(58,143,160,.07);color:var(--teal)">
+      🎵 <b>조성</b>은 음악의 감정 색채를 결정합니다. 같은 가야금이라도 Am(애절)과 G(신명)는 완전히 다른 음악이 됩니다.
+    </div>
+    <!-- 서양 키 -->
+    <div style="margin-bottom:20px">
+      <div style="font-size:12px;color:var(--teal);font-weight:600;margin-bottom:10px">① 서양 조성 (Key) <span style="font-size:10px;color:var(--muted)">— 하나 선택</span>
+        <span style="font-size:10px;color:var(--gold);margin-left:8px">⭐ = 국악 퓨전 추천</span>
+      </div>
+      <div class="card-grid col3" id="musicKeyGrid"></div>
+    </div>
+    <!-- 국악 음계 -->
+    <div>
+      <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">② 국악 음계 (Korean Scale) <span style="font-size:10px;color:var(--muted)">— 하나 선택</span></div>
+      <div class="card-grid col3" id="koreanScaleGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 09B: 에너지 아크 / 곡 구조 -->
+<div class="section" style="border-color:rgba(201,168,76,.4);background:rgba(201,168,76,.03)">
+  <div class="section-head" onclick="toggleSection('arcBody','arcIcon')" style="cursor:pointer;background:rgba(201,168,76,.08)">
+    <div class="sec-num">09B</div>
+    <div class="sec-title">에너지 아크 — 곡 구조 설계 <span id="arcIcon" style="font-size:14px">▼</span></div>
+    <div class="sec-sub">감정의 흐름 · 기승전결 설계 (클릭하여 펼치기/접기)</div>
+  </div>
+  <div class="section-body" id="arcBody" style="display:none">
+    <div class="info-bar" style="margin-bottom:16px">
+      📈 <b>에너지 아크</b>는 곡이 처음부터 끝까지 어떤 감정 흐름을 가질지 설계합니다. Suno는 이 지시를 잘 따릅니다.
+    </div>
+    <div class="card-grid col2" id="energyArcGrid"></div>
+  </div>
+</div>
+
+<!-- SECTION 09C: 레퍼런스 아티스트 -->
+<div class="section" style="border-color:rgba(160,90,58,.35)">
+  <div class="section-head" onclick="toggleSection('refBody','refIcon')" style="cursor:pointer">
+    <div class="sec-num korean">09C</div>
+    <div class="sec-title">레퍼런스 아티스트 &amp; 프로덕션 시대 <span id="refIcon" style="font-size:14px">▼</span></div>
+    <div class="sec-sub">닮고 싶은 사운드 레퍼런스 (클릭하여 펼치기/접기)</div>
+  </div>
+  <div class="section-body" id="refBody" style="display:none">
+    <div class="info-bar" style="margin-bottom:16px">
+      🎤 Suno는 아티스트 이름에 매우 민감하게 반응합니다. 복수 선택 가능 (최대 3명 권장)
+    </div>
+    <!-- 한국 아티스트 -->
+    <div style="margin-bottom:20px">
+      <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">① 한국 아티스트</div>
+      <div class="chip-wrap" id="refArtistKrGrid"></div>
+    </div>
+    <!-- 서양 아티스트 -->
+    <div style="margin-bottom:20px">
+      <div style="font-size:12px;color:var(--gold);font-weight:600;margin-bottom:10px">② 서양 아티스트</div>
+      <div class="chip-wrap" id="refArtistWestGrid"></div>
+    </div>
+    <!-- 프로덕션 시대 -->
+    <div style="padding-top:16px;border-top:1px solid var(--border)">
+      <div style="font-size:12px;color:var(--teal);font-weight:600;margin-bottom:10px">③ 프로덕션 시대 &amp; 녹음 질감</div>
+      <div class="card-grid col2" id="productionEraGrid"></div>
+    </div>
+  </div>
+</div>
+
 <!-- SECTION 09: 프롬프트 생성 -->
 <div class="section">
   <div class="section-head">
@@ -1034,7 +1104,64 @@ const DATA = {
     {en:'Sanjo Blue Notes',kr:'산조 블루 노트',desc:'산조의 즉흥 프레이즈 = 재즈 임프로바이제이션. 같은 즉흥의 언어. 5음계와 블루스 펜타토닉이 완벽히 겹침',style:'Sanjo improvisation + jazz blue notes'},
     {en:'Han Soul Ballad',kr:'한(恨) 소울 발라드',desc:'한국 한(恨)의 정서를 소울 발라드 형식으로. 오티스 레딩이 아쟁 소리를 들었다면. 가장 깊은 감정의 음악',style:'Ajaeng deep lead + soul ballad structure'},
     {en:'Gritty Korean R&B',kr:'날 것의 한국 R&B',desc:'정제되지 않은 거칠고 날것의 소리. 피리의 토속 비음 + 아쟁의 묵직한 활 소리 + R&B 그루브. 가장 한국적인 소울',style:'Raw piri + ajaeng + R&B groove'},
-  ]
+  ],
+
+  /* ── 조성 (Western Key) ── */
+  musicKeys: [
+    {en:'A minor',short:'Am',kr:'라 단조',desc:'가장 한국적 정서에 맞는 키 — 애절하고 깊은 감성',mood:'애절·한(恨)·몽환',recommend:true},
+    {en:'D minor',short:'Dm',kr:'레 단조',desc:'무겁고 서사적인 소울 블루스 — 판소리·아쟁에 최적',mood:'어둡고 깊음·소울',recommend:true},
+    {en:'E minor',short:'Em',kr:'미 단조',desc:'재즈·블루스의 표준 단조 — 즉흥성과 감성이 균형',mood:'감성적·재즈'},
+    {en:'G minor',short:'Gm',kr:'솔 단조',desc:'신비롭고 드라마틱한 긴장감 — 시네마틱 퓨전에 적합',mood:'신비·시네마틱'},
+    {en:'C minor',short:'Cm',kr:'도 단조',desc:'클래식하고 장엄한 어두움 — 궁중 소울과 잘 맞음',mood:'장엄·웅장'},
+    {en:'F major',short:'F',kr:'파 장조',desc:'따뜻하고 서정적 — Neo Soul·라운지 감성',mood:'따뜻·서정적'},
+    {en:'G major',short:'G',kr:'솔 장조',desc:'밝고 희망적인 에너지 — 신명나는 장단과 잘 어울림',mood:'밝음·신명·희망'},
+    {en:'B♭ major',short:'Bb',kr:'시♭ 장조',desc:'재즈 스탠다드의 왕 — 빅밴드·소울 오케스트레이션',mood:'재즈·소울·성숙'},
+  ],
+
+  /* ── 국악 음계 (Korean Scale) ── */
+  koreanScales: [
+    {en:'Gyemyeonjo',kr:'계면조',desc:'남도 민요의 핵심 음계 — 슬프고 애절한 한(恨)의 정서. 국악 퓨전에서 가장 강력한 감정 유발',feel:'슬픔·애절·한(恨)',suno:'pentatonic minor with Korean phrasing, mournful slides, 시김새'},
+    {en:'Pyeongjo',kr:'평조',desc:'궁중 정악의 음계 — 밝고 웅장하며 기품 있음. 조선 궁중 소울에 최적',feel:'밝음·웅장·기품',suno:'pentatonic major with noble Korean court phrasing, graceful'},
+    {en:'Ujo',kr:'우조',desc:'강하고 호탕한 기상 — 굿거리·무악에서 기원. 힘차고 당당한 에너지',feel:'강함·호탕·당당',suno:'strong pentatonic scale, bold and powerful Korean shaman phrasing'},
+    {en:'Gyeongtori',kr:'경토리',desc:'경기 민요의 경쾌한 음계 — 발랄하고 신명남. 서울·수도권의 흥겨운 감성',feel:'경쾌·신명·발랄',suno:'bright Korean pentatonic, lively and playful Seoul folk phrasing'},
+    {en:'Menaritori',kr:'메나리토리',desc:'강원·함경도 산악 지방의 음계 — 구슬프고 처연하며 광야의 외로움',feel:'처연·구슬픔·외로움',suno:'Korean mountain pentatonic, haunting and lonesome, wide vibrato slides'},
+  ],
+
+  /* ── 에너지 아크 (Energy Arc) ── */
+  energyArcs: [
+    {en:'Slow Burn Rise',kr:'천천히 타오르는 고조',desc:'잔잔한 도입 → 서서히 감정 쌓기 → 클라이맥스 폭발 → 짧은 여운',curve:'▁▂▃▄▆█▇▄',suno:'starts quiet and sparse, slowly builds intensity, explosive climax at 2:00, then fades with emotional resonance'},
+    {en:'Wave Form',kr:'파도형 — 밀물과 썰물',desc:'고조와 이완을 반복 — 감정이 파도처럼 밀려왔다 빠짐. 중독성 강한 구조',curve:'▃▆▃▆▃▇▃▅',suno:'alternating tension and release, recurring emotional waves, each chorus slightly bigger than the last'},
+    {en:'Mountain Peak',kr:'산봉우리 — 정상 후 하강',desc:'빠르게 고조 → 클라이맥스 유지 → 천천히 잦아드는 여운',curve:'▂▄▇█▇▅▃▁',suno:'quick intensity buildup, sustained emotional peak in the middle, slow gradual release into quiet outro'},
+    {en:'Reverse Bloom',kr:'역개화 — 폭발 후 잔잔',desc:'강렬하게 시작 → 감정이 점차 녹아내리듯 잦아듦. 강렬한 첫인상',curve:'█▇▆▅▃▂▁▁',suno:'opens with full intensity, gradually strips back layers, ends in intimate and bare instrumentation'},
+    {en:'Twin Peaks',kr:'쌍봉 — 두 번의 절정',desc:'1차 절정 → 브리지 이완 → 더 큰 2차 절정. 드라마틱한 감정 구조',curve:'▃▇▄▂▄█▅▂',suno:'first climax at 1:20, drops to intimate bridge, second bigger climax at 2:30, powerful resolution'},
+    {en:'Sustained Groove',kr:'일정한 그루브 유지',desc:'처음부터 끝까지 안정된 에너지 — 지치지 않는 몰입감. 드라이브·작업용',curve:'▅▅▅▅▆▅▅▅',suno:'consistent steady groove throughout, minimal variation in energy, hypnotic and continuous flow'},
+  ],
+
+  /* ── 레퍼런스 아티스트 (Reference Artists) ── */
+  refArtists: [
+    {en:'이날치',kr:'이날치',type:'korean',desc:'판소리 + 펑크 베이스. 전통의 팝화 정석'},
+    {en:'씽씽',kr:'씽씽',type:'korean',desc:'민요 + 사이키델릭 록. 가장 날 것의 국악 팝'},
+    {en:'장사익',kr:'장사익',type:'korean',desc:'한(恨)의 목소리. 민요·판소리의 현대적 계승'},
+    {en:'하림',kr:'하림',type:'korean',desc:'국악 + 재즈 감성. 도시적 국악 퓨전'},
+    {en:'이상은',kr:'이상은',type:'korean',desc:'독창적 감성과 실험성. K-아방가르드의 원조'},
+    {en:'나윤선',kr:'나윤선',type:'korean',desc:'재즈 보컬 × 국악 감성. 세계가 인정한 한국 재즈'},
+    {en:'Bill Withers',kr:'빌 위더스',type:'western',desc:'가장 따뜻하고 인간적인 Soul. "Lean on Me"의 작가'},
+    {en:'D\'Angelo',kr:'디앤젤로',type:'western',desc:'Neo Soul의 최고봉. 그루브와 감성의 완벽한 균형'},
+    {en:'Nina Simone',kr:'니나 시몬',type:'western',desc:'재즈·블루스·소울의 경계를 허문 목소리'},
+    {en:'John Coltrane',kr:'존 콜트레인',type:'western',desc:'재즈 즉흥의 신. 동양 음악에서 영감받은 A Love Supreme'},
+    {en:'Robert Johnson',kr:'로버트 존슨',type:'western',desc:'델타 블루스의 원형. 가장 원초적인 한(恨)의 서양판'},
+    {en:'Erykah Badu',kr:'에리카 바두',type:'western',desc:'소울·재즈·힙합의 크로스오버. 깊고 신비로운 감성'},
+  ],
+
+  /* ── 프로덕션 시대 (Production Era) ── */
+  productionEras: [
+    {en:'1960s–70s Analog Soul',kr:'60–70년대 아날로그 소울',desc:'따뜻하고 두꺼운 테이프 음색. 빈티지 Motown·Stax 질감',suno:'warm 1970s analog recording, tape saturation, vintage soul production, thick and warm'},
+    {en:'1980s Fusion Jazz',kr:'80년대 퓨전 재즈',desc:'전기 악기와 어쿠스틱의 혼합. 정교하고 풍성한 편곡',suno:'1980s fusion jazz production, electric-acoustic blend, sophisticated arrangement, studio polish'},
+    {en:'1990s Neo Soul',kr:'90년대 네오소울',desc:'D\'Angelo·Erykah Badu 시대. 드럼 머신 + 라이브 그루브의 황금비',suno:'1990s neo soul production, MPC drums, warm bass, intimate studio feel, D\'Angelo influenced'},
+    {en:'2000s K-indie Warmth',kr:'2000년대 K-인디 감성',desc:'홍대 감성. 아날로그 따뜻함 + 인디 DIY 질감',suno:'2000s Korean indie warmth, lo-fi analog texture, intimate and personal recording atmosphere'},
+    {en:'2010s World Music',kr:'2010년대 월드 뮤직',desc:'글로벌 퓨전 트렌드. Spotify 시대의 세련된 혼합',suno:'2010s contemporary world music production, clean modern mix, global fusion aesthetic, streaming-ready quality'},
+    {en:'Timeless Classic',kr:'시대 초월 — 클래식',desc:'특정 시대에 귀속되지 않는 보편적 음악 언어',suno:'timeless production quality, no specific era, universal sonic language, emotionally pure recording'},
+  ],
 };
 
 /* ═══════════════════════════════════════════
@@ -1054,6 +1181,12 @@ const STATE = {
   gueumStyle:null,
   hanSoulStyle:null,
   gueumStrength:'strong',
+  /* ── 신규: 조성·음계·구조·레퍼런스 ── */
+  musicKey:null,
+  koreanScale:null,
+  energyArc:null,
+  refArtists:[],
+  productionEra:null,
 };
 
 /* ═══════════════════════════════════════════
@@ -1228,6 +1361,79 @@ function renderHanSoulStyles() {
       <div style="font-size:10px;color:#e07070;margin-top:8px;padding:4px 8px;background:rgba(200,80,80,.1);border-radius:4px">→ ${d.style}</div>
     </div>`).join('');
 }
+/* ── 신규 렌더 함수들 ── */
+function renderMusicKeys() {
+  const g = document.getElementById('musicKeyGrid');
+  if (!g) return;
+  g.innerHTML = DATA.musicKeys.map((d,i) => `
+    <div class="selcard ${STATE.musicKey===i?'active':''}" id="mkey_${i}" onclick="selectMusicKey(${i})" style="${d.recommend?'border-left:3px solid var(--gold)':''}">
+      <div class="check-dot"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <span style="font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--gold)">${d.short}</span>
+        <span style="font-size:11px;color:var(--muted)">${d.kr}</span>
+        ${d.recommend?'<span style="font-size:10px;color:var(--gold);margin-left:auto">⭐추천</span>':''}
+      </div>
+      <div style="font-size:10px;color:var(--teal);margin-bottom:4px">${d.mood}</div>
+      <div class="card-desc">${d.desc}</div>
+    </div>`).join('');
+}
+function renderKoreanScales() {
+  const g = document.getElementById('koreanScaleGrid');
+  if (!g) return;
+  g.innerHTML = DATA.koreanScales.map((d,i) => `
+    <div class="selcard korean-card ${STATE.koreanScale===i?'active':''}" id="kscale_${i}" onclick="selectKoreanScale(${i})">
+      <div class="check-dot"></div>
+      <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--korean2);margin-bottom:3px">${d.en}</div>
+      <div style="font-family:'Noto Serif KR',serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">${d.kr}</div>
+      <div style="font-size:10px;color:var(--teal);margin-bottom:4px">${d.feel}</div>
+      <div class="card-desc">${d.desc}</div>
+    </div>`).join('');
+}
+function renderEnergyArcs() {
+  const g = document.getElementById('energyArcGrid');
+  if (!g) return;
+  g.innerHTML = DATA.energyArcs.map((d,i) => `
+    <div class="selcard ${STATE.energyArc===i?'active':''}" id="arc_${i}" onclick="selectEnergyArc(${i})">
+      <div class="check-dot"></div>
+      <div style="font-family:'Noto Serif KR',serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">${d.kr}</div>
+      <div style="font-family:'Space Mono',monospace;font-size:16px;letter-spacing:3px;color:var(--gold);margin-bottom:6px">${d.curve}</div>
+      <div style="font-size:11px;color:var(--muted)">${d.en}</div>
+      <div class="card-desc" style="margin-top:4px">${d.desc}</div>
+    </div>`).join('');
+}
+function renderRefArtists() {
+  const kr = DATA.refArtists.filter(d=>d.type==='korean');
+  const west = DATA.refArtists.filter(d=>d.type==='western');
+  const krGrid = document.getElementById('refArtistKrGrid');
+  const westGrid = document.getElementById('refArtistWestGrid');
+  if (krGrid) krGrid.innerHTML = kr.map((d,i) => {
+    const origIdx = DATA.refArtists.indexOf(d);
+    const sel = STATE.refArtists.includes(origIdx);
+    return `<div class="chip korean-chip ${sel?'active':''}" id="ref_${origIdx}" onclick="toggleRefArtist(${origIdx})">
+      <span class="chip-en">${d.en}</span>
+      <span class="chip-kr" style="font-size:10px;color:var(--muted)">${d.desc}</span>
+    </div>`;
+  }).join('');
+  if (westGrid) westGrid.innerHTML = west.map((d,i) => {
+    const origIdx = DATA.refArtists.indexOf(d);
+    const sel = STATE.refArtists.includes(origIdx);
+    return `<div class="chip ${sel?'active':''}" id="ref_${origIdx}" onclick="toggleRefArtist(${origIdx})">
+      <span class="chip-en">${d.en}</span>
+      <span class="chip-kr" style="font-size:10px;color:var(--muted)">${d.desc}</span>
+    </div>`;
+  }).join('');
+}
+function renderProductionEras() {
+  const g = document.getElementById('productionEraGrid');
+  if (!g) return;
+  g.innerHTML = DATA.productionEras.map((d,i) => `
+    <div class="selcard ${STATE.productionEra===i?'active':''}" id="era_${i}" onclick="selectProductionEra(${i})">
+      <div class="check-dot"></div>
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--teal);margin-bottom:4px">${d.en}</div>
+      <div style="font-family:'Noto Serif KR',serif;font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">${d.kr}</div>
+      <div class="card-desc">${d.desc}</div>
+    </div>`).join('');
+}
 
 /* ═══════════════════════════════════════════
    SELECTION HANDLERS
@@ -1352,6 +1558,38 @@ function selectHanSoulStyle(i) {
   if (STATE.hanSoulStyle!==null) document.getElementById('hansoul_'+i)?.classList.add('active');
   buildPrompt();
 }
+/* ── 신규 핸들러들 ── */
+function selectMusicKey(i) {
+  STATE.musicKey = STATE.musicKey===i ? null : i;
+  document.querySelectorAll('[id^="mkey_"]').forEach(el=>el.classList.remove('active'));
+  if (STATE.musicKey!==null) document.getElementById('mkey_'+i)?.classList.add('active');
+  buildPrompt();
+}
+function selectKoreanScale(i) {
+  STATE.koreanScale = STATE.koreanScale===i ? null : i;
+  document.querySelectorAll('[id^="kscale_"]').forEach(el=>el.classList.remove('active'));
+  if (STATE.koreanScale!==null) document.getElementById('kscale_'+i)?.classList.add('active');
+  buildPrompt();
+}
+function selectEnergyArc(i) {
+  STATE.energyArc = STATE.energyArc===i ? null : i;
+  document.querySelectorAll('[id^="arc_"]').forEach(el=>el.classList.remove('active'));
+  if (STATE.energyArc!==null) document.getElementById('arc_'+i)?.classList.add('active');
+  buildPrompt();
+}
+function toggleRefArtist(i) {
+  const idx = STATE.refArtists.indexOf(i);
+  if (idx>=0) STATE.refArtists.splice(idx,1);
+  else { if(STATE.refArtists.length>=3){showToast('⚠️ 레퍼런스는 최대 3명까지 선택 가능합니다.');return;} STATE.refArtists.push(i); }
+  document.getElementById('ref_'+i)?.classList.toggle('active', STATE.refArtists.includes(i));
+  buildPrompt();
+}
+function selectProductionEra(i) {
+  STATE.productionEra = STATE.productionEra===i ? null : i;
+  document.querySelectorAll('[id^="era_"]').forEach(el=>el.classList.remove('active'));
+  if (STATE.productionEra!==null) document.getElementById('era_'+i)?.classList.add('active');
+  buildPrompt();
+}
 function updateBpm(v) {
   STATE.bpm=parseInt(v);
   document.getElementById('bpmVal').textContent=v;
@@ -1436,7 +1674,32 @@ function buildPrompt() {
     parts.push(`[Emotional Intensity] ${STATE.intensity}/10 (${STATE.intensity<=3?'Chill':STATE.intensity<=6?'Emotional':'Explosive Soul'})`);
     const kr=STATE.koreanRatio||70; const mod=100-kr;
     parts.push(`[Direction] ${kr}% Korean traditional dominance — Korean instruments MUST lead with authentic techniques (시김새, 농현, 정간보). Modern ${mod}% elements are strictly background elevation.`);
-    parts.push(`[Structure] Tasteful breakdown, dynamic lift at 1:20–1:40, emotional climax, Korean instrument spotlight moment, powerful final ensemble, well-placed silence for maximum impact.`);
+    /* ── 신규: 조성·음계 ── */
+    if (STATE.musicKey!==null && DATA.musicKeys[STATE.musicKey]) {
+      const mk=DATA.musicKeys[STATE.musicKey];
+      parts.push(`[Key] ${mk.en} (${mk.short}) — ${mk.mood}`);
+    }
+    if (STATE.koreanScale!==null && DATA.koreanScales[STATE.koreanScale]) {
+      const ks=DATA.koreanScales[STATE.koreanScale];
+      parts.push(`[Korean Scale] ${ks.en} (${ks.kr}) — ${ks.suno}`);
+    }
+    /* ── 신규: 에너지 아크 ── */
+    if (STATE.energyArc!==null && DATA.energyArcs[STATE.energyArc]) {
+      const arc=DATA.energyArcs[STATE.energyArc];
+      parts.push(`[Energy Arc] ${arc.suno}`);
+    } else {
+      parts.push(`[Structure] Tasteful breakdown, dynamic lift at 1:20–1:40, emotional climax, Korean instrument spotlight moment, powerful final ensemble, well-placed silence for maximum impact.`);
+    }
+    /* ── 신규: 레퍼런스 아티스트 ── */
+    if (STATE.refArtists.length) {
+      const names=STATE.refArtists.filter(i=>DATA.refArtists[i]).map(i=>DATA.refArtists[i].en).join(', ');
+      parts.push(`[Reference] In the style of: ${names} — blend their emotional sensibility with Korean traditional core`);
+    }
+    /* ── 신규: 프로덕션 시대 ── */
+    if (STATE.productionEra!==null && DATA.productionEras[STATE.productionEra]) {
+      const era=DATA.productionEras[STATE.productionEra];
+      parts.push(`[Production] ${era.suno}`);
+    }
     const box=document.getElementById('promptBox');
     box.textContent=parts.length>3?parts.join('\n'):'← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
   } catch(e) {
@@ -1832,6 +2095,8 @@ function resetAll(doRender=true) {
   STATE.bpm=95;STATE.intensity=5;STATE.gender='all';STATE.koreanDominance=82;
   STATE.gueumPositions=[];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
   STATE.gueumStyle=null;STATE.hanSoulStyle=null;STATE.gueumStrength='strong';
+  STATE.musicKey=null;STATE.koreanScale=null;STATE.energyArc=null;
+  STATE.refArtists=[];STATE.productionEra=null;
   if(doRender){
     renderAll();syncSliders();
     // 구음 UI 초기화
@@ -1848,7 +2113,9 @@ function resetAll(doRender=true) {
 function renderAll() {
   renderGenres();renderMoods();renderInstruments();renderConcepts();
   renderVocalStyles();renderTones(STATE.gender);renderAdvancedChips();
-  renderGueumStyles();renderHanSoulStyles(); /* FIX: 누락된 렌더 함수 추가 */
+  renderGueumStyles();renderHanSoulStyles();
+  renderMusicKeys();renderKoreanScales();renderEnergyArcs();
+  renderRefArtists();renderProductionEras();
   if(STATE.genre!==null)document.getElementById('genre_'+STATE.genre)?.classList.add('active');
   STATE.moods.forEach(i=>document.getElementById('mood_'+i)?.classList.add('active'));
   if(STATE.concept!==null)document.getElementById('concept_'+STATE.concept)?.classList.add('active');
