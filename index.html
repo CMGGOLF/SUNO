@@ -2185,6 +2185,24 @@ function applyRandomPreset() {
   const rndGBtn=[...document.querySelectorAll('.gender-btn')].find(b=>(STATE.gender==='all'&&b.textContent.includes('전체'))||(STATE.gender==='male'&&b.textContent.includes('남성'))||(STATE.gender==='female'&&b.textContent.includes('여성')));
   if(rndGBtn)rndGBtn.classList.add('active');
 
+  /* ✅ [FIX v6] display:none 섹션은 getElementById가 null 반환할 수 있음
+     → 강제로 잠깐 열어서 active 적용 후 다시 닫기 */
+  const _scaleBody=document.getElementById('scaleBody');
+  const _arcBody=document.getElementById('arcBody');
+  const _refBody=document.getElementById('refBody');
+  const _scaleWas=_scaleBody?.style.display;
+  const _arcWas=_arcBody?.style.display;
+  const _refWas=_refBody?.style.display;
+  if(_scaleBody)_scaleBody.style.display='block';
+  if(_arcBody)_arcBody.style.display='block';
+  if(_refBody)_refBody.style.display='block';
+
+  renderMusicKeys();renderKoreanScales();renderEnergyArcs();renderProductionEras();
+
+  if(_scaleBody)_scaleBody.style.display=_scaleWas||'none';
+  if(_arcBody)_arcBody.style.display=_arcWas||'none';
+  if(_refBody)_refBody.style.display=_refWas||'none';
+
   buildPrompt();showToast("✨ 랜덤 3:7 프리셋 적용!");
 }
 
