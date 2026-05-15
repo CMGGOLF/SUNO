@@ -1324,33 +1324,46 @@ function renderMoods() {
     </div>`).join('');
 }
 function renderInstruments() {
+  const currentKey = STATE.instrCategory; // 현재 선택된 악기 (예: "string_0")
   const gs = document.getElementById('instrGridString');
-  if (gs) gs.innerHTML = DATA.instrumentsString.map((d,i) => `
-    <div class="selcard korean-card" id="instr_s_${i}" onclick="selectInstrByCategory('string',${i})">
+  if (gs) gs.innerHTML = DATA.instrumentsString.map((d,i) => {
+    const key = `string_${i}`;
+    const isActive = currentKey === key;
+    return `
+    <div class="selcard korean-card ${isActive ? 'active' : ''}" id="instr_s_${i}" onclick="selectInstrByCategory('string',${i})">
       <div class="check-dot"></div>
       <div class="card-en">${d.en}</div>
       <div class="card-kr">${d.kr}</div>
       <div class="card-desc">${d.desc}</div>
       <div class="card-ratio r37" style="background:rgba(160,90,58,0.25);color:var(--korean2);border:1px solid rgba(160,90,58,0.4)">🔶 7:3 정통화</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   const gp = document.getElementById('instrGridPercussion');
-  if (gp) gp.innerHTML = DATA.instrumentsPercussion.map((d,i) => `
-    <div class="selcard korean-card" id="instr_p_${i}" onclick="selectInstrByCategory('percussion',${i})">
+  if (gp) gp.innerHTML = DATA.instrumentsPercussion.map((d,i) => {
+    const key = `percussion_${i}`;
+    const isActive = currentKey === key;
+    return `
+    <div class="selcard korean-card ${isActive ? 'active' : ''}" id="instr_p_${i}" onclick="selectInstrByCategory('percussion',${i})">
       <div class="check-dot"></div>
       <div class="card-en">${d.en}</div>
       <div class="card-kr">${d.kr}</div>
       <div class="card-desc">${d.desc}</div>
       <div class="card-ratio r37" style="background:rgba(160,90,58,0.25);color:var(--korean2);border:1px solid rgba(160,90,58,0.4)">🔶 7:3 정통화</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   const gw = document.getElementById('instrGridWind');
-  if (gw) gw.innerHTML = DATA.instrumentsWind.map((d,i) => `
-    <div class="selcard korean-card" id="instr_w_${i}" onclick="selectInstrByCategory('wind',${i})">
+  if (gw) gw.innerHTML = DATA.instrumentsWind.map((d,i) => {
+    const key = `wind_${i}`;
+    const isActive = currentKey === key;
+    return `
+    <div class="selcard korean-card ${isActive ? 'active' : ''}" id="instr_w_${i}" onclick="selectInstrByCategory('wind',${i})">
       <div class="check-dot"></div>
       <div class="card-en">${d.en}</div>
       <div class="card-kr">${d.kr}</div>
       <div class="card-desc">${d.desc}</div>
       <div class="card-ratio r37" style="background:rgba(160,90,58,0.25);color:var(--korean2);border:1px solid rgba(160,90,58,0.4)">🔶 7:3 정통화</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 function selectInstrByCategory(cat, i) {
   document.querySelectorAll('[id^="instr_"]').forEach(el => el.classList.remove('active'));
