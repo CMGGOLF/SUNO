@@ -1810,6 +1810,10 @@ function buildPrompt() {
       const era=DATA.productionEras[STATE.productionEra];
       parts.push(`[Production] ${era.suno}`);
     }
+    /* === 곡 길이 강제 (가장 중요) === */
+    if (STATE.songDuration) {
+      parts.push(`[Song Length] This must be a FULL ${STATE.songDuration} song. Extended intro, full structure, emotional build-up, and LONG outro. Do NOT make it short or fade out early. Complete song around ${STATE.songDuration}.`);
+    }
     if (STATE.songDuration) {
       parts.push(`[Song Length] Make a FULL ${STATE.songDuration} song with long intro and long outro. Do not make it short.`);
     }
