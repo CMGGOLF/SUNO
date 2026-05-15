@@ -266,6 +266,14 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 .han-soul-card.active { border-color:#c85050;background:rgba(200,80,80,.1); }
 .han-soul-card .card-en { color:#e07070; }
 
+.dur-btn{
+  padding:8px 18px;border-radius:6px;border:1px solid var(--border);
+  background:var(--surface2);color:var(--muted);font-size:13px;
+  font-family:'Space Mono',monospace;cursor:pointer;transition:all .2s;font-weight:700;
+}
+.dur-btn:hover{border-color:var(--gold);color:var(--text);}
+.dur-btn.active{background:rgba(201,168,76,.2);border-color:var(--gold);color:var(--gold);}
+
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:var(--dim)}
@@ -645,6 +653,39 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
       <div style="font-size:12px;color:#6aa0e0;margin-bottom:8px;font-weight:600">07H. 인간미 / 라이브 느낌</div>
       <div class="chip-wrap" id="humanFeelGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 07B: 목표 곡 길이 -->
+<div class="section" style="border-color:rgba(201,168,76,.4);background:rgba(201,168,76,.04)">
+  <div class="section-head" style="background:rgba(201,168,76,.08)">
+    <div class="sec-num" style="background:var(--gold);color:#08080e">⏱</div>
+    <div class="sec-title">목표 곡 길이 <span style="color:var(--gold);font-size:12px">(Suno 길이 제어 핵심!)</span></div>
+    <div class="sec-sub">스타일 프롬프트에 자동 반영 — 짧은 곡 방지</div>
+  </div>
+  <div class="section-body">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <div style="display:flex;gap:8px;flex-wrap:wrap" id="durationBtnWrap">
+        <button class="dur-btn" onclick="setSongDuration('3:00')">3:00</button>
+        <button class="dur-btn active" onclick="setSongDuration('3:30')">3:30 ⭐</button>
+        <button class="dur-btn" onclick="setSongDuration('4:00')">4:00</button>
+        <button class="dur-btn" onclick="setSongDuration('4:30')">4:30</button>
+        <button class="dur-btn" onclick="setSongDuration('5:00')">5:00</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:11px;color:var(--muted)">직접입력:</span>
+        <input type="text" id="songDurationCustom" value="3:30"
+          style="width:70px;padding:5px 10px;font-size:13px;font-family:'Space Mono',monospace;text-align:center"
+          onblur="setSongDurationCustom(this.value)"
+          onkeydown="if(event.key==='Enter')setSongDurationCustom(this.value)"
+          placeholder="3:30">
+      </div>
+      <div style="font-size:12px;color:var(--gold);font-family:'Space Mono',monospace;font-weight:700" id="durationDisplay">현재: 3:30</div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.7">
+      💡 수노는 기본적으로 <b style="color:var(--gold)">2분 내외</b>로 짧게 생성합니다.<br>
+      이 설정이 스타일 프롬프트에 <b style="color:var(--gold)">"full 3:30 song, extended outro"</b> 형태로 자동 삽입되어 길이를 강제합니다.
     </div>
   </div>
 </div>
@@ -1225,6 +1266,7 @@ const STATE = {
   energyArc:null,
   refArtists:[],
   productionEra:null,
+  songDuration:'3:30',
 };
 
 /* ═══════════════════════════════════════════
@@ -1851,18 +1893,53 @@ async function genLyrics(lang) {
   const isEn=lang==='en';
   const loading=document.getElementById(isEn?'lyricsEnLoading':'lyricsKrLoading');
   const out=document.getElementById(isEn?'lyricsEnOut':'lyricsKrOut');
-  /* ✅ [FIX v6] 가사 생성 직전 duration 강제 검증 — onblur 미발생 케이스 대응 */
+
+  /* 길이 입력 강제 검증 */
   const durationInput=document.getElementById(isEn?'lyricsDurationEn':'lyricsDurationKr');
   if(durationInput) enforceDuration(durationInput);
   const duration=durationInput?.value||'3:00';
+
+  /* ── 시간 → 섹션 구조 자동 계산 ── */
+  const [minsStr, secsStr] = duration.split(':');
+  const totalSec = parseInt(minsStr)*60 + parseInt(secsStr||'0');
+
+  // 한 줄 = 평균 4~5초 (느린 소울/블루스 기준 5초)
+  const secPerLine = 5;
+  // 섹션별 초 배분: Intro(15), Verse(35), Chorus(25), Bridge(20), Outro(15)
+  // 절 수 계산
+  const introPct=0.08, versePct=0.28, chorusPct=0.20, bridgePct=0.14, outroPct=0.10;
+  const verseLines  = Math.max(4, Math.round((totalSec * versePct) / secPerLine));
+  const chorusLines = Math.max(4, Math.round((totalSec * chorusPct) / secPerLine));
+  const bridgeLines = Math.max(3, Math.round((totalSec * bridgePct) / secPerLine));
+  const outroLines  = Math.max(2, Math.round((totalSec * outroPct) / secPerLine));
+
+  // 총 시간에 따라 Verse + Chorus 반복 횟수 결정
+  const repeatCount = totalSec >= 240 ? 3 : totalSec >= 180 ? 2 : 2;
+
+  /* ── 구조 명세 문자열 생성 ── */
+  let structureEn = `[Intro]\n(${Math.round(totalSec*introPct)} seconds — short instrumental feel or 1-2 atmosphere lines)\n\n`;
+  let structureKr = `[인트로]\n(${Math.round(totalSec*introPct)}초 — 짧은 분위기 라인 1~2줄)\n\n`;
+
+  for(let i=1;i<=repeatCount;i++){
+    structureEn += `[Verse ${i}]\n(WRITE EXACTLY ${verseLines} lines here)\n\n[Chorus]\n(WRITE EXACTLY ${chorusLines} lines here)\n\n`;
+    structureKr += `[절 ${i}]\n(정확히 ${verseLines}줄 작성)\n\n[후렴]\n(정확히 ${chorusLines}줄 작성)\n\n`;
+  }
+  structureEn += `[Bridge]\n(WRITE EXACTLY ${bridgeLines} lines here)\n\n[Chorus - Final]\n(WRITE EXACTLY ${chorusLines} lines — more intense than before)\n\n[Outro]\n(WRITE EXACTLY ${outroLines} lines — fade out feeling)`;
+  structureKr += `[브릿지]\n(정확히 ${bridgeLines}줄 작성)\n\n[후렴 - 마지막]\n(정확히 ${chorusLines}줄 — 이전보다 더 강렬하게)\n\n[아웃트로]\n(정확히 ${outroLines}줄 — 여운 있게 마무리)`;
+
   loading.classList.add('show');
   try {
-    const lyricPrompt=isEn
-      ?`Write deeply emotional, poetic lyrics in ENGLISH ONLY for a ${duration} long 3:7 Korean fusion track.\nRules: Never mention instrument names. Focus on emotion, imagery, longing, and Korean sensibility.\nMusic style:\n${current}\nFormat: [Verse 1]\n...\n[Chorus]\n...\n[Bridge]\n...\n[Outro]\n...`
-      :`다음 3:7 국악 퓨전 음악에 맞는 깊고 시적인 한국어 가사를 ${duration} 길이 곡에 맞춰 작성하세요.\n규칙: 악기 이름 절대 금지. 감정, 이미지, 한국적 정서에 집중.\n음악 스타일:\n${current}\n형식: [절 1]\n...\n[후렴]\n...\n[브릿지]\n...\n[아웃트로]\n...`;
-    const sysP=isEn?'World-class lyricist for Korean fusion. Never mention instruments.':'최고 수준의 감성 작사가. 악기 이름 금지. 감정과 이미지 중심 한국어 가사 작성.';
+    const lyricPrompt = isEn
+      ? `You are writing lyrics for a ${duration} song (${totalSec} seconds total).\n\nCRITICAL RULES:\n1. Follow the EXACT structure below — do NOT skip or shorten any section\n2. Write the EXACT number of lines specified for each section\n3. English only. Never mention instrument names.\n4. Focus on emotion, imagery, longing, Korean sensibility (han, midnight, soul)\n5. Each line should take ~${secPerLine} seconds to sing (medium-slow pacing)\n6. The song MUST feel like a full ${duration} song when read aloud\n\nMusic style:\n${current}\n\nSTRUCTURE TO FOLLOW EXACTLY:\n${structureEn}`
+      : `${duration} 길이(${totalSec}초)의 곡에 맞는 가사를 작성합니다.\n\n절대 규칙:\n1. 아래 구조를 정확히 따를 것 — 섹션 생략·단축 절대 금지\n2. 각 섹션에 지정된 줄 수를 정확히 작성할 것\n3. 한국어만 사용. 악기 이름 절대 금지.\n4. 감정·이미지·한(恨)·심야·소울 중심\n5. 각 줄은 느리게 부를 때 약 ${secPerLine}초 분량\n6. 완창 시 ${duration}이 되도록 충분한 양 작성\n\n음악 스타일:\n${current}\n\n정확히 따라야 할 구조:\n${structureKr}`;
+
+    const sysP = isEn
+      ? `You are a world-class lyricist. You MUST write the exact number of lines specified for each section. Never skip sections. Never write fewer lines than required. The output must fill a ${duration} song.`
+      : `최고 수준의 감성 작사가입니다. 각 섹션에 지정된 줄 수를 반드시 지켜야 합니다. 섹션 생략 금지. 지정 줄 수보다 적게 쓰는 것 금지. ${duration} 분량을 채워야 합니다.`;
+
     const text=await callClaude(lyricPrompt,sysP);
     out.value=cleanModelText(text);
+    showToast(`✅ ${duration} 분량 가사 생성 완료!`);
   } catch(e) { out.value='오류: '+(e.message||'알 수 없는 오류'); }
   loading.classList.remove('show');
 }
@@ -2376,6 +2453,30 @@ function openSunoWithEverything() {
   let fullText=""; if(title)fullText+=`Title: ${title}\n\n`; if(prompt)fullText+=`${prompt}\n\n`; if(lyrics)fullText+=`Lyrics:\n${lyrics}`;
   if(!fullText.trim()){alert("복사할 내용이 없습니다!");return;}
   navigator.clipboard.writeText(fullText).then(()=>{window.open('https://suno.com/create','_blank');setTimeout(()=>{alert("✅ 복사 완료!\nSuno에서 Ctrl+V 눌러 붙여넣기 해주세요!");},800);}).catch(()=>{alert("복사 실패\n\n"+fullText);window.open('https://suno.com/create','_blank');});
+}
+
+/* ═══════════════════════════════════════════
+   곡 길이 설정
+═══════════════════════════════════════════ */
+function setSongDuration(val) {
+  STATE.songDuration = val;
+  document.querySelectorAll('.dur-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.startsWith(val));
+  });
+  const custom = document.getElementById('songDurationCustom');
+  if (custom) custom.value = val;
+  document.getElementById('durationDisplay').textContent = '현재: ' + val;
+  buildPrompt();
+}
+function setSongDurationCustom(val) {
+  const m = val.trim().match(/^(\d+):(\d{2})$/);
+  if (!m) { showToast('⚠️ 형식: 3:30'); return; }
+  const total = parseInt(m[1])*60+parseInt(m[2]);
+  if (total < 120) { showToast('⚠️ 최소 2:00'); return; }
+  STATE.songDuration = val.trim();
+  document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('durationDisplay').textContent = '현재: ' + STATE.songDuration;
+  buildPrompt();
 }
 
 /* ═══════════════════════════════════════════
