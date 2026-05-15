@@ -1671,18 +1671,36 @@ function buildPrompt() {
     if (STATE.blackSoulElements.length) { const bse=STATE.blackSoulElements.filter(i=>DATA.blackSoulElements[i]).map(i=>DATA.blackSoulElements[i].en).join(', '); if(bse)parts.push(`[Black Soul/Blues] ${bse}`); }
     if (STATE.humanFeelElements.length) { const hfe=STATE.humanFeelElements.filter(i=>DATA.humanFeelElements[i]).map(i=>DATA.humanFeelElements[i].en).join(', '); if(hfe)parts.push(`[Human Feel] ${hfe}`); }
     if (STATE.vocalTones.length) { const vts=STATE.vocalTones.filter(i=>DATA.vocalTones[i]).map(i=>DATA.vocalTones[i].en).join(', '); if(vts)parts.push(`[Vocal Tone] ${vts}`); }
-    if (STATE.gueumPositions.length||STATE.gueumStyle!==null) {
-      const posMap={start:'at the very beginning (intro)',mid:'in the middle (bridge)',end:'at the end (outro)'};
-      const posText=STATE.gueumPositions.map(p=>posMap[p]).join(' and ')||'prominently throughout';
-      const pitchMap={high:'high register',midhigh:'mid-high register',midlow:'mid-low register',low:'deep low register'};
-      const genderMap={both:'male and female voices',male:'male voice (deep, gritty, powerful)',female:'female voice (clear, mournful)'};
-      const styleInfo=STATE.gueumStyle!==null&&DATA.gueumStyles[STATE.gueumStyle]?DATA.gueumStyles[STATE.gueumStyle]:null;
-      const strength=STATE.gueumStrength||'strong';
-      let strengthPrefix=strength==='maximum'?'CRITICAL INSTRUCTION: ':strength==='strong'?'IMPORTANT: ':'';
-      let gueumText=styleInfo
-        ?`${strengthPrefix}Forcefully include authentic traditional Korean gueum (구음) vocalization using real Korean onomatopoeia sounds such as "${styleInfo.en2}". Style: ${styleInfo.kr}. Place the gueum ${posText}. Use ${pitchMap[STATE.gueumPitch]} with ${genderMap[STATE.gueumGender]}. The gueum must be clearly audible, emotionally powerful, and stand out in the mix. Do NOT replace with Western scat singing.`
-        :`${strengthPrefix}Forcefully include traditional Korean gueum vocalization ${posText}. Use authentic Korean onomatopoeia in ${pitchMap[STATE.gueumPitch]} with ${genderMap[STATE.gueumGender]}. Make the gueum clearly audible and emotionally dominant.`;
-      parts.push(`[GUEUM] ${gueumText}`);
+ if (STATE.gueumPositions.length||STATE.gueumStyle!==null) {
+  const posMap={start:'at the very beginning (intro)',mid:'in the middle (bridge)',end:'at the end (outro)'};
+  const posText=STATE.gueumPositions.map(p=>posMap[p]).join(' and ')||'prominently throughout';
+  const pitchMap={high:'high register',midhigh:'mid-high register',midlow:'mid-low register',low:'deep low register'};
+  const genderMap={both:'male and female voices',male:'male voice (deep, gritty, powerful)',female:'female voice (clear, mournful)'};
+  const styleInfo=STATE.gueumStyle!==null&&DATA.gueumStyles[STATE.gueumStyle]?DATA.gueumStyles[STATE.gueumStyle]:null;
+  const strength=STATE.gueumStrength||'strong';
+
+  let strengthPrefix = '';
+  if (strength === 'maximum') {
+    strengthPrefix = 'CRITICAL INSTRUCTION - HIGHEST PRIORITY: ';
+  } else if (strength === 'strong') {
+    strengthPrefix = 'IMPORTANT: ';
+  }
+
+  let gueumText = '';
+  if (styleInfo) {
+    gueumText = `${strengthPrefix}Forcefully include authentic traditional Korean gueum (구음) vocalization. ` +
+      `Use exact Korean onomatopoeia sounds such as "${styleInfo.en2}". ` +
+      `Style: ${styleInfo.kr}. ` +
+      `This is NOT humming and NOT Western scat. ` +
+      `Place the gueum ${posText}. ` +
+      `Use ${pitchMap[STATE.gueumPitch]} with ${genderMap[STATE.gueumGender]}. ` +
+      `The gueum must be clearly audible, emotionally powerful, and stand out in the mix.`;
+  } else {
+    gueumText = `${strengthPrefix}Forcefully include traditional Korean gueum vocalization ${posText}. ` +
+      `Use authentic Korean onomatopoeia. This is NOT humming. Make the gueum clearly audible and emotionally dominant.`;
+  }
+
+  parts.push(`[GUEUM] ${gueumText}`);
     }
     if (STATE.hanSoulStyle!==null&&DATA.hanSoulStyles[STATE.hanSoulStyle]) {
       const hs=DATA.hanSoulStyles[STATE.hanSoulStyle];
