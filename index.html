@@ -297,11 +297,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v4</span></div>
-        <div class="logo-sub">Joseon Core · 7:3 정통화 (Korean Traditional 70% + Modern Elevation 30%)</div>
+        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v7</span></div>
+        <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 가사 삽입 강화판</div>
       </div>
     </div>
-    <div class="header-badge">JOSEON CORE v4 · 구음·비율조절 · 버그수정판</div>
+    <div class="header-badge">JOSEON CORE v7 · 구음 가사 삽입 · 스타일프롬프트 최적화</div>
   </div>
 </header>
 
@@ -858,6 +858,16 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="sec-sub">영어 가사 / 한국어 가사 / 직접 입력</div>
   </div>
   <div class="section-body">
+    <!-- 구음 삽입 버튼 -->
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:rgba(160,90,58,.08);border:1px solid rgba(160,90,58,.35);border-radius:8px;">
+      <button class="btn btn-korean" onclick="insertGueumToLyrics()" style="white-space:nowrap">
+        🎵 구음 가사 삽입
+      </button>
+      <span style="font-size:11px;color:var(--muted);line-height:1.5">
+        06B에서 선택한 <span style="color:var(--korean2)">구음 스타일·위치</span>가 현재 가사창에 자동 삽입됩니다.<br>
+        <span style="color:var(--dim)">※ 위치 미선택 시 경고가 표시됩니다.</span>
+      </span>
+    </div>
     <div class="tab-row">
       <div class="tab active" onclick="switchTab('lyricsEn',this)">🇺🇸 영어 가사 (AI 생성)</div>
       <div class="tab" onclick="switchTab('lyricsKr',this)">🇰🇷 한국어 가사 (AI 생성)</div>
@@ -1671,36 +1681,27 @@ function buildPrompt() {
     if (STATE.blackSoulElements.length) { const bse=STATE.blackSoulElements.filter(i=>DATA.blackSoulElements[i]).map(i=>DATA.blackSoulElements[i].en).join(', '); if(bse)parts.push(`[Black Soul/Blues] ${bse}`); }
     if (STATE.humanFeelElements.length) { const hfe=STATE.humanFeelElements.filter(i=>DATA.humanFeelElements[i]).map(i=>DATA.humanFeelElements[i].en).join(', '); if(hfe)parts.push(`[Human Feel] ${hfe}`); }
     if (STATE.vocalTones.length) { const vts=STATE.vocalTones.filter(i=>DATA.vocalTones[i]).map(i=>DATA.vocalTones[i].en).join(', '); if(vts)parts.push(`[Vocal Tone] ${vts}`); }
- if (STATE.gueumPositions.length||STATE.gueumStyle!==null) {
-  const posMap={start:'at the very beginning (intro)',mid:'in the middle (bridge)',end:'at the end (outro)'};
-  const posText=STATE.gueumPositions.map(p=>posMap[p]).join(' and ')||'prominently throughout';
-  const pitchMap={high:'high register',midhigh:'mid-high register',midlow:'mid-low register',low:'deep low register'};
-  const genderMap={both:'male and female voices',male:'male voice (deep, gritty, powerful)',female:'female voice (clear, mournful)'};
-  const styleInfo=STATE.gueumStyle!==null&&DATA.gueumStyles[STATE.gueumStyle]?DATA.gueumStyles[STATE.gueumStyle]:null;
-  const strength=STATE.gueumStrength||'strong';
-
-  let strengthPrefix = '';
-  if (strength === 'maximum') {
-    strengthPrefix = 'CRITICAL INSTRUCTION - HIGHEST PRIORITY: ';
-  } else if (strength === 'strong') {
-    strengthPrefix = 'IMPORTANT: ';
-  }
-
-  let gueumText = '';
-  if (styleInfo) {
-    gueumText = `${strengthPrefix}Forcefully include authentic traditional Korean gueum (구음) vocalization. ` +
-      `Use exact Korean onomatopoeia sounds such as "${styleInfo.en2}". ` +
-      `Style: ${styleInfo.kr}. ` +
-      `This is NOT humming and NOT Western scat. ` +
-      `Place the gueum ${posText}. ` +
-      `Use ${pitchMap[STATE.gueumPitch]} with ${genderMap[STATE.gueumGender]}. ` +
-      `The gueum must be clearly audible, emotionally powerful, and stand out in the mix.`;
-  } else {
-    gueumText = `${strengthPrefix}Forcefully include traditional Korean gueum vocalization ${posText}. ` +
-      `Use authentic Korean onomatopoeia. This is NOT humming. Make the gueum clearly audible and emotionally dominant.`;
-  }
-
-  parts.push(`[GUEUM] ${gueumText}`);
+    if (STATE.gueumPositions.length||STATE.gueumStyle!==null) {
+      const pitchMap={high:'high register',midhigh:'mid-high register',midlow:'mid-low register',low:'deep low register'};
+      const genderMap={both:'male and female voices',male:'male voice (deep, gritty, powerful)',female:'female voice (clear, mournful)'};
+      const styleInfo=STATE.gueumStyle!==null&&DATA.gueumStyles[STATE.gueumStyle]?DATA.gueumStyles[STATE.gueumStyle]:null;
+      const strength=STATE.gueumStrength||'strong';
+      let strengthPrefix='';
+      if(strength==='maximum') strengthPrefix='CRITICAL INSTRUCTION - HIGHEST PRIORITY: ';
+      else if(strength==='strong') strengthPrefix='IMPORTANT: ';
+      let gueumText='';
+      if(styleInfo){
+        gueumText=`${strengthPrefix}Forcefully include authentic traditional Korean gueum (구음) vocalization. `+
+          `Use exact Korean onomatopoeia sounds such as "${styleInfo.en2}". `+
+          `Style: ${styleInfo.kr}. `+
+          `This is NOT humming and NOT Western scat. `+
+          `Use ${pitchMap[STATE.gueumPitch]} with ${genderMap[STATE.gueumGender]}. `+
+          `The gueum must be clearly audible, emotionally powerful, and stand out in the mix.`;
+      } else {
+        gueumText=`${strengthPrefix}Forcefully include traditional Korean gueum vocalization. `+
+          `Use authentic Korean onomatopoeia. This is NOT humming. Make the gueum clearly audible and emotionally dominant.`;
+      }
+      parts.push(`[GUEUM] ${gueumText}`);
     }
     if (STATE.hanSoulStyle!==null&&DATA.hanSoulStyles[STATE.hanSoulStyle]) {
       const hs=DATA.hanSoulStyles[STATE.hanSoulStyle];
@@ -2357,6 +2358,80 @@ function openSunoWithEverything() {
   let fullText=""; if(title)fullText+=`Title: ${title}\n\n`; if(prompt)fullText+=`${prompt}\n\n`; if(lyrics)fullText+=`Lyrics:\n${lyrics}`;
   if(!fullText.trim()){alert("복사할 내용이 없습니다!");return;}
   navigator.clipboard.writeText(fullText).then(()=>{window.open('https://suno.com/create','_blank');setTimeout(()=>{alert("✅ 복사 완료!\nSuno에서 Ctrl+V 눌러 붙여넣기 해주세요!");},800);}).catch(()=>{alert("복사 실패\n\n"+fullText);window.open('https://suno.com/create','_blank');});
+}
+
+/* ═══════════════════════════════════════════
+   구음 가사 삽입
+═══════════════════════════════════════════ */
+function insertGueumToLyrics() {
+  if (!STATE.gueumPositions.length) {
+    showToast('⚠️ 06B 섹션에서 구음 위치를 먼저 선택해주세요! (시작/중간/끝)');
+    return;
+  }
+
+  /* 현재 활성화된 가사 탭의 textarea 찾기 */
+  const activePanel = document.querySelector('.tab-panel.active');
+  if (!activePanel) { showToast('⚠️ 가사창이 열려있지 않습니다.'); return; }
+  const textarea = activePanel.querySelector('textarea');
+  if (!textarea) { showToast('⚠️ 가사 입력란을 찾을 수 없습니다.'); return; }
+
+  /* 구음 소리 텍스트 */
+  const styleInfo = STATE.gueumStyle !== null && DATA.gueumStyles[STATE.gueumStyle]
+    ? DATA.gueumStyles[STATE.gueumStyle] : null;
+  const rawSounds = styleInfo ? styleInfo.en2 : '으~흠~';
+  /* "/" 로 구분된 소리를 줄바꿈으로 */
+  const soundLines = rawSounds.split('/').map(s => s.trim()).filter(Boolean).join('\n');
+
+  let lyrics = textarea.value;
+
+  /* 위치별 삽입 (순서: end → mid → start 역순으로 처리해야 앞쪽 삽입이 뒤쪽 인덱스에 영향 안 줌) */
+  const orderedPos = [...STATE.gueumPositions].sort((a,b)=>{
+    const order={end:0,mid:1,start:2}; return order[a]-order[b];
+  });
+
+  orderedPos.forEach(pos => {
+    if (pos === 'start') {
+      /* ── 시작: [Intro] 앞 or 맨 위 ── */
+      const introTag = lyrics.match(/\[(Intro|인트로|절\s*1|Verse\s*1)\]/i);
+      if (introTag) {
+        lyrics = lyrics.replace(introTag[0],
+          `[Intro - 구음]\n${soundLines}\n\n${introTag[0]}`);
+      } else {
+        lyrics = `[Intro - 구음]\n${soundLines}\n\n` + lyrics;
+      }
+
+    } else if (pos === 'mid') {
+      /* ── 중간: [Bridge] or [Chorus] 앞 or 가사 중간 ── */
+      const bridgeTag = lyrics.match(/\[(Bridge|브릿지|Chorus|후렴|절\s*2|Verse\s*2)\]/i);
+      if (bridgeTag) {
+        lyrics = lyrics.replace(bridgeTag[0],
+          `[Bridge - 구음]\n${soundLines}\n\n${bridgeTag[0]}`);
+      } else {
+        /* 섹션 태그 없으면 텍스트 중간에 삽입 */
+        const lines = lyrics.split('\n');
+        const mid = Math.floor(lines.length / 2);
+        lines.splice(mid, 0, `\n[Bridge - 구음]\n${soundLines}\n`);
+        lyrics = lines.join('\n');
+      }
+
+    } else if (pos === 'end') {
+      /* ── 끝: [Outro] 앞 or 맨 아래 ── */
+      const outroTag = lyrics.match(/\[(Outro|아웃트로|Ending)\]/i);
+      if (outroTag) {
+        lyrics = lyrics.replace(outroTag[0],
+          `[Outro - 구음]\n${soundLines}\n\n${outroTag[0]}`);
+      } else {
+        lyrics = lyrics.trimEnd() + `\n\n[Outro - 구음]\n${soundLines}\n`;
+      }
+    }
+  });
+
+  textarea.value = lyrics;
+
+  /* 삽입된 위치 표시 */
+  const posNames = {start:'시작(Intro)', mid:'중간(Bridge)', end:'끝(Outro)'};
+  const inserted = STATE.gueumPositions.map(p=>posNames[p]).join(', ');
+  showToast(`✅ 구음 삽입 완료! 위치: ${inserted}`);
 }
 
 window.addEventListener('DOMContentLoaded',()=>{
