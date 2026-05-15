@@ -2501,69 +2501,79 @@ function insertGueumToLyrics() {
     return;
   }
 
-  /* 현재 활성화된 가사 탭의 textarea 찾기 */
   const activePanel = document.querySelector('.tab-panel.active');
   if (!activePanel) { showToast('⚠️ 가사창이 열려있지 않습니다.'); return; }
   const textarea = activePanel.querySelector('textarea');
   if (!textarea) { showToast('⚠️ 가사 입력란을 찾을 수 없습니다.'); return; }
 
-  /* 구음 소리 텍스트 */
+  /* 구음 소리 풀 */
   const styleInfo = STATE.gueumStyle !== null && DATA.gueumStyles[STATE.gueumStyle]
     ? DATA.gueumStyles[STATE.gueumStyle] : null;
-  const rawSounds = styleInfo ? styleInfo.en2 : '으~흠~';
-  /* \n 으로 구분된 소리 그대로 사용 (/ 구분자 하위호환 처리) */
-  const soundLines = rawSounds.replace(/\s*\/\s*/g, '\n').trim();
+  const rawSounds = Array.isArray(styleInfo?.en2) ? styleInfo.en2
+    : ['으~흠~','어~허~','아~이~야~','으으~흠~','어~이~야~','흐~음~'];
+
+  /* 매번 클릭할 때마다 완전히 새로 셔플 */
+  const shuffled = [...rawSounds].sort(() => Math.random() - 0.5);
+  while (shuffled.length < 12) shuffled.push(...rawSounds.sort(() => Math.random() - 0.5));
+
+  const COUNTS = { start: 3, mid: 3, end: 3 };
+  const INSERT_ORDER = ['start', 'mid', 'end'];
+  const activePos = INSERT_ORDER.filter(p => STATE.gueumPositions.includes(p));
+
+  let cursor = 0;
+  const blockMap = {};
+  activePos.forEach(pos => {
+    const n = COUNTS[pos];
+    blockMap[pos] = shuffled.slice(cursor, cursor + n).join('\n');
+    cursor += n;
+  });
 
   let lyrics = textarea.value;
 
-  /* 위치별 삽입 (순서: end → mid → start 역순으로 처리해야 앞쪽 삽입이 뒤쪽 인덱스에 영향 안 줌) */
-  const orderedPos = [...STATE.gueumPositions].sort((a,b)=>{
-    const order={end:0,mid:1,start:2}; return order[a]-order[b];
-  });
+  /* ============================================
+     기존 구음 블록을 확실하게 제거 (중복 방지 핵심)
+     ============================================ */
+  lyrics = lyrics.replace(/\[(Intro|Bridge|Outro) - 구음\][\s\S]*?(?=\n\[|\n$|$)/gi, '');
+  lyrics = lyrics.replace(/\n{3,}/g, '\n\n').trim();
 
-  orderedPos.forEach(pos => {
-    if (pos === 'start') {
-      /* ── 시작: [Intro] 앞 or 맨 위 ── */
-      const introTag = lyrics.match(/\[(Intro|인트로|절\s*1|Verse\s*1)\]/i);
-      if (introTag) {
-        lyrics = lyrics.replace(introTag[0],
-          `[Intro - 구음]\n${soundLines}\n\n${introTag[0]}`);
-      } else {
-        lyrics = `[Intro - 구음]\n${soundLines}\n\n` + lyrics;
-      }
-
-    } else if (pos === 'mid') {
-      /* ── 중간: [Bridge] or [Chorus] 앞 or 가사 중간 ── */
-      const bridgeTag = lyrics.match(/\[(Bridge|브릿지|Chorus|후렴|절\s*2|Verse\s*2)\]/i);
-      if (bridgeTag) {
-        lyrics = lyrics.replace(bridgeTag[0],
-          `[Bridge - 구음]\n${soundLines}\n\n${bridgeTag[0]}`);
-      } else {
-        /* 섹션 태그 없으면 텍스트 중간에 삽입 */
-        const lines = lyrics.split('\n');
-        const mid = Math.floor(lines.length / 2);
-        lines.splice(mid, 0, `\n[Bridge - 구음]\n${soundLines}\n`);
-        lyrics = lines.join('\n');
-      }
-
-    } else if (pos === 'end') {
-      /* ── 끝: [Outro] 앞 or 맨 아래 ── */
-      const outroTag = lyrics.match(/\[(Outro|아웃트로|Ending)\]/i);
-      if (outroTag) {
-        lyrics = lyrics.replace(outroTag[0],
-          `[Outro - 구음]\n${soundLines}\n\n${outroTag[0]}`);
-      } else {
-        lyrics = lyrics.trimEnd() + `\n\n[Outro - 구음]\n${soundLines}\n`;
-      }
+  /* start 삽입 */
+  if (blockMap.start) {
+    const tag = lyrics.match(/\[(Intro|인트로|Verse\s*1|절\s*1)\]/i);
+    if (tag) {
+      lyrics = lyrics.replace(tag[0], `[Intro - 구음]\n${blockMap.start}\n\n${tag[0]}`);
+    } else {
+      lyrics = `[Intro - 구음]\n${blockMap.start}\n\n` + lyrics;
     }
-  });
+  }
+
+  /* mid 삽입 */
+  if (blockMap.mid) {
+    const tag = lyrics.match(/\[(Bridge|브릿지|Chorus|후렴|Verse\s*2|절\s*2)\]/i);
+    if (tag) {
+      lyrics = lyrics.replace(tag[0], `[Bridge - 구음]\n${blockMap.mid}\n\n${tag[0]}`);
+    } else {
+      const lines = lyrics.split('\n');
+      const mid = Math.floor(lines.length / 2);
+      lines.splice(mid, 0, '', '[Bridge - 구음]', blockMap.mid, '');
+      lyrics = lines.join('\n');
+    }
+  }
+
+  /* end 삽입 */
+  if (blockMap.end) {
+    const tag = lyrics.match(/\[(Outro|아웃트로|Ending)\]/i);
+    if (tag) {
+      lyrics = lyrics.replace(tag[0], `[Outro - 구음]\n${blockMap.end}\n\n${tag[0]}`);
+    } else {
+      lyrics = lyrics.trimEnd() + `\n\n[Outro - 구음]\n${blockMap.end}\n`;
+    }
+  }
 
   textarea.value = lyrics;
 
-  /* 삽입된 위치 표시 */
-  const posNames = {start:'시작(Intro)', mid:'중간(Bridge)', end:'끝(Outro)'};
-  const inserted = STATE.gueumPositions.map(p=>posNames[p]).join(', ');
-  showToast(`✅ 구음 삽입 완료! 위치: ${inserted}`);
+  const posNames = { start:'시작(Intro)', mid:'중간(Bridge)', end:'끝(Outro)' };
+  const inserted = activePos.map(p => posNames[p]).join(' → ');
+  showToast(`✅ 구음 새로 생성 완료! ${inserted}`);
 }
 
 window.addEventListener('DOMContentLoaded',()=>{
