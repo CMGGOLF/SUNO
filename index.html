@@ -250,17 +250,13 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 }
 .yt-result.show{display:block}
 /* 구음 버튼 스타일 */
-.gueum-pos-btn, .gueum-pitch-btn, .gueum-gender-btn {
+.gueum-pos-btn,.gueum-pitch-btn,.gueum-gender-btn{
   padding:8px 18px;border-radius:6px;border:1px solid rgba(160,90,58,.4);
   background:var(--surface2);color:var(--muted);font-size:12px;cursor:pointer;
   transition:all .2s;font-family:'Noto Sans KR',sans-serif;
 }
-.gueum-pos-btn:hover, .gueum-pitch-btn:hover, .gueum-gender-btn:hover {
-  border-color:var(--korean2);color:var(--text);
-}
-.gueum-pos-btn.active { background:rgba(160,90,58,.25);border-color:var(--korean2);color:var(--korean2);font-weight:700; }
-.gueum-pitch-btn.active { background:rgba(160,90,58,.25);border-color:var(--korean2);color:var(--korean2);font-weight:700; }
-.gueum-gender-btn.active { background:rgba(160,90,58,.25);border-color:var(--korean2);color:var(--korean2);font-weight:700; }
+.gueum-pos-btn:hover,.gueum-pitch-btn:hover,.gueum-gender-btn:hover{border-color:var(--korean2);color:var(--text);}
+.gueum-pos-btn.active,.gueum-pitch-btn.active,.gueum-gender-btn.active{background:rgba(160,90,58,.25);border-color:var(--korean2);color:var(--korean2);font-weight:700;}
 .han-soul-card { border:1px solid rgba(200,80,80,.3);border-radius:8px;padding:14px 16px;cursor:pointer;transition:all .2s;background:var(--surface2); }
 .han-soul-card:hover { border-color:rgba(200,80,80,.6); }
 .han-soul-card.active { border-color:#c85050;background:rgba(200,80,80,.1); }
@@ -289,6 +285,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   .card-grid.col2,.card-grid.col3{grid-template-columns:1fr}
   .rec-grid{grid-template-columns:1fr}
 }
+.gstrength-btn{padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:12px;cursor:pointer;transition:all .2s;}
+.gstrength-btn.active{font-weight:700;}
+.gstrength-strong.active{border-color:var(--korean2);background:rgba(160,90,58,0.25);color:var(--korean2);}
+.gstrength-maximum.active{border-color:#c85050;background:rgba(200,80,80,0.2);color:#e07070;}
+.gstrength-btn:not(.gstrength-strong):not(.gstrength-maximum).active{border-color:var(--dim);background:var(--surface3);color:var(--text);}
 #toast{
   position:fixed;bottom:30px;right:30px;z-index:9999;
   background:var(--surface2);border:1px solid var(--gold);border-radius:8px;
@@ -513,9 +514,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════
-     SECTION 06B: 구음 설정 — [FIX] 구조 수정 + ④⑤ 순서 교정
-═══════════════════════════════════════════════════════════ -->
+<!-- SECTION 06B: 구음 설정 -->
 <div class="section" style="border-color:rgba(160,90,58,.5);background:rgba(160,90,58,.04)">
   <div class="section-head" onclick="toggleSection('gueumBody','gueumIcon')" style="cursor:pointer;background:rgba(160,90,58,.12)">
     <div class="sec-num korean">06B</div>
@@ -579,25 +578,16 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div style="margin-bottom:8px;padding-top:16px;border-top:1px solid var(--border)">
       <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">⑤ 구음 강도 (Suno 반영 강도)</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button onclick="selectGueumStrength('normal')" id="gstrength_normal"
-                style="padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:12px;cursor:pointer;">
-          보통
-        </button>
-        <button onclick="selectGueumStrength('strong')" id="gstrength_strong"
-                style="padding:8px 16px;border-radius:6px;border:1px solid var(--korean2);background:rgba(160,90,58,0.25);color:var(--korean2);font-size:12px;cursor:pointer;font-weight:700;">
-          강하게 ★
-        </button>
-        <button onclick="selectGueumStrength('maximum')" id="gstrength_maximum"
-                style="padding:8px 16px;border-radius:6px;border:1px solid #c85050;background:rgba(200,80,80,0.2);color:#e07070;font-size:12px;cursor:pointer;font-weight:700;">
-          최대 ★★★
-        </button>
+        <button onclick="selectGueumStrength('normal')" id="gstrength_normal" class="gstrength-btn">보통</button>
+        <button onclick="selectGueumStrength('strong')" id="gstrength_strong" class="gstrength-btn gstrength-strong">강하게 ★</button>
+        <button onclick="selectGueumStrength('maximum')" id="gstrength_maximum" class="gstrength-btn gstrength-maximum">최대 ★★★</button>
       </div>
       <div style="font-size:10px;color:var(--muted);margin-top:8px">※ 강하게/최대 설정할수록 Suno가 구음을 더 잘 인식합니다.</div>
     </div>
   </div><!-- /gueumBody -->
 </div>
 
-<!-- SECTION 06C: 한(恨) 소울 스타일 — [FIX] col3 적용으로 구음 카드와 동일 크기 -->
+<!-- SECTION 06C: 한(恨) 소울 스타일 -->
 <div class="section" style="border-color:rgba(200,80,80,.4);background:rgba(200,80,80,.03)">
   <div class="section-head" onclick="toggleSection('hanSoulBody','hanSoulIcon')" style="cursor:pointer;background:rgba(200,80,80,.08)">
     <div class="sec-num" style="background:#c85050;color:#fff">06C</div>
@@ -1018,7 +1008,7 @@ const DATA = {
     {en:'Danso Solo + Dreamy Pad + Soft Texture',kr:'단소 솔로 + 드리미 패드 + 소프트 텍스처',desc:'단소 맑고 여린 솔로·호흡(70%) + 몽환적 Ambient(30%)',ratio:'7:3'},
     {en:'Saenghwang Harmonic Core + Ethereal Pad',kr:'생황 화성 코어 + 에테리얼 패드',desc:'생황 독특한 화성·동양 음색(70%) + 현대 패드 승화(30%)',ratio:'7:3'},
   ],
-  get instruments() { return [...this.instrumentsString,...this.instrumentsPercussion,...this.instrumentsWind]; },
+
   concepts: [
     {num:'01',name:'조선 궁중 소울 (Joseon Court Soul)',core:['Elegant','Emotional','Noble'],sub:['Han','Graceful'],desc:'가야금·대금·해금 궁중 정악(70%) + 은은한 Neo Soul·재즈 화성(30%)',genres:['Joseon Court Soul','Elevated Gugak'],inst:['가야금','대금','해금','Warm Rhodes','Upright Bass','Brush Drums']},
     {num:'02',name:'산조 재즈 격상 (Sanjo Jazz Elevation)',core:['Improvisational','Free','Emotional'],sub:['Expressive','Nostalgic'],desc:'산조 즉흥 + 장단 리듬(70%) + 서양 재즈 스윙·화성(30%)',genres:['Sanjo Jazz','Korean Improvisation'],inst:['가야금','해금','Jazz Piano','Upright Bass','Brush Drums','Light Reverb']},
@@ -1217,7 +1207,7 @@ const DATA = {
   ],
 
   /* ── 레퍼런스 아티스트 (Reference Artists) ── */
-  refArtists: [
+  suggestedArtists: [
     {en:'이날치',kr:'이날치',type:'korean',desc:'판소리 + 펑크 베이스. 전통의 팝화 정석'},
     {en:'씽씽',kr:'씽씽',type:'korean',desc:'민요 + 사이키델릭 록. 가장 날 것의 국악 팝'},
     {en:'장사익',kr:'장사익',type:'korean',desc:'한(恨)의 목소리. 민요·판소리의 현대적 계승'},
@@ -1246,6 +1236,7 @@ const DATA = {
 /* ═══════════════════════════════════════════
    STATE
 ═══════════════════════════════════════════ */
+let recItems=null;
 const STATE = {
   genre:null, moods:[], instr:null, instrCategory:null,
   concept:null, vocalStyle:null, vocalTones:[],
@@ -1260,7 +1251,7 @@ const STATE = {
   gueumStyle:null,
   hanSoulStyle:null,
   gueumStrength:'strong',
-  /* ── 신규: 조성·음계·구조·레퍼런스 ── */
+  /* 조성·음계·구조·레퍼런스 ── */
   musicKey:null,
   koreanScale:null,
   energyArc:null,
@@ -1323,40 +1314,13 @@ function renderMoods() {
       <span class="chip-kr">${d.kr}</span>
     </div>`).join('');
 }
-function renderInstruments() {
-  const currentKey = STATE.instrCategory; // 현재 선택된 악기 (예: "string_0")
-  const gs = document.getElementById('instrGridString');
-  if (gs) gs.innerHTML = DATA.instrumentsString.map((d,i) => {
-    const key = `string_${i}`;
-    const isActive = currentKey === key;
-    return `
-    <div class="selcard korean-card ${isActive ? 'active' : ''}" id="instr_s_${i}" onclick="selectInstrByCategory('string',${i})">
-      <div class="check-dot"></div>
-      <div class="card-en">${d.en}</div>
-      <div class="card-kr">${d.kr}</div>
-      <div class="card-desc">${d.desc}</div>
-      <div class="card-ratio r37" style="background:rgba(160,90,58,0.25);color:var(--korean2);border:1px solid rgba(160,90,58,0.4)">🔶 7:3 정통화</div>
-    </div>`;
-  }).join('');
-  const gp = document.getElementById('instrGridPercussion');
-  if (gp) gp.innerHTML = DATA.instrumentsPercussion.map((d,i) => {
-    const key = `percussion_${i}`;
-    const isActive = currentKey === key;
-    return `
-    <div class="selcard korean-card ${isActive ? 'active' : ''}" id="instr_p_${i}" onclick="selectInstrByCategory('percussion',${i})">
-      <div class="check-dot"></div>
-      <div class="card-en">${d.en}</div>
-      <div class="card-kr">${d.kr}</div>
-      <div class="card-desc">${d.desc}</div>
-      <div class="card-ratio r37" style="background:rgba(160,90,58,0.25);color:var(--korean2);border:1px solid rgba(160,90,58,0.4)">🔶 7:3 정통화</div>
-    </div>`;
-  }).join('');
-  const gw = document.getElementById('instrGridWind');
-  if (gw) gw.innerHTML = DATA.instrumentsWind.map((d,i) => {
-    const key = `wind_${i}`;
-    const isActive = currentKey === key;
-    return `
-    <div class="selcard korean-card ${isActive ? 'active' : ''}" id="instr_w_${i}" onclick="selectInstrByCategory('wind',${i})">
+function renderInstrGroup(gridId,data,catKey,shortKey){
+  const g=document.getElementById(gridId);
+  if(!g)return;
+  const cur=STATE.instrCategory;
+  g.innerHTML=data.map((d,i)=>{
+    const key=`${catKey}_${i}`;
+    return `<div class="selcard korean-card ${cur===key?'active':''}" id="instr_${shortKey}_${i}" onclick="selectInstrByCategory('${catKey}',${i})">
       <div class="check-dot"></div>
       <div class="card-en">${d.en}</div>
       <div class="card-kr">${d.kr}</div>
@@ -1365,6 +1329,12 @@ function renderInstruments() {
     </div>`;
   }).join('');
 }
+function renderInstruments(){
+  renderInstrGroup('instrGridString',DATA.instrumentsString,'string','s');
+  renderInstrGroup('instrGridPercussion',DATA.instrumentsPercussion,'percussion','p');
+  renderInstrGroup('instrGridWind',DATA.instrumentsWind,'wind','w');
+}
+function getCatData(cat){return cat==='string'?DATA.instrumentsString:cat==='percussion'?DATA.instrumentsPercussion:DATA.instrumentsWind;}
 function selectInstrByCategory(cat, i) {
   document.querySelectorAll('[id^="instr_"]').forEach(el => el.classList.remove('active'));
   const sameKey = `${cat}_${i}`;
@@ -1372,7 +1342,7 @@ function selectInstrByCategory(cat, i) {
     STATE.instr=null; STATE.instrCategory=null;
   } else {
     STATE.instrCategory = sameKey;
-    const catData = cat==='string'?DATA.instrumentsString:cat==='percussion'?DATA.instrumentsPercussion:DATA.instrumentsWind;
+    const catData = getCatData(cat);
     STATE.instr = catData[i];
     document.getElementById(`instr_${cat[0]}_${i}`)?.classList.add('active');
   }
@@ -1454,7 +1424,7 @@ function renderHanSoulStyles() {
       <div style="font-size:10px;color:#e07070;margin-top:8px;padding:4px 8px;background:rgba(200,80,80,.1);border-radius:4px">→ ${d.style}</div>
     </div>`).join('');
 }
-/* ── 신규 렌더 함수들 ── */
+
 function renderMusicKeys() {
   const g = document.getElementById('musicKeyGrid');
   if (!g) return;
@@ -1469,7 +1439,6 @@ function renderMusicKeys() {
       <div style="font-size:10px;color:var(--teal);margin-bottom:4px">${d.mood}</div>
       <div class="card-desc">${d.desc}</div>
     </div>`).join('');
-  if(STATE.musicKey!==null) document.getElementById('mkey_'+STATE.musicKey)?.classList.add('active');
 }
 function renderKoreanScales() {
   const g = document.getElementById('koreanScaleGrid');
@@ -1482,7 +1451,6 @@ function renderKoreanScales() {
       <div style="font-size:10px;color:var(--teal);margin-bottom:4px">${d.feel}</div>
       <div class="card-desc">${d.desc}</div>
     </div>`).join('');
-  if(STATE.koreanScale!==null) document.getElementById('kscale_'+STATE.koreanScale)?.classList.add('active');
 }
 function renderEnergyArcs() {
   const g = document.getElementById('energyArcGrid');
@@ -1495,7 +1463,6 @@ function renderEnergyArcs() {
       <div style="font-size:11px;color:var(--muted)">${d.en}</div>
       <div class="card-desc" style="margin-top:4px">${d.desc}</div>
     </div>`).join('');
-  if(STATE.energyArc!==null) document.getElementById('arc_'+STATE.energyArc)?.classList.add('active');
 }
 function renderRefArtists() {
   renderRefTags();
@@ -1510,34 +1477,33 @@ function renderProductionEras() {
       <div style="font-family:'Noto Serif KR',serif;font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">${d.kr}</div>
       <div class="card-desc">${d.desc}</div>
     </div>`).join('');
-  if(STATE.productionEra!==null) document.getElementById('era_'+STATE.productionEra)?.classList.add('active');
 }
 
 /* ═══════════════════════════════════════════
    SELECTION HANDLERS
 ═══════════════════════════════════════════ */
-function selectGenre(i) {
-  document.querySelectorAll('#genreGrid .selcard').forEach(el=>el.classList.remove('active'));
-  STATE.genre = STATE.genre===i?null:i;
-  if (STATE.genre!==null) document.getElementById('genre_'+i)?.classList.add('active');
-  buildPrompt();
+/* 단일 선택 팩토리: querySelectorAll(selector)로 active 초기화 후 stateKey 토글 */
+function createSelectOne(stateKey, selector, idPrefix) {
+  return function(i) {
+    document.querySelectorAll(selector).forEach(el=>el.classList.remove('active'));
+    STATE[stateKey] = STATE[stateKey]===i ? null : i;
+    if (STATE[stateKey]!==null) document.getElementById(idPrefix+i)?.classList.add('active');
+    buildPrompt();
+  };
 }
+const selectGenre       = createSelectOne('genre',       '#genreGrid .selcard',    'genre_');
+const selectConcept     = createSelectOne('concept',     '.concept-card',          'concept_');
+const selectVocalStyle  = createSelectOne('vocalStyle',  '#vocalStyleGrid .selcard','vs_');
+const selectGueumStyle  = createSelectOne('gueumStyle',  '[id^="gueum_"]',         'gueum_');
+const selectHanSoulStyle= createSelectOne('hanSoulStyle','[id^="hansoul_"]',       'hansoul_');
+const selectMusicKey    = createSelectOne('musicKey',    '[id^="mkey_"]',          'mkey_');
+const selectKoreanScale = createSelectOne('koreanScale', '[id^="kscale_"]',        'kscale_');
+const selectEnergyArc   = createSelectOne('energyArc',  '[id^="arc_"]',           'arc_');
+const selectProductionEra=createSelectOne('productionEra','[id^="era_"]',          'era_');
 function toggleMood(i) {
   const idx=STATE.moods.indexOf(i);
   if (idx>=0) STATE.moods.splice(idx,1); else STATE.moods.push(i);
   document.getElementById('mood_'+i)?.classList.toggle('active');
-  buildPrompt();
-}
-function selectConcept(i) {
-  document.querySelectorAll('.concept-card').forEach(el=>el.classList.remove('active'));
-  STATE.concept = STATE.concept===i?null:i;
-  if (STATE.concept!==null) document.getElementById('concept_'+i)?.classList.add('active');
-  buildPrompt();
-}
-function selectVocalStyle(i) {
-  document.querySelectorAll('#vocalStyleGrid .selcard').forEach(el=>el.classList.remove('active'));
-  STATE.vocalStyle = STATE.vocalStyle===i?null:i;
-  if (STATE.vocalStyle!==null) document.getElementById('vs_'+i)?.classList.add('active');
   buildPrompt();
 }
 function toggleTone(i) {
@@ -1617,44 +1583,11 @@ function selectGueumGender(g) {
 }
 function selectGueumStrength(level) {
   STATE.gueumStrength=level;
-  document.querySelectorAll('[id^="gstrength_"]').forEach(b=>{
-    b.style.fontWeight=''; b.style.borderColor=''; b.style.background=''; b.style.color='';
-  });
-  const btn=document.getElementById('gstrength_'+level);
-  if (btn) { btn.style.fontWeight='700'; }
+  document.querySelectorAll('[id^="gstrength_"]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('gstrength_'+level)?.classList.add('active');
   buildPrompt();
 }
-function selectGueumStyle(i) {
-  STATE.gueumStyle=STATE.gueumStyle===i?null:i;
-  document.querySelectorAll('[id^="gueum_"]').forEach(el=>el.classList.remove('active'));
-  if (STATE.gueumStyle!==null) document.getElementById('gueum_'+i)?.classList.add('active');
-  buildPrompt();
-}
-function selectHanSoulStyle(i) {
-  STATE.hanSoulStyle=STATE.hanSoulStyle===i?null:i;
-  document.querySelectorAll('[id^="hansoul_"]').forEach(el=>el.classList.remove('active'));
-  if (STATE.hanSoulStyle!==null) document.getElementById('hansoul_'+i)?.classList.add('active');
-  buildPrompt();
-}
-/* ── 신규 핸들러들 ── */
-function selectMusicKey(i) {
-  STATE.musicKey = STATE.musicKey===i ? null : i;
-  document.querySelectorAll('[id^="mkey_"]').forEach(el=>el.classList.remove('active'));
-  if (STATE.musicKey!==null) document.getElementById('mkey_'+i)?.classList.add('active');
-  buildPrompt();
-}
-function selectKoreanScale(i) {
-  STATE.koreanScale = STATE.koreanScale===i ? null : i;
-  document.querySelectorAll('[id^="kscale_"]').forEach(el=>el.classList.remove('active'));
-  if (STATE.koreanScale!==null) document.getElementById('kscale_'+i)?.classList.add('active');
-  buildPrompt();
-}
-function selectEnergyArc(i) {
-  STATE.energyArc = STATE.energyArc===i ? null : i;
-  document.querySelectorAll('[id^="arc_"]').forEach(el=>el.classList.remove('active'));
-  if (STATE.energyArc!==null) document.getElementById('arc_'+i)?.classList.add('active');
-  buildPrompt();
-}
+
 function addRefTag() {
   const input = document.getElementById('refInput');
   const val = (input.value||'').trim();
@@ -1685,12 +1618,7 @@ function renderRefTags() {
       <span onclick="removeRefTag('${v.replace(/'/g,"\\'")}'')" style="cursor:pointer;color:var(--muted);font-size:14px;line-height:1;margin-left:2px">×</span>
     </div>`).join('');
 }
-function selectProductionEra(i) {
-  STATE.productionEra = STATE.productionEra===i ? null : i;
-  document.querySelectorAll('[id^="era_"]').forEach(el=>el.classList.remove('active'));
-  if (STATE.productionEra!==null) document.getElementById('era_'+i)?.classList.add('active');
-  buildPrompt();
-}
+
 function updateBpm(v) {
   STATE.bpm=parseInt(v);
   document.getElementById('bpmVal').textContent=v;
@@ -1734,6 +1662,7 @@ function switchTab(id,el) {
 /* ═══════════════════════════════════════════
    PROMPT BUILDER
 ═══════════════════════════════════════════ */
+function getEnList(arr,data){return arr.filter(i=>data[i]).map(i=>data[i].en).join(', ');}
 function buildPrompt() {
   try {
     const parts=[];
@@ -1741,20 +1670,20 @@ function buildPrompt() {
     parts.push(`[Ratio] Korean traditional instruments ${dom}% lead (melody + rhythm + emotion) + Modern elements only ${100-dom}% subtle elevation/background`);
     parts.push(`[Korean Lead Instruction] Korean instruments (Gayageum, Daegeum, Haegeum, Piri, Janggu, Ajaeng) MUST dominate the mix. Modern jazz/blues/soul elements are only soft background color.`);
     if (STATE.genre!==null&&DATA.genres[STATE.genre]) { const g=DATA.genres[STATE.genre]; parts.push(`[Genre] ${g.en} (${g.kr})`); }
-    if (STATE.moods.length) { const ms=STATE.moods.filter(i=>DATA.moods[i]).map(i=>DATA.moods[i].en).join(', '); if(ms)parts.push(`[Mood] ${ms}`); }
+    if(STATE.moods.length){const ms=getEnList(STATE.moods,DATA.moods);if(ms)parts.push(`[Mood] ${ms}`);}
     if (STATE.instr) parts.push(`[Instruments] ${STATE.instr.en}`);
     if (STATE.concept!==null&&DATA.concepts[STATE.concept]) { const c=DATA.concepts[STATE.concept]; parts.push(`[Concept] ${c.name}`); parts.push(`[Core Mood] ${c.core.join(', ')}`); parts.push(`[Instruments (Concept)] ${c.inst.join(', ')}`); }
     if (STATE.vocalStyle!==null&&DATA.vocalStyles[STATE.vocalStyle]) { const vs=DATA.vocalStyles[STATE.vocalStyle]; parts.push(`[Vocal Style] ${vs.en} — ${vs.tone}`); }
-    if (STATE.textures.length) { const ts=STATE.textures.filter(i=>DATA.textures[i]).map(i=>DATA.textures[i].en).join(', '); if(ts)parts.push(`[Texture] ${ts}`); }
-    if (STATE.grooves.length) { const gs=STATE.grooves.filter(i=>DATA.grooves[i]).map(i=>DATA.grooves[i].en).join(', '); if(gs)parts.push(`[Groove] ${gs}`); }
-    if (STATE.spaces.length) { const ss=STATE.spaces.filter(i=>DATA.spaces[i]).map(i=>DATA.spaces[i].en).join(', '); if(ss)parts.push(`[Space] ${ss}`); }
-    if (STATE.koreanGrooves.length) { const kgs=STATE.koreanGrooves.filter(i=>DATA.koreanGrooves[i]).map(i=>DATA.koreanGrooves[i].en).join(', '); if(kgs)parts.push(`[Korean Traditional Techniques] ${kgs} (use authentic Korean phrasing, 시김새, 농현, 추성)`); }
-    if (STATE.bassStyles.length) { const bs=STATE.bassStyles.filter(i=>DATA.bassStyles[i]).map(i=>DATA.bassStyles[i].en).join(', '); if(bs)parts.push(`[Bass Movement] ${bs}`); }
-    if (STATE.koreanFeelings.length) { const kfs=STATE.koreanFeelings.filter(i=>DATA.koreanFeelings[i]).map(i=>DATA.koreanFeelings[i].en).join(', '); if(kfs)parts.push(`[Korean Soul Feeling] ${kfs}`); }
-    if (STATE.blackSoulElements.length) { const bse=STATE.blackSoulElements.filter(i=>DATA.blackSoulElements[i]).map(i=>DATA.blackSoulElements[i].en).join(', '); if(bse)parts.push(`[Black Soul/Blues] ${bse}`); }
-    if (STATE.humanFeelElements.length) { const hfe=STATE.humanFeelElements.filter(i=>DATA.humanFeelElements[i]).map(i=>DATA.humanFeelElements[i].en).join(', '); if(hfe)parts.push(`[Human Feel] ${hfe}`); }
-    if (STATE.vocalTones.length) { const vts=STATE.vocalTones.filter(i=>DATA.vocalTones[i]).map(i=>DATA.vocalTones[i].en).join(', '); if(vts)parts.push(`[Vocal Tone] ${vts}`); }
-       if (STATE.gueumPositions.length||STATE.gueumStyle!==null) {
+    if(STATE.textures.length){const ts=getEnList(STATE.textures,DATA.textures);if(ts)parts.push(`[Texture] ${ts}`);}
+    if(STATE.grooves.length){const gs=getEnList(STATE.grooves,DATA.grooves);if(gs)parts.push(`[Groove] ${gs}`);}
+    if(STATE.spaces.length){const ss=getEnList(STATE.spaces,DATA.spaces);if(ss)parts.push(`[Space] ${ss}`);}
+    if(STATE.koreanGrooves.length){const kgs=getEnList(STATE.koreanGrooves,DATA.koreanGrooves);if(kgs)parts.push(`[Korean Traditional Techniques] ${kgs} (use authentic Korean phrasing, 시김새, 농현, 추성)`);}
+    if(STATE.bassStyles.length){const bs=getEnList(STATE.bassStyles,DATA.bassStyles);if(bs)parts.push(`[Bass Movement] ${bs}`);}
+    if(STATE.koreanFeelings.length){const kfs=getEnList(STATE.koreanFeelings,DATA.koreanFeelings);if(kfs)parts.push(`[Korean Soul Feeling] ${kfs}`);}
+    if(STATE.blackSoulElements.length){const bse=getEnList(STATE.blackSoulElements,DATA.blackSoulElements);if(bse)parts.push(`[Black Soul/Blues] ${bse}`);}
+    if(STATE.humanFeelElements.length){const hfe=getEnList(STATE.humanFeelElements,DATA.humanFeelElements);if(hfe)parts.push(`[Human Feel] ${hfe}`);}
+    if(STATE.vocalTones.length){const vts=getEnList(STATE.vocalTones,DATA.vocalTones);if(vts)parts.push(`[Vocal Tone] ${vts}`);}
+    if (STATE.gueumPositions.length||STATE.gueumStyle!==null) {
       const pitchMap={high:'high register',midhigh:'mid-high register',midlow:'mid-low register',low:'deep low register'};
       const genderMap={both:'male and female voices',male:'male voice (deep, gritty, powerful)',female:'female voice (clear, mournful)'};
       const styleInfo=STATE.gueumStyle!==null&&DATA.gueumStyles[STATE.gueumStyle]?DATA.gueumStyles[STATE.gueumStyle]:null;
@@ -1762,34 +1691,29 @@ function buildPrompt() {
       let strengthPrefix='';
       if(strength==='maximum') strengthPrefix='CRITICAL INSTRUCTION - HIGHEST PRIORITY: ';
       else if(strength==='strong') strengthPrefix='IMPORTANT: ';
-
       let gueumText='';
       if(styleInfo){
-        let styleDesc = styleInfo.kr;
-        if (STATE.hanSoulStyle !== null) {
-          styleDesc += ` with deep Korean Han(恨) emotion`;
-        }
-        gueumText = `${strengthPrefix}Forcefully include authentic traditional Korean gueum (구음) vocalization. ` +
-          `Style: ${styleDesc}. ` +
-          `This is NOT humming and NOT Western scat. ` +
-          `Use ${pitchMap[STATE.gueumPitch]} with ${genderMap[STATE.gueumGender]}. ` +
-          `The gueum must be clearly audible, emotionally raw and powerful, and stand out prominently in the mix. ` +
-          `Make the gueum feel gritty, soulful, and emotionally intense.`;
+        gueumText=`${strengthPrefix}Forcefully include authentic traditional Korean gueum (구음) vocalization. `+
+          `Use exact Korean onomatopoeia sounds such as "${styleInfo.en2.split('\n').slice(0,3).join(' / ')}". `+
+          `Style: ${styleInfo.kr}. `+
+          `This is NOT humming and NOT Western scat. `+
+          `Use ${pitchMap[STATE.gueumPitch]} with ${genderMap[STATE.gueumGender]}. `+
+          `The gueum must be clearly audible, emotionally powerful, and stand out in the mix.`;
       } else {
         gueumText=`${strengthPrefix}Forcefully include traditional Korean gueum vocalization. `+
-          `Use authentic Korean onomatopoeia. This is NOT humming. Make the gueum clearly audible, emotionally dominant, and gritty.`;
+          `Use authentic Korean onomatopoeia. This is NOT humming. Make the gueum clearly audible and emotionally dominant.`;
       }
       parts.push(`[GUEUM] ${gueumText}`);
     }
-       if (STATE.hanSoulStyle!==null&&DATA.hanSoulStyles[STATE.hanSoulStyle]) {
+    if (STATE.hanSoulStyle!==null&&DATA.hanSoulStyles[STATE.hanSoulStyle]) {
       const hs=DATA.hanSoulStyles[STATE.hanSoulStyle];
-      parts.push(`[Han Soul Style] ${hs.en} — ${hs.style}. Deep Korean Han(恨) emotion blended with soul, blues, or gospel sensibility. Express raw and spiritual Korean emotion through this style.`);
+      parts.push(`[Han Soul Style] ${hs.en} — ${hs.style} — Korean Han(恨) emotion expressed through ${hs.en.toLowerCase()} sensibility.`);
     }
     parts.push(`[BPM] ${STATE.bpm}`);
     parts.push(`[Emotional Intensity] ${STATE.intensity}/10 (${STATE.intensity<=3?'Chill':STATE.intensity<=6?'Emotional':'Explosive Soul'})`);
     const kr=STATE.koreanRatio||70; const mod=100-kr;
     parts.push(`[Direction] ${kr}% Korean traditional dominance — Korean instruments MUST lead with authentic techniques (시김새, 농현, 정간보). Modern ${mod}% elements are strictly background elevation.`);
-    /* ── 신규: 조성·음계 ── */
+    /* 조성·음계 ── */
     if (STATE.musicKey!==null && DATA.musicKeys[STATE.musicKey]) {
       const mk=DATA.musicKeys[STATE.musicKey];
       parts.push(`[Key] ${mk.en} (${mk.short}) — ${mk.mood}`);
@@ -1798,29 +1722,22 @@ function buildPrompt() {
       const ks=DATA.koreanScales[STATE.koreanScale];
       parts.push(`[Korean Scale] ${ks.en} (${ks.kr}) — ${ks.suno}`);
     }
-    /* ── 신규: 에너지 아크 ── */
+    /* 에너지 아크 ── */
     if (STATE.energyArc!==null && DATA.energyArcs[STATE.energyArc]) {
       const arc=DATA.energyArcs[STATE.energyArc];
       parts.push(`[Energy Arc] ${arc.suno}`);
     } else {
       parts.push(`[Structure] Tasteful breakdown, dynamic lift at 1:20–1:40, emotional climax, Korean instrument spotlight moment, powerful final ensemble, well-placed silence for maximum impact.`);
     }
-    /* ── 신규: 레퍼런스 아티스트 ── */
+    /* 레퍼런스 아티스트 ── */
     if (STATE.refArtists.length) {
       const names = STATE.refArtists.join(', ');
       parts.push(`[Reference] In the style of: ${names} — blend their emotional sensibility with Korean traditional core`);
     }
-    /* ── 신규: 프로덕션 시대 ── */
+    /* 프로덕션 시대 ── */
     if (STATE.productionEra!==null && DATA.productionEras[STATE.productionEra]) {
       const era=DATA.productionEras[STATE.productionEra];
       parts.push(`[Production] ${era.suno}`);
-    }
-    /* === 곡 길이 강제 (가장 중요) === */
-    if (STATE.songDuration) {
-      parts.push(`[Song Length] This must be a FULL ${STATE.songDuration} song. Extended intro, full structure, emotional build-up, and LONG outro. Do NOT make it short or fade out early. Complete song around ${STATE.songDuration}.`);
-    }
-    if (STATE.songDuration) {
-      parts.push(`[Song Length] Make a FULL ${STATE.songDuration} song with long intro and long outro. Do not make it short.`);
     }
     const box=document.getElementById('promptBox');
     box.textContent=parts.length>3?parts.join('\n'):'← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
@@ -1887,7 +1804,7 @@ function applyAnalysisToUI(analysis) {
   if (analysis.moods&&Array.isArray(analysis.moods)) { analysis.moods.forEach(m=>{const idx=DATA.moods.findIndex(d=>d.en.toLowerCase().includes(m.toLowerCase())||d.kr.includes(m));if(idx!==-1&&!STATE.moods.includes(idx))STATE.moods.push(idx);}); }
   if (analysis.bpm&&analysis.bpm>=65&&analysis.bpm<=145) STATE.bpm=parseInt(analysis.bpm);
   if (analysis.koreanGrooves&&Array.isArray(analysis.koreanGrooves)) { analysis.koreanGrooves.forEach(n=>{const idx=DATA.koreanGrooves.findIndex(k=>k.en.toLowerCase().includes(n.toLowerCase())||k.kr.includes(n));if(idx!==-1&&!STATE.koreanGrooves.includes(idx))STATE.koreanGrooves.push(idx);}); }
-  renderAll(); document.getElementById('bpmSlider').value=STATE.bpm; document.getElementById('bpmVal').textContent=STATE.bpm; updateBpmGuide(STATE.bpm); buildPrompt();
+  syncSliders(); renderAll(); buildPrompt();
   showToast("✅ 분석 결과가 자동으로 적용되었습니다!");
 }
 async function aiExpandPrompt() {
@@ -1975,7 +1892,7 @@ async function genRec() {
     const text=await callClaude(`글로벌 리플레이 채널을 위한 7:3 Joseon Core 음악 스타일 6개 추천.\n반드시 JSON 배열만: [{"rank":1,"name":"스타일명","nameEn":"Style Name","views":"예상조회수","moods":["분위기1"],"bpm":"78-95","instruments":"주요 악기","reason":"조회수 이유"},...]`,'글로벌 채널 3:7 국악 퓨전 전략가. JSON만 출력.');
     const clean=text.replace(/```json|```/g,'').trim(); const match=clean.match(/\[[\s\S]*\]/);
     if (!match) throw new Error('JSON 배열 응답 형식 오류');
-    const items=JSON.parse(match[0]); window._recItems=items;
+    const items=JSON.parse(match[0]); recItems=items;
     grid.innerHTML=items.map((item,i)=>`
       <div class="rec-card" onclick="applyRecCard(${i})">
         <div class="rec-rank">#${item.rank} 추천</div>
@@ -1990,7 +1907,7 @@ async function genRec() {
   loading.classList.remove('show');
 }
 function applyRecCard(idx) {
-  const item=window._recItems&&window._recItems[idx]; if (!item) return;
+  const item=recItems&&recItems[idx]; if (!item) return;
   resetAll(false);
   const bpmStr=String(item.bpm||'95');
   const bpmRange=bpmStr.match(/(\d+)\s*[-–~]\s*(\d+)/);
@@ -2022,7 +1939,7 @@ function enforceDuration(input) {
   }
   const mins = parseInt(match[1]);
   const secs = parseInt(match[2]);
-  /* ✅ [FIX v6] 초 범위 검증 (60초 이상 입력 방지) */
+  /* 초 범위 검증 (60초 이상 입력 방지) */
   if (secs >= 60) {
     input.value = `${mins+1}:00`;
     input.style.borderColor='var(--red)';
@@ -2037,12 +1954,12 @@ function enforceDuration(input) {
     setTimeout(()=>input.style.borderColor='',1500);
     showToast('⚠️ 최소 길이는 3:00 입니다!');
   } else {
-    /* ✅ [FIX v6] 정상 값이면 테두리 초록으로 잠깐 표시 */
+    /* 정상 값이면 테두리 초록으로 잠깐 표시 */
     input.style.borderColor='var(--teal)';
     setTimeout(()=>input.style.borderColor='',1200);
   }
 }
-/* ✅ [FIX v6] 실시간 입력 중 포맷 완성되면 즉시 소프트 체크 (빨간 테두리만, toast 없음) */
+/* 실시간 입력 중 포맷 완성되면 즉시 소프트 체크 (빨간 테두리만, toast 없음) */
 function softCheckDuration(input) {
   const val = (input.value||'').trim();
   const match = val.match(/^(\d+):(\d{1,2})$/);
@@ -2075,11 +1992,6 @@ function toggleSection(bodyId,iconId) {
   const body=document.getElementById(bodyId); const icon=document.getElementById(iconId);
   if(body.style.display==='none'||body.style.display===''){
     body.style.display='block';icon.textContent='▲';
-    /* ✅ [FIX v6] 섹션 열릴 때 active 상태 재동기화 */
-    if(STATE.musicKey!==null){document.querySelectorAll('[id^="mkey_"]').forEach(el=>el.classList.remove('active'));document.getElementById('mkey_'+STATE.musicKey)?.classList.add('active');}
-    if(STATE.koreanScale!==null){document.querySelectorAll('[id^="kscale_"]').forEach(el=>el.classList.remove('active'));document.getElementById('kscale_'+STATE.koreanScale)?.classList.add('active');}
-    if(STATE.energyArc!==null){document.querySelectorAll('[id^="arc_"]').forEach(el=>el.classList.remove('active'));document.getElementById('arc_'+STATE.energyArc)?.classList.add('active');}
-    if(STATE.productionEra!==null){document.querySelectorAll('[id^="era_"]').forEach(el=>el.classList.remove('active'));document.getElementById('era_'+STATE.productionEra)?.classList.add('active');}
   } else{body.style.display='none';icon.textContent='▼';}
 }
 
@@ -2126,7 +2038,7 @@ function applyUltimateGroovePreset() {
   syncSliders();renderAll();buildPrompt();showToast("🔥 Ultimate 7:3 Joseon Groove 적용 완료!");
 }
 
-/* ── [FIX] applyQuickStart: concept 인덱스 범위 수정 (0~7만 유효) ── */
+/* applyQuickStart: concept 인덱스 범위 수정 (0~7만 유효) ── */
 function applyQuickStart(type) {
   resetAll(false);
   if (type==='drive') {
@@ -2185,18 +2097,7 @@ function applyGueumPreset(type) {
     STATE.gueumPositions=['mid','end'];STATE.gueumPitch='low';STATE.gueumGender='male';
     STATE.gueumStyle=1;STATE.hanSoulStyle=4;selectInstrByCategory('string',2);
   }
-  syncSliders();renderAll();
-  renderGueumStyles();renderHanSoulStyles();
-  document.querySelectorAll('.gueum-pos-btn').forEach(b=>b.classList.remove('active'));
-  STATE.gueumPositions.forEach(p=>document.getElementById('gpos_'+p)?.classList.add('active'));
-  document.querySelectorAll('.gueum-pitch-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('gpitch_'+STATE.gueumPitch)?.classList.add('active');
-  const pitchSliderVal={high:4,midhigh:3,midlow:2,low:1}[STATE.gueumPitch]||3;
-  const ps=document.getElementById('gueumPitchSlider');
-  if(ps){ps.value=pitchSliderVal;updateGueumPitchSlider(pitchSliderVal);}
-  document.querySelectorAll('.gueum-gender-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('ggender_'+STATE.gueumGender)?.classList.add('active');
-  buildPrompt();
+  syncSliders();renderAll();syncGueumUI();buildPrompt();
   const labels={pansori_han_blues:'🎙️ 판소리 한 블루스',seoul_midnight_jazz:'🎷 서울 심야 재즈',sanjo_blue:'🎸 산조 블루 노트',joseon_gospel:'✝️ 조선 소울 가스펠',ajaeng_soul_ballad:'🎻 아쟁 소울 발라드'};
   showToast((labels[type]||'✅')+' 프리셋 적용 완료!');
 }
@@ -2204,7 +2105,7 @@ function applyGueumPreset(type) {
 function applyRandomPreset() {
   resetAll(false);
 
-  /* ── 🟢 항상 랜덤: 필수 뼈대 ── */
+  /* 랜덤 필수 */
   STATE.genre=Math.floor(Math.random()*DATA.genres.length);
   STATE.moods=[Math.floor(Math.random()*DATA.moods.length)];
   if(Math.random()>0.4)STATE.moods.push((STATE.moods[0]+1+Math.floor(Math.random()*(DATA.moods.length-1)))%DATA.moods.length);
@@ -2219,7 +2120,7 @@ function applyRandomPreset() {
 
   /* 악기 */
   const cats=['string','percussion','wind'];const cat=cats[Math.floor(Math.random()*3)];
-  const catData=cat==='string'?DATA.instrumentsString:cat==='percussion'?DATA.instrumentsPercussion:DATA.instrumentsWind;
+  const catData=getCatData(cat);
   selectInstrByCategory(cat,Math.floor(Math.random()*catData.length));
 
   /* 보컬 톤 1~2개 */
@@ -2264,12 +2165,12 @@ function applyRandomPreset() {
   STATE.energyArc=Math.floor(Math.random()*DATA.energyArcs.length);
 
   /* 09C: 레퍼런스 아티스트 1~2명 + 프로덕션 시대 */
-  const shuffledArtists=[...DATA.refArtists].sort(()=>Math.random()-.5);
+  const shuffledArtists=[...DATA.suggestedArtists].sort(()=>Math.random()-.5);
   const artistCount=1+Math.floor(Math.random()*2);
   shuffledArtists.slice(0,artistCount).forEach(a=>STATE.refArtists.push(a.en));
   STATE.productionEra=Math.floor(Math.random()*DATA.productionEras.length);
 
-  /* ── 🟡 50% 확률: 선택적 레이어 ── */
+  /* 50% 확률 선택 */
   if(Math.random()<0.5){
     const bsCount=1+Math.floor(Math.random()*2);
     const bsShuffled=[...Array(DATA.blackSoulElements.length).keys()].sort(()=>Math.random()-.5);
@@ -2281,7 +2182,7 @@ function applyRandomPreset() {
     STATE.humanFeelElements=hfShuffled.slice(0,hfCount);
   }
 
-  /* ── 🔵 30% 확률: 구음 스페셜 ── */
+  /* 30% 구음 */
   if(Math.random()<0.3){
     const positions=['start','mid','end'];
     const posCount=1+Math.floor(Math.random()*2);
@@ -2292,39 +2193,24 @@ function applyRandomPreset() {
     STATE.gueumStrength=['normal','strong','maximum'][Math.floor(Math.random()*3)];
   }
 
-  /* ── 🔵 30% 확률: 한소울 스페셜 ── */
+  /* 30% 한소울 */
   if(Math.random()<0.3){
     STATE.hanSoulStyle=Math.floor(Math.random()*DATA.hanSoulStyles.length);
   }
 
   syncSliders();renderAll();
 
-  /* ── 구음 버튼 UI 동기화 ── */
-  document.querySelectorAll('.gueum-pos-btn').forEach(b=>b.classList.remove('active'));
-  STATE.gueumPositions.forEach(p=>document.getElementById('gpos_'+p)?.classList.add('active'));
-  document.querySelectorAll('.gueum-pitch-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('gpitch_'+STATE.gueumPitch)?.classList.add('active');
-  const rndPitchVal={high:4,midhigh:3,midlow:2,low:1}[STATE.gueumPitch]||3;
-  const rndPs=document.getElementById('gueumPitchSlider');
-  if(rndPs){rndPs.value=rndPitchVal;updateGueumPitchSlider(rndPitchVal);}
-  document.querySelectorAll('.gueum-gender-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('ggender_'+STATE.gueumGender)?.classList.add('active');
-
+  syncGueumUI();
   /* ── 구음 강도 버튼 UI 동기화 ── */
-  document.querySelectorAll('[id^="gstrength_"]').forEach(b=>{
-    const isActive=b.id==='gstrength_'+STATE.gueumStrength;
-    b.style.borderColor=isActive?(STATE.gueumStrength==='maximum'?'#c85050':'var(--korean2)'):'var(--border)';
-    b.style.background=isActive?(STATE.gueumStrength==='maximum'?'rgba(200,80,80,0.2)':'rgba(160,90,58,0.25)'):'var(--surface2)';
-    b.style.color=isActive?(STATE.gueumStrength==='maximum'?'#e07070':'var(--korean2)'):'var(--muted)';
-    b.style.fontWeight=isActive?'700':'400';
-  });
+  document.querySelectorAll('[id^="gstrength_"]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('gstrength_'+STATE.gueumStrength)?.classList.add('active');
 
   /* ── 성별 버튼 UI 동기화 ── */
   document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active'));
   const rndGBtn=[...document.querySelectorAll('.gender-btn')].find(b=>(STATE.gender==='all'&&b.textContent.includes('전체'))||(STATE.gender==='male'&&b.textContent.includes('남성'))||(STATE.gender==='female'&&b.textContent.includes('여성')));
   if(rndGBtn)rndGBtn.classList.add('active');
 
-  /* ✅ [FIX v6] display:none 섹션은 getElementById가 null 반환할 수 있음
+  /* display:none 섹션은 getElementById가 null 반환할 수 있음
      → 강제로 잠깐 열어서 active 적용 후 다시 닫기 */
   const _scaleBody=document.getElementById('scaleBody');
   const _arcBody=document.getElementById('arcBody');
@@ -2345,6 +2231,20 @@ function applyRandomPreset() {
   buildPrompt();showToast("✨ 랜덤 3:7 프리셋 적용!");
 }
 
+
+function syncGueumUI() {
+  document.querySelectorAll('.gueum-pos-btn').forEach(b=>b.classList.remove('active'));
+  STATE.gueumPositions.forEach(p=>document.getElementById('gpos_'+p)?.classList.add('active'));
+  document.querySelectorAll('.gueum-pitch-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('gpitch_'+STATE.gueumPitch)?.classList.add('active');
+  const ps=document.getElementById('gueumPitchSlider');
+  const pv={high:4,midhigh:3,midlow:2,low:1}[STATE.gueumPitch]||3;
+  if(ps){ps.value=pv;updateGueumPitchSlider(pv);}
+  document.querySelectorAll('.gueum-gender-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('ggender_'+STATE.gueumGender)?.classList.add('active');
+  document.querySelectorAll('[id^="gstrength_"]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('gstrength_'+STATE.gueumStrength)?.classList.add('active');
+}
 function syncSliders() {
   document.getElementById('bpmSlider').value=STATE.bpm;
   document.getElementById('bpmVal').textContent=STATE.bpm;
@@ -2393,7 +2293,7 @@ function loadPresets() {
   modal.innerHTML=`<div style="background:var(--surface);padding:20px;border-radius:12px;width:400px;max-width:90%">
     <h3 style="margin-bottom:15px">내 프리셋</h3>
     <div style="max-height:300px;overflow-y:auto">${presets.map((p,i)=>`<div style="padding:8px;border-bottom:1px solid var(--border);cursor:pointer" onclick="loadPreset(${i})"><strong>${p.name}</strong><br><span style="font-size:11px;color:var(--muted)">${new Date(p.timestamp).toLocaleString()}</span></div>`).join('')}</div>
-    <button class="btn btn-outline" style="margin-top:15px;width:100%" onclick="this.closest('.modal').remove()">닫기</button>
+    <button class="btn btn-outline" style="margin-top:15px;width:100%" onclick="document.querySelector('.modal').remove()">닫기</button>
   </div>`;
   modal.className='modal'; document.body.appendChild(modal);
 }
@@ -2413,7 +2313,7 @@ function copyPrompt(){doCopy(document.getElementById('promptBox').textContent);}
 function copyField(id){const el=document.getElementById(id);doCopy(el.value!==undefined?el.value:el.textContent);}
 function showToast(msg="✅ 완료!"){const t=document.getElementById('toast');if(t){t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}}
 
-/* ── [FIX] resetAll: 구음/한소울 상태도 초기화 ── */
+/* resetAll: 구음/한소울 상태도 초기화 ── */
 function resetAll(doRender=true) {
   STATE.genre=null;STATE.moods=[];STATE.instr=null;STATE.instrCategory=null;
   STATE.concept=null;STATE.vocalStyle=null;STATE.vocalTones=[];STATE.textures=[];
@@ -2436,7 +2336,7 @@ function resetAll(doRender=true) {
   }
 }
 
-/* ── [FIX] renderAll: renderGueumStyles + renderHanSoulStyles 추가 ── */
+/* renderAll: renderGueumStyles + renderHanSoulStyles 추가 ── */
 function renderAll() {
   renderGenres();renderMoods();renderInstruments();renderConcepts();
   renderVocalStyles();renderTones(STATE.gender);renderAdvancedChips();
@@ -2451,7 +2351,7 @@ function renderAll() {
   document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active'));
   const activeGBtn=[...document.querySelectorAll('.gender-btn')].find(b=>(STATE.gender==='all'&&b.textContent.includes('전체'))||(STATE.gender==='male'&&b.textContent.includes('남성'))||(STATE.gender==='female'&&b.textContent.includes('여성')));
   if(activeGBtn)activeGBtn.classList.add('active');
-  /* ✅ [FIX v6] 09A/09B 자동조합 후 active 클래스 명시 적용 */
+  /* 09A/09B 자동조합 후 active 클래스 명시 적용 */
   if(STATE.musicKey!==null){document.querySelectorAll('[id^="mkey_"]').forEach(el=>el.classList.remove('active'));document.getElementById('mkey_'+STATE.musicKey)?.classList.add('active');}
   if(STATE.koreanScale!==null){document.querySelectorAll('[id^="kscale_"]').forEach(el=>el.classList.remove('active'));document.getElementById('kscale_'+STATE.koreanScale)?.classList.add('active');}
   if(STATE.energyArc!==null){document.querySelectorAll('[id^="arc_"]').forEach(el=>el.classList.remove('active'));document.getElementById('arc_'+STATE.energyArc)?.classList.add('active');}
