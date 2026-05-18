@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 v8 - Joseon Core</title>
+<title>BV 뮤직 프롬프트 메이커 v9 - Joseon Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -249,13 +249,18 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   padding:14px 16px;margin-top:10px;font-size:12px;line-height:1.8;display:none;
 }
 .yt-result.show{display:block}
-.gueum-pos-btn,.gueum-pitch-btn,.gueum-gender-btn{
+/* ── 공통 섹션 레이블 클래스 ── */
+.lbl-korean{font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px}
+.lbl-gold{font-size:12px;color:var(--gold);margin-bottom:8px;font-weight:600}
+.lbl-soul{font-size:12px;color:#e07070;margin-bottom:8px;font-weight:600}
+.lbl-blue{font-size:12px;color:#6aa0e0;margin-bottom:8px;font-weight:600}
+.gueum-ctrl-btn{
   padding:8px 18px;border-radius:6px;border:1px solid rgba(160,90,58,.4);
   background:var(--surface2);color:var(--muted);font-size:12px;cursor:pointer;
   transition:all .2s;font-family:'Noto Sans KR',sans-serif;
 }
-.gueum-pos-btn:hover,.gueum-pitch-btn:hover,.gueum-gender-btn:hover{border-color:var(--korean2);color:var(--text);}
-.gueum-pos-btn.active,.gueum-pitch-btn.active,.gueum-gender-btn.active{background:rgba(160,90,58,.25);border-color:var(--korean2);color:var(--korean2);font-weight:700;}
+.gueum-ctrl-btn:hover{border-color:var(--korean2);color:var(--text);}
+.gueum-ctrl-btn.active{background:rgba(160,90,58,.25);border-color:var(--korean2);color:var(--korean2);font-weight:700;}
 .han-soul-card{border:1px solid rgba(200,80,80,.3);border-radius:8px;padding:14px 16px;cursor:pointer;transition:all .2s;background:var(--surface2);}
 .han-soul-card:hover{border-color:rgba(200,80,80,.6);}
 .han-soul-card.active{border-color:#c85050;background:rgba(200,80,80,.1);}
@@ -353,11 +358,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v8</span></div>
+        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v9</span></div>
         <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 가사 삽입 · 변형 생성</div>
       </div>
     </div>
-    <div class="header-badge">JOSEON CORE v8 · 5개 변형 생성 · 스타일프롬프트 최적화</div>
+    <div class="header-badge">JOSEON CORE v9 · 버그수정+최적화 · 5개 변형 생성</div>
   </div>
 </header>
 
@@ -553,9 +558,9 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   <div class="section-body" id="toneBody" style="display:none">
     <div class="gender-row">
       <span class="gender-lbl">성별 필터:</span>
-      <button class="gender-btn active" onclick="setGender('all')">전체</button>
-      <button class="gender-btn" onclick="setGender('male')">남성</button>
-      <button class="gender-btn" onclick="setGender('female')">여성</button>
+      <button class="gender-btn active" onclick="setGender('all', this)">전체</button>
+      <button class="gender-btn" onclick="setGender('male', this)">남성</button>
+      <button class="gender-btn" onclick="setGender('female', this)">여성</button>
     </div>
     <div class="chip-wrap" id="toneGrid"></div>
   </div>
@@ -573,20 +578,20 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       🎙️ <b>구음</b>은 악기 소리를 입으로 표현하는 한국 전통 창법입니다. 재즈·블루스·소울의 스캣(scat)과 같은 즉흥적 보컬 표현으로 Suno에서 강력한 정체성을 만듭니다.
     </div>
     <div style="margin-bottom:20px">
-      <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">① 구음 삽입 위치 <span style="font-size:10px;color:var(--muted)">(복수 선택 가능)</span></div>
+      <div class="lbl-korean">① 구음 삽입 위치 <span style="font-size:10px;color:var(--muted)">(복수 선택 가능)</span></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="gueum-pos-btn" id="gpos_start" onclick="toggleGueumPos('start')">🎬 시작 (Intro)</button>
-        <button class="gueum-pos-btn" id="gpos_mid" onclick="toggleGueumPos('mid')">🎵 중간 (Bridge)</button>
-        <button class="gueum-pos-btn" id="gpos_end" onclick="toggleGueumPos('end')">🎭 끝 (Outro)</button>
+        <button class="gueum-ctrl-btn" id="gpos_start" onclick="toggleGueumPos('start')">🎬 시작 (Intro)</button>
+        <button class="gueum-ctrl-btn" id="gpos_mid" onclick="toggleGueumPos('mid')">🎵 중간 (Bridge)</button>
+        <button class="gueum-ctrl-btn" id="gpos_end" onclick="toggleGueumPos('end')">🎭 끝 (Outro)</button>
       </div>
     </div>
     <div style="margin-bottom:20px">
-      <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">② 구음 음역대 <span style="font-size:10px;color:var(--muted)">(하나 선택)</span></div>
+      <div class="lbl-korean">② 구음 음역대 <span style="font-size:10px;color:var(--muted)">(하나 선택)</span></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
-        <button class="gueum-pitch-btn" id="gpitch_high" onclick="selectGueumPitch('high')">🔺 고음 (High)</button>
-        <button class="gueum-pitch-btn" id="gpitch_midhigh" onclick="selectGueumPitch('midhigh')">◆ 중고음 (Mid-High)</button>
-        <button class="gueum-pitch-btn" id="gpitch_midlow" onclick="selectGueumPitch('midlow')">◇ 중저음 (Mid-Low)</button>
-        <button class="gueum-pitch-btn" id="gpitch_low" onclick="selectGueumPitch('low')">🔻 저음 (Low)</button>
+        <button class="gueum-ctrl-btn" id="gpitch_high" onclick="selectGueumPitch('high')">🔺 고음 (High)</button>
+        <button class="gueum-ctrl-btn" id="gpitch_midhigh" onclick="selectGueumPitch('midhigh')">◆ 중고음 (Mid-High)</button>
+        <button class="gueum-ctrl-btn" id="gpitch_midlow" onclick="selectGueumPitch('midlow')">◇ 중저음 (Mid-Low)</button>
+        <button class="gueum-ctrl-btn" id="gpitch_low" onclick="selectGueumPitch('low')">🔻 저음 (Low)</button>
       </div>
       <div style="display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 16px">
         <span style="font-size:10px;color:var(--muted);white-space:nowrap">저음</span>
@@ -600,19 +605,19 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       </div>
     </div>
     <div style="margin-bottom:20px">
-      <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">③ 구음 보컬 성별</div>
+      <div class="lbl-korean">③ 구음 보컬 성별</div>
       <div style="display:flex;gap:10px">
-        <button class="gueum-gender-btn active" id="ggender_both" onclick="selectGueumGender('both')">👥 남녀 구음</button>
-        <button class="gueum-gender-btn" id="ggender_male" onclick="selectGueumGender('male')">🎤 남성 구음 <span style="font-size:10px;opacity:.8">(묵직·굵음)</span></button>
-        <button class="gueum-gender-btn" id="ggender_female" onclick="selectGueumGender('female')">🎵 여성 구음 <span style="font-size:10px;opacity:.8">(청아·애절)</span></button>
+        <button class="gueum-ctrl-btn active" id="ggender_both" onclick="selectGueumGender('both')">👥 남녀 구음</button>
+        <button class="gueum-ctrl-btn" id="ggender_male" onclick="selectGueumGender('male')">🎤 남성 구음 <span style="font-size:10px;opacity:.8">(묵직·굵음)</span></button>
+        <button class="gueum-ctrl-btn" id="ggender_female" onclick="selectGueumGender('female')">🎵 여성 구음 <span style="font-size:10px;opacity:.8">(청아·애절)</span></button>
       </div>
     </div>
     <div style="margin-bottom:20px">
-      <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">④ 구음 스타일 <span style="font-size:10px;color:var(--muted)">(하나 선택)</span></div>
+      <div class="lbl-korean">④ 구음 스타일 <span style="font-size:10px;color:var(--muted)">(하나 선택)</span></div>
       <div class="card-grid col3" id="gueumStyleGrid"></div>
     </div>
     <div style="margin-bottom:8px;padding-top:16px;border-top:1px solid var(--border)">
-      <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">⑤ 구음 강도 (Suno 반영 강도)</div>
+      <div class="lbl-korean">⑤ 구음 강도 (Suno 반영 강도)</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button onclick="selectGueumStrength('normal')" id="gstrength_normal" class="gstrength-btn">보통</button>
         <button onclick="selectGueumStrength('strong')" id="gstrength_strong" class="gstrength-btn gstrength-strong">강하게 ★</button>
@@ -648,35 +653,35 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
   <div class="section-body" id="advancedSettingsBody" style="display:none">
     <div style="margin-bottom:20px">
-      <div style="font-size:12px;color:var(--gold);margin-bottom:8px;font-weight:600">07A. 사운드 질감 (Texture)</div>
+      <div class="lbl-gold">07A. 사운드 질감 (Texture)</div>
       <div class="chip-wrap" id="textureGrid"></div>
     </div>
     <div style="margin-bottom:20px">
-      <div style="font-size:12px;color:var(--gold);margin-bottom:8px;font-weight:600">07B. 그루브 / 리듬 스타일</div>
+      <div class="lbl-gold">07B. 그루브 / 리듬 스타일</div>
       <div class="chip-wrap" id="grooveGrid"></div>
     </div>
     <div style="margin-bottom:20px">
-      <div style="font-size:12px;color:var(--gold);margin-bottom:8px;font-weight:600">07C. 공간감 / 리버브</div>
+      <div class="lbl-gold">07C. 공간감 / 리버브</div>
       <div class="chip-wrap" id="spaceGrid"></div>
     </div>
     <div style="margin-bottom:20px">
-      <div style="font-size:12px;color:var(--korean2);margin-bottom:8px;font-weight:600">07D. 한국적 그루브 요소 🔶 (3:7 핵심)</div>
+      <div class="lbl-korean">07D. 한국적 그루브 요소 🔶 (3:7 핵심)</div>
       <div class="chip-wrap" id="koreanGrooveGrid"></div>
     </div>
     <div style="margin-bottom:20px">
-      <div style="font-size:12px;color:var(--gold);margin-bottom:8px;font-weight:600">07E. 베이스 움직임</div>
+      <div class="lbl-gold">07E. 베이스 움직임</div>
       <div class="chip-wrap" id="bassStyleGrid"></div>
     </div>
     <div>
-      <div style="font-size:12px;color:var(--korean2);margin-bottom:8px;font-weight:600">07F. 한국적 감성 / 분위기 🔶 (3:7 핵심)</div>
+      <div class="lbl-korean">07F. 한국적 감성 / 분위기 🔶 (3:7 핵심)</div>
       <div class="chip-wrap" id="koreanFeelingGrid"></div>
     </div>
     <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
-      <div style="font-size:12px;color:#e07070;margin-bottom:8px;font-weight:600">07G. 흑인 블루스 / 소울 요소 (Black Soul/Blues)</div>
+      <div class="lbl-soul">07G. 흑인 블루스 / 소울 요소 (Black Soul/Blues)</div>
       <div class="chip-wrap" id="blackSoulGrid"></div>
     </div>
     <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
-      <div style="font-size:12px;color:#6aa0e0;margin-bottom:8px;font-weight:600">07H. 인간미 / 라이브 느낌</div>
+      <div class="lbl-blue">07H. 인간미 / 라이브 느낌</div>
       <div class="chip-wrap" id="humanFeelGrid"></div>
     </div>
   </div>
@@ -1247,7 +1252,7 @@ const STATE = {
   textures:[], grooves:[], spaces:[], koreanGrooves:[],
   bassStyles:[], koreanFeelings:[], blackSoulElements:[], humanFeelElements:[],
   bpm:95, intensity:5, gender:'all',
-  koreanDominance:82,
+  koreanDominance:80,
   koreanRatio:70,
   gueumPositions:[],
   gueumPitch:'midhigh',
@@ -1264,6 +1269,12 @@ const STATE = {
 /* ═══════════════════════════════════════════
    HELPERS
 ═══════════════════════════════════════════ */
+/* 성능: 슬라이더 연속 이벤트용 디바운서 */
+function debounce(fn, ms) {
+  let t; return function(...args) { clearTimeout(t); t = setTimeout(()=>fn.apply(this,args), ms); };
+}
+/* 성능: BPM 가이드 역순 배열 1회 계산 (매 호출마다 slice().reverse() 불필요) */
+const _bpmGuidesReversed = DATA.bpmGuides.slice().reverse();
 function renderChipGroup(containerId, dataArray, stateArray, toggleFnName, idPrefix) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -1337,7 +1348,10 @@ function renderInstruments(){
 }
 function getCatData(cat){return cat==='string'?DATA.instrumentsString:cat==='percussion'?DATA.instrumentsPercussion:DATA.instrumentsWind;}
 function selectInstrByCategory(cat, i) {
-  document.querySelectorAll('[id^="instr_"]').forEach(el => el.classList.remove('active'));
+  /* 성능: 전체 DOM 탐색 대신 3개 그리드 내에서만 active 해제 */
+  ['instrGridString','instrGridPercussion','instrGridWind'].forEach(gid=>{
+    document.getElementById(gid)?.querySelectorAll('.selcard').forEach(el=>el.classList.remove('active'));
+  });
   const sameKey = `${cat}_${i}`;
   if (STATE.instrCategory === sameKey) {
     STATE.instr=null; STATE.instrCategory=null;
@@ -1481,9 +1495,26 @@ const selectConcept     = createSelectOne('concept',     '.concept-card',       
 const selectVocalStyle  = createSelectOne('vocalStyle',  '#vocalStyleGrid .selcard','vs_');
 const selectGueumStyle  = createSelectOne('gueumStyle',  '[id^="gueum_"]',         'gueum_');
 const selectHanSoulStyle= createSelectOne('hanSoulStyle','[id^="hansoul_"]',       'hansoul_');
-const selectMusicKey    = createSelectOne('musicKey',    '[id^="mkey_"]',          'mkey_');
-const selectKoreanScale = createSelectOne('koreanScale', '[id^="kscale_"]',        'kscale_');
+const _selectMusicKey   = createSelectOne('musicKey',    '[id^="mkey_"]',          'mkey_');
+const _selectKoreanScale= createSelectOne('koreanScale', '[id^="kscale_"]',        'kscale_');
 const selectEnergyArc   = createSelectOne('energyArc',  '[id^="arc_"]',           'arc_');
+
+/* Key + Korean Scale 충돌 감지 — 선택 후 경고 */
+const _MAJOR_KEYS  = new Set([5,6,7]); /* F, G, Bb */
+const _MINOR_KEYS  = new Set([0,1,2,3,4]); /* Am,Dm,Em,Gm,Cm */
+const _GYEMYEON = 0; /* 계면조: 슬픔·단조 */
+const _PYEONGJO = 1; /* 평조: 밝음·장조 */
+function _checkKeyScaleConflict() {
+  if (STATE.musicKey===null||STATE.koreanScale===null) return;
+  const isMajorKey = _MAJOR_KEYS.has(STATE.musicKey);
+  const isMinorKey = _MINOR_KEYS.has(STATE.musicKey);
+  if (isMajorKey && STATE.koreanScale===_GYEMYEON)
+    showToast('⚠️ 장조 키 + 계면조(슬픔)는 감정이 충돌할 수 있습니다. 단조 키를 추천합니다.');
+  else if (isMinorKey && STATE.koreanScale===_PYEONGJO)
+    showToast('⚠️ 단조 키 + 평조(밝음·웅장)는 감정이 충돌할 수 있습니다. 장조 키를 추천합니다.');
+}
+function selectMusicKey(i)    { _selectMusicKey(i);    _checkKeyScaleConflict(); }
+function selectKoreanScale(i) { _selectKoreanScale(i); _checkKeyScaleConflict(); }
 
 function toggleMood(i) {
   const idx=STATE.moods.indexOf(i);
@@ -1497,10 +1528,15 @@ function toggleTone(i) {
   document.getElementById('tone_'+i)?.classList.toggle('active');
   buildPrompt();
 }
-function setGender(g) {
+function setGender(g, btn) {
   STATE.gender=g;
   document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active'));
-  event.target.classList.add('active');
+  if(btn) btn.classList.add('active');
+  /* 성별 필터 변경 시 — 현재 필터에서 숨겨질 tone 자동 해제 (STATE 정합성 유지) */
+  STATE.vocalTones = STATE.vocalTones.filter(i => {
+    const d = DATA.vocalTones[i];
+    return d && (g==='all' || d.gender===g || d.gender==='both');
+  });
   renderTones(g);
 }
 const toggleTexture=createToggleFunction('textures','textureGrid','texture');
@@ -1541,7 +1577,7 @@ function toggleGueumPos(pos) {
 }
 function selectGueumPitch(pitch) {
   STATE.gueumPitch=pitch;
-  document.querySelectorAll('.gueum-pitch-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll(".gueum-ctrl-btn[id^=gpitch_]").forEach(b=>b.classList.remove('active'));
   document.getElementById('gpitch_'+pitch)?.classList.add('active');
   const sliderVal=pitch==='high'?4:pitch==='midhigh'?3:pitch==='midlow'?2:1;
   const slider=document.getElementById('gueumPitchSlider');
@@ -1556,13 +1592,13 @@ function updateGueumPitchSlider(v) {
   document.getElementById('gueumPitchLabel').textContent=labels[v];
   const pct=((v-1)/3*100).toFixed(0)+'%';
   document.getElementById('gueumPitchSlider').style.setProperty('--gpct',pct);
-  document.querySelectorAll('.gueum-pitch-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll(".gueum-ctrl-btn[id^=gpitch_]").forEach(b=>b.classList.remove('active'));
   document.getElementById('gpitch_'+pitches[v])?.classList.add('active');
   buildPrompt();
 }
 function selectGueumGender(g) {
   STATE.gueumGender=g;
-  document.querySelectorAll('.gueum-gender-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll(".gueum-ctrl-btn[id^=ggender_]").forEach(b=>b.classList.remove('active'));
   document.getElementById('ggender_'+g)?.classList.add('active');
   buildPrompt();
 }
@@ -1582,7 +1618,7 @@ function updateBpm(v) {
   buildPrompt();
 }
 function updateBpmGuide(bpm) {
-  const guide=DATA.bpmGuides.slice().reverse().find(g=>{const[lo]=g.range.split('–').map(Number);return bpm>=lo;})||DATA.bpmGuides[0];
+  const guide=_bpmGuidesReversed.find(g=>{const[lo]=g.range.split('–').map(Number);return bpm>=lo;})||DATA.bpmGuides[0];
   document.getElementById('bgRange').textContent=guide.range+' BPM';
   document.getElementById('bgName').textContent=guide.name;
   document.getElementById('bgMood').textContent=guide.mood;
@@ -1627,12 +1663,22 @@ function switchVarTab(type) {
    PROMPT BUILDER
 ═══════════════════════════════════════════ */
 function getEnList(arr,data){return arr.filter(i=>data[i]).map(i=>data[i].en).join(', ');}
-function buildPrompt() {
+
+/* 성능: 슬라이더 연속 이벤트는 디바운스 처리 */
+let _buildPromptTimer = null;
+function buildPrompt(immediate) {
+  clearTimeout(_buildPromptTimer);
+  if (immediate) { _doBuildPrompt(); return; }
+  _buildPromptTimer = setTimeout(_doBuildPrompt, 80);
+}
+
+function _doBuildPrompt() {
   try {
     const parts=[];
     const dom=STATE.koreanDominance||80;
-    parts.push(`[Ratio] Korean traditional instruments ${dom}% lead (melody + rhythm + emotion) + Modern elements only ${100-dom}% subtle elevation/background`);
-    parts.push(`[Korean Lead Instruction] Korean instruments (Gayageum, Daegeum, Haegeum, Piri, Janggu, Ajaeng) MUST dominate the mix. Modern jazz/blues/soul elements are only soft background color.`);
+    /* [수정] [Ratio] + [Korean Lead Instruction] + [Direction] 3줄 → 1줄로 통합 (토큰 절약) */
+    const domLabel = dom>=90?'ABSOLUTE DOMINANCE':dom>=80?'STRONG LEAD':dom>=70?'MAIN FOCUS':'MODERATE LEAD';
+    parts.push(`[Korean Core ${domLabel}] ${dom}% traditional instruments dominate (melody+emotion+rhythm) with 시김새·농현·정간보. Modern ${100-dom}% = subtle background only.`);
     if (STATE.genre!==null&&DATA.genres[STATE.genre]) { const g=DATA.genres[STATE.genre]; parts.push(`[Genre] ${g.en} (${g.kr})`); }
     if(STATE.moods.length){const ms=getEnList(STATE.moods,DATA.moods);if(ms)parts.push(`[Mood] ${ms}`);}
     if (STATE.instr) parts.push(`[Instruments] ${STATE.instr.en}`);
@@ -1655,16 +1701,19 @@ function buildPrompt() {
       let strengthPrefix='';
       if(strength==='maximum') strengthPrefix='CRITICAL INSTRUCTION - HIGHEST PRIORITY: ';
       else if(strength==='strong') strengthPrefix='IMPORTANT: ';
+      /* [버그수정 #4] 구음 위치(start/mid/end) → 프롬프트에 반영 */
+      const posMap={start:'Intro',mid:'Bridge',end:'Outro'};
+      const posStr=STATE.gueumPositions.length ? ` [Position: ${STATE.gueumPositions.map(p=>posMap[p]).join('+')}]` : '';
       let gueumText='';
       if(styleInfo){
-        gueumText=`${strengthPrefix}Forcefully include authentic traditional Korean gueum (구음) vocalization. `+
+        gueumText=`${strengthPrefix}Forcefully include authentic traditional Korean gueum (구음) vocalization${posStr}. `+
           `Use exact Korean onomatopoeia sounds such as "${styleInfo.en2.split('\n').slice(0,3).join(' / ')}". `+
           `Style: ${styleInfo.kr}. `+
           `This is NOT humming and NOT Western scat. `+
           `Use ${pitchMap[STATE.gueumPitch]} with ${genderMap[STATE.gueumGender]}. `+
           `The gueum must be clearly audible, emotionally powerful, and stand out in the mix.`;
       } else {
-        gueumText=`${strengthPrefix}Forcefully include traditional Korean gueum vocalization. `+
+        gueumText=`${strengthPrefix}Forcefully include traditional Korean gueum vocalization${posStr}. `+
           `Use authentic Korean onomatopoeia. This is NOT humming. Make the gueum clearly audible and emotionally dominant.`;
       }
       parts.push(`[GUEUM] ${gueumText}`);
@@ -1675,8 +1724,7 @@ function buildPrompt() {
     }
     parts.push(`[BPM] ${STATE.bpm}`);
     parts.push(`[Emotional Intensity] ${STATE.intensity}/10 (${STATE.intensity<=3?'Chill':STATE.intensity<=6?'Emotional':'Explosive Soul'})`);
-    const kr=STATE.koreanRatio||70; const mod=100-kr;
-    parts.push(`[Direction] ${kr}% Korean traditional dominance — Korean instruments MUST lead with authentic techniques (시김새, 농현, 정간보). Modern ${mod}% elements are strictly background elevation.`);
+    /* [수정] [Direction] 제거 — 위 [Korean Core] 줄에 통합됨 */
     if (STATE.musicKey!==null && DATA.musicKeys[STATE.musicKey]) {
       const mk=DATA.musicKeys[STATE.musicKey];
       parts.push(`[Key] ${mk.en} (${mk.short}) — ${mk.mood}`);
@@ -1691,6 +1739,10 @@ function buildPrompt() {
     } else {
       parts.push(`[Structure] Tasteful breakdown, dynamic lift at 1:20–1:40, emotional climax, Korean instrument spotlight moment, powerful final ensemble, well-placed silence for maximum impact.`);
     }
+    /* [버그수정 #1] songDuration — 기존에 STATE에 저장되나 프롬프트 미반영이었던 버그 수정 */
+    if (STATE.songDuration) {
+      parts.push(`[Duration] target ${STATE.songDuration} full song — no early fade, include full outro`);
+    }
     const box=document.getElementById('promptBox');
     box.textContent=parts.length>3?parts.join('\n'):'← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
   } catch(e) {
@@ -1702,7 +1754,7 @@ function buildPrompt() {
    API
 ═══════════════════════════════════════════ */
 function getApiKey() { return (document.getElementById('apiKeyInput')?.value||'').trim()||localStorage.getItem('gugak_api_key')||''; }
-async function callClaude(prompt, systemPrompt='') {
+async function callClaude(prompt, systemPrompt='', temperature=0.85) {
   const apiKey=getApiKey();
   if (!apiKey) { document.getElementById('apiKeyInput')?.focus(); throw new Error('OpenRouter API 키를 먼저 입력해 주세요.'); }
   if (!apiKey.startsWith('sk-or-v1-')) throw new Error('OpenRouter 키 형식 오류 (sk-or-v1- 로 시작)');
@@ -1711,8 +1763,8 @@ async function callClaude(prompt, systemPrompt='') {
   messages.push({role:'user',content:prompt});
   const res=await fetch('https://openrouter.ai/api/v1/chat/completions',{
     method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`,'HTTP-Referer':window.location.href,'X-Title':'Gugak Prompt Maker v8'},
-    body:JSON.stringify({model:'openrouter/free',messages,max_tokens:2500,temperature:0.85})
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`,'HTTP-Referer':window.location.href,'X-Title':'Gugak Prompt Maker v9'},
+    body:JSON.stringify({model:'openrouter/free',messages,max_tokens:2500,temperature})
   });
   const data=await res.json().catch(()=>({}));
   if (!res.ok) {
@@ -1740,7 +1792,7 @@ async function runAI() {
   const sysPrompt=`당신은 7:3 Joseon Core 전문가입니다. 반드시 다음 JSON 형식만 응답: {"genre":"","moods":[],"instruments":"","concept":"","vocalStyle":"","bpm":85,"textures":[],"koreanGrooves":[],"koreanFeelings":[],"summary":""}`;
   const userPrompt=isYT?`다음 YouTube 링크의 음악을 7:3 국악 퓨전 스타일로 추천: ${kw}\nJSON만 작성.`:`"${kw}" 키워드를 7:3 Joseon Core 스타일로 추천. JSON만 작성.`;
   try {
-    const text=await callClaude(userPrompt,sysPrompt);
+    const text=await callClaude(userPrompt,sysPrompt, 0.35);
     const jsonMatch=text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("JSON 형식 응답 없음");
     const analysis=JSON.parse(jsonMatch[0]);
@@ -1756,7 +1808,7 @@ function applyAnalysisToUI(analysis) {
   if (analysis.moods&&Array.isArray(analysis.moods)) { analysis.moods.forEach(m=>{const idx=DATA.moods.findIndex(d=>d.en.toLowerCase().includes(m.toLowerCase())||d.kr.includes(m));if(idx!==-1&&!STATE.moods.includes(idx))STATE.moods.push(idx);}); }
   if (analysis.bpm&&analysis.bpm>=65&&analysis.bpm<=145) STATE.bpm=parseInt(analysis.bpm);
   if (analysis.koreanGrooves&&Array.isArray(analysis.koreanGrooves)) { analysis.koreanGrooves.forEach(n=>{const idx=DATA.koreanGrooves.findIndex(k=>k.en.toLowerCase().includes(n.toLowerCase())||k.kr.includes(n));if(idx!==-1&&!STATE.koreanGrooves.includes(idx))STATE.koreanGrooves.push(idx);}); }
-  syncSliders(); renderAll(); buildPrompt();
+  syncSliders(); renderAll(); buildPrompt(true);
   showToast("✅ 분석 결과가 자동으로 적용되었습니다!");
 }
 async function aiExpandPrompt() {
@@ -1773,7 +1825,7 @@ async function genTitle() {
   const current=document.getElementById('promptBox').textContent;
   const loading=document.getElementById('titleLoading'); loading.classList.add('show');
   try {
-    const text=await callClaude(`다음 프롬프트 기반으로 곡 제목 생성:\n${current}\n반드시 JSON만: {"en":"English Title","kr":"한글 제목"}`,'음악 제목 생성 전문가. JSON만 출력.');
+    const text=await callClaude(`다음 프롬프트 기반으로 곡 제목 생성:\n${current}\n반드시 JSON만: {"en":"English Title","kr":"한글 제목"}`,'음악 제목 생성 전문가. JSON만 출력.', 0.4);
     const clean=text.replace(/```json|```/g,'').trim(); const match=clean.match(/\{[\s\S]*\}/);
     if (!match) throw new Error('JSON 응답 형식 오류');
     const parsed=JSON.parse(match[0]);
@@ -1814,7 +1866,7 @@ async function genLyrics(lang) {
     const sysP = isEn
       ? `You are a world-class lyricist. Write the exact number of lines specified. The output must fill a ${duration} song.`
       : `최고 수준의 감성 작사가입니다. 각 섹션에 지정된 줄 수를 반드시 지켜야 합니다. ${duration} 분량을 채워야 합니다.`;
-    const text=await callClaude(lyricPrompt,sysP);
+    const text=await callClaude(lyricPrompt,sysP, 0.92);
     out.value=cleanModelText(text);
     showToast(`✅ ${duration} 분량 가사 생성 완료!`);
   } catch(e) { out.value='오류: '+(e.message||'알 수 없는 오류'); }
@@ -1824,7 +1876,7 @@ async function genRec() {
   const loading=document.getElementById('recLoading'); const grid=document.getElementById('recGrid');
   loading.classList.add('show'); grid.innerHTML='';
   try {
-    const text=await callClaude(`글로벌 리플레이 채널을 위한 7:3 Joseon Core 음악 스타일 6개 추천.\n반드시 JSON 배열만: [{"rank":1,"name":"스타일명","nameEn":"Style Name","views":"예상조회수","moods":["분위기1"],"bpm":"78-95","instruments":"주요 악기","reason":"조회수 이유"},...]`,'글로벌 채널 3:7 국악 퓨전 전략가. JSON만 출력.');
+    const text=await callClaude(`글로벌 리플레이 채널을 위한 7:3 Joseon Core 음악 스타일 6개 추천.\n반드시 JSON 배열만: [{"rank":1,"name":"스타일명","nameEn":"Style Name","views":"예상조회수","moods":["분위기1"],"bpm":"78-95","instruments":"주요 악기","reason":"조회수 이유"},...]`,'글로벌 채널 3:7 국악 퓨전 전략가. JSON만 출력.', 0.4);
     const clean=text.replace(/```json|```/g,'').trim(); const match=clean.match(/\[[\s\S]*\]/);
     if (!match) throw new Error('JSON 배열 응답 형식 오류');
     const items=JSON.parse(match[0]); recItems=items;
@@ -1858,7 +1910,7 @@ function applyRecCard(idx) {
   if (STATE.koreanGrooves.length===0) STATE.koreanGrooves=[0,4];
   STATE.textures=[0]; STATE.grooves=[1,6]; STATE.spaces=[0]; STATE.koreanFeelings=[0]; STATE.intensity=6;
   document.querySelectorAll('#recGrid .rec-card').forEach((c,i)=>{c.style.borderColor=(i===idx)?'var(--gold)':'';c.style.background=(i===idx)?'var(--selected-bg)':'';});
-  syncSliders(); renderAll(); buildPrompt();
+  syncSliders(); renderAll(); buildPrompt(true);
   document.getElementById('promptBox').scrollIntoView({behavior:'smooth',block:'center'});
   showToast(`✅ "${item.name}" 스타일이 자동 적용되었습니다!`);
 }
@@ -2082,7 +2134,7 @@ function apply73Preset(type) {
     STATE.bassStyles=[3,4];STATE.koreanFeelings=[0,5];STATE.bpm=95;STATE.intensity=7;
     selectInstrByCategory('wind',0);
   }
-  syncSliders();renderAll();buildPrompt();
+  syncSliders();renderAll();buildPrompt(true);
   showToast(`✅ 7:3 ${type.toUpperCase()} Joseon Core 프리셋 적용 완료!`);
 }
 function applyUltimateGroovePreset() {
@@ -2091,7 +2143,7 @@ function applyUltimateGroovePreset() {
   STATE.textures=[0,6];STATE.grooves=[3,6];STATE.spaces=[0,2];STATE.koreanGrooves=[0,2,4,9,10];
   STATE.bassStyles=[0,2,4];STATE.koreanFeelings=[0,3,5];STATE.humanFeelElements=[0,1,4];
   STATE.bpm=90;STATE.intensity=6;selectInstrByCategory('string',0);
-  syncSliders();renderAll();buildPrompt();showToast("🔥 Ultimate 7:3 Joseon Groove 적용 완료!");
+  syncSliders();renderAll();buildPrompt(true);showToast("🔥 Ultimate 7:3 Joseon Groove 적용 완료!");
 }
 function applyQuickStart(type) {
   resetAll(false);
@@ -2113,7 +2165,7 @@ function applyQuickStart(type) {
     STATE.genre=7;STATE.moods=[13];STATE.concept=7;
     STATE.grooves=[4,5];STATE.koreanGrooves=[2,3];STATE.bpm=95;STATE.intensity=5;selectInstrByCategory('wind',0);
   }
-  syncSliders();renderAll();buildPrompt();
+  syncSliders();renderAll();buildPrompt(true);
   const msg={drive:'✅ 드라이브',night:'✅ 늦은 밤',workout:'✅ 운동',hiphop:'✅ 힙합',labor:'✅ 노동가'};
   showToast((msg[type]||'✅')+" 세팅 적용 완료!");
 }
@@ -2150,7 +2202,7 @@ function applyGueumPreset(type) {
     STATE.gueumPositions=['mid','end'];STATE.gueumPitch='low';STATE.gueumGender='male';
     STATE.gueumStyle=1;STATE.hanSoulStyle=4;selectInstrByCategory('string',2);
   }
-  syncSliders();renderAll();syncGueumUI();buildPrompt();
+  syncSliders();renderAll();syncGueumUI();buildPrompt(true);
   const labels={pansori_han_blues:'🎙️ 판소리 한 블루스',seoul_midnight_jazz:'🎷 서울 심야 재즈',sanjo_blue:'🎸 산조 블루 노트',joseon_gospel:'✝️ 조선 소울 가스펠',ajaeng_soul_ballad:'🎻 아쟁 소울 발라드'};
   showToast((labels[type]||'✅')+' 프리셋 적용 완료!');
 }
@@ -2194,18 +2246,18 @@ function applyRandomPreset() {
     STATE.gueumStrength=['normal','strong','maximum'][Math.floor(Math.random()*3)];
   }
   if(Math.random()<0.3) STATE.hanSoulStyle=Math.floor(Math.random()*DATA.hanSoulStyles.length);
-  syncSliders();renderAll();syncGueumUI();buildPrompt();showToast("✨ 랜덤 프리셋 적용!");
+  syncSliders();renderAll();syncGueumUI();buildPrompt(true);showToast("✨ 랜덤 프리셋 적용!");
 }
 
 function syncGueumUI() {
-  document.querySelectorAll('.gueum-pos-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll(".gueum-ctrl-btn[id^=gpos_]").forEach(b=>b.classList.remove('active'));
   STATE.gueumPositions.forEach(p=>document.getElementById('gpos_'+p)?.classList.add('active'));
-  document.querySelectorAll('.gueum-pitch-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll(".gueum-ctrl-btn[id^=gpitch_]").forEach(b=>b.classList.remove('active'));
   document.getElementById('gpitch_'+STATE.gueumPitch)?.classList.add('active');
   const ps=document.getElementById('gueumPitchSlider');
   const pv={high:4,midhigh:3,midlow:2,low:1}[STATE.gueumPitch]||3;
   if(ps){ps.value=pv;updateGueumPitchSlider(pv);}
-  document.querySelectorAll('.gueum-gender-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll(".gueum-ctrl-btn[id^=ggender_]").forEach(b=>b.classList.remove('active'));
   document.getElementById('ggender_'+STATE.gueumGender)?.classList.add('active');
   document.querySelectorAll('[id^="gstrength_"]').forEach(b=>b.classList.remove('active'));
   document.getElementById('gstrength_'+STATE.gueumStrength)?.classList.add('active');
@@ -2265,7 +2317,7 @@ function loadPresets() {
 function loadPreset(index) {
   let presets=JSON.parse(localStorage.getItem('gugak_presets')||'[]');
   const preset=presets[index]; if(!preset)return;
-  Object.assign(STATE,preset.state); syncSliders();renderAll();buildPrompt();
+  Object.assign(STATE,preset.state); syncSliders();renderAll();buildPrompt(true);
   showToast("✅ 프리셋이 불러와졌습니다!"); document.querySelector('.modal')?.remove();
 }
 
@@ -2283,16 +2335,16 @@ function resetAll(doRender=true) {
   STATE.concept=null;STATE.vocalStyle=null;STATE.vocalTones=[];STATE.textures=[];
   STATE.grooves=[];STATE.spaces=[];STATE.koreanGrooves=[];STATE.bassStyles=[];
   STATE.koreanFeelings=[];STATE.blackSoulElements=[];STATE.humanFeelElements=[];
-  STATE.bpm=95;STATE.intensity=5;STATE.gender='all';STATE.koreanDominance=82;
+  STATE.bpm=95;STATE.intensity=5;STATE.gender='all';STATE.koreanDominance=80;
   STATE.gueumPositions=[];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
   STATE.gueumStyle=null;STATE.hanSoulStyle=null;STATE.gueumStrength='strong';
   STATE.musicKey=null;STATE.koreanScale=null;STATE.energyArc=null;
   if(doRender){
     renderAll();syncSliders();
-    document.querySelectorAll('.gueum-pos-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.gueum-pitch-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll(".gueum-ctrl-btn[id^=gpos_]").forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll(".gueum-ctrl-btn[id^=gpitch_]").forEach(b=>b.classList.remove('active'));
     document.getElementById('gpitch_midhigh')?.classList.add('active');
-    document.querySelectorAll('.gueum-gender-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll(".gueum-ctrl-btn[id^=ggender_]").forEach(b=>b.classList.remove('active'));
     document.getElementById('ggender_both')?.classList.add('active');
     document.getElementById('promptBox').textContent='← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
     // 변형 결과 초기화
@@ -2350,7 +2402,7 @@ function setSongDuration(val) {
   const custom = document.getElementById('songDurationCustom');
   if (custom) custom.value = val;
   document.getElementById('durationDisplay').textContent = '현재: ' + val;
-  buildPrompt();
+  buildPrompt(true);
 }
 function setSongDurationCustom(val) {
   const m = val.trim().match(/^(\d+):(\d{2})$/);
