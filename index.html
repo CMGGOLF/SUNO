@@ -2441,7 +2441,11 @@ function loadPreset(index) {
 ═══════════════════════════════════════════ */
 function fallbackCopy(text){const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');showToast();}catch(e){}document.body.removeChild(ta);}
 function doCopy(text){if(!text||!text.trim())return;if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(text).then(()=>showToast()).catch(()=>fallbackCopy(text));else fallbackCopy(text);}
-function copyPrompt(){doCopy(document.getElementById('promptBox').textContent);}
+function copyPrompt(){
+  const text = (document.getElementById('promptBox').textContent || '').trim();
+  if (!text || text.includes('←')) { showToast('⚠️ 복사할 프롬프트가 없습니다.'); return; }
+  doCopy(text);
+}
 function copyField(id){const el=document.getElementById(id);doCopy(el.value!==undefined?el.value:el.textContent);}
 function showToast(msg="✅ 완료!"){const t=document.getElementById('toast');if(t){t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}}
 
@@ -2495,17 +2499,19 @@ function onApiKeyInput(v){const key=v.trim();if(key.startsWith('sk-or-v1-'))show
 function showApiStatus(msg,color){document.getElementById('apiKeyStatus').innerHTML=`<span style="color:${color}">${msg}</span>`;}
 function loadSavedKey(){const k=localStorage.getItem('gugak_api_key');if(k){document.getElementById('apiKeyInput').value=k;showApiStatus('✅ 저장된 API 키가 불러와졌습니다.','var(--teal)');}}
 function openSunoWithEverything() {
-  let title=""; const titleEn=document.getElementById('titleEn'); const titleKr=document.getElementById('titleKr');
-  if(titleEn&&titleEn.textContent!=='—')title=titleEn.textContent.trim();
-  else if(titleKr&&titleKr.textContent!=='—')title=titleKr.textContent.trim();
-  let prompt=""; const promptBox=document.getElementById('promptBox'); if(promptBox)prompt=promptBox.textContent.trim();
-  let lyrics=""; const lyricsEn=document.getElementById('lyricsEnOut'); const lyricsKr=document.getElementById('lyricsKrOut'); const lyricsFree=document.getElementById('lyricsFreeInput');
-  if(lyricsEn&&lyricsEn.value.trim())lyrics=lyricsEn.value.trim();
-  else if(lyricsKr&&lyricsKr.value.trim())lyrics=lyricsKr.value.trim();
-  else if(lyricsFree&&lyricsFree.value.trim())lyrics=lyricsFree.value.trim();
-  let fullText=""; if(title)fullText+=`Title: ${title}\n\n`; if(prompt)fullText+=`${prompt}\n\n`; if(lyrics)fullText+=`Lyrics:\n${lyrics}`;
-  if(!fullText.trim()){alert("복사할 내용이 없습니다!");return;}
-  navigator.clipboard.writeText(fullText).then(()=>{window.open('https://suno.com/create','_blank');setTimeout(()=>{alert("✅ 복사 완료!\nSuno에서 Ctrl+V 눌러 붙여넣기 해주세요!");},800);}).catch(()=>{alert("복사 실패\n\n"+fullText);window.open('https://suno.com/create','_blank');});
+  // ✅ 클립보드에는 프롬프트만 복사 (가사는 제외)
+  const promptBox = document.getElementById('promptBox');
+  const prompt = promptBox ? promptBox.textContent.trim() : '';
+  if (!prompt || prompt.includes('←')) { alert('복사할 프롬프트가 없습니다!\n먼저 항목을 선택해 프롬프트를 생성해 주세요.'); return; }
+  navigator.clipboard.writeText(prompt)
+    .then(() => {
+      window.open('https://suno.com/create', '_blank');
+      setTimeout(() => { alert("✅ 프롬프트 복사 완료!\nSuno에서 Ctrl+V 눌러 붙여넣기 해주세요!\n\n💡 가사는 아래 가사 탭의 [복사] 버튼으로 별도 복사하세요."); }, 800);
+    })
+    .catch(() => {
+      alert("복사 실패\n\n" + prompt);
+      window.open('https://suno.com/create', '_blank');
+    });
 }
 
 /* ═══════════════════════════════════════════
