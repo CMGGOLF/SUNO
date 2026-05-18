@@ -1490,14 +1490,68 @@ function createSelectOne(stateKey, selector, idPrefix) {
     buildPrompt();
   };
 }
-const selectGenre       = createSelectOne('genre',       '#genreGrid .selcard',    'genre_');
 const selectConcept     = createSelectOne('concept',     '.concept-card',          'concept_');
 const selectVocalStyle  = createSelectOne('vocalStyle',  '#vocalStyleGrid .selcard','vs_');
 const selectGueumStyle  = createSelectOne('gueumStyle',  '[id^="gueum_"]',         'gueum_');
-const selectHanSoulStyle= createSelectOne('hanSoulStyle','[id^="hansoul_"]',       'hansoul_');
 const _selectMusicKey   = createSelectOne('musicKey',    '[id^="mkey_"]',          'mkey_');
 const _selectKoreanScale= createSelectOne('koreanScale', '[id^="kscale_"]',        'kscale_');
 const selectEnergyArc   = createSelectOne('energyArc',  '[id^="arc_"]',           'arc_');
+
+/* ── 조성·음계 자동 적용 헬퍼 ── */
+function _autoSetKeyScale(keyIdx, scaleIdx) {
+  STATE.musicKey = keyIdx;
+  STATE.koreanScale = scaleIdx;
+  document.querySelectorAll('[id^="mkey_"]').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('[id^="kscale_"]').forEach(el => el.classList.remove('active'));
+  document.getElementById('mkey_' + keyIdx)?.classList.add('active');
+  document.getElementById('kscale_' + scaleIdx)?.classList.add('active');
+}
+
+/* 장르별 조성·음계 자동 매핑 테이블
+   musicKeys:    0=Am 1=Dm 2=Em 3=Gm 4=Cm 5=F 6=G 7=Bb
+   koreanScales: 0=계면조 1=평조 2=우조 3=경토리 4=메나리토리 */
+const _GENRE_KEY_MAP = [
+  [0, 0], // 0 조선궁중소울  → Am + 계면조 (애절·한)
+  [2, 0], // 1 산조재즈      → Em + 계면조 (즉흥성·재즈)
+  [1, 0], // 2 판소리소울    → Dm + 계면조 (서사적·깊은 한)
+  [0, 4], // 3 민요블루스    → Am + 메나리토리 (처연·구슬픔)
+  [1, 0], // 4 국악궁중힙합  → Dm + 계면조 (묵직·힙합)
+  [5, 3], // 5 대금앰비언트  → F  + 경토리 (서정적·신명)
+  [1, 4], // 6 아쟁딥소울    → Dm + 메나리토리 (깊은 슬픔·처연)
+  [4, 1], // 7 네오조선퓨전  → Cm + 평조 (장엄·웅장·기품)
+];
+
+/* 한소울스타일별 조성·음계 자동 매핑 */
+const _HANSOUL_KEY_MAP = [
+  [1, 0], // 0 Mississippi Han Blues  → Dm + 계면조
+  [7, 2], // 1 Joseon Soul Gospel     → Bb + 우조
+  [2, 0], // 2 Seoul Midnight Jazz    → Em + 계면조
+  [0, 0], // 3 Sanjo Blue Notes       → Am + 계면조
+  [1, 4], // 4 Han Soul Ballad        → Dm + 메나리토리
+  [0, 0], // 5 Gritty Korean R&B      → Am + 계면조
+];
+
+function selectGenre(i) {
+  document.querySelectorAll('#genreGrid .selcard').forEach(el => el.classList.remove('active'));
+  STATE.genre = (STATE.genre === i) ? null : i;
+  if (STATE.genre !== null) {
+    document.getElementById('genre_' + i)?.classList.add('active');
+    const map = _GENRE_KEY_MAP[i];
+    if (map) _autoSetKeyScale(map[0], map[1]);
+  }
+  buildPrompt();
+}
+
+function selectHanSoulStyle(i) {
+  document.querySelectorAll('[id^="hansoul_"]').forEach(el => el.classList.remove('active'));
+  STATE.hanSoulStyle = (STATE.hanSoulStyle === i) ? null : i;
+  if (STATE.hanSoulStyle !== null) {
+    document.getElementById('hansoul_' + i)?.classList.add('active');
+    const map = _HANSOUL_KEY_MAP[i];
+    if (map) _autoSetKeyScale(map[0], map[1]);
+  }
+  buildPrompt();
+}
 
 /* Key + Korean Scale 충돌 감지 — 선택 후 경고 */
 const _MAJOR_KEYS  = new Set([5,6,7]); /* F, G, Bb */
@@ -1871,11 +1925,11 @@ async function genLyrics(lang) {
   loading.classList.add('show');
   try {
     const lyricPrompt = isEn
-      ? `You are writing lyrics for a ${duration} song (${totalSec} seconds total).\n\nCRITICAL RULES:\n1. Follow the EXACT structure below\n2. Write the EXACT number of lines specified\n3. English only.\n4. Focus on emotion, longing, Korean sensibility (han, midnight, soul)\n5. The song MUST feel like a full ${duration} song\n\nMusic style:\n${current}\n\nSTRUCTURE:\n${structureEn}`
-      : `${duration} 길이(${totalSec}초) 가사를 작성합니다.\n\n절대 규칙:\n1. 아래 구조를 정확히 따를 것\n2. 각 섹션에 지정된 줄 수를 정확히 작성\n3. 한국어만 사용.\n4. 감정·이미지·한(恨)·심야·소울 중심\n\n음악 스타일:\n${current}\n\n구조:\n${structureKr}`;
+      ? `You are writing poetic lyrics for a ${duration} song (${totalSec} seconds total).\n\nCRITICAL RULES:\n1. Follow the EXACT structure below\n2. Write the EXACT number of lines specified\n3. English only.\n4. NEVER mention any instrument names (no gayageum, haegeum, ajaeng, daegeum, piri, janggu, piano, guitar, bass, drums, etc.)\n5. Express the FEELING of the music through nature, emotion, light, shadow, wind, water, night, longing — purely poetic and sensory language\n6. Draw from Korean aesthetic sensibility: han(恨), yeojung(餘情), silence between words, moonlight on water\n7. Avoid clichés. Use unexpected, vivid imagery. Every line should ache or shimmer.\n8. The song MUST feel like a full ${duration} song\n\nMusic style (use as emotional reference only, not literally):\n${current}\n\nSTRUCTURE:\n${structureEn}`
+      : `${duration} 길이(${totalSec}초)의 시적인 가사를 작성합니다.\n\n절대 규칙:\n1. 아래 구조를 정확히 따를 것\n2. 각 섹션에 지정된 줄 수를 정확히 작성\n3. 한국어만 사용\n4. 절대로 악기 이름을 가사에 넣지 마세요 (가야금, 해금, 아쟁, 대금, 피리, 장구, 피아노, 기타, 베이스, 드럼 등 일체 금지)\n5. 음악의 '감정'을 자연·빛·그림자·바람·물·밤·그리움 같은 감각적 언어로만 표현할 것\n6. 한국적 미감으로: 한(恨)·여정(餘情)·침묵·달빛·서리·새벽안개를 품은 시어를 사용\n7. 진부한 표현 금지. 예상치 못한 선명한 이미지 사용. 모든 줄이 아프거나 빛나야 함\n8. ${duration} 분량을 완전히 채울 것\n\n음악 스타일 (감정 참고용, 직역 금지):\n${current}\n\n구조:\n${structureKr}`;
     const sysP = isEn
-      ? `You are a world-class lyricist. Write the exact number of lines specified. The output must fill a ${duration} song.`
-      : `최고 수준의 감성 작사가입니다. 각 섹션에 지정된 줄 수를 반드시 지켜야 합니다. ${duration} 분량을 채워야 합니다.`;
+      ? `You are a world-class poet-lyricist. No instrument names ever. Pure sensory and emotional imagery only. Write the exact number of lines specified. The output must fill a ${duration} song.`
+      : `당신은 세계적 수준의 시인이자 작사가입니다. 악기 이름은 절대 금지입니다. 순수한 감각적·시적 언어만 사용하세요. 각 섹션에 지정된 줄 수를 반드시 지키고 ${duration} 분량을 완전히 채우세요.`;
     const text=await callClaude(lyricPrompt,sysP, 0.92);
     out.value=cleanModelText(text);
     showToast(`✅ ${duration} 분량 가사 생성 완료!`);
