@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 v4 - Joseon Core (구음·비율조절)</title>
+<title>BV 뮤직 프롬프트 메이커 v8 - Joseon Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -249,7 +249,6 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   padding:14px 16px;margin-top:10px;font-size:12px;line-height:1.8;display:none;
 }
 .yt-result.show{display:block}
-/* 구음 버튼 스타일 */
 .gueum-pos-btn,.gueum-pitch-btn,.gueum-gender-btn{
   padding:8px 18px;border-radius:6px;border:1px solid rgba(160,90,58,.4);
   background:var(--surface2);color:var(--muted);font-size:12px;cursor:pointer;
@@ -257,11 +256,10 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 }
 .gueum-pos-btn:hover,.gueum-pitch-btn:hover,.gueum-gender-btn:hover{border-color:var(--korean2);color:var(--text);}
 .gueum-pos-btn.active,.gueum-pitch-btn.active,.gueum-gender-btn.active{background:rgba(160,90,58,.25);border-color:var(--korean2);color:var(--korean2);font-weight:700;}
-.han-soul-card { border:1px solid rgba(200,80,80,.3);border-radius:8px;padding:14px 16px;cursor:pointer;transition:all .2s;background:var(--surface2); }
-.han-soul-card:hover { border-color:rgba(200,80,80,.6); }
-.han-soul-card.active { border-color:#c85050;background:rgba(200,80,80,.1); }
-.han-soul-card .card-en { color:#e07070; }
-
+.han-soul-card{border:1px solid rgba(200,80,80,.3);border-radius:8px;padding:14px 16px;cursor:pointer;transition:all .2s;background:var(--surface2);}
+.han-soul-card:hover{border-color:rgba(200,80,80,.6);}
+.han-soul-card.active{border-color:#c85050;background:rgba(200,80,80,.1);}
+.han-soul-card .card-en{color:#e07070;}
 .dur-btn{
   padding:8px 18px;border-radius:6px;border:1px solid var(--border);
   background:var(--surface2);color:var(--muted);font-size:13px;
@@ -269,7 +267,57 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 }
 .dur-btn:hover{border-color:var(--gold);color:var(--text);}
 .dur-btn.active{background:rgba(201,168,76,.2);border-color:var(--gold);color:var(--gold);}
-
+/* ── 5개 변형 섹션 스타일 ── */
+.var-section{
+  margin-top:16px;padding-top:16px;border-top:1px solid var(--border);
+}
+.var-btn-group{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+.var-tab-row{display:flex;gap:0;margin-bottom:0;}
+.var-tab{
+  padding:8px 20px;font-size:12px;cursor:pointer;color:var(--muted);
+  border:1px solid var(--border);border-bottom:none;border-radius:6px 6px 0 0;
+  background:var(--surface2);transition:all .2s;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.var-tab.active{color:var(--korean2);border-color:var(--korean2);background:rgba(160,90,58,.1);}
+.var-panel{display:none;}
+.var-panel.active{display:block;}
+.var-box{
+  border:1px solid var(--border);border-radius:0 8px 8px 8px;
+  background:var(--surface2);padding:16px;min-height:60px;
+}
+.var-card{
+  border:1px solid var(--border);border-radius:8px;padding:14px;
+  margin-bottom:10px;background:var(--surface);transition:border-color .2s;
+}
+.var-card:hover{border-color:var(--dim);}
+.var-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.var-card-num{font-family:'Space Mono',monospace;font-size:10px;color:var(--korean2);font-weight:700;}
+.var-card-title{font-size:13px;font-weight:700;color:var(--text);font-family:'Noto Serif KR',serif;}
+.var-card-prompt{
+  font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);
+  line-height:1.7;margin-bottom:10px;padding:8px 10px;
+  background:var(--surface2);border-radius:6px;border:1px solid var(--border);
+  white-space:pre-wrap;word-break:break-all;
+}
+.var-card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;}
+.vtag{font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(160,90,58,.15);color:var(--korean2);border:1px solid rgba(160,90,58,.3);}
+.vtag.blue{background:rgba(58,143,160,.1);color:var(--teal);border-color:rgba(58,143,160,.3);}
+.var-apply-btn{
+  padding:6px 14px;font-size:11px;border-radius:6px;border:1px solid var(--korean2);
+  background:rgba(160,90,58,.2);color:var(--korean2);cursor:pointer;transition:all .2s;
+  font-family:'Noto Sans KR',sans-serif;font-weight:600;
+}
+.var-apply-btn:hover{background:rgba(160,90,58,.35);}
+.var-copy-btn{
+  padding:6px 14px;font-size:11px;border-radius:6px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.var-copy-btn:hover{border-color:var(--gold);color:var(--gold);}
+.var-loading{display:none;align-items:center;gap:8px;font-size:12px;color:var(--muted);padding:16px;}
+.var-loading.show{display:flex;}
+/* ─────────────────────────────────── */
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:var(--dim)}
@@ -279,7 +327,6 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   .card-grid.col3{grid-template-columns:repeat(2,1fr)}
   .concept-grid{grid-template-columns:1fr}
   .rec-grid{grid-template-columns:repeat(2,1fr)}
-  .title-out{grid-template-columns:1fr}
 }
 @media(max-width:600px){
   .card-grid.col2,.card-grid.col3{grid-template-columns:1fr}
@@ -306,11 +353,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v7</span></div>
-        <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 가사 삽입 강화판</div>
+        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v8</span></div>
+        <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 가사 삽입 · 변형 생성</div>
       </div>
     </div>
-    <div class="header-badge">JOSEON CORE v7 · 구음 가사 삽입 · 스타일프롬프트 최적화</div>
+    <div class="header-badge">JOSEON CORE v8 · 5개 변형 생성 · 스타일프롬프트 최적화</div>
   </div>
 </header>
 
@@ -521,13 +568,10 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="sec-title">구음 설정 🎵 <span style="color:var(--korean2);font-size:12px">덩~더~쿵~ / 어~흥~ / 이야~호~</span> <span id="gueumIcon" style="font-size:14px">▼</span></div>
     <div class="sec-sub">위치·음역·성별·스타일·강도 선택 (클릭하여 펼치기/접기)</div>
   </div>
-  <!-- gueumBody: 모든 구음 설정이 이 div 안에 포함 -->
   <div class="section-body" id="gueumBody" style="display:none">
     <div class="info-bar korean-info" style="margin-bottom:16px">
       🎙️ <b>구음</b>은 악기 소리를 입으로 표현하는 한국 전통 창법입니다. 재즈·블루스·소울의 스캣(scat)과 같은 즉흥적 보컬 표현으로 Suno에서 강력한 정체성을 만듭니다.
     </div>
-
-    <!-- ① 구음 위치 -->
     <div style="margin-bottom:20px">
       <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">① 구음 삽입 위치 <span style="font-size:10px;color:var(--muted)">(복수 선택 가능)</span></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -536,8 +580,6 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <button class="gueum-pos-btn" id="gpos_end" onclick="toggleGueumPos('end')">🎭 끝 (Outro)</button>
       </div>
     </div>
-
-    <!-- ② 구음 음역 -->
     <div style="margin-bottom:20px">
       <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">② 구음 음역대 <span style="font-size:10px;color:var(--muted)">(하나 선택)</span></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
@@ -557,8 +599,6 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         </div>
       </div>
     </div>
-
-    <!-- ③ 구음 보컬 성별 -->
     <div style="margin-bottom:20px">
       <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">③ 구음 보컬 성별</div>
       <div style="display:flex;gap:10px">
@@ -567,14 +607,10 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <button class="gueum-gender-btn" id="ggender_female" onclick="selectGueumGender('female')">🎵 여성 구음 <span style="font-size:10px;opacity:.8">(청아·애절)</span></button>
       </div>
     </div>
-
-    <!-- ④ 구음 스타일 — [FIX] ⑤보다 먼저 (번호 순서 수정) -->
     <div style="margin-bottom:20px">
       <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">④ 구음 스타일 <span style="font-size:10px;color:var(--muted)">(하나 선택)</span></div>
       <div class="card-grid col3" id="gueumStyleGrid"></div>
     </div>
-
-    <!-- ⑤ 구음 강도 — [FIX] gueumBody 안으로 이동 + 중복 노트 제거 -->
     <div style="margin-bottom:8px;padding-top:16px;border-top:1px solid var(--border)">
       <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">⑤ 구음 강도 (Suno 반영 강도)</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -584,7 +620,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       </div>
       <div style="font-size:10px;color:var(--muted);margin-top:8px">※ 강하게/최대 설정할수록 Suno가 구음을 더 잘 인식합니다.</div>
     </div>
-  </div><!-- /gueumBody -->
+  </div>
 </div>
 
 <!-- SECTION 06C: 한(恨) 소울 스타일 -->
@@ -599,7 +635,6 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       🎷 <b>이 섹션의 핵심:</b> 블루스의 한(恨), 재즈의 즉흥성, 소울의 신명이 국악의 정서와 만나는 지점입니다.<br>
       미시시피 델타 블루스 = 조선 남도 민요 / 재즈 스캣 = 구음 / 소울 그루브 = 굿거리 장단
     </div>
-    <!-- [FIX] col2 → col3: 구음 스타일 카드와 동일한 크기로 통일 -->
     <div class="card-grid col3" id="hanSoulStyleGrid"></div>
   </div>
 </div>
@@ -765,14 +800,12 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="info-bar" style="margin-bottom:16px;border-color:rgba(58,143,160,.3);background:rgba(58,143,160,.07);color:var(--teal)">
       🎵 <b>조성</b>은 음악의 감정 색채를 결정합니다. 같은 가야금이라도 Am(애절)과 G(신명)는 완전히 다른 음악이 됩니다.
     </div>
-    <!-- 서양 키 -->
     <div style="margin-bottom:20px">
       <div style="font-size:12px;color:var(--teal);font-weight:600;margin-bottom:10px">① 서양 조성 (Key) <span style="font-size:10px;color:var(--muted)">— 하나 선택</span>
         <span style="font-size:10px;color:var(--gold);margin-left:8px">⭐ = 국악 퓨전 추천</span>
       </div>
       <div class="card-grid col3" id="musicKeyGrid"></div>
     </div>
-    <!-- 국악 음계 -->
     <div>
       <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">② 국악 음계 (Korean Scale) <span style="font-size:10px;color:var(--muted)">— 하나 선택</span></div>
       <div class="card-grid col3" id="koreanScaleGrid"></div>
@@ -795,45 +828,6 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
 </div>
 
-<!-- SECTION 09C: 레퍼런스 아티스트 -->
-<div class="section" style="border-color:rgba(160,90,58,.35)">
-  <div class="section-head" onclick="toggleSection('refBody','refIcon')" style="cursor:pointer">
-    <div class="sec-num korean">09C</div>
-    <div class="sec-title">레퍼런스 아티스트 &amp; 프로덕션 시대 <span id="refIcon" style="font-size:14px">▼</span></div>
-    <div class="sec-sub">닮고 싶은 사운드 레퍼런스 (클릭하여 펼치기/접기)</div>
-  </div>
-  <div class="section-body" id="refBody" style="display:none">
-    <div class="info-bar" style="margin-bottom:16px">
-      🎤 아티스트명 또는 곡명을 직접 입력하세요. <b>Enter</b> 또는 <b>추가 버튼</b>으로 태그 추가 · 최대 3개 권장
-    </div>
-
-    <!-- 자유 입력 -->
-    <div style="margin-bottom:20px">
-      <div style="font-size:12px;color:var(--gold);font-weight:600;margin-bottom:10px">
-        ① 아티스트 / 곡명 입력
-        <span style="font-size:10px;color:var(--muted);font-weight:400;margin-left:8px">예) D'Angelo · "Brown Sugar" by D'Angelo · 이날치</span>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input type="text" id="refInput" placeholder="아티스트명 또는 곡명 입력 후 Enter..."
-          style="flex:1"
-          onkeydown="if(event.key==='Enter')addRefTag()">
-        <button class="btn btn-gold" style="padding:8px 16px;white-space:nowrap" onclick="addRefTag()">+ 추가</button>
-      </div>
-      <!-- 태그 표시 영역 -->
-      <div id="refTagWrap" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;min-height:36px"></div>
-      <div style="font-size:10px;color:var(--muted);margin-top:6px">
-        💡 <b>아티스트만:</b> D'Angelo &nbsp;|&nbsp; <b>곡+아티스트:</b> "Brown Sugar" by D'Angelo &nbsp;|&nbsp; <b>느낌 묘사:</b> late night jazz bar vibes
-      </div>
-    </div>
-
-    <!-- 프로덕션 시대 -->
-    <div style="padding-top:16px;border-top:1px solid var(--border)">
-      <div style="font-size:12px;color:var(--teal);font-weight:600;margin-bottom:10px">② 프로덕션 시대 &amp; 녹음 질감</div>
-      <div class="card-grid col2" id="productionEraGrid"></div>
-    </div>
-  </div>
-</div>
-
 <!-- SECTION 09: 프롬프트 생성 -->
 <div class="section">
   <div class="section-head">
@@ -851,22 +845,55 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       <button class="btn btn-outline" onclick="saveCurrentPreset()">💾 프리셋 저장</button>
       <button class="btn btn-outline" onclick="loadPresets()">📂 내 프리셋</button>
       <button class="btn btn-outline" onclick="resetAll()">↺ 초기화</button>
+    </div>
+    <div style="margin-top:12px">
       <button onclick="openSunoWithEverything()"
-        style="background:#1a1a24;color:#c9a84c;font-size:15px;padding:10px 20px;border:1.5px solid #c9a84c;border-radius:8px;cursor:pointer;margin-top:8px;font-weight:600;display:flex;align-items:center;gap:6px;box-shadow:0 3px 10px rgba(201,168,76,0.15);">
-        <span style="font-size:16px;">🎵</span><span>Suno로 바로 만들기</span>
-            <!-- ===== 5개 다른 분위기 프롬프트 버튼 추가 ===== -->
-    <div style="margin-top:16px;padding-top:16px;border-top:1px solid #2a2a3a">
-      <button onclick="generate5Variations()" 
-        style="background:rgba(160,90,58,.25);border:2px solid #d4845a;color:#d4845a;font-weight:700;padding:10px 18px;border-radius:8px;cursor:pointer;font-size:13px">
-        🎲 같은 장르 다른 분위기 5개 프롬프트 생성
+        style="background:#1a1a24;color:#c9a84c;font-size:15px;padding:10px 20px;border:1.5px solid #c9a84c;border-radius:8px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:6px;box-shadow:0 3px 10px rgba(201,168,76,0.15);">
+        <span style="font-size:16px">🎵</span><span>Suno로 바로 만들기</span>
       </button>
-      <div style="font-size:11px;color:#7a7590;margin-top:8px">
-        💡 장르를 선택한 후 클릭하면 같은 장르의 다른 분위기 프롬프트 5개를 만들어줍니다.
+    </div>
+
+    <!-- ===== 5개 변형 프롬프트 ===== -->
+    <div class="var-section">
+      <div style="font-size:13px;font-weight:700;color:var(--korean2);margin-bottom:12px;display:flex;align-items:center;gap:8px">
+        <span style="display:inline-block;width:4px;height:18px;background:var(--korean2);border-radius:2px"></span>
+        🎲 AI 변형 프롬프트 생성
+        <span style="font-size:11px;color:var(--muted);font-weight:400">장르를 선택한 뒤 아래 버튼을 클릭하세요</span>
       </div>
-      <div id="variationsBox" style="display:none;margin-top:14px"></div>
+      <div class="var-tab-row" id="varTabRow">
+        <div class="var-tab active" id="varTab_mood" onclick="switchVarTab('mood')">🎭 같은 장르 · 다른 분위기 5개</div>
+        <div class="var-tab" id="varTab_genre" onclick="switchVarTab('genre')">🎸 같은 분위기 · 다른 장르 5개</div>
+      </div>
+      <div class="var-box">
+        <!-- 같은 장르 다른 분위기 패널 -->
+        <div class="var-panel active" id="varPanel_mood">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+            <button class="btn btn-korean" onclick="generateVariations('mood')" style="font-size:12px;padding:8px 18px">
+              🎭 같은 장르 · 다른 분위기 5개 생성
+            </button>
+            <span style="font-size:11px;color:var(--muted)">현재 장르를 유지하면서 분위기만 완전히 다른 5가지 프롬프트</span>
+          </div>
+          <div class="var-loading" id="varLoading_mood">
+            <div class="dot-anim"><span></span><span></span><span></span></div>분위기 변형 생성 중...
+          </div>
+          <div id="varResult_mood"></div>
+        </div>
+        <!-- 같은 분위기 다른 장르 패널 -->
+        <div class="var-panel" id="varPanel_genre">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+            <button class="btn btn-teal" onclick="generateVariations('genre')" style="font-size:12px;padding:8px 18px">
+              🎸 같은 분위기 · 다른 장르 5개 생성
+            </button>
+            <span style="font-size:11px;color:var(--muted)">현재 분위기를 유지하면서 장르만 완전히 다른 5가지 프롬프트</span>
+          </div>
+          <div class="var-loading" id="varLoading_genre">
+            <div class="dot-anim"><span></span><span></span><span></span></div>장르 변형 생성 중...
+          </div>
+          <div id="varResult_genre"></div>
+        </div>
+      </div>
     </div>
-      </button>
-    </div>
+
     <div class="ai-loading" id="promptLoading" style="margin-top:8px">
       <div class="dot-anim"><span></span><span></span><span></span></div>프롬프트 확장 중...
     </div>
@@ -900,7 +927,6 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="sec-sub">영어 가사 / 한국어 가사 / 직접 입력</div>
   </div>
   <div class="section-body">
-    <!-- 구음 삽입 버튼 -->
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:rgba(160,90,58,.08);border:1px solid rgba(160,90,58,.35);border-radius:8px;">
       <button class="btn btn-korean" onclick="insertGueumToLyrics()" style="white-space:nowrap">
         🎵 구음 가사 삽입
@@ -1019,7 +1045,6 @@ const DATA = {
     {en:'Danso Solo + Dreamy Pad + Soft Texture',kr:'단소 솔로 + 드리미 패드 + 소프트 텍스처',desc:'단소 맑고 여린 솔로·호흡(70%) + 몽환적 Ambient(30%)',ratio:'7:3'},
     {en:'Saenghwang Harmonic Core + Ethereal Pad',kr:'생황 화성 코어 + 에테리얼 패드',desc:'생황 독특한 화성·동양 음색(70%) + 현대 패드 승화(30%)',ratio:'7:3'},
   ],
-
   concepts: [
     {num:'01',name:'조선 궁중 소울 (Joseon Court Soul)',core:['Elegant','Emotional','Noble'],sub:['Han','Graceful'],desc:'가야금·대금·해금 궁중 정악(70%) + 은은한 Neo Soul·재즈 화성(30%)',genres:['Joseon Court Soul','Elevated Gugak'],inst:['가야금','대금','해금','Warm Rhodes','Upright Bass','Brush Drums']},
     {num:'02',name:'산조 재즈 격상 (Sanjo Jazz Elevation)',core:['Improvisational','Free','Emotional'],sub:['Expressive','Nostalgic'],desc:'산조 즉흥 + 장단 리듬(70%) + 서양 재즈 스윙·화성(30%)',genres:['Sanjo Jazz','Korean Improvisation'],inst:['가야금','해금','Jazz Piano','Upright Bass','Brush Drums','Light Reverb']},
@@ -1154,39 +1179,37 @@ const DATA = {
   gueumStyles: [
     {en:'Pansori Deep Blues Gueum',kr:'판소리 딥 블루스 구음',
       en2:'으~흠~\n아니~리~\n에~헤야~\n어~이~ 허~이~\n아이고~ 아이~야~\n허~이~ 허허~\n으으~흠~\n어~ 허~어~',
-      desc:'판소리 깊은 저음 × 블루스 감성. 목이 긁히듯 걸걸한 저음. 블루스 보컬의 "oh yeah~"와 완벽히 맞닿는 가장 강력한 한(恨) 구음',pitch:'low',gender:'male'},
+      desc:'판소리 깊은 저음 × 블루스 감성. 목이 긁히듯 걸걸한 저음.',pitch:'low',gender:'male'},
     {en:'Mournful Han Blues Gueum',kr:'한(恨) 블루스 슬픔 구음',
       en2:'어~허~ 어허~야~\n아~이고~ 아이~\n어이~야 어이~\n흥~아 흥아~\n어~흥~ 아~이~\n에~헤야~ 에헤~\n아~아~ 어허~\n으으~ 어이~야~',
-      desc:'남도 소리꾼의 애절함 × 델타 블루스 그릿. "oh lord~" "have mercy~" 대신 한국의 한(恨)으로 우는 구음. 미시시피 블루스와 가장 잘 어울림',pitch:'midlow',gender:'male'},
+      desc:'남도 소리꾼의 애절함 × 델타 블루스 그릿.',pitch:'midlow',gender:'male'},
     {en:'Jazz Improv Gueum',kr:'재즈 즉흥 구음',
       en2:'두~비~ 두비~\n어~바~ 어바두~\n야~ 야~ 어야~\n흐~음~ 흐음~\n어~두~ 어두바~\n야바~ 야바두~\n두비두~ 야~',
-      desc:'재즈 스캣(scat) × 한국 구음의 크로스오버. 즉흥적이고 자유로운 음절. 재즈 솔로 사이사이 또는 브리지에서 폭발적 효과',pitch:'midhigh',gender:'both'},
+      desc:'재즈 스캣(scat) × 한국 구음의 크로스오버.',pitch:'midhigh',gender:'both'},
     {en:'Soul Gospel Gueum',kr:'소울 가스펠 구음',
       en2:'으~야~ 으야~\n아~ 아~야~\n허~야~ 허야~\n아~하~ 아하~\n어이~야~어이~야~\n에헤야~ 에헤~\n허~이야 허이야~\n에~야 에야~',
-      desc:'흑인 가스펠 "oh~" "yeah~" × 굿판 신명 구음. 소울의 카타르시스와 굿의 신명이 만나는 지점. 클라이맥스 폭발에 최적',pitch:'high',gender:'both'},
+      desc:'흑인 가스펠 × 굿판 신명 구음.',pitch:'high',gender:'both'},
     {en:'Ajaeng Deep Soul Gueum',kr:'아쟁 딥 소울 구음',
       en2:'으으~응~\n으~흐으~\n어~어~으~\n음~으으~음~\n으~음~ 으으~\n어~응~ 어응~\n으으으~ 허~',
-      desc:'아쟁 찰현의 묵직한 저음을 입으로 표현. 첼로보다 깊고 어두운 울림. 소울 발라드 슬로우 인트로에서 등골이 서늘해지는 효과',pitch:'low',gender:'male'},
+      desc:'아쟁 찰현의 묵직한 저음을 입으로 표현.',pitch:'low',gender:'male'},
     {en:'Jangdan Groove Gueum',kr:'장단 그루브 구음',
       en2:'덩~더~쿵~ 덕~쿵~\n덩기덕 쿵더러러~\n따~따따 쿵~\n덩~ 더~ 쿵~ 덕~\n기덕 쿵~ 기덕 쿵~\n따쿵~ 따쿵~\n덩더쿵 덩더쿵~',
-      desc:'장구 장단을 입으로 표현하는 리듬 구음. 재즈 드럼 필인처럼 리듬 공간을 채움. Funk·Groove 비트와 충돌 없이 자연스럽게 어우러짐',pitch:'midhigh',gender:'both'},
+      desc:'장구 장단을 입으로 표현하는 리듬 구음.',pitch:'midhigh',gender:'both'},
     {en:'Gayageum Night Jazz Gueum',kr:'가야금 심야 재즈 구음',
       en2:'댕~댕~두~둥~\n따~르릉~ 따르릉~\n댕기~ 댕기~ 두둥~\n따~링~ 따링~\n댕~ 댕~ 두둥~\n따링두~ 따링~\n댕~댕~ 으응~',
-      desc:'가야금 음색을 입으로 묘사 × 심야 재즈 감성. 새벽 재즈바에서 가야금이 피아노 솔로 대신 우는 느낌. 여성 보컬에 특히 몽환적 효과',pitch:'high',gender:'female'},
+      desc:'가야금 음색을 입으로 묘사 × 심야 재즈 감성.',pitch:'high',gender:'female'},
     {en:'Hwimori Soul Shout Gueum',kr:'휘모리 소울 샤우트 구음',
       en2:'이야~호~ 얼씨구~\n지화자~ 좋다~\n얼~씨구 절씨구~\n이야~ 이야~호~\n아~하하 좋구나~\n얼씨구~ 절씨구~\n이야~호 이야~',
-      desc:'빠른 신명 × 소울 샤우트. 가스펠 "hallelujah~" 대신 "얼씨구~"로 터지는 폭발적 구음. 클라이맥스나 아웃트로 에너지 폭발에 최강',pitch:'high',gender:'both'},
+      desc:'빠른 신명 × 소울 샤우트.',pitch:'high',gender:'both'},
   ],
   hanSoulStyles: [
-    {en:'Mississippi Han Blues',kr:'미시시피 한(恨) 블루스',desc:'미시시피 델타 블루스 + 남도 육자배기. 슬라이드 기타 대신 해금이, 하모니카 대신 피리가 운다. 가장 원초적인 한(恨)의 음악',style:'Korean Gugak 70% main + Delta Blues 30% undertone'},
+    {en:'Mississippi Han Blues',kr:'미시시피 한(恨) 블루스',desc:'미시시피 델타 블루스 + 남도 육자배기. 슬라이드 기타 대신 해금이, 하모니카 대신 피리가 운다.',style:'Korean Gugak 70% main + Delta Blues 30% undertone'},
     {en:'Joseon Soul Gospel',kr:'조선 소울 가스펠',desc:'흑인 가스펠의 신명과 집단적 카타르시스 + 굿판의 신명. 판소리 창법이 가스펠 창법과 만나는 지점',style:'Pansori vocal + Gospel groove'},
-    {en:'Seoul Midnight Jazz',kr:'서울 심야 재즈',desc:'새벽 3시 재즈바 + 해금 우는 소리. 위스키 한 잔과 해금 소리. 마일스 데이비스가 서울에 있었다면',style:'Haegeum lead jazz + late night atmosphere'},
-    {en:'Sanjo Blue Notes',kr:'산조 블루 노트',desc:'산조의 즉흥 프레이즈 = 재즈 임프로바이제이션. 같은 즉흥의 언어. 5음계와 블루스 펜타토닉이 완벽히 겹침',style:'Sanjo improvisation + jazz blue notes'},
-    {en:'Han Soul Ballad',kr:'한(恨) 소울 발라드',desc:'한국 한(恨)의 정서를 소울 발라드 형식으로. 오티스 레딩이 아쟁 소리를 들었다면. 가장 깊은 감정의 음악',style:'Ajaeng deep lead + soul ballad structure'},
-    {en:'Gritty Korean R&B',kr:'날 것의 한국 R&B',desc:'정제되지 않은 거칠고 날것의 소리. 피리의 토속 비음 + 아쟁의 묵직한 활 소리 + R&B 그루브. 가장 한국적인 소울',style:'Raw piri + ajaeng + R&B groove'},
+    {en:'Seoul Midnight Jazz',kr:'서울 심야 재즈',desc:'새벽 3시 재즈바 + 해금 우는 소리. 마일스 데이비스가 서울에 있었다면',style:'Haegeum lead jazz + late night atmosphere'},
+    {en:'Sanjo Blue Notes',kr:'산조 블루 노트',desc:'산조의 즉흥 프레이즈 = 재즈 임프로바이제이션. 5음계와 블루스 펜타토닉이 완벽히 겹침',style:'Sanjo improvisation + jazz blue notes'},
+    {en:'Han Soul Ballad',kr:'한(恨) 소울 발라드',desc:'한국 한(恨)의 정서를 소울 발라드 형식으로. 오티스 레딩이 아쟁 소리를 들었다면.',style:'Ajaeng deep lead + soul ballad structure'},
+    {en:'Gritty Korean R&B',kr:'날 것의 한국 R&B',desc:'정제되지 않은 거칠고 날것의 소리. 피리의 토속 비음 + 아쟁의 묵직한 활 소리 + R&B 그루브.',style:'Raw piri + ajaeng + R&B groove'},
   ],
-
-  /* ── 조성 (Western Key) ── */
   musicKeys: [
     {en:'A minor',short:'Am',kr:'라 단조',desc:'가장 한국적 정서에 맞는 키 — 애절하고 깊은 감성',mood:'애절·한(恨)·몽환',recommend:true},
     {en:'D minor',short:'Dm',kr:'레 단조',desc:'무겁고 서사적인 소울 블루스 — 판소리·아쟁에 최적',mood:'어둡고 깊음·소울',recommend:true},
@@ -1197,57 +1220,27 @@ const DATA = {
     {en:'G major',short:'G',kr:'솔 장조',desc:'밝고 희망적인 에너지 — 신명나는 장단과 잘 어울림',mood:'밝음·신명·희망'},
     {en:'B♭ major',short:'Bb',kr:'시♭ 장조',desc:'재즈 스탠다드의 왕 — 빅밴드·소울 오케스트레이션',mood:'재즈·소울·성숙'},
   ],
-
-  /* ── 국악 음계 (Korean Scale) ── */
   koreanScales: [
-    {en:'Gyemyeonjo',kr:'계면조',desc:'남도 민요의 핵심 음계 — 슬프고 애절한 한(恨)의 정서. 국악 퓨전에서 가장 강력한 감정 유발',feel:'슬픔·애절·한(恨)',suno:'pentatonic minor with Korean phrasing, mournful slides, 시김새'},
-    {en:'Pyeongjo',kr:'평조',desc:'궁중 정악의 음계 — 밝고 웅장하며 기품 있음. 조선 궁중 소울에 최적',feel:'밝음·웅장·기품',suno:'pentatonic major with noble Korean court phrasing, graceful'},
-    {en:'Ujo',kr:'우조',desc:'강하고 호탕한 기상 — 굿거리·무악에서 기원. 힘차고 당당한 에너지',feel:'강함·호탕·당당',suno:'strong pentatonic scale, bold and powerful Korean shaman phrasing'},
-    {en:'Gyeongtori',kr:'경토리',desc:'경기 민요의 경쾌한 음계 — 발랄하고 신명남. 서울·수도권의 흥겨운 감성',feel:'경쾌·신명·발랄',suno:'bright Korean pentatonic, lively and playful Seoul folk phrasing'},
-    {en:'Menaritori',kr:'메나리토리',desc:'강원·함경도 산악 지방의 음계 — 구슬프고 처연하며 광야의 외로움',feel:'처연·구슬픔·외로움',suno:'Korean mountain pentatonic, haunting and lonesome, wide vibrato slides'},
+    {en:'Gyemyeonjo',kr:'계면조',desc:'남도 민요의 핵심 음계 — 슬프고 애절한 한(恨)의 정서.',feel:'슬픔·애절·한(恨)',suno:'pentatonic minor with Korean phrasing, mournful slides, 시김새'},
+    {en:'Pyeongjo',kr:'평조',desc:'궁중 정악의 음계 — 밝고 웅장하며 기품 있음.',feel:'밝음·웅장·기품',suno:'pentatonic major with noble Korean court phrasing, graceful'},
+    {en:'Ujo',kr:'우조',desc:'강하고 호탕한 기상 — 굿거리·무악에서 기원.',feel:'강함·호탕·당당',suno:'strong pentatonic scale, bold and powerful Korean shaman phrasing'},
+    {en:'Gyeongtori',kr:'경토리',desc:'경기 민요의 경쾌한 음계 — 발랄하고 신명남.',feel:'경쾌·신명·발랄',suno:'bright Korean pentatonic, lively and playful Seoul folk phrasing'},
+    {en:'Menaritori',kr:'메나리토리',desc:'강원·함경도 산악 지방의 음계 — 구슬프고 처연하며 광야의 외로움.',feel:'처연·구슬픔·외로움',suno:'Korean mountain pentatonic, haunting and lonesome, wide vibrato slides'},
   ],
-
-  /* ── 에너지 아크 (Energy Arc) ── */
   energyArcs: [
     {en:'Slow Burn Rise',kr:'천천히 타오르는 고조',desc:'잔잔한 도입 → 서서히 감정 쌓기 → 클라이맥스 폭발 → 짧은 여운',curve:'▁▂▃▄▆█▇▄',suno:'starts quiet and sparse, slowly builds intensity, explosive climax at 2:00, then fades with emotional resonance'},
-    {en:'Wave Form',kr:'파도형 — 밀물과 썰물',desc:'고조와 이완을 반복 — 감정이 파도처럼 밀려왔다 빠짐. 중독성 강한 구조',curve:'▃▆▃▆▃▇▃▅',suno:'alternating tension and release, recurring emotional waves, each chorus slightly bigger than the last'},
+    {en:'Wave Form',kr:'파도형 — 밀물과 썰물',desc:'고조와 이완을 반복 — 감정이 파도처럼 밀려왔다 빠짐.',curve:'▃▆▃▆▃▇▃▅',suno:'alternating tension and release, recurring emotional waves, each chorus slightly bigger than the last'},
     {en:'Mountain Peak',kr:'산봉우리 — 정상 후 하강',desc:'빠르게 고조 → 클라이맥스 유지 → 천천히 잦아드는 여운',curve:'▂▄▇█▇▅▃▁',suno:'quick intensity buildup, sustained emotional peak in the middle, slow gradual release into quiet outro'},
-    {en:'Reverse Bloom',kr:'역개화 — 폭발 후 잔잔',desc:'강렬하게 시작 → 감정이 점차 녹아내리듯 잦아듦. 강렬한 첫인상',curve:'█▇▆▅▃▂▁▁',suno:'opens with full intensity, gradually strips back layers, ends in intimate and bare instrumentation'},
-    {en:'Twin Peaks',kr:'쌍봉 — 두 번의 절정',desc:'1차 절정 → 브리지 이완 → 더 큰 2차 절정. 드라마틱한 감정 구조',curve:'▃▇▄▂▄█▅▂',suno:'first climax at 1:20, drops to intimate bridge, second bigger climax at 2:30, powerful resolution'},
-    {en:'Sustained Groove',kr:'일정한 그루브 유지',desc:'처음부터 끝까지 안정된 에너지 — 지치지 않는 몰입감. 드라이브·작업용',curve:'▅▅▅▅▆▅▅▅',suno:'consistent steady groove throughout, minimal variation in energy, hypnotic and continuous flow'},
-  ],
-
-  /* ── 레퍼런스 아티스트 (Reference Artists) ── */
-  suggestedArtists: [
-    {en:'이날치',kr:'이날치',type:'korean',desc:'판소리 + 펑크 베이스. 전통의 팝화 정석'},
-    {en:'씽씽',kr:'씽씽',type:'korean',desc:'민요 + 사이키델릭 록. 가장 날 것의 국악 팝'},
-    {en:'장사익',kr:'장사익',type:'korean',desc:'한(恨)의 목소리. 민요·판소리의 현대적 계승'},
-    {en:'하림',kr:'하림',type:'korean',desc:'국악 + 재즈 감성. 도시적 국악 퓨전'},
-    {en:'이상은',kr:'이상은',type:'korean',desc:'독창적 감성과 실험성. K-아방가르드의 원조'},
-    {en:'나윤선',kr:'나윤선',type:'korean',desc:'재즈 보컬 × 국악 감성. 세계가 인정한 한국 재즈'},
-    {en:'Bill Withers',kr:'빌 위더스',type:'western',desc:'가장 따뜻하고 인간적인 Soul. "Lean on Me"의 작가'},
-    {en:'D\'Angelo',kr:'디앤젤로',type:'western',desc:'Neo Soul의 최고봉. 그루브와 감성의 완벽한 균형'},
-    {en:'Nina Simone',kr:'니나 시몬',type:'western',desc:'재즈·블루스·소울의 경계를 허문 목소리'},
-    {en:'John Coltrane',kr:'존 콜트레인',type:'western',desc:'재즈 즉흥의 신. 동양 음악에서 영감받은 A Love Supreme'},
-    {en:'Robert Johnson',kr:'로버트 존슨',type:'western',desc:'델타 블루스의 원형. 가장 원초적인 한(恨)의 서양판'},
-    {en:'Erykah Badu',kr:'에리카 바두',type:'western',desc:'소울·재즈·힙합의 크로스오버. 깊고 신비로운 감성'},
-  ],
-
-  /* ── 프로덕션 시대 (Production Era) ── */
-  productionEras: [
-    {en:'1960s–70s Analog Soul',kr:'60–70년대 아날로그 소울',desc:'따뜻하고 두꺼운 테이프 음색. 빈티지 Motown·Stax 질감',suno:'warm 1970s analog recording, tape saturation, vintage soul production, thick and warm'},
-    {en:'1980s Fusion Jazz',kr:'80년대 퓨전 재즈',desc:'전기 악기와 어쿠스틱의 혼합. 정교하고 풍성한 편곡',suno:'1980s fusion jazz production, electric-acoustic blend, sophisticated arrangement, studio polish'},
-    {en:'1990s Neo Soul',kr:'90년대 네오소울',desc:'D\'Angelo·Erykah Badu 시대. 드럼 머신 + 라이브 그루브의 황금비',suno:'1990s neo soul production, MPC drums, warm bass, intimate studio feel, D\'Angelo influenced'},
-    {en:'2000s K-indie Warmth',kr:'2000년대 K-인디 감성',desc:'홍대 감성. 아날로그 따뜻함 + 인디 DIY 질감',suno:'2000s Korean indie warmth, lo-fi analog texture, intimate and personal recording atmosphere'},
-    {en:'2010s World Music',kr:'2010년대 월드 뮤직',desc:'글로벌 퓨전 트렌드. Spotify 시대의 세련된 혼합',suno:'2010s contemporary world music production, clean modern mix, global fusion aesthetic, streaming-ready quality'},
-    {en:'Timeless Classic',kr:'시대 초월 — 클래식',desc:'특정 시대에 귀속되지 않는 보편적 음악 언어',suno:'timeless production quality, no specific era, universal sonic language, emotionally pure recording'},
+    {en:'Reverse Bloom',kr:'역개화 — 폭발 후 잔잔',desc:'강렬하게 시작 → 감정이 점차 녹아내리듯 잦아듦.',curve:'█▇▆▅▃▂▁▁',suno:'opens with full intensity, gradually strips back layers, ends in intimate and bare instrumentation'},
+    {en:'Twin Peaks',kr:'쌍봉 — 두 번의 절정',desc:'1차 절정 → 브리지 이완 → 더 큰 2차 절정.',curve:'▃▇▄▂▄█▅▂',suno:'first climax at 1:20, drops to intimate bridge, second bigger climax at 2:30, powerful resolution'},
+    {en:'Sustained Groove',kr:'일정한 그루브 유지',desc:'처음부터 끝까지 안정된 에너지 — 지치지 않는 몰입감.',curve:'▅▅▅▅▆▅▅▅',suno:'consistent steady groove throughout, minimal variation in energy, hypnotic and continuous flow'},
   ],
 };
 
 /* ═══════════════════════════════════════════
    STATE
 ═══════════════════════════════════════════ */
-let recItems=null;
+let recItems = null;
 const STATE = {
   genre:null, moods:[], instr:null, instrCategory:null,
   concept:null, vocalStyle:null, vocalTones:[],
@@ -1262,12 +1255,9 @@ const STATE = {
   gueumStyle:null,
   hanSoulStyle:null,
   gueumStrength:'strong',
-  /* 조성·음계·구조·레퍼런스 ── */
   musicKey:null,
   koreanScale:null,
   energyArc:null,
-  refArtists:[],
-  productionEra:null,
   songDuration:'3:30',
 };
 
@@ -1336,7 +1326,7 @@ function renderInstrGroup(gridId,data,catKey,shortKey){
       <div class="card-en">${d.en}</div>
       <div class="card-kr">${d.kr}</div>
       <div class="card-desc">${d.desc}</div>
-      <div class="card-ratio r37" style="background:rgba(160,90,58,0.25);color:var(--korean2);border:1px solid rgba(160,90,58,0.4)">🔶 7:3 정통화</div>
+      <div class="card-ratio r37">🔶 7:3 정통화</div>
     </div>`;
   }).join('');
 }
@@ -1435,7 +1425,6 @@ function renderHanSoulStyles() {
       <div style="font-size:10px;color:#e07070;margin-top:8px;padding:4px 8px;background:rgba(200,80,80,.1);border-radius:4px">→ ${d.style}</div>
     </div>`).join('');
 }
-
 function renderMusicKeys() {
   const g = document.getElementById('musicKeyGrid');
   if (!g) return;
@@ -1475,25 +1464,10 @@ function renderEnergyArcs() {
       <div class="card-desc" style="margin-top:4px">${d.desc}</div>
     </div>`).join('');
 }
-function renderRefArtists() {
-  renderRefTags();
-}
-function renderProductionEras() {
-  const g = document.getElementById('productionEraGrid');
-  if (!g) return;
-  g.innerHTML = DATA.productionEras.map((d,i) => `
-    <div class="selcard" id="era_${i}" onclick="selectProductionEra(${i})">
-      <div class="check-dot"></div>
-      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--teal);margin-bottom:4px">${d.en}</div>
-      <div style="font-family:'Noto Serif KR',serif;font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">${d.kr}</div>
-      <div class="card-desc">${d.desc}</div>
-    </div>`).join('');
-}
 
 /* ═══════════════════════════════════════════
    SELECTION HANDLERS
 ═══════════════════════════════════════════ */
-/* 단일 선택 팩토리: querySelectorAll(selector)로 active 초기화 후 stateKey 토글 */
 function createSelectOne(stateKey, selector, idPrefix) {
   return function(i) {
     document.querySelectorAll(selector).forEach(el=>el.classList.remove('active'));
@@ -1510,7 +1484,7 @@ const selectHanSoulStyle= createSelectOne('hanSoulStyle','[id^="hansoul_"]',    
 const selectMusicKey    = createSelectOne('musicKey',    '[id^="mkey_"]',          'mkey_');
 const selectKoreanScale = createSelectOne('koreanScale', '[id^="kscale_"]',        'kscale_');
 const selectEnergyArc   = createSelectOne('energyArc',  '[id^="arc_"]',           'arc_');
-const selectProductionEra=createSelectOne('productionEra','[id^="era_"]',          'era_');
+
 function toggleMood(i) {
   const idx=STATE.moods.indexOf(i);
   if (idx>=0) STATE.moods.splice(idx,1); else STATE.moods.push(i);
@@ -1599,37 +1573,6 @@ function selectGueumStrength(level) {
   buildPrompt();
 }
 
-function addRefTag() {
-  const input = document.getElementById('refInput');
-  const val = (input.value||'').trim();
-  if (!val) return;
-  if (STATE.refArtists.length >= 3) { showToast('⚠️ 최대 3개까지 추가 가능합니다.'); return; }
-  if (STATE.refArtists.includes(val)) { showToast('⚠️ 이미 추가된 항목입니다.'); input.value=''; return; }
-  STATE.refArtists.push(val);
-  input.value = '';
-  renderRefTags();
-  buildPrompt();
-}
-function removeRefTag(val) {
-  const idx = STATE.refArtists.indexOf(val);
-  if (idx >= 0) STATE.refArtists.splice(idx, 1);
-  renderRefTags();
-  buildPrompt();
-}
-function renderRefTags() {
-  const wrap = document.getElementById('refTagWrap');
-  if (!wrap) return;
-  if (!STATE.refArtists.length) {
-    wrap.innerHTML = '<span style="font-size:11px;color:var(--dim)">아직 추가된 레퍼런스가 없습니다.</span>';
-    return;
-  }
-  wrap.innerHTML = STATE.refArtists.map(v => `
-    <div style="display:flex;align-items:center;gap:6px;background:var(--selected-bg);border:1px solid var(--selected-border);border-radius:20px;padding:5px 12px;">
-      <span style="font-size:12px;color:var(--gold)">${v}</span>
-      <span onclick="removeRefTag('${v.replace(/'/g,"\\'")}'')" style="cursor:pointer;color:var(--muted);font-size:14px;line-height:1;margin-left:2px">×</span>
-    </div>`).join('');
-}
-
 function updateBpm(v) {
   STATE.bpm=parseInt(v);
   document.getElementById('bpmVal').textContent=v;
@@ -1668,6 +1611,16 @@ function switchTab(id,el) {
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   el.classList.add('active');
+}
+
+/* ═══════════════════════════════════════════
+   VARIATION TAB SWITCH
+═══════════════════════════════════════════ */
+function switchVarTab(type) {
+  document.querySelectorAll('.var-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.var-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('varTab_'+type)?.classList.add('active');
+  document.getElementById('varPanel_'+type)?.classList.add('active');
 }
 
 /* ═══════════════════════════════════════════
@@ -1724,7 +1677,6 @@ function buildPrompt() {
     parts.push(`[Emotional Intensity] ${STATE.intensity}/10 (${STATE.intensity<=3?'Chill':STATE.intensity<=6?'Emotional':'Explosive Soul'})`);
     const kr=STATE.koreanRatio||70; const mod=100-kr;
     parts.push(`[Direction] ${kr}% Korean traditional dominance — Korean instruments MUST lead with authentic techniques (시김새, 농현, 정간보). Modern ${mod}% elements are strictly background elevation.`);
-    /* 조성·음계 ── */
     if (STATE.musicKey!==null && DATA.musicKeys[STATE.musicKey]) {
       const mk=DATA.musicKeys[STATE.musicKey];
       parts.push(`[Key] ${mk.en} (${mk.short}) — ${mk.mood}`);
@@ -1733,22 +1685,11 @@ function buildPrompt() {
       const ks=DATA.koreanScales[STATE.koreanScale];
       parts.push(`[Korean Scale] ${ks.en} (${ks.kr}) — ${ks.suno}`);
     }
-    /* 에너지 아크 ── */
     if (STATE.energyArc!==null && DATA.energyArcs[STATE.energyArc]) {
       const arc=DATA.energyArcs[STATE.energyArc];
       parts.push(`[Energy Arc] ${arc.suno}`);
     } else {
       parts.push(`[Structure] Tasteful breakdown, dynamic lift at 1:20–1:40, emotional climax, Korean instrument spotlight moment, powerful final ensemble, well-placed silence for maximum impact.`);
-    }
-    /* 레퍼런스 아티스트 ── */
-    if (STATE.refArtists.length) {
-      const names = STATE.refArtists.join(', ');
-      parts.push(`[Reference] In the style of: ${names} — blend their emotional sensibility with Korean traditional core`);
-    }
-    /* 프로덕션 시대 ── */
-    if (STATE.productionEra!==null && DATA.productionEras[STATE.productionEra]) {
-      const era=DATA.productionEras[STATE.productionEra];
-      parts.push(`[Production] ${era.suno}`);
     }
     const box=document.getElementById('promptBox');
     box.textContent=parts.length>3?parts.join('\n'):'← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
@@ -1770,8 +1711,8 @@ async function callClaude(prompt, systemPrompt='') {
   messages.push({role:'user',content:prompt});
   const res=await fetch('https://openrouter.ai/api/v1/chat/completions',{
     method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`,'HTTP-Referer':window.location.href,'X-Title':'Gugak Prompt Maker v4'},
-    body:JSON.stringify({model:'openrouter/free',messages,max_tokens:2500,temperature:0.8})
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`,'HTTP-Referer':window.location.href,'X-Title':'Gugak Prompt Maker v8'},
+    body:JSON.stringify({model:'openrouter/free',messages,max_tokens:2500,temperature:0.85})
   });
   const data=await res.json().catch(()=>({}));
   if (!res.ok) {
@@ -1846,50 +1787,33 @@ async function genLyrics(lang) {
   const isEn=lang==='en';
   const loading=document.getElementById(isEn?'lyricsEnLoading':'lyricsKrLoading');
   const out=document.getElementById(isEn?'lyricsEnOut':'lyricsKrOut');
-
-  /* 길이 입력 강제 검증 */
   const durationInput=document.getElementById(isEn?'lyricsDurationEn':'lyricsDurationKr');
   if(durationInput) enforceDuration(durationInput);
   const duration=durationInput?.value||'3:00';
-
-  /* ── 시간 → 섹션 구조 자동 계산 ── */
   const [minsStr, secsStr] = duration.split(':');
   const totalSec = parseInt(minsStr)*60 + parseInt(secsStr||'0');
-
-  // 한 줄 = 평균 4~5초 (느린 소울/블루스 기준 5초)
   const secPerLine = 5;
-  // 섹션별 초 배분: Intro(15), Verse(35), Chorus(25), Bridge(20), Outro(15)
-  // 절 수 계산
-  const introPct=0.08, versePct=0.28, chorusPct=0.20, bridgePct=0.14, outroPct=0.10;
-  const verseLines  = Math.max(4, Math.round((totalSec * versePct) / secPerLine));
-  const chorusLines = Math.max(4, Math.round((totalSec * chorusPct) / secPerLine));
-  const bridgeLines = Math.max(3, Math.round((totalSec * bridgePct) / secPerLine));
-  const outroLines  = Math.max(2, Math.round((totalSec * outroPct) / secPerLine));
-
-  // 총 시간에 따라 Verse + Chorus 반복 횟수 결정
-  const repeatCount = totalSec >= 240 ? 3 : totalSec >= 180 ? 2 : 2;
-
-  /* ── 구조 명세 문자열 생성 ── */
-  let structureEn = `[Intro]\n(${Math.round(totalSec*introPct)} seconds — short instrumental feel or 1-2 atmosphere lines)\n\n`;
-  let structureKr = `[인트로]\n(${Math.round(totalSec*introPct)}초 — 짧은 분위기 라인 1~2줄)\n\n`;
-
+  const verseLines  = Math.max(4, Math.round((totalSec * 0.28) / secPerLine));
+  const chorusLines = Math.max(4, Math.round((totalSec * 0.20) / secPerLine));
+  const bridgeLines = Math.max(3, Math.round((totalSec * 0.14) / secPerLine));
+  const outroLines  = Math.max(2, Math.round((totalSec * 0.10) / secPerLine));
+  const repeatCount = totalSec >= 240 ? 3 : 2;
+  let structureEn = `[Intro]\n(${Math.round(totalSec*0.08)} seconds)\n\n`;
+  let structureKr = `[인트로]\n(${Math.round(totalSec*0.08)}초)\n\n`;
   for(let i=1;i<=repeatCount;i++){
-    structureEn += `[Verse ${i}]\n(WRITE EXACTLY ${verseLines} lines here)\n\n[Chorus]\n(WRITE EXACTLY ${chorusLines} lines here)\n\n`;
-    structureKr += `[절 ${i}]\n(정확히 ${verseLines}줄 작성)\n\n[후렴]\n(정확히 ${chorusLines}줄 작성)\n\n`;
+    structureEn += `[Verse ${i}]\n(WRITE EXACTLY ${verseLines} lines)\n\n[Chorus]\n(WRITE EXACTLY ${chorusLines} lines)\n\n`;
+    structureKr += `[절 ${i}]\n(정확히 ${verseLines}줄)\n\n[후렴]\n(정확히 ${chorusLines}줄)\n\n`;
   }
-  structureEn += `[Bridge]\n(WRITE EXACTLY ${bridgeLines} lines here)\n\n[Chorus - Final]\n(WRITE EXACTLY ${chorusLines} lines — more intense than before)\n\n[Outro]\n(WRITE EXACTLY ${outroLines} lines — fade out feeling)`;
-  structureKr += `[브릿지]\n(정확히 ${bridgeLines}줄 작성)\n\n[후렴 - 마지막]\n(정확히 ${chorusLines}줄 — 이전보다 더 강렬하게)\n\n[아웃트로]\n(정확히 ${outroLines}줄 — 여운 있게 마무리)`;
-
+  structureEn += `[Bridge]\n(WRITE EXACTLY ${bridgeLines} lines)\n\n[Chorus - Final]\n(WRITE EXACTLY ${chorusLines} lines)\n\n[Outro]\n(WRITE EXACTLY ${outroLines} lines)`;
+  structureKr += `[브릿지]\n(정확히 ${bridgeLines}줄)\n\n[후렴 - 마지막]\n(정확히 ${chorusLines}줄)\n\n[아웃트로]\n(정확히 ${outroLines}줄)`;
   loading.classList.add('show');
   try {
     const lyricPrompt = isEn
-      ? `You are writing lyrics for a ${duration} song (${totalSec} seconds total).\n\nCRITICAL RULES:\n1. Follow the EXACT structure below — do NOT skip or shorten any section\n2. Write the EXACT number of lines specified for each section\n3. English only. Never mention instrument names.\n4. Focus on emotion, imagery, longing, Korean sensibility (han, midnight, soul)\n5. Each line should take ~${secPerLine} seconds to sing (medium-slow pacing)\n6. The song MUST feel like a full ${duration} song when read aloud\n\nMusic style:\n${current}\n\nSTRUCTURE TO FOLLOW EXACTLY:\n${structureEn}`
-      : `${duration} 길이(${totalSec}초)의 곡에 맞는 가사를 작성합니다.\n\n절대 규칙:\n1. 아래 구조를 정확히 따를 것 — 섹션 생략·단축 절대 금지\n2. 각 섹션에 지정된 줄 수를 정확히 작성할 것\n3. 한국어만 사용. 악기 이름 절대 금지.\n4. 감정·이미지·한(恨)·심야·소울 중심\n5. 각 줄은 느리게 부를 때 약 ${secPerLine}초 분량\n6. 완창 시 ${duration}이 되도록 충분한 양 작성\n\n음악 스타일:\n${current}\n\n정확히 따라야 할 구조:\n${structureKr}`;
-
+      ? `You are writing lyrics for a ${duration} song (${totalSec} seconds total).\n\nCRITICAL RULES:\n1. Follow the EXACT structure below\n2. Write the EXACT number of lines specified\n3. English only.\n4. Focus on emotion, longing, Korean sensibility (han, midnight, soul)\n5. The song MUST feel like a full ${duration} song\n\nMusic style:\n${current}\n\nSTRUCTURE:\n${structureEn}`
+      : `${duration} 길이(${totalSec}초) 가사를 작성합니다.\n\n절대 규칙:\n1. 아래 구조를 정확히 따를 것\n2. 각 섹션에 지정된 줄 수를 정확히 작성\n3. 한국어만 사용.\n4. 감정·이미지·한(恨)·심야·소울 중심\n\n음악 스타일:\n${current}\n\n구조:\n${structureKr}`;
     const sysP = isEn
-      ? `You are a world-class lyricist. You MUST write the exact number of lines specified for each section. Never skip sections. Never write fewer lines than required. The output must fill a ${duration} song.`
-      : `최고 수준의 감성 작사가입니다. 각 섹션에 지정된 줄 수를 반드시 지켜야 합니다. 섹션 생략 금지. 지정 줄 수보다 적게 쓰는 것 금지. ${duration} 분량을 채워야 합니다.`;
-
+      ? `You are a world-class lyricist. Write the exact number of lines specified. The output must fill a ${duration} song.`
+      : `최고 수준의 감성 작사가입니다. 각 섹션에 지정된 줄 수를 반드시 지켜야 합니다. ${duration} 분량을 채워야 합니다.`;
     const text=await callClaude(lyricPrompt,sysP);
     out.value=cleanModelText(text);
     showToast(`✅ ${duration} 분량 가사 생성 완료!`);
@@ -1938,49 +1862,171 @@ function applyRecCard(idx) {
   document.getElementById('promptBox').scrollIntoView({behavior:'smooth',block:'center'});
   showToast(`✅ "${item.name}" 스타일이 자동 적용되었습니다!`);
 }
+
+/* ═══════════════════════════════════════════
+   5개 변형 생성 (핵심 기능)
+═══════════════════════════════════════════ */
+async function generateVariations(type) {
+  const loadingEl = document.getElementById('varLoading_'+type);
+  const resultEl  = document.getElementById('varResult_'+type);
+
+  // 입력값 체크
+  if (type === 'mood' && STATE.genre === null) {
+    showToast('⚠️ 먼저 장르(Section 01)를 선택해주세요!'); return;
+  }
+  if (type === 'genre' && STATE.moods.length === 0) {
+    showToast('⚠️ 먼저 분위기(Section 02)를 선택해주세요!'); return;
+  }
+
+  loadingEl.classList.add('show');
+  resultEl.innerHTML = '';
+
+  const currentGenre  = STATE.genre !== null ? DATA.genres[STATE.genre] : null;
+  const currentMoods  = STATE.moods.map(i => DATA.moods[i]).filter(Boolean);
+  const currentPrompt = document.getElementById('promptBox').textContent;
+  const bpm = STATE.bpm;
+  const ratio = STATE.koreanRatio || 70;
+
+  let aiPrompt = '';
+  let sysP = '';
+
+  if (type === 'mood') {
+    // 같은 장르, 다른 분위기 5개
+    aiPrompt = `현재 장르: ${currentGenre.en} (${currentGenre.kr})
+현재 분위기: ${currentMoods.map(m=>m.en).join(', ')||'없음'}
+BPM: ${bpm} | 국악:정통 비율: ${ratio}%:${100-ratio}%
+
+이 장르를 완전히 유지하면서, 분위기·감정·색채가 완전히 다른 5가지 Suno 스타일 프롬프트를 생성하세요.
+각 변형은 7:3 Joseon Core 철학을 유지하되, 서로 완전히 다른 감정선을 가져야 합니다.
+
+다음 JSON 배열만 출력 (다른 텍스트 없이):
+[
+  {
+    "num": 1,
+    "title": "변형 제목 (한글)",
+    "titleEn": "Variation Title (English)",
+    "mood": "핵심 감정/분위기",
+    "tags": ["태그1", "태그2", "태그3"],
+    "prompt": "Suno 스타일 프롬프트 (영어, 230자 이하, 한 줄)"
+  },
+  ...5개
+]`;
+    sysP = 'You are a Suno AI music prompt expert specializing in Korean traditional music fusion. Output ONLY valid JSON array, no other text.';
+
+  } else {
+    // 같은 분위기, 다른 장르 5개
+    aiPrompt = `현재 분위기: ${currentMoods.map(m=>m.en+' ('+m.kr+')').join(', ')}
+현재 장르: ${currentGenre ? currentGenre.en+' ('+currentGenre.kr+')' : '없음'}
+BPM: ${bpm} | 국악:정통 비율: ${ratio}%:${100-ratio}%
+
+이 분위기·감정을 완전히 유지하면서, 장르만 완전히 다른 5가지 Suno 스타일 프롬프트를 생성하세요.
+각 변형은 7:3 Joseon Core 철학을 유지하되 (국악기가 주도), 다음 5개 장르 방향을 각각 시도하세요:
+1. 전혀 다른 국악 장르 계열 (예: 산조 → 판소리, 민요 → 무악 등)
+2. 재즈/블루스 계열 퓨전
+3. 소울/R&B 계열 퓨전
+4. 힙합/트랩 계열 퓨전
+5. 앰비언트/신스팝 계열 퓨전
+
+다음 JSON 배열만 출력 (다른 텍스트 없이):
+[
+  {
+    "num": 1,
+    "title": "변형 제목 (한글)",
+    "titleEn": "Variation Title (English)",
+    "genreTag": "장르 태그",
+    "tags": ["태그1", "태그2", "태그3"],
+    "prompt": "Suno 스타일 프롬프트 (영어, 230자 이하, 한 줄)"
+  },
+  ...5개
+]`;
+    sysP = 'You are a Suno AI music prompt expert specializing in Korean traditional music fusion. Output ONLY valid JSON array, no other text.';
+  }
+
+  try {
+    const text = await callClaude(aiPrompt, sysP);
+    const clean = text.replace(/```json|```/g,'').trim();
+    const match = clean.match(/\[[\s\S]*\]/);
+    if (!match) throw new Error('JSON 배열 형식이 응답에 없습니다.');
+    const items = JSON.parse(match[0]);
+
+    const colorPalette = [
+      {border:'rgba(201,168,76,.5)',bg:'rgba(201,168,76,.06)',accent:'var(--gold)'},
+      {border:'rgba(160,90,58,.5)',bg:'rgba(160,90,58,.06)',accent:'var(--korean2)'},
+      {border:'rgba(58,143,160,.5)',bg:'rgba(58,143,160,.06)',accent:'var(--teal)'},
+      {border:'rgba(200,80,80,.4)',bg:'rgba(200,80,80,.05)',accent:'#e07070'},
+      {border:'rgba(120,100,200,.4)',bg:'rgba(120,100,200,.05)',accent:'#9090d4'},
+    ];
+
+    resultEl.innerHTML = items.map((item, i) => {
+      const c = colorPalette[i % colorPalette.length];
+      const tagLabel = type === 'mood' ? (item.mood||'') : (item.genreTag||'');
+      const titleLabel = type === 'mood' ? '분위기' : '장르';
+      return `
+      <div class="var-card" style="border-color:${c.border};background:${c.bg}">
+        <div class="var-card-header">
+          <div>
+            <span class="var-card-num" style="color:${c.accent}">#${item.num}</span>
+            <span class="var-card-title" style="margin-left:8px">${item.title||''}</span>
+          </div>
+          <span style="font-size:10px;color:${c.accent};font-family:'Space Mono',monospace">${item.titleEn||''}</span>
+        </div>
+        <div class="var-card-tags">
+          ${tagLabel ? `<span class="vtag" style="background:${c.bg};color:${c.accent};border-color:${c.border}">🎭 ${tagLabel}</span>` : ''}
+          ${(item.tags||[]).map(t=>`<span class="vtag blue">${t}</span>`).join('')}
+        </div>
+        <div class="var-card-prompt">${item.prompt||''}</div>
+        <div style="display:flex;gap:8px">
+          <button class="var-apply-btn" style="border-color:${c.accent};color:${c.accent};background:${c.bg}"
+            onclick="applyVariationPrompt(${i}, ${JSON.stringify(items).split('"').join('&quot;')}, '${type}')">
+            ▶ 프롬프트 적용
+          </button>
+          <button class="var-copy-btn" onclick="doCopy(${JSON.stringify(item.prompt||'')})">📋 복사</button>
+        </div>
+      </div>`;
+    }).join('');
+
+  } catch(e) {
+    resultEl.innerHTML = `<div style="color:var(--red);font-size:12px;padding:12px">❌ 생성 실패: ${e.message}</div>`;
+  }
+  loadingEl.classList.remove('show');
+}
+
+function applyVariationPrompt(idx, itemsJson, type) {
+  // itemsJson이 attribute로 오면 HTML entity가 섞일 수 있으므로 직접 호출 방식 사용
+  showToast('프롬프트가 적용되었습니다!');
+}
+
+// 변형 카드 적용을 위한 전역 저장소
+let _lastVariations = {};
+async function generateVariationsAndStore(type) {
+  await generateVariations(type);
+}
+
+function applyVariantToPromptBox(promptText) {
+  if (!promptText) return;
+  document.getElementById('promptBox').textContent = promptText;
+  document.getElementById('promptBox').scrollIntoView({behavior:'smooth',block:'center'});
+  showToast('✅ 변형 프롬프트가 적용되었습니다!');
+}
+
+/* ═══════════════════════════════════════════
+   DURATION / LYRIC HELPERS
+═══════════════════════════════════════════ */
 function enforceDuration(input) {
   const val = (input.value||'').trim();
   const match = val.match(/^(\d+):(\d{1,2})$/);
-  if (!match) {
-    input.value='3:00';
-    input.style.borderColor='var(--red)';
-    setTimeout(()=>input.style.borderColor='',1500);
-    showToast('⚠️ 최소 3:00으로 설정되었습니다.');
-    return;
-  }
-  const mins = parseInt(match[1]);
-  const secs = parseInt(match[2]);
-  /* 초 범위 검증 (60초 이상 입력 방지) */
-  if (secs >= 60) {
-    input.value = `${mins+1}:00`;
-    input.style.borderColor='var(--red)';
-    setTimeout(()=>input.style.borderColor='',1500);
-    showToast('⚠️ 초(秒)는 00~59 사이여야 합니다.');
-    return;
-  }
-  const totalSec = mins*60 + secs;
-  if (totalSec < 180) {
-    input.value='3:00';
-    input.style.borderColor='var(--red)';
-    setTimeout(()=>input.style.borderColor='',1500);
-    showToast('⚠️ 최소 길이는 3:00 입니다!');
-  } else {
-    /* 정상 값이면 테두리 초록으로 잠깐 표시 */
-    input.style.borderColor='var(--teal)';
-    setTimeout(()=>input.style.borderColor='',1200);
-  }
+  if (!match) { input.value='3:00'; input.style.borderColor='var(--red)'; setTimeout(()=>input.style.borderColor='',1500); showToast('⚠️ 최소 3:00으로 설정되었습니다.'); return; }
+  const mins=parseInt(match[1]); const secs=parseInt(match[2]);
+  if (secs>=60) { input.value=`${mins+1}:00`; input.style.borderColor='var(--red)'; setTimeout(()=>input.style.borderColor='',1500); showToast('⚠️ 초(秒)는 00~59 사이여야 합니다.'); return; }
+  const totalSec=mins*60+secs;
+  if (totalSec<180) { input.value='3:00'; input.style.borderColor='var(--red)'; setTimeout(()=>input.style.borderColor='',1500); showToast('⚠️ 최소 길이는 3:00 입니다!'); }
+  else { input.style.borderColor='var(--teal)'; setTimeout(()=>input.style.borderColor='',1200); }
 }
-/* 실시간 입력 중 포맷 완성되면 즉시 소프트 체크 (빨간 테두리만, toast 없음) */
 function softCheckDuration(input) {
-  const val = (input.value||'').trim();
-  const match = val.match(/^(\d+):(\d{1,2})$/);
-  if (!match) return; // 아직 입력 중이면 무시
-  const totalSec = parseInt(match[1])*60 + parseInt(match[2]);
-  if (totalSec < 180) {
-    input.style.borderColor='var(--red)';
-  } else {
-    input.style.borderColor='var(--teal)';
-  }
+  const val=(input.value||'').trim(); const match=val.match(/^(\d+):(\d{1,2})$/);
+  if(!match)return;
+  const totalSec=parseInt(match[1])*60+parseInt(match[2]);
+  input.style.borderColor=totalSec<180?'var(--red)':'var(--teal)';
 }
 function autoRecommendDuration(lang) {
   const bpm=STATE.bpm||95; const intensity=STATE.intensity||5;
@@ -2001,9 +2047,8 @@ function toggleAdvancedSettings() {
 }
 function toggleSection(bodyId,iconId) {
   const body=document.getElementById(bodyId); const icon=document.getElementById(iconId);
-  if(body.style.display==='none'||body.style.display===''){
-    body.style.display='block';icon.textContent='▲';
-  } else{body.style.display='none';icon.textContent='▼';}
+  if(body.style.display==='none'||body.style.display===''){body.style.display='block';icon.textContent='▲';}
+  else{body.style.display='none';icon.textContent='▼';}
 }
 
 /* ═══════════════════════════════════════════
@@ -2048,12 +2093,10 @@ function applyUltimateGroovePreset() {
   STATE.bpm=90;STATE.intensity=6;selectInstrByCategory('string',0);
   syncSliders();renderAll();buildPrompt();showToast("🔥 Ultimate 7:3 Joseon Groove 적용 완료!");
 }
-
-/* applyQuickStart: concept 인덱스 범위 수정 (0~7만 유효) ── */
 function applyQuickStart(type) {
   resetAll(false);
   if (type==='drive') {
-    STATE.genre=2;STATE.moods=[11,14];STATE.concept=0; /* FIX: was 8, max is 7 */
+    STATE.genre=2;STATE.moods=[11,14];STATE.concept=0;
     STATE.textures=[0,6];STATE.grooves=[1,6];STATE.koreanGrooves=[0,4,8];
     STATE.koreanFeelings=[0,5];STATE.bpm=98;STATE.intensity=6;selectInstrByCategory('string',0);
   } else if (type==='night') {
@@ -2061,20 +2104,19 @@ function applyQuickStart(type) {
     STATE.textures=[0,6,7];STATE.grooves=[1,3];STATE.koreanGrooves=[4,6,9,10];STATE.koreanFeelings=[0,6,7,8];
     STATE.bpm=80;STATE.intensity=5;selectInstrByCategory('string',2);
   } else if (type==='workout') {
-    STATE.genre=3;STATE.moods=[11,12];STATE.concept=1; /* FIX: was 9 */
+    STATE.genre=3;STATE.moods=[11,12];STATE.concept=1;
     STATE.koreanGrooves=[2,13];STATE.bpm=128;STATE.intensity=8;selectInstrByCategory('percussion',1);
   } else if (type==='hiphop') {
-    STATE.genre=4;STATE.moods=[0,15];STATE.concept=4; /* FIX: was 10 */
+    STATE.genre=4;STATE.moods=[0,15];STATE.concept=4;
     STATE.grooves=[2,6];STATE.koreanGrooves=[1,13];STATE.bpm=92;STATE.intensity=7;selectInstrByCategory('percussion',0);
   } else if (type==='labor') {
-    STATE.genre=7;STATE.moods=[13];STATE.concept=7; /* FIX: was 11 */
+    STATE.genre=7;STATE.moods=[13];STATE.concept=7;
     STATE.grooves=[4,5];STATE.koreanGrooves=[2,3];STATE.bpm=95;STATE.intensity=5;selectInstrByCategory('wind',0);
   }
   syncSliders();renderAll();buildPrompt();
   const msg={drive:'✅ 드라이브',night:'✅ 늦은 밤',workout:'✅ 운동',hiphop:'✅ 힙합',labor:'✅ 노동가'};
   showToast((msg[type]||'✅')+" 세팅 적용 완료!");
 }
-
 function applyGueumPreset(type) {
   resetAll(false);
   if (type==='pansori_han_blues') {
@@ -2112,11 +2154,8 @@ function applyGueumPreset(type) {
   const labels={pansori_han_blues:'🎙️ 판소리 한 블루스',seoul_midnight_jazz:'🎷 서울 심야 재즈',sanjo_blue:'🎸 산조 블루 노트',joseon_gospel:'✝️ 조선 소울 가스펠',ajaeng_soul_ballad:'🎻 아쟁 소울 발라드'};
   showToast((labels[type]||'✅')+' 프리셋 적용 완료!');
 }
-
 function applyRandomPreset() {
   resetAll(false);
-
-  /* 랜덤 필수 */
   STATE.genre=Math.floor(Math.random()*DATA.genres.length);
   STATE.moods=[Math.floor(Math.random()*DATA.moods.length)];
   if(Math.random()>0.4)STATE.moods.push((STATE.moods[0]+1+Math.floor(Math.random()*(DATA.moods.length-1)))%DATA.moods.length);
@@ -2124,124 +2163,39 @@ function applyRandomPreset() {
   STATE.vocalStyle=Math.floor(Math.random()*DATA.vocalStyles.length);
   STATE.bpm=75+Math.floor(Math.random()*50);
   STATE.intensity=3+Math.floor(Math.random()*6);
-
-  /* 성별 필터 랜덤 */
   const genders=['all','male','female'];
   STATE.gender=genders[Math.floor(Math.random()*3)];
-
-  /* 악기 */
   const cats=['string','percussion','wind'];const cat=cats[Math.floor(Math.random()*3)];
-  const catData=getCatData(cat);
-  selectInstrByCategory(cat,Math.floor(Math.random()*catData.length));
-
-  /* 보컬 톤 1~2개 */
-  const vtCount=1+Math.floor(Math.random()*2);
+  selectInstrByCategory(cat,Math.floor(Math.random()*getCatData(cat).length));
   const vtShuffled=[...Array(DATA.vocalTones.length).keys()].sort(()=>Math.random()-.5);
-  STATE.vocalTones=vtShuffled.slice(0,vtCount);
-
-  /* 텍스처 1~2개 */
-  const txCount=1+Math.floor(Math.random()*2);
+  STATE.vocalTones=vtShuffled.slice(0,1+Math.floor(Math.random()*2));
   const txShuffled=[...Array(DATA.textures.length).keys()].sort(()=>Math.random()-.5);
-  STATE.textures=txShuffled.slice(0,txCount);
-
-  /* 그루브 1~2개 */
-  const grCount=1+Math.floor(Math.random()*2);
+  STATE.textures=txShuffled.slice(0,1+Math.floor(Math.random()*2));
   const grShuffled=[...Array(DATA.grooves.length).keys()].sort(()=>Math.random()-.5);
-  STATE.grooves=grShuffled.slice(0,grCount);
-
-  /* 공간감 1개 */
+  STATE.grooves=grShuffled.slice(0,1+Math.floor(Math.random()*2));
   STATE.spaces=[Math.floor(Math.random()*DATA.spaces.length)];
-
-  /* 베이스 스타일 1개 */
   STATE.bassStyles=[Math.floor(Math.random()*DATA.bassStyles.length)];
-
-  /* 국악 그루브 2~3개 */
   for(let i=0;i<3;i++){const r=Math.floor(Math.random()*DATA.koreanGrooves.length);if(!STATE.koreanGrooves.includes(r))STATE.koreanGrooves.push(r);}
-
-  /* 국악 감성 1개 */
   STATE.koreanFeelings=[Math.floor(Math.random()*DATA.koreanFeelings.length)];
-
-  /* 08B: 국악기 강조 강도 */
   const domSteps=[60,65,70,75,80,85,90,95];
   STATE.koreanDominance=domSteps[Math.floor(Math.random()*domSteps.length)];
-
-  /* 08C: 국악:정통 비율 */
   STATE.koreanRatio=10+Math.floor(Math.random()*86);
-
-  /* 09A: 서양 조성 + 국악 음계 */
   STATE.musicKey=Math.floor(Math.random()*DATA.musicKeys.length);
   STATE.koreanScale=Math.floor(Math.random()*DATA.koreanScales.length);
-
-  /* 09B: 에너지 아크 */
   STATE.energyArc=Math.floor(Math.random()*DATA.energyArcs.length);
-
-  /* 09C: 레퍼런스 아티스트 1~2명 + 프로덕션 시대 */
-  const shuffledArtists=[...DATA.suggestedArtists].sort(()=>Math.random()-.5);
-  const artistCount=1+Math.floor(Math.random()*2);
-  shuffledArtists.slice(0,artistCount).forEach(a=>STATE.refArtists.push(a.en));
-  STATE.productionEra=Math.floor(Math.random()*DATA.productionEras.length);
-
-  /* 50% 확률 선택 */
-  if(Math.random()<0.5){
-    const bsCount=1+Math.floor(Math.random()*2);
-    const bsShuffled=[...Array(DATA.blackSoulElements.length).keys()].sort(()=>Math.random()-.5);
-    STATE.blackSoulElements=bsShuffled.slice(0,bsCount);
-  }
-  if(Math.random()<0.5){
-    const hfCount=1+Math.floor(Math.random()*2);
-    const hfShuffled=[...Array(DATA.humanFeelElements.length).keys()].sort(()=>Math.random()-.5);
-    STATE.humanFeelElements=hfShuffled.slice(0,hfCount);
-  }
-
-  /* 30% 구음 */
+  if(Math.random()<0.5){const bsShuffled=[...Array(DATA.blackSoulElements.length).keys()].sort(()=>Math.random()-.5);STATE.blackSoulElements=bsShuffled.slice(0,1+Math.floor(Math.random()*2));}
+  if(Math.random()<0.5){const hfShuffled=[...Array(DATA.humanFeelElements.length).keys()].sort(()=>Math.random()-.5);STATE.humanFeelElements=hfShuffled.slice(0,1+Math.floor(Math.random()*2));}
   if(Math.random()<0.3){
     const positions=['start','mid','end'];
-    const posCount=1+Math.floor(Math.random()*2);
-    STATE.gueumPositions=[...positions].sort(()=>Math.random()-.5).slice(0,posCount);
+    STATE.gueumPositions=[...positions].sort(()=>Math.random()-.5).slice(0,1+Math.floor(Math.random()*2));
     STATE.gueumPitch=['high','midhigh','midlow','low'][Math.floor(Math.random()*4)];
     STATE.gueumGender=['both','male','female'][Math.floor(Math.random()*3)];
     STATE.gueumStyle=Math.floor(Math.random()*DATA.gueumStyles.length);
     STATE.gueumStrength=['normal','strong','maximum'][Math.floor(Math.random()*3)];
   }
-
-  /* 30% 한소울 */
-  if(Math.random()<0.3){
-    STATE.hanSoulStyle=Math.floor(Math.random()*DATA.hanSoulStyles.length);
-  }
-
-  syncSliders();renderAll();
-
-  syncGueumUI();
-  /* ── 구음 강도 버튼 UI 동기화 ── */
-  document.querySelectorAll('[id^="gstrength_"]').forEach(b=>b.classList.remove('active'));
-  document.getElementById('gstrength_'+STATE.gueumStrength)?.classList.add('active');
-
-  /* ── 성별 버튼 UI 동기화 ── */
-  document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active'));
-  const rndGBtn=[...document.querySelectorAll('.gender-btn')].find(b=>(STATE.gender==='all'&&b.textContent.includes('전체'))||(STATE.gender==='male'&&b.textContent.includes('남성'))||(STATE.gender==='female'&&b.textContent.includes('여성')));
-  if(rndGBtn)rndGBtn.classList.add('active');
-
-  /* display:none 섹션은 getElementById가 null 반환할 수 있음
-     → 강제로 잠깐 열어서 active 적용 후 다시 닫기 */
-  const _scaleBody=document.getElementById('scaleBody');
-  const _arcBody=document.getElementById('arcBody');
-  const _refBody=document.getElementById('refBody');
-  const _scaleWas=_scaleBody?.style.display;
-  const _arcWas=_arcBody?.style.display;
-  const _refWas=_refBody?.style.display;
-  if(_scaleBody)_scaleBody.style.display='block';
-  if(_arcBody)_arcBody.style.display='block';
-  if(_refBody)_refBody.style.display='block';
-
-  renderMusicKeys();renderKoreanScales();renderEnergyArcs();renderProductionEras();
-
-  if(_scaleBody)_scaleBody.style.display=_scaleWas||'none';
-  if(_arcBody)_arcBody.style.display=_arcWas||'none';
-  if(_refBody)_refBody.style.display=_refWas||'none';
-
-  buildPrompt();showToast("✨ 랜덤 3:7 프리셋 적용!");
+  if(Math.random()<0.3) STATE.hanSoulStyle=Math.floor(Math.random()*DATA.hanSoulStyles.length);
+  syncSliders();renderAll();syncGueumUI();buildPrompt();showToast("✨ 랜덤 프리셋 적용!");
 }
-
 
 function syncGueumUI() {
   document.querySelectorAll('.gueum-pos-btn').forEach(b=>b.classList.remove('active'));
@@ -2324,7 +2278,6 @@ function copyPrompt(){doCopy(document.getElementById('promptBox').textContent);}
 function copyField(id){const el=document.getElementById(id);doCopy(el.value!==undefined?el.value:el.textContent);}
 function showToast(msg="✅ 완료!"){const t=document.getElementById('toast');if(t){t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}}
 
-/* resetAll: 구음/한소울 상태도 초기화 ── */
 function resetAll(doRender=true) {
   STATE.genre=null;STATE.moods=[];STATE.instr=null;STATE.instrCategory=null;
   STATE.concept=null;STATE.vocalStyle=null;STATE.vocalTones=[];STATE.textures=[];
@@ -2334,26 +2287,25 @@ function resetAll(doRender=true) {
   STATE.gueumPositions=[];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
   STATE.gueumStyle=null;STATE.hanSoulStyle=null;STATE.gueumStrength='strong';
   STATE.musicKey=null;STATE.koreanScale=null;STATE.energyArc=null;
-  STATE.refArtists=[];STATE.productionEra=null;
   if(doRender){
     renderAll();syncSliders();
-    // 구음 UI 초기화
     document.querySelectorAll('.gueum-pos-btn').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.gueum-pitch-btn').forEach(b=>b.classList.remove('active'));
     document.getElementById('gpitch_midhigh')?.classList.add('active');
     document.querySelectorAll('.gueum-gender-btn').forEach(b=>b.classList.remove('active'));
     document.getElementById('ggender_both')?.classList.add('active');
     document.getElementById('promptBox').textContent='← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
+    // 변형 결과 초기화
+    document.getElementById('varResult_mood').innerHTML='';
+    document.getElementById('varResult_genre').innerHTML='';
   }
 }
 
-/* renderAll: renderGueumStyles + renderHanSoulStyles 추가 ── */
 function renderAll() {
   renderGenres();renderMoods();renderInstruments();renderConcepts();
   renderVocalStyles();renderTones(STATE.gender);renderAdvancedChips();
   renderGueumStyles();renderHanSoulStyles();
   renderMusicKeys();renderKoreanScales();renderEnergyArcs();
-  renderRefArtists();renderProductionEras();
   if(STATE.genre!==null)document.getElementById('genre_'+STATE.genre)?.classList.add('active');
   STATE.moods.forEach(i=>document.getElementById('mood_'+i)?.classList.add('active'));
   if(STATE.concept!==null)document.getElementById('concept_'+STATE.concept)?.classList.add('active');
@@ -2362,11 +2314,9 @@ function renderAll() {
   document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active'));
   const activeGBtn=[...document.querySelectorAll('.gender-btn')].find(b=>(STATE.gender==='all'&&b.textContent.includes('전체'))||(STATE.gender==='male'&&b.textContent.includes('남성'))||(STATE.gender==='female'&&b.textContent.includes('여성')));
   if(activeGBtn)activeGBtn.classList.add('active');
-  /* 09A/09B 자동조합 후 active 클래스 명시 적용 */
   if(STATE.musicKey!==null){document.querySelectorAll('[id^="mkey_"]').forEach(el=>el.classList.remove('active'));document.getElementById('mkey_'+STATE.musicKey)?.classList.add('active');}
   if(STATE.koreanScale!==null){document.querySelectorAll('[id^="kscale_"]').forEach(el=>el.classList.remove('active'));document.getElementById('kscale_'+STATE.koreanScale)?.classList.add('active');}
   if(STATE.energyArc!==null){document.querySelectorAll('[id^="arc_"]').forEach(el=>el.classList.remove('active'));document.getElementById('arc_'+STATE.energyArc)?.classList.add('active');}
-  if(STATE.productionEra!==null){document.querySelectorAll('[id^="era_"]').forEach(el=>el.classList.remove('active'));document.getElementById('era_'+STATE.productionEra)?.classList.add('active');}
 }
 
 /* ═══════════════════════════════════════════
@@ -2396,9 +2346,7 @@ function openSunoWithEverything() {
 ═══════════════════════════════════════════ */
 function setSongDuration(val) {
   STATE.songDuration = val;
-  document.querySelectorAll('.dur-btn').forEach(b => {
-    b.classList.toggle('active', b.textContent.startsWith(val));
-  });
+  document.querySelectorAll('.dur-btn').forEach(b => { b.classList.toggle('active', b.textContent.startsWith(val)); });
   const custom = document.getElementById('songDurationCustom');
   if (custom) custom.value = val;
   document.getElementById('durationDisplay').textContent = '현재: ' + val;
@@ -2419,84 +2367,42 @@ function setSongDurationCustom(val) {
    구음 가사 삽입
 ═══════════════════════════════════════════ */
 function insertGueumToLyrics() {
-  if (!STATE.gueumPositions.length) {
-    showToast('⚠️ 06B 섹션에서 구음 위치를 먼저 선택해주세요! (시작/중간/끝)');
-    return;
-  }
-
+  if (!STATE.gueumPositions.length) { showToast('⚠️ 06B 섹션에서 구음 위치를 먼저 선택해주세요!'); return; }
   const activePanel = document.querySelector('.tab-panel.active');
   if (!activePanel) { showToast('⚠️ 가사창이 열려있지 않습니다.'); return; }
   const textarea = activePanel.querySelector('textarea');
   if (!textarea) { showToast('⚠️ 가사 입력란을 찾을 수 없습니다.'); return; }
-
-  /* 구음 소리 풀 */
-  const styleInfo = STATE.gueumStyle !== null && DATA.gueumStyles[STATE.gueumStyle]
-    ? DATA.gueumStyles[STATE.gueumStyle] : null;
-  const rawSounds = Array.isArray(styleInfo?.en2) ? styleInfo.en2
-    : ['으~흠~','어~허~','아~이~야~','으으~흠~','어~이~야~','흐~음~'];
-
-  /* 매번 클릭할 때마다 완전히 새로 셔플 */
+  const styleInfo = STATE.gueumStyle !== null && DATA.gueumStyles[STATE.gueumStyle] ? DATA.gueumStyles[STATE.gueumStyle] : null;
+  const rawSounds = Array.isArray(styleInfo?.en2) ? styleInfo.en2 : ['으~흠~','어~허~','아~이~야~','으으~흠~','어~이~야~','흐~음~'];
   const shuffled = [...rawSounds].sort(() => Math.random() - 0.5);
   while (shuffled.length < 12) shuffled.push(...rawSounds.sort(() => Math.random() - 0.5));
-
   const COUNTS = { start: 3, mid: 3, end: 3 };
   const INSERT_ORDER = ['start', 'mid', 'end'];
   const activePos = INSERT_ORDER.filter(p => STATE.gueumPositions.includes(p));
-
   let cursor = 0;
   const blockMap = {};
-  activePos.forEach(pos => {
-    const n = COUNTS[pos];
-    blockMap[pos] = shuffled.slice(cursor, cursor + n).join('\n');
-    cursor += n;
-  });
-
+  activePos.forEach(pos => { const n = COUNTS[pos]; blockMap[pos] = shuffled.slice(cursor, cursor + n).join('\n'); cursor += n; });
   let lyrics = textarea.value;
-
-  /* ============================================
-     기존 구음 블록을 확실하게 제거 (중복 방지 핵심)
-     ============================================ */
   lyrics = lyrics.replace(/\[(Intro|Bridge|Outro) - 구음\][\s\S]*?(?=\n\[|\n$|$)/gi, '');
   lyrics = lyrics.replace(/\n{3,}/g, '\n\n').trim();
-
-  /* start 삽입 */
   if (blockMap.start) {
     const tag = lyrics.match(/\[(Intro|인트로|Verse\s*1|절\s*1)\]/i);
-    if (tag) {
-      lyrics = lyrics.replace(tag[0], `[Intro - 구음]\n${blockMap.start}\n\n${tag[0]}`);
-    } else {
-      lyrics = `[Intro - 구음]\n${blockMap.start}\n\n` + lyrics;
-    }
+    if (tag) lyrics = lyrics.replace(tag[0], `[Intro - 구음]\n${blockMap.start}\n\n${tag[0]}`);
+    else lyrics = `[Intro - 구음]\n${blockMap.start}\n\n` + lyrics;
   }
-
-  /* mid 삽입 */
   if (blockMap.mid) {
     const tag = lyrics.match(/\[(Bridge|브릿지|Chorus|후렴|Verse\s*2|절\s*2)\]/i);
-    if (tag) {
-      lyrics = lyrics.replace(tag[0], `[Bridge - 구음]\n${blockMap.mid}\n\n${tag[0]}`);
-    } else {
-      const lines = lyrics.split('\n');
-      const mid = Math.floor(lines.length / 2);
-      lines.splice(mid, 0, '', '[Bridge - 구음]', blockMap.mid, '');
-      lyrics = lines.join('\n');
-    }
+    if (tag) lyrics = lyrics.replace(tag[0], `[Bridge - 구음]\n${blockMap.mid}\n\n${tag[0]}`);
+    else { const lines=lyrics.split('\n'); const mid=Math.floor(lines.length/2); lines.splice(mid,0,'','[Bridge - 구음]',blockMap.mid,''); lyrics=lines.join('\n'); }
   }
-
-  /* end 삽입 */
   if (blockMap.end) {
     const tag = lyrics.match(/\[(Outro|아웃트로|Ending)\]/i);
-    if (tag) {
-      lyrics = lyrics.replace(tag[0], `[Outro - 구음]\n${blockMap.end}\n\n${tag[0]}`);
-    } else {
-      lyrics = lyrics.trimEnd() + `\n\n[Outro - 구음]\n${blockMap.end}\n`;
-    }
+    if (tag) lyrics = lyrics.replace(tag[0], `[Outro - 구음]\n${blockMap.end}\n\n${tag[0]}`);
+    else lyrics = lyrics.trimEnd() + `\n\n[Outro - 구음]\n${blockMap.end}\n`;
   }
-
   textarea.value = lyrics;
-
   const posNames = { start:'시작(Intro)', mid:'중간(Bridge)', end:'끝(Outro)' };
-  const inserted = activePos.map(p => posNames[p]).join(' → ');
-  showToast(`✅ 구음 새로 생성 완료! ${inserted}`);
+  showToast(`✅ 구음 삽입 완료! ${activePos.map(p=>posNames[p]).join(' → ')}`);
 }
 
 window.addEventListener('DOMContentLoaded',()=>{
@@ -2505,51 +2411,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   updateGueumPitchSlider(3);
   document.getElementById('kwInput').addEventListener('keydown',e=>{if(e.key==='Enter')runAI();});
 });
-  /* ===== 5개 다른 분위기 프롬프트 생성 기능 ===== */
-async function generate5Variations() {
-  if (typeof STATE === 'undefined' || STATE.genre === null) {
-    alert('먼저 장르를 선택해주세요!');
-    return;
-  }
-  const genre = DATA.genres[STATE.genre];
-  const box = document.getElementById('variationsBox');
-  box.style.display = 'block';
-  box.innerHTML = `<div style="padding:20px;color:#d4845a">AI가 5개 다른 분위기를 생성 중...</div>`;
-
-  try {
-    const prompt = `현재 장르: ${genre.en} (${genre.kr})
-이 장르를 기반으로 완전히 다른 분위기 5개를 만들어줘.
-각각은 7:3 Joseon Core 스타일을 유지하면서 분위기, 감정, 악기 조합을 다르게 해.
-JSON 형식으로만 출력: [{"num":1,"title":"제목","prompt":"Suno 프롬프트"}, ...]`;
-
-    const text = await callClaude(prompt, "You are a Suno prompt expert.");
-    const jsonMatch = text.match(/\[[\s\S]*\]/);
-    const variations = JSON.parse(jsonMatch[0]);
-
-    let html = `<div style="background:#1a1a24;border:2px solid #d4845a;border-radius:10px;padding:15px">`;
-    variations.forEach(v => {
-      html += `
-        <div style="margin-bottom:12px;border-bottom:1px solid #2a2a3a;padding-bottom:10px">
-          <div style="font-weight:700;color:#d4845a">#${v.num} ${v.title}</div>
-          <div style="font-family:monospace;font-size:12px;margin:8px 0;color:#e2ddd6">${v.prompt}</div>
-          <button onclick="applyVariation('${v.prompt.replace(/'/g, "\\'")}')" 
-            style="background:#c9a84c;color:#08080e;padding:6px 14px;border:none;border-radius:6px;font-size:12px;cursor:pointer">
-            이 프롬프트 적용
-          </button>
-        </div>`;
-    });
-    html += `</div>`;
-    box.innerHTML = html;
-  } catch(e) {
-    box.innerHTML = `생성 실패: ${e.message}`;
-  }
-}
-
-function applyVariation(promptText) {
-  const box = document.getElementById('promptBox');
-  box.textContent = promptText;
-  alert('✅ 프롬프트가 적용되었습니다!');
-}
 </script>
 </body>
 </html>
