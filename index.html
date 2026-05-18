@@ -1830,6 +1830,17 @@ async function callClaude(prompt, systemPrompt='', temperature=0.85) {
   }
   return data.choices?.[0]?.message?.content||'결과를 가져올 수 없습니다.';
 }
+function cleanLyrics(text) {
+  if (!text) return '';
+  return text
+    // 번호 목록 제거: "1. " "1) " "(1)" 등
+    .replace(/^\s*(\d+[.):]\s*)/gm, '')
+    // 모델이 끼워넣는 괄호 지시문 제거: (8 lines), (정확히 4줄) 등
+    .replace(/^\s*\(.*?(lines?|줄|초|seconds?).*?\)\s*$/gmi, '')
+    // 섹션 태그 앞뒤 공백 정리
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
 function cleanModelText(text) { return (text||'').replace(/```(?:json)?/g,'').replace(/```/g,'').trim(); }
 function sanitizeSunoPrompt(text,maxLen=230) {
   let t=cleanModelText(text).replace(/^[-•\s]*(Suno prompt|Prompt|프롬프트)\s*[:：-]\s*/i,'').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim();
@@ -1889,7 +1900,26 @@ async function genTitle() {
   const current=document.getElementById('promptBox').textContent;
   const loading=document.getElementById('titleLoading'); loading.classList.add('show');
   try {
-    const text=await callClaude(`다음 프롬프트 기반으로 곡 제목 생성:\n${current}\n반드시 JSON만: {"en":"English Title","kr":"한글 제목"}`,'음악 제목 생성 전문가. JSON만 출력.', 0.4);
+    const lyricsSnippet = (() => {
+      const el = document.getElementById('lyricsEnOut') || document.getElementById('lyricsKrOut');
+      const val = el ? (el.value || '').trim() : '';
+      return val ? val.split('\n').filter(l => l.trim() && !l.startsWith('[')).slice(0, 6).join('\n') : '';
+    })();
+    const titleContext = lyricsSnippet
+      ? `Music prompt:\n${current}\n\nFirst lines of the lyrics (use for mood/imagery reference):\n${lyricsSnippet}`
+      : `Music prompt:\n${current}`;
+    const titleSys = `You are a poetic music title writer.
+Rules for the English title:
+- MAX 4 words. Short is better.
+- DO NOT use genre words: Blues, Soul, Jazz, Fusion, Core, Traditional
+- DO NOT use instrument names
+- DO NOT use patterns like "[Adjective] [Noun] of the [Genre]"
+- Use evocative imagery: nature, light, silence, longing, season, time
+- Examples of GOOD titles: "Moon Without Shore", "Still Water Grief", "The Reed Bends Low", "Before the Dawn Breaks", "Dust on Still Water"
+- Examples of BAD titles: "Weeping Strings of the Han Blues", "Gayageum Soul Fusion", "Korean Traditional Jazz Ballad"
+- The Korean title should feel like a natural song title, not a translation. Poetic, 2-5 syllables ideal.
+Output ONLY valid JSON, nothing else.`;
+    const text=await callClaude(`${titleContext}\n\nGenerate a song title.\nOutput ONLY this JSON: {"en":"English Title","kr":"한글 제목"}`, titleSys, 0.75);
     const clean=text.replace(/```json|```/g,'').trim(); const match=clean.match(/\{[\s\S]*\}/);
     if (!match) throw new Error('JSON 응답 형식 오류');
     const parsed=JSON.parse(match[0]);
@@ -1928,10 +1958,10 @@ async function genLyrics(lang) {
       ? `You are writing poetic lyrics for a ${duration} song (${totalSec} seconds total).\n\nCRITICAL RULES:\n1. Follow the EXACT structure below\n2. Write the EXACT number of lines specified\n3. English only.\n4. NEVER mention any instrument names (no gayageum, haegeum, ajaeng, daegeum, piri, janggu, piano, guitar, bass, drums, etc.)\n5. Express the FEELING of the music through nature, emotion, light, shadow, wind, water, night, longing — purely poetic and sensory language\n6. Draw from Korean aesthetic sensibility: han(恨), yeojung(餘情), silence between words, moonlight on water\n7. Avoid clichés. Use unexpected, vivid imagery. Every line should ache or shimmer.\n8. The song MUST feel like a full ${duration} song\n\nMusic style (use as emotional reference only, not literally):\n${current}\n\nSTRUCTURE:\n${structureEn}`
       : `${duration} 길이(${totalSec}초)의 시적인 가사를 작성합니다.\n\n절대 규칙:\n1. 아래 구조를 정확히 따를 것\n2. 각 섹션에 지정된 줄 수를 정확히 작성\n3. 한국어만 사용\n4. 절대로 악기 이름을 가사에 넣지 마세요 (가야금, 해금, 아쟁, 대금, 피리, 장구, 피아노, 기타, 베이스, 드럼 등 일체 금지)\n5. 음악의 '감정'을 자연·빛·그림자·바람·물·밤·그리움 같은 감각적 언어로만 표현할 것\n6. 한국적 미감으로: 한(恨)·여정(餘情)·침묵·달빛·서리·새벽안개를 품은 시어를 사용\n7. 진부한 표현 금지. 예상치 못한 선명한 이미지 사용. 모든 줄이 아프거나 빛나야 함\n8. ${duration} 분량을 완전히 채울 것\n\n음악 스타일 (감정 참고용, 직역 금지):\n${current}\n\n구조:\n${structureKr}`;
     const sysP = isEn
-      ? `You are a world-class poet-lyricist. No instrument names ever. Pure sensory and emotional imagery only. Write the exact number of lines specified. The output must fill a ${duration} song.`
-      : `당신은 세계적 수준의 시인이자 작사가입니다. 악기 이름은 절대 금지입니다. 순수한 감각적·시적 언어만 사용하세요. 각 섹션에 지정된 줄 수를 반드시 지키고 ${duration} 분량을 완전히 채우세요.`;
+      ? `You are a world-class poet-lyricist. CRITICAL: Output ONLY plain song lyrics — NO numbering (no 1. 2. 3.), NO parenthetical instructions, NO explanations. Use only [Section] headers and lyric lines. No instrument names ever. Pure sensory and emotional imagery only. Write the exact number of lines specified. The output must fill a ${duration} song.`
+      : `당신은 세계적 수준의 시인이자 작사가입니다. 반드시 지킬 것: 번호 매기기 절대 금지(1. 2. 3. 금지), 괄호 지시문 출력 금지, 설명 문장 금지. [섹션명] 태그와 가사 줄만 출력하세요. 악기 이름은 절대 금지입니다. 순수한 감각적·시적 언어만 사용하세요. 각 섹션에 지정된 줄 수를 반드시 지키고 ${duration} 분량을 완전히 채우세요.`;
     const text=await callClaude(lyricPrompt,sysP, 0.92);
-    out.value=cleanModelText(text);
+    out.value=cleanLyrics(text);
     showToast(`✅ ${duration} 분량 가사 생성 완료!`);
   } catch(e) { out.value='오류: '+(e.message||'알 수 없는 오류'); }
   loading.classList.remove('show');
