@@ -854,6 +854,17 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       <button onclick="openSunoWithEverything()"
         style="background:#1a1a24;color:#c9a84c;font-size:15px;padding:10px 20px;border:1.5px solid #c9a84c;border-radius:8px;cursor:pointer;margin-top:8px;font-weight:600;display:flex;align-items:center;gap:6px;box-shadow:0 3px 10px rgba(201,168,76,0.15);">
         <span style="font-size:16px;">🎵</span><span>Suno로 바로 만들기</span>
+            <!-- ===== 5개 다른 분위기 프롬프트 버튼 추가 ===== -->
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid #2a2a3a">
+      <button onclick="generate5Variations()" 
+        style="background:rgba(160,90,58,.25);border:2px solid #d4845a;color:#d4845a;font-weight:700;padding:10px 18px;border-radius:8px;cursor:pointer;font-size:13px">
+        🎲 같은 장르 다른 분위기 5개 프롬프트 생성
+      </button>
+      <div style="font-size:11px;color:#7a7590;margin-top:8px">
+        💡 장르를 선택한 후 클릭하면 같은 장르의 다른 분위기 프롬프트 5개를 만들어줍니다.
+      </div>
+      <div id="variationsBox" style="display:none;margin-top:14px"></div>
+    </div>
       </button>
     </div>
     <div class="ai-loading" id="promptLoading" style="margin-top:8px">
@@ -2494,6 +2505,51 @@ window.addEventListener('DOMContentLoaded',()=>{
   updateGueumPitchSlider(3);
   document.getElementById('kwInput').addEventListener('keydown',e=>{if(e.key==='Enter')runAI();});
 });
+  /* ===== 5개 다른 분위기 프롬프트 생성 기능 ===== */
+async function generate5Variations() {
+  if (typeof STATE === 'undefined' || STATE.genre === null) {
+    alert('먼저 장르를 선택해주세요!');
+    return;
+  }
+  const genre = DATA.genres[STATE.genre];
+  const box = document.getElementById('variationsBox');
+  box.style.display = 'block';
+  box.innerHTML = `<div style="padding:20px;color:#d4845a">AI가 5개 다른 분위기를 생성 중...</div>`;
+
+  try {
+    const prompt = `현재 장르: ${genre.en} (${genre.kr})
+이 장르를 기반으로 완전히 다른 분위기 5개를 만들어줘.
+각각은 7:3 Joseon Core 스타일을 유지하면서 분위기, 감정, 악기 조합을 다르게 해.
+JSON 형식으로만 출력: [{"num":1,"title":"제목","prompt":"Suno 프롬프트"}, ...]`;
+
+    const text = await callClaude(prompt, "You are a Suno prompt expert.");
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    const variations = JSON.parse(jsonMatch[0]);
+
+    let html = `<div style="background:#1a1a24;border:2px solid #d4845a;border-radius:10px;padding:15px">`;
+    variations.forEach(v => {
+      html += `
+        <div style="margin-bottom:12px;border-bottom:1px solid #2a2a3a;padding-bottom:10px">
+          <div style="font-weight:700;color:#d4845a">#${v.num} ${v.title}</div>
+          <div style="font-family:monospace;font-size:12px;margin:8px 0;color:#e2ddd6">${v.prompt}</div>
+          <button onclick="applyVariation('${v.prompt.replace(/'/g, "\\'")}')" 
+            style="background:#c9a84c;color:#08080e;padding:6px 14px;border:none;border-radius:6px;font-size:12px;cursor:pointer">
+            이 프롬프트 적용
+          </button>
+        </div>`;
+    });
+    html += `</div>`;
+    box.innerHTML = html;
+  } catch(e) {
+    box.innerHTML = `생성 실패: ${e.message}`;
+  }
+}
+
+function applyVariation(promptText) {
+  const box = document.getElementById('promptBox');
+  box.textContent = promptText;
+  alert('✅ 프롬프트가 적용되었습니다!');
+}
 </script>
 </body>
 </html>
