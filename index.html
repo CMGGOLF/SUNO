@@ -2748,37 +2748,79 @@ function insertGueumToLyrics() {
   if (!activePanel) { showToast('⚠️ 가사창이 열려있지 않습니다.'); return; }
   const textarea = activePanel.querySelector('textarea');
   if (!textarea) { showToast('⚠️ 가사 입력란을 찾을 수 없습니다.'); return; }
+
   const styleInfo = STATE.gueumStyle !== null && DATA.gueumStyles[STATE.gueumStyle] ? DATA.gueumStyles[STATE.gueumStyle] : null;
-  // [수정] en2는 \n 구분 문자열 → split으로 배열 변환 / fallback도 영어로 교체
   const rawSounds = styleInfo?.en2
     ? styleInfo.en2.split('\n').map(s => s.trim()).filter(Boolean)
     : ['Mmm~hmm~','Oh~yeah~','Ah~yeah~','Mmm~mm~','Oh~why~','Huh~yeah~'];
-  const shuffled = [...rawSounds].sort(() => Math.random() - 0.5);
-  while (shuffled.length < 12) shuffled.push(...rawSounds.sort(() => Math.random() - 0.5));
-  const COUNTS = { start: 3, mid: 3, end: 3 };
+
+  // 무한 풀링용 헬퍼 — rawSounds를 섞어가며 n줄 뽑기
+  function pickLines(n) {
+    const pool = [];
+    while (pool.length < n) pool.push(...[...rawSounds].sort(() => Math.random() - 0.5));
+    return pool.slice(0, n).join('\n');
+  }
+
+  const existingLyrics = textarea.value.trim();
+  const isLyricsEmpty = existingLyrics.length === 0;
+
+  // ── 가사가 없으면 목표 시간 기반 풀 구음 구조 생성 ──
+  if (isLyricsEmpty) {
+    // 목표 시간 파싱 (STATE.songDuration 또는 기본 3:30)
+    const durStr = STATE.songDuration || '3:30';
+    const [mStr, sStr] = durStr.split(':');
+    const totalSec = parseInt(mStr) * 60 + parseInt(sStr || '0');
+
+    // 초당 0.4줄 기준으로 섹션별 줄 수 계산
+    const introLines  = Math.max(3, Math.round(totalSec * 0.08 / 2.5));
+    const verseLines  = Math.max(4, Math.round(totalSec * 0.22 / 2.5));
+    const chorusLines = Math.max(4, Math.round(totalSec * 0.18 / 2.5));
+    const bridgeLines = Math.max(3, Math.round(totalSec * 0.12 / 2.5));
+    const outroLines  = Math.max(2, Math.round(totalSec * 0.06 / 2.5));
+    const repeatCount = totalSec >= 240 ? 3 : 2;
+
+    let fullLyrics = `[Intro]\n${pickLines(introLines)}\n\n`;
+    for (let i = 1; i <= repeatCount; i++) {
+      fullLyrics += `[Verse ${i}]\n${pickLines(verseLines)}\n\n`;
+      fullLyrics += `[Chorus]\n${pickLines(chorusLines)}\n\n`;
+    }
+    fullLyrics += `[Bridge]\n${pickLines(bridgeLines)}\n\n`;
+    fullLyrics += `[Final Chorus]\n${pickLines(chorusLines)}\n\n`;
+    fullLyrics += `[Outro]\n${pickLines(outroLines)}\n`;
+
+    textarea.value = fullLyrics;
+    showToast(`✅ ${durStr} 분량 구음 전체 구조 생성 완료!`);
+    return;
+  }
+
+  // ── 기존 가사가 있으면 지정 위치에만 삽입 (기존 동작) ──
   const INSERT_ORDER = ['start', 'mid', 'end'];
   const activePos = INSERT_ORDER.filter(p => STATE.gueumPositions.includes(p));
-  let cursor = 0;
-  const blockMap = {};
-  activePos.forEach(pos => { const n = COUNTS[pos]; blockMap[pos] = shuffled.slice(cursor, cursor + n).join('\n'); cursor += n; });
-  let lyrics = textarea.value;
+  const COUNTS = { start: 4, mid: 4, end: 3 };
+
+  let lyrics = existingLyrics;
   lyrics = lyrics.replace(/\[(Intro|Bridge|Outro) - 구음\][\s\S]*?(?=\n\[|\n$|$)/gi, '');
   lyrics = lyrics.replace(/\n{3,}/g, '\n\n').trim();
-  if (blockMap.start) {
+
+  if (activePos.includes('start')) {
+    const block = pickLines(COUNTS.start);
     const tag = lyrics.match(/\[(Intro|인트로|Verse\s*1|절\s*1)\]/i);
-    if (tag) lyrics = lyrics.replace(tag[0], `[Intro - 구음]\n${blockMap.start}\n\n${tag[0]}`);
-    else lyrics = `[Intro - 구음]\n${blockMap.start}\n\n` + lyrics;
+    if (tag) lyrics = lyrics.replace(tag[0], `[Intro - Gueum]\n${block}\n\n${tag[0]}`);
+    else lyrics = `[Intro - Gueum]\n${block}\n\n` + lyrics;
   }
-  if (blockMap.mid) {
+  if (activePos.includes('mid')) {
+    const block = pickLines(COUNTS.mid);
     const tag = lyrics.match(/\[(Bridge|브릿지|Chorus|후렴|Verse\s*2|절\s*2)\]/i);
-    if (tag) lyrics = lyrics.replace(tag[0], `[Bridge - 구음]\n${blockMap.mid}\n\n${tag[0]}`);
-    else { const lines=lyrics.split('\n'); const mid=Math.floor(lines.length/2); lines.splice(mid,0,'','[Bridge - 구음]',blockMap.mid,''); lyrics=lines.join('\n'); }
+    if (tag) lyrics = lyrics.replace(tag[0], `[Bridge - Gueum]\n${block}\n\n${tag[0]}`);
+    else { const lines=lyrics.split('\n'); const mid=Math.floor(lines.length/2); lines.splice(mid,0,'','[Bridge - Gueum]',block,''); lyrics=lines.join('\n'); }
   }
-  if (blockMap.end) {
+  if (activePos.includes('end')) {
+    const block = pickLines(COUNTS.end);
     const tag = lyrics.match(/\[(Outro|아웃트로|Ending)\]/i);
-    if (tag) lyrics = lyrics.replace(tag[0], `[Outro - 구음]\n${blockMap.end}\n\n${tag[0]}`);
-    else lyrics = lyrics.trimEnd() + `\n\n[Outro - 구음]\n${blockMap.end}\n`;
+    if (tag) lyrics = lyrics.replace(tag[0], `[Outro - Gueum]\n${block}\n\n${tag[0]}`);
+    else lyrics = lyrics.trimEnd() + `\n\n[Outro - Gueum]\n${block}\n`;
   }
+
   textarea.value = lyrics;
   const posNames = { start:'시작(Intro)', mid:'중간(Bridge)', end:'끝(Outro)' };
   showToast(`✅ 구음 삽입 완료! ${activePos.map(p=>posNames[p]).join(' → ')}`);
