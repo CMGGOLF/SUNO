@@ -2749,7 +2749,10 @@ function insertGueumToLyrics() {
   const textarea = activePanel.querySelector('textarea');
   if (!textarea) { showToast('⚠️ 가사 입력란을 찾을 수 없습니다.'); return; }
   const styleInfo = STATE.gueumStyle !== null && DATA.gueumStyles[STATE.gueumStyle] ? DATA.gueumStyles[STATE.gueumStyle] : null;
-  const rawSounds = Array.isArray(styleInfo?.en2) ? styleInfo.en2 : ['으~흠~','어~허~','아~이~야~','으으~흠~','어~이~야~','흐~음~'];
+  // [수정] en2는 \n 구분 문자열 → split으로 배열 변환 / fallback도 영어로 교체
+  const rawSounds = styleInfo?.en2
+    ? styleInfo.en2.split('\n').map(s => s.trim()).filter(Boolean)
+    : ['Mmm~hmm~','Oh~yeah~','Ah~yeah~','Mmm~mm~','Oh~why~','Huh~yeah~'];
   const shuffled = [...rawSounds].sort(() => Math.random() - 0.5);
   while (shuffled.length < 12) shuffled.push(...rawSounds.sort(() => Math.random() - 0.5));
   const COUNTS = { start: 3, mid: 3, end: 3 };
