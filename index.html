@@ -1772,6 +1772,12 @@ function _doBuildPrompt() {
     if(STATE.blackSoulElements.length){const bse=getEnList(STATE.blackSoulElements,DATA.blackSoulElements);if(bse)parts.push(`[Black Soul/Blues] ${bse}`);}
     if(STATE.humanFeelElements.length){const hfe=getEnList(STATE.humanFeelElements,DATA.humanFeelElements);if(hfe)parts.push(`[Human Feel] ${hfe}`);}
     if(STATE.vocalTones.length){const vts=getEnList(STATE.vocalTones,DATA.vocalTones);if(vts)parts.push(`[Vocal Tone] ${vts}`);}
+    /* ── Fix: 보컬 성별 프롬프트 미반영 버그 수정 ── */
+    if (STATE.gender === 'male') {
+      parts.push(`[Voice Gender] STRICTLY male vocalist ONLY — deep baritone or tenor male voice, NO female vocals whatsoever, NO female harmonies, male voice throughout entire song`);
+    } else if (STATE.gender === 'female') {
+      parts.push(`[Voice Gender] STRICTLY female vocalist ONLY — clear soprano or alto female voice, NO male vocals whatsoever, female voice throughout entire song`);
+    }
     if (STATE.gueumPositions.length||STATE.gueumStyle!==null) {
       const pitchMap={high:'high register',midhigh:'mid-high register',midlow:'mid-low register',low:'deep low register'};
       const genderMap={both:'male and female voices',male:'male voice (deep, gritty, powerful)',female:'female voice (clear, mournful)'};
@@ -1792,10 +1798,19 @@ function _doBuildPrompt() {
           `Use ${pitchMap[STATE.gueumPitch]} with ${genderMap[STATE.gueumGender]}. `+
           `The gueum must be clearly audible, emotionally powerful, and stand out in the mix.`;
       } else {
+        /* Fix: 스타일 미선택 fallback에도 gender 추가 */
+        const _gFallback={both:'male and female voices',male:'STRICTLY male voice ONLY (deep, gritty, powerful)',female:'STRICTLY female voice ONLY (clear, mournful)'};
         gueumText=`${strengthPrefix}Forcefully include traditional Korean gueum vocalization${posStr}. `+
+          `Use ${_gFallback[gGender]}. `+
           `Use authentic Korean onomatopoeia. This is NOT humming. Make the gueum clearly audible and emotionally dominant.`;
       }
       parts.push(`[GUEUM] ${gueumText}`);
+      /* Fix: 구음 성별을 별도 독립 태그로 강제 — [GUEUM] 안에만 있으면 Suno가 무시 */
+      if (gGender === 'male') {
+        parts.push(`[Gueum Voice] STRICTLY MALE vocalist for ALL gueum sections — deep masculine Korean baritone, NO female voice in any gueum/vocalization part, male voice ONLY throughout`);
+      } else if (gGender === 'female') {
+        parts.push(`[Gueum Voice] STRICTLY FEMALE vocalist for ALL gueum sections — clear feminine Korean alto or soprano, NO male voice in any gueum/vocalization part, female voice ONLY throughout`);
+      }
     }
     if (STATE.hanSoulStyle!==null&&DATA.hanSoulStyles[STATE.hanSoulStyle]) {
       const hs=DATA.hanSoulStyles[STATE.hanSoulStyle];
