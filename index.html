@@ -2900,30 +2900,52 @@ function insertGueumToLyrics() {
     end:   HUMMING_OUTRO,   // Outro 직후 → 여운 허밍
   };
 
-  // 위치별 삽입 기준 태그 (해당 태그 바로 뒤에 구음 포인트 삽입)
+  // 위치별 삽입 기준: 해당 섹션의 [instrumental break] 바로 뒤에 구음 포인트 삽입
   const TAG_MAP = {
-    start: /\[Intro\b[^\]]*\]/i,
-    add1:  /\[Verse\s*1\b[^\]]*\]/i,
-    mid:   /\[Chorus\b[^\]]*\]/i,
-    add2:  /\[Verse\s*2\b[^\]]*\]/i,
-    add3:  /\[(Bridge|Final\s*Chorus)\b[^\]]*\]/i,
-    end:   /\[(Outro|Ending)\b[^\]]*\]/i,
+    start: /(\[Intro\b[^\]]*\]\n\[instrumental break\])/i,
+    add1:  /(\[Verse\s*1\b[^\]]*\]\n\[instrumental break\])/i,
+    mid:   /(\[Chorus\b[^\]]*\]\n\[instrumental break\])/i,
+    add2:  /(\[Verse\s*2\b[^\]]*\]\n\[instrumental break\])/i,
+    add3:  /(\[(?:Bridge|Final\s*Chorus)\b[^\]]*\]\n\[instrumental break\])/i,
+    end:   /(\[(?:Outro|Ending)\b[^\]]*\]\n\[instrumental break\])/i,
   };
 
-  // 가사가 비어있으면 → 빈 섹션 구조 자동 생성 (음악만 재생되는 골격)
+  // 가사가 비어있으면 → 곡 길이에 맞는 섹션 구조 자동 생성
   const isLyricsEmpty = existingLyrics.length === 0;
   let lyrics = existingLyrics;
 
   if (isLyricsEmpty) {
     const durStr = STATE.songDuration || '3:30';
-    const repeatCount = (() => { const [m,s]=durStr.split(':'); return parseInt(m)*60+parseInt(s||0) >= 240 ? 3 : 2; })();
-    // 빈 섹션 구조 생성 (가사 없이 섹션 태그만)
-    let skeleton = '[Intro]\n\n';
+    const [mStr, sStr] = durStr.split(':');
+    const totalSec = parseInt(mStr) * 60 + parseInt(sStr || '0');
+
+    // 곡 길이별 섹션 반복 수 & 각 섹션 평균 초
+    // Suno는 [instrumental break] 1개당 약 20~25초 처리
+    // Intro~20s / Verse~30s / Chorus~25s / Bridge~20s / Outro~20s
+    const SEC = { intro:20, verse:30, chorus:25, bridge:20, finalChorus:25, outro:20 };
+
+    // 반복 수: 남은 시간을 Verse+Chorus(55초) 단위로 채움
+    const fixedSec = SEC.intro + SEC.bridge + SEC.finalChorus + SEC.outro;
+    const repeatCount = Math.max(2, Math.min(4, Math.round((totalSec - fixedSec) / (SEC.verse + SEC.chorus))));
+
+    // [instrumental break] 뒤에 Suno용 시간 힌트 주석 추가
+    const IB = '[instrumental break]';
+
+    let skeleton = `[Intro]\n${IB}\n\n`;
     for (let i = 1; i <= repeatCount; i++) {
-      skeleton += `[Verse ${i}]\n\n[Chorus]\n\n`;
+      skeleton += `[Verse ${i}]\n${IB}\n\n`;
+      skeleton += `[Chorus]\n${IB}\n\n`;
     }
-    skeleton += '[Bridge]\n\n[Final Chorus]\n\n[Outro]\n';
+    skeleton += `[Bridge]\n${IB}\n\n`;
+    skeleton += `[Final Chorus]\n${IB}\n\n`;
+    skeleton += `[Outro]\n${IB}\n`;
     lyrics = skeleton;
+  } else {
+    // 기존 가사 있을 때 → 빈 섹션 태그에 [instrumental break] 보충
+    lyrics = existingLyrics.replace(
+      /(\[[^\]]+\])\n(\n|\[)/g,
+      (_, tag, next) => `${tag}\n[instrumental break]\n${next}`
+    );
   }
 
   // 기존 구음 포인트 제거 (재삽입 시 중복 방지)
@@ -2943,19 +2965,17 @@ function insertGueumToLyrics() {
     };
     const label = labelMap[pos] || pos;
 
-    // 태그 찾기 → 태그 다음 줄 바로 뒤에 포인트 삽입
-    const match = lyrics.match(tagRx);
-    if (match) {
-      // 태그 이후 빈 줄 또는 내용 뒤에 구음 포인트 블록 삽입
-      const insertAfter = match[0];
-      // 해당 태그 뒤에 이미 내용이 있으면 그 뒤에, 없으면 바로 뒤에
-      lyrics = lyrics.replace(
-        new RegExp('(' + insertAfter.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '\\n?)((?:(?!\\[)[^\\n]*\\n)*)', ''),
-        (_, tag, content) => `${tag}${content}[${label} - Gueum]\n${block}\n\n`
-      );
+    if (tagRx.test(lyrics)) {
+      // [섹션]\n[instrumental break] 뒤에 구음 포인트 삽입
+      lyrics = lyrics.replace(tagRx, `$1\n\n[${label} - Gueum]\n${block}`);
     } else {
-      // 태그를 못 찾으면 가사 끝에 붙임
-      lyrics = lyrics.trimEnd() + `\n\n[${label} - Gueum]\n${block}\n`;
+      // instrumental break 없이 섹션 태그만 있는 경우 fallback
+      const fallbackRx = new RegExp(`(\\[${pos==='start'?'Intro':pos==='add1'?'Verse\\s*1':pos==='mid'?'Chorus':pos==='add2'?'Verse\\s*2':pos==='add3'?'(?:Bridge|Final Chorus)':'(?:Outro|Ending)'}[^\\]]*\\])`, 'i');
+      if (fallbackRx.test(lyrics)) {
+        lyrics = lyrics.replace(fallbackRx, `$1\n\n[${label} - Gueum]\n${block}`);
+      } else {
+        lyrics = lyrics.trimEnd() + `\n\n[${label} - Gueum]\n${block}\n`;
+      }
     }
   }
 
