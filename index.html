@@ -2754,68 +2754,113 @@ function insertGueumToLyrics() {
     ? styleInfo.en2.split('\n').map(s => s.trim()).filter(Boolean)
     : ['Mmm~hmm~','Oh~yeah~','Ah~yeah~','Mmm~mm~','Oh~why~','Huh~yeah~'];
 
-  // 무한 풀링용 헬퍼 — rawSounds를 섞어가며 n줄 뽑기
-  function pickLines(n) {
-    const pool = [];
-    while (pool.length < n) pool.push(...[...rawSounds].sort(() => Math.random() - 0.5));
-    return pool.slice(0, n).join('\n');
+  // 장르 감지 — 스캣/구음/애드립 단어를 장르에 맞게 조정
+  const genreEn = (STATE.genre !== null && DATA.genres[STATE.genre]) ? DATA.genres[STATE.genre].en.toLowerCase() : '';
+  const isJazz    = genreEn.includes('jazz') || genreEn.includes('lounge');
+  const isGospel  = genreEn.includes('gospel') || genreEn.includes('soul');
+  const isHiphop  = genreEn.includes('hip') || genreEn.includes('trap');
+  const isKorean  = genreEn.includes('joseon') || genreEn.includes('pansori') || genreEn.includes('sanjo') || genreEn.includes('minyo');
+
+  // 섹션별 텍스처 단어 풀
+  const HUMMING   = ['Mmm~', 'Hmm~', 'Mm-mmm~', 'Hmm~ hmm~', 'Mmm~ oh~', 'Hm-mmm~'];
+  const CHORUS_PAD = isKorean
+    ? ['Ah~ oh~', 'Oh~ ah~', 'Mm-ah~', 'Ah-oh~', 'Oh~ mm~', 'Ah~ ah-oh~']
+    : ['Ah~ oh~', 'Oh~ ah-ah~', 'Mm-ah~ oh~', 'Ah~ oh-oh~', 'Oh~ mm-ah~', 'Ah-ah~ oh~'];
+  const SCAT = isJazz
+    ? ['Doo-ba doo-wah~', 'Sha-ba da-ba doo~', 'Doo-bee doo-wah yeah~', 'Ba-da-boom doo~', 'Scat-a-dat doo~', 'Doo-wah shoo-bee~']
+    : isKorean
+    ? rawSounds
+    : ['Doo-ba yeah~', 'Sha-la-la oh~', 'Da-da-da yeah~', 'Ba-da-boom~', 'Doo-wah oh~', 'La-la-la yeah~'];
+  const ADLIB = isGospel
+    ? ['Oh yeah~', 'Come on~', 'Alright~', 'Oh Lord~', 'Can I get a witness~', 'Hallelujah~']
+    : isHiphop
+    ? ['Uh~ yeah~', 'Okay~', 'Let\'s go~', 'Uh-huh~', 'Yeah yeah~', 'That\'s right~']
+    : isKorean
+    ? ['Yeah~ho~', 'Alright~', 'Oh yeah~', 'Let\'s go~', 'Come on~', 'That\'s it~']
+    : ['Oh yeah~', 'Come on~', 'Alright~', 'Yeah~', 'Ooh~', 'That\'s right~'];
+  const GUEUM_RHYTHM = rawSounds;
+
+  // n줄 무작위 뽑기
+  function pick(pool, n) {
+    const out = [];
+    while (out.length < n) out.push(...[...pool].sort(() => Math.random() - 0.5));
+    return out.slice(0, n).join('\n');
   }
 
   const existingLyrics = textarea.value.trim();
   const isLyricsEmpty = existingLyrics.length === 0;
 
-  // ── 가사가 없으면 목표 시간 기반 풀 구음 구조 생성 ──
+  // ── 가사 없음 → 6번 혼합 구조 풀 생성 ──
   if (isLyricsEmpty) {
-    // 목표 시간 파싱 (STATE.songDuration 또는 기본 3:30)
     const durStr = STATE.songDuration || '3:30';
     const [mStr, sStr] = durStr.split(':');
     const totalSec = parseInt(mStr) * 60 + parseInt(sStr || '0');
+    const SEC = 2.5; // 줄당 평균 초
 
-    // 초당 0.4줄 기준으로 섹션별 줄 수 계산
-    const introLines  = Math.max(3, Math.round(totalSec * 0.08 / 2.5));
-    const verseLines  = Math.max(4, Math.round(totalSec * 0.22 / 2.5));
-    const chorusLines = Math.max(4, Math.round(totalSec * 0.18 / 2.5));
-    const bridgeLines = Math.max(3, Math.round(totalSec * 0.12 / 2.5));
-    const outroLines  = Math.max(2, Math.round(totalSec * 0.06 / 2.5));
-    const repeatCount = totalSec >= 240 ? 3 : 2;
+    const introLines   = Math.max(3, Math.round(totalSec * 0.07 / SEC));
+    const verseLines   = Math.max(5, Math.round(totalSec * 0.20 / SEC));
+    const chorusLines  = Math.max(4, Math.round(totalSec * 0.16 / SEC));
+    const bridgeLines  = Math.max(3, Math.round(totalSec * 0.10 / SEC));
+    const adlibLines   = Math.max(3, Math.round(totalSec * 0.12 / SEC));
+    const outroLines   = Math.max(2, Math.round(totalSec * 0.06 / SEC));
+    const repeatCount  = totalSec >= 240 ? 3 : 2;
 
-    let fullLyrics = `[Intro]\n${pickLines(introLines)}\n\n`;
+    // 6번 혼합 구조
+    let fullLyrics = '';
+
+    // [Intro] → 허밍
+    fullLyrics += `[Intro]\n${pick(HUMMING, introLines)}\n\n`;
+
     for (let i = 1; i <= repeatCount; i++) {
-      fullLyrics += `[Verse ${i}]\n${pickLines(verseLines)}\n\n`;
-      fullLyrics += `[Chorus]\n${pickLines(chorusLines)}\n\n`;
+      // [Verse] → 코러스 패드
+      fullLyrics += `[Verse ${i}]\n${pick(CHORUS_PAD, verseLines)}\n\n`;
+      // [Chorus] → 스캣
+      fullLyrics += `[Chorus]\n${pick(SCAT, chorusLines)}\n\n`;
     }
-    fullLyrics += `[Bridge]\n${pickLines(bridgeLines)}\n\n`;
-    fullLyrics += `[Final Chorus]\n${pickLines(chorusLines)}\n\n`;
-    fullLyrics += `[Outro]\n${pickLines(outroLines)}\n`;
+
+    // [Bridge] → 구음/타악 리듬 (긴장감)
+    fullLyrics += `[Bridge]\n${pick(GUEUM_RHYTHM, bridgeLines)}\n\n`;
+
+    // [Final Chorus] → 애드립 (폭발)
+    fullLyrics += `[Final Chorus]\n${pick(ADLIB, adlibLines)}\n\n`;
+
+    // [Outro] → 허밍 (여운)
+    fullLyrics += `[Outro]\n${pick(HUMMING, outroLines)}\n`;
 
     textarea.value = fullLyrics;
-    showToast(`✅ ${durStr} 분량 구음 전체 구조 생성 완료!`);
+    showToast(`✅ ${durStr} 혼합 구조 생성 완료! (허밍→코러스패드→스캣→구음→애드립→허밍)`);
     return;
   }
 
-  // ── 기존 가사가 있으면 지정 위치에만 삽입 (기존 동작) ──
+  // ── 기존 가사 있음 → 지정 위치에만 삽입 ──
+  function pickRaw(n) {
+    const pool = [];
+    while (pool.length < n) pool.push(...[...rawSounds].sort(() => Math.random() - 0.5));
+    return pool.slice(0, n).join('\n');
+  }
+
   const INSERT_ORDER = ['start', 'mid', 'end'];
   const activePos = INSERT_ORDER.filter(p => STATE.gueumPositions.includes(p));
   const COUNTS = { start: 4, mid: 4, end: 3 };
 
   let lyrics = existingLyrics;
-  lyrics = lyrics.replace(/\[(Intro|Bridge|Outro) - 구음\][\s\S]*?(?=\n\[|\n$|$)/gi, '');
+  lyrics = lyrics.replace(/\[(Intro|Bridge|Outro)\s*-\s*(Gueum|구음)\][\s\S]*?(?=\n\[|\n$|$)/gi, '');
   lyrics = lyrics.replace(/\n{3,}/g, '\n\n').trim();
 
   if (activePos.includes('start')) {
-    const block = pickLines(COUNTS.start);
+    const block = pick(HUMMING, COUNTS.start);
     const tag = lyrics.match(/\[(Intro|인트로|Verse\s*1|절\s*1)\]/i);
     if (tag) lyrics = lyrics.replace(tag[0], `[Intro - Gueum]\n${block}\n\n${tag[0]}`);
     else lyrics = `[Intro - Gueum]\n${block}\n\n` + lyrics;
   }
   if (activePos.includes('mid')) {
-    const block = pickLines(COUNTS.mid);
+    const block = pick(GUEUM_RHYTHM, COUNTS.mid);
     const tag = lyrics.match(/\[(Bridge|브릿지|Chorus|후렴|Verse\s*2|절\s*2)\]/i);
     if (tag) lyrics = lyrics.replace(tag[0], `[Bridge - Gueum]\n${block}\n\n${tag[0]}`);
     else { const lines=lyrics.split('\n'); const mid=Math.floor(lines.length/2); lines.splice(mid,0,'','[Bridge - Gueum]',block,''); lyrics=lines.join('\n'); }
   }
   if (activePos.includes('end')) {
-    const block = pickLines(COUNTS.end);
+    const block = pick(ADLIB, COUNTS.end);
     const tag = lyrics.match(/\[(Outro|아웃트로|Ending)\]/i);
     if (tag) lyrics = lyrics.replace(tag[0], `[Outro - Gueum]\n${block}\n\n${tag[0]}`);
     else lyrics = lyrics.trimEnd() + `\n\n[Outro - Gueum]\n${block}\n`;
