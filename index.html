@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 v11 - Joseon Core</title>
+<title>BV 뮤직 프롬프트 메이커 v12 - Joseon Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -362,7 +362,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 A+B 전 섹션 적용 · 변형 생성</div>
       </div>
     </div>
-    <div class="header-badge">JOSEON CORE v11 · 구음 A+B 조합 · pitch·gender 전 섹션 반영</div>
+    <div class="header-badge">JOSEON CORE v12 · 구음 A+B 조합 · pitch·gender 전 섹션 반영</div>
   </div>
 </header>
 
@@ -739,7 +739,8 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     </div>
     <div style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.7">
       💡 수노는 기본적으로 <b style="color:var(--gold)">2분 내외</b>로 짧게 생성합니다.<br>
-      이 설정이 스타일 프롬프트에 <b style="color:var(--gold)">"full 3:30 song, extended outro"</b> 형태로 자동 삽입되어 길이를 강제합니다.
+      이 설정이 스타일 프롬프트에 <b style="color:var(--gold)">HARD STOP 강제</b> 형태로 삽입되어 길이를 제한합니다.<br>
+      <span style="color:var(--red)">⚠️ 5:00 초과 설정 시 Suno가 빈 공간을 생성할 수 있습니다.</span>
     </div>
   </div>
 </div>
@@ -1257,9 +1258,9 @@ const DATA = {
     {en:'Menaritori',kr:'메나리토리',desc:'강원·함경도 산악 지방의 음계 — 구슬프고 처연하며 광야의 외로움.',feel:'처연·구슬픔·외로움',suno:'Korean mountain pentatonic, haunting and lonesome, wide vibrato slides'},
   ],
   energyArcs: [
-    {en:'Slow Burn Rise',kr:'천천히 타오르는 고조',desc:'잔잔한 도입 → 서서히 감정 쌓기 → 클라이맥스 폭발 → 짧은 여운',curve:'▁▂▃▄▆█▇▄',suno:'starts quiet and sparse, slowly builds intensity, explosive climax at 2:00, then fades with emotional resonance'},
+    {en:'Slow Burn Rise',kr:'천천히 타오르는 고조',desc:'잔잔한 도입 → 서서히 감정 쌓기 → 클라이맥스 폭발 → 짧은 여운',curve:'▁▂▃▄▆█▇▄',suno:'starts quiet and sparse, slowly builds intensity, explosive climax at 2:00, brief fade to end'},
     {en:'Wave Form',kr:'파도형 — 밀물과 썰물',desc:'고조와 이완을 반복 — 감정이 파도처럼 밀려왔다 빠짐.',curve:'▃▆▃▆▃▇▃▅',suno:'alternating tension and release, recurring emotional waves, each chorus slightly bigger than the last'},
-    {en:'Mountain Peak',kr:'산봉우리 — 정상 후 하강',desc:'빠르게 고조 → 클라이맥스 유지 → 천천히 잦아드는 여운',curve:'▂▄▇█▇▅▃▁',suno:'quick intensity buildup, sustained emotional peak in the middle, slow gradual release into quiet outro'},
+    {en:'Mountain Peak',kr:'산봉우리 — 정상 후 하강',desc:'빠르게 고조 → 클라이맥스 유지 → 천천히 잦아드는 여운',curve:'▂▄▇█▇▅▃▁',suno:'quick intensity buildup, sustained emotional peak in the middle, brief 10-second fade to end'},
     {en:'Reverse Bloom',kr:'역개화 — 폭발 후 잔잔',desc:'강렬하게 시작 → 감정이 점차 녹아내리듯 잦아듦.',curve:'█▇▆▅▃▂▁▁',suno:'opens with full intensity, gradually strips back layers, ends in intimate and bare instrumentation'},
     {en:'Twin Peaks',kr:'쌍봉 — 두 번의 절정',desc:'1차 절정 → 브리지 이완 → 더 큰 2차 절정.',curve:'▃▇▄▂▄█▅▂',suno:'first climax at 1:20, drops to intimate bridge, second bigger climax at 2:30, powerful resolution'},
     {en:'Sustained Groove',kr:'일정한 그루브 유지',desc:'처음부터 끝까지 안정된 에너지 — 지치지 않는 몰입감.',curve:'▅▅▅▅▆▅▅▅',suno:'consistent steady groove throughout, minimal variation in energy, hypnotic and continuous flow'},
@@ -1815,11 +1816,14 @@ function _doBuildPrompt() {
       const arc=DATA.energyArcs[STATE.energyArc];
       parts.push(`[Energy Arc] ${arc.suno}`);
     } else {
-      parts.push(`[Structure] Tasteful breakdown, dynamic lift at 1:20–1:40, emotional climax, Korean instrument spotlight moment, powerful final ensemble, well-placed silence for maximum impact.`);
+      parts.push(`[Structure] Tasteful breakdown, dynamic lift at 1:20–1:40, emotional climax, Korean instrument spotlight moment, powerful final ensemble, brief fade-out to end.`);
     }
     /* [버그수정 #1] songDuration — 기존에 STATE에 저장되나 프롬프트 미반영이었던 버그 수정 */
     if (STATE.songDuration) {
-      parts.push(`[Duration] target ${STATE.songDuration} full song — no early fade, include full outro`);
+      /* ── Fix: Duration HARD STOP — Suno가 멋대로 늘리는 현상 방지 ── */
+      const _durParts = STATE.songDuration.split(':');
+      const _durSec = parseInt(_durParts[0])*60 + parseInt(_durParts[1]||0);
+      parts.push(`[Duration] HARD STOP at ${STATE.songDuration} (${_durSec} seconds total) — song MUST end exactly at ${STATE.songDuration}, 5-second fade-out only, NO extended outro, NO silence padding after ${STATE.songDuration}, STRICT length limit`);
     }
     const box=document.getElementById('promptBox');
     // [수정2] 사용자가 장르·분위기·악기 중 하나라도 선택했을 때만 프롬프트 표시
@@ -2938,7 +2942,7 @@ function insertGueumToLyrics() {
     }
     skeleton += `[Bridge]\n${IB}\n\n`;
     skeleton += `[Final Chorus]\n${IB}\n\n`;
-    skeleton += `[Outro]\n${IB}\n`;
+    skeleton += `[Outro]\n${IB}\n\n[End]\n`;
     lyrics = skeleton;
   } else {
     // 기존 가사 있을 때 → 빈 섹션 태그에 [instrumental break] 보충
