@@ -578,12 +578,36 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       🎙️ <b>구음</b>은 악기 소리를 입으로 표현하는 한국 전통 창법입니다. 재즈·블루스·소울의 스캣(scat)과 같은 즉흥적 보컬 표현으로 Suno에서 강력한 정체성을 만듭니다.
     </div>
     <div style="margin-bottom:20px">
-      <div class="lbl-korean">① 구음 삽입 위치 <span style="font-size:10px;color:var(--muted)">(복수 선택 가능)</span></div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="gueum-ctrl-btn" id="gpos_start" onclick="toggleGueumPos('start')">🎬 시작 (Intro)</button>
-        <button class="gueum-ctrl-btn" id="gpos_mid" onclick="toggleGueumPos('mid')">🎵 중간 (Bridge)</button>
-        <button class="gueum-ctrl-btn" id="gpos_end" onclick="toggleGueumPos('end')">🎭 끝 (Outro)</button>
+      <div class="lbl-korean">① 구음 삽입 위치 <span style="font-size:10px;color:var(--muted)">(복수 선택 — 음악 중간 포인트로 삽입)</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:6px">
+        <button class="gueum-ctrl-btn" id="gpos_start" onclick="toggleGueumPos('start')" style="text-align:left">
+          <span style="font-size:10px;color:var(--muted);display:block;margin-bottom:2px">① Intro 직후</span>
+          🎬 시작 포인트
+        </button>
+        <button class="gueum-ctrl-btn" id="gpos_add1" onclick="toggleGueumPos('add1')" style="text-align:left">
+          <span style="font-size:10px;color:var(--muted);display:block;margin-bottom:2px">② Verse 1 직후</span>
+          ✦ 추가 포인트 1
+        </button>
+        <button class="gueum-ctrl-btn" id="gpos_mid" onclick="toggleGueumPos('mid')" style="text-align:left">
+          <span style="font-size:10px;color:var(--muted);display:block;margin-bottom:2px">③ Chorus 직후</span>
+          🎵 중간 포인트
+        </button>
       </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <button class="gueum-ctrl-btn" id="gpos_add2" onclick="toggleGueumPos('add2')" style="text-align:left">
+          <span style="font-size:10px;color:var(--muted);display:block;margin-bottom:2px">④ Verse 2 직후</span>
+          ✦ 추가 포인트 2
+        </button>
+        <button class="gueum-ctrl-btn" id="gpos_add3" onclick="toggleGueumPos('add3')" style="text-align:left">
+          <span style="font-size:10px;color:var(--muted);display:block;margin-bottom:2px">⑤ Outro 직전</span>
+          ✦ 추가 포인트 3
+        </button>
+        <button class="gueum-ctrl-btn" id="gpos_end" onclick="toggleGueumPos('end')" style="text-align:left">
+          <span style="font-size:10px;color:var(--muted);display:block;margin-bottom:2px">⑥ Outro 직후</span>
+          🎭 끝 포인트
+        </button>
+      </div>
+      <div style="margin-top:8px;font-size:11px;color:var(--dim)">💡 선택한 위치에만 1~2줄 구음이 포인트로 삽입됩니다. 나머지는 음악만 재생.</div>
     </div>
     <div style="margin-bottom:20px">
       <div class="lbl-korean">② 구음 음역대 <span style="font-size:10px;color:var(--muted)">(하나 선택)</span></div>
@@ -1756,8 +1780,8 @@ function _doBuildPrompt() {
       if(strength==='maximum') strengthPrefix='CRITICAL INSTRUCTION - HIGHEST PRIORITY: ';
       else if(strength==='strong') strengthPrefix='IMPORTANT: ';
       /* [버그수정 #4] 구음 위치(start/mid/end) → 프롬프트에 반영 */
-      const posMap={start:'Intro',mid:'Bridge',end:'Outro'};
-      const posStr=STATE.gueumPositions.length ? ` [Position: ${STATE.gueumPositions.map(p=>posMap[p]).join('+')}]` : '';
+      const posMap={start:'after Intro',add1:'after Verse 1',mid:'after Chorus',add2:'after Verse 2',add3:'before Outro',end:'after Outro'};
+      const posStr=STATE.gueumPositions.length ? ` [Point positions: ${STATE.gueumPositions.map(p=>posMap[p]).join(' / ')}]` : '';
       let gueumText='';
       if(styleInfo){
         gueumText=`${strengthPrefix}Forcefully include authentic traditional Korean gueum (구음) vocalization${posStr}. `+
@@ -2849,104 +2873,102 @@ function insertGueumToLyrics() {
   }
 
   const existingLyrics = textarea.value.trim();
-  const isLyricsEmpty = existingLyrics.length === 0;
 
-  // ── 가사 없음 → 옵션 A+B 적용된 전체 구조 생성 ──
-  if (isLyricsEmpty) {
-    const durStr = STATE.songDuration || '3:30';
-    const [mStr, sStr] = durStr.split(':');
-    const totalSec = parseInt(mStr) * 60 + parseInt(sStr || '0');
-
-    // 줄당 소리를 2~3개 이어 붙이므로 한 줄이 커버하는 시간을 늘림
-    // SEC_PER_LINE: 한 줄(2~3개 구음)이 차지하는 평균 초
-    const SEC_PER_LINE = 7; // 기존 2.5 → 7 (한 줄이 길어졌으므로)
-
-    // 섹션 비율은 동일하게 유지하되, 최대 줄 수 3~4줄로 캡
-    const introLines   = Math.min(3, Math.max(2, Math.round(totalSec * 0.07 / SEC_PER_LINE)));
-    const verseLines   = Math.min(4, Math.max(3, Math.round(totalSec * 0.20 / SEC_PER_LINE)));
-    const chorusLines  = Math.min(4, Math.max(3, Math.round(totalSec * 0.16 / SEC_PER_LINE)));
-    const bridgeLines  = Math.min(3, Math.max(2, Math.round(totalSec * 0.10 / SEC_PER_LINE)));
-    const adlibLines   = Math.min(3, Math.max(2, Math.round(totalSec * 0.12 / SEC_PER_LINE)));
-    const outroLines   = Math.min(2, Math.max(1, Math.round(totalSec * 0.06 / SEC_PER_LINE)));
-    const repeatCount  = totalSec >= 240 ? 3 : 2;
-
-    // 한 줄에 이어 붙일 구음 수: 음악 길이가 길수록 한 줄을 더 풍성하게
-    // 짧은 곡(~3분): 2개 / 긴 곡(4분+): 3개
-    const perLineIntro  = 2; // Intro: 조용하게, 2개씩
-    const perLineVerse  = totalSec >= 240 ? 3 : 2;
-    const perLineChorus = totalSec >= 240 ? 3 : 2;
-    const perLineBridge = 2;
-    const perLineAdlib  = 2;
-    const perLineOutro  = 2; // Outro: 여운, 2개씩
-
-    // 옵션 B: pitch·gender 보정 (줄 수 ±1)
-    const introBonus  = (isLowEnergy || isMaleVoice)   ? 1 : 0;
-    const chorusBonus = (isHighEnergy || isFemaleVoice) ? 1 : 0;
-    const bridgeBonus = (isLowEnergy || isMaleVoice)   ? 1 : 0;
-    const adlibBonus  = (isHighEnergy || isFemaleVoice) ? 1 : 0;
-
-    let fullLyrics = '';
-
-    fullLyrics += `[Intro]\n${pickSpaced(HUMMING_INTRO, introLines + introBonus, perLineIntro)}\n\n`;
-
-    for (let i = 1; i <= repeatCount; i++) {
-      fullLyrics += `[Verse ${i}]\n${pickSpaced(CHORUS_PAD, verseLines, perLineVerse)}\n\n`;
-      fullLyrics += `[Chorus]\n${pickSpaced(SCAT, chorusLines + chorusBonus, perLineChorus)}\n\n`;
-    }
-
-    fullLyrics += `[Bridge]\n${pickSpaced(GUEUM_RHYTHM, bridgeLines + bridgeBonus, perLineBridge)}\n\n`;
-    fullLyrics += `[Final Chorus]\n${pickSpaced(ADLIB, Math.max(2, adlibLines + adlibBonus), perLineAdlib)}\n\n`;
-    fullLyrics += `[Outro]\n${pickSpaced(HUMMING_OUTRO, outroLines, perLineOutro)}\n`;
-
-    textarea.value = fullLyrics;
-    const pitchLabel = { high:'고음', midhigh:'중고음', midlow:'중저음', low:'저음' }[pitch] || pitch;
-    const genderLabel = { male:'남성', female:'여성', both:'남/여' }[gGender] || gGender;
-    const styleName = styleInfo ? ` [${styleInfo.kr}]` : '';
-    showToast(`✅ ${durStr} A+B 구조 완성!${styleName} ${pitchLabel}·${genderLabel} 기반으로 전 섹션 구음 적용`);
-    return;
+  // ── 포인트 1줄 뽑기 (한 줄에 2개 이어붙임) ──
+  function pointLine(pool) {
+    const src = (pool && pool.length) ? pool : rawFallback;
+    const sh = [...src].sort(() => Math.random() - 0.5);
+    return sh.slice(0, 2).join('  ');
   }
 
-  // ── 기존 가사 있음 → 지정 위치에 A+B 색깔 적용 삽입 ──
-  const INSERT_ORDER = ['start', 'mid', 'end'];
-  const activePos = INSERT_ORDER.filter(p => STATE.gueumPositions.includes(p));
+  // ── 포인트 블록: 1~2줄만 (산만하지 않게) ──
+  // 저음·남성 → 2줄, 그 외 → 1줄
+  const pointLines = (isLowEnergy || isMaleVoice) ? 2 : 1;
+  function makePoint(pool) {
+    const rows = [];
+    for (let i = 0; i < pointLines; i++) rows.push(pointLine(pool));
+    return rows.join('\n');
+  }
 
-  // 옵션 B: pitch·gender에 따라 삽입 줄 수 조정 (최대 3~4줄 캡)
-  const COUNTS = {
-    start: (isLowEnergy || isMaleVoice) ? 3 : 2,
-    mid:   3,
-    end:   (isHighEnergy || isFemaleVoice) ? 3 : 2
+  // 위치별 구음 풀 매핑
+  const POOL_MAP = {
+    start: HUMMING_INTRO,   // Intro 직후 → 조용한 허밍형
+    add1:  CHORUS_PAD,      // Verse 1 직후 → 중간 패드형
+    mid:   GUEUM_RHYTHM,    // Chorus 직후 → 리듬 구음
+    add2:  SCAT,            // Verse 2 직후 → 고조형 스캣
+    add3:  ADLIB,           // Outro 직전 → 폭발 애드립
+    end:   HUMMING_OUTRO,   // Outro 직후 → 여운 허밍
   };
 
+  // 위치별 삽입 기준 태그 (해당 태그 바로 뒤에 구음 포인트 삽입)
+  const TAG_MAP = {
+    start: /\[Intro\b[^\]]*\]/i,
+    add1:  /\[Verse\s*1\b[^\]]*\]/i,
+    mid:   /\[Chorus\b[^\]]*\]/i,
+    add2:  /\[Verse\s*2\b[^\]]*\]/i,
+    add3:  /\[(Bridge|Final\s*Chorus)\b[^\]]*\]/i,
+    end:   /\[(Outro|Ending)\b[^\]]*\]/i,
+  };
+
+  // 가사가 비어있으면 → 빈 섹션 구조 자동 생성 (음악만 재생되는 골격)
+  const isLyricsEmpty = existingLyrics.length === 0;
   let lyrics = existingLyrics;
-  lyrics = lyrics.replace(/\[(Intro|Bridge|Outro)\s*-\s*(Gueum|구음)\][\s\S]*?(?=\n\[|\n$|$)/gi, '');
+
+  if (isLyricsEmpty) {
+    const durStr = STATE.songDuration || '3:30';
+    const repeatCount = (() => { const [m,s]=durStr.split(':'); return parseInt(m)*60+parseInt(s||0) >= 240 ? 3 : 2; })();
+    // 빈 섹션 구조 생성 (가사 없이 섹션 태그만)
+    let skeleton = '[Intro]\n\n';
+    for (let i = 1; i <= repeatCount; i++) {
+      skeleton += `[Verse ${i}]\n\n[Chorus]\n\n`;
+    }
+    skeleton += '[Bridge]\n\n[Final Chorus]\n\n[Outro]\n';
+    lyrics = skeleton;
+  }
+
+  // 기존 구음 포인트 제거 (재삽입 시 중복 방지)
+  lyrics = lyrics.replace(/\[.*?Gueum.*?\]\n.*?(?=\n\[|\n*$)/gi, '').replace(/\n{3,}/g, '\n\n').trim();
+
+  // 선택된 위치에만 포인트 삽입
+  const ALL_POS = ['start','add1','mid','add2','add3','end'];
+  const activePos = ALL_POS.filter(p => STATE.gueumPositions.includes(p));
+
+  for (const pos of activePos) {
+    const pool = POOL_MAP[pos];
+    const tagRx = TAG_MAP[pos];
+    const block = makePoint(pool);
+    const labelMap = {
+      start:'Intro 포인트', add1:'After Verse 1', mid:'After Chorus',
+      add2:'After Verse 2', add3:'Before Outro', end:'Outro 포인트'
+    };
+    const label = labelMap[pos] || pos;
+
+    // 태그 찾기 → 태그 다음 줄 바로 뒤에 포인트 삽입
+    const match = lyrics.match(tagRx);
+    if (match) {
+      // 태그 이후 빈 줄 또는 내용 뒤에 구음 포인트 블록 삽입
+      const insertAfter = match[0];
+      // 해당 태그 뒤에 이미 내용이 있으면 그 뒤에, 없으면 바로 뒤에
+      lyrics = lyrics.replace(
+        new RegExp('(' + insertAfter.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '\\n?)((?:(?!\\[)[^\\n]*\\n)*)', ''),
+        (_, tag, content) => `${tag}${content}[${label} - Gueum]\n${block}\n\n`
+      );
+    } else {
+      // 태그를 못 찾으면 가사 끝에 붙임
+      lyrics = lyrics.trimEnd() + `\n\n[${label} - Gueum]\n${block}\n`;
+    }
+  }
+
   lyrics = lyrics.replace(/\n{3,}/g, '\n\n').trim();
-
-  // start → 옵션 A: HUMMING_INTRO (구음 스타일 색깔 + pitch 기반)
-  if (activePos.includes('start')) {
-    const block = pick(HUMMING_INTRO, COUNTS.start);
-    const tag = lyrics.match(/\[(Intro|인트로|Verse\s*1|절\s*1)\]/i);
-    if (tag) lyrics = lyrics.replace(tag[0], `[Intro - Gueum]\n${block}\n\n${tag[0]}`);
-    else lyrics = `[Intro - Gueum]\n${block}\n\n` + lyrics;
-  }
-  // mid → GUEUM_RHYTHM (현행 유지, rawSounds 전체)
-  if (activePos.includes('mid')) {
-    const block = pick(GUEUM_RHYTHM, COUNTS.mid);
-    const tag = lyrics.match(/\[(Bridge|브릿지|Chorus|후렴|Verse\s*2|절\s*2)\]/i);
-    if (tag) lyrics = lyrics.replace(tag[0], `[Bridge - Gueum]\n${block}\n\n${tag[0]}`);
-    else { const lines=lyrics.split('\n'); const mid=Math.floor(lines.length/2); lines.splice(mid,0,'','[Bridge - Gueum]',block,''); lyrics=lines.join('\n'); }
-  }
-  // end → 옵션 A: ADLIB (구음 스타일 색깔 + pitch·gender 기반)
-  if (activePos.includes('end')) {
-    const block = pick(ADLIB, COUNTS.end);
-    const tag = lyrics.match(/\[(Outro|아웃트로|Ending)\]/i);
-    if (tag) lyrics = lyrics.replace(tag[0], `[Outro - Gueum]\n${block}\n\n${tag[0]}`);
-    else lyrics = lyrics.trimEnd() + `\n\n[Outro - Gueum]\n${block}\n`;
-  }
-
   textarea.value = lyrics;
-  const posNames = { start:'시작(Intro)', mid:'중간(Bridge)', end:'끝(Outro)' };
+
+  const posNames = {
+    start:'시작(Intro 직후)', add1:'추가1(Verse1 직후)', mid:'중간(Chorus 직후)',
+    add2:'추가2(Verse2 직후)', add3:'추가3(Outro 직전)', end:'끝(Outro 직후)'
+  };
   const styleName = styleInfo ? ` [${styleInfo.kr}]` : '';
-  showToast(`✅ A+B 구음 삽입!${styleName} ${activePos.map(p=>posNames[p]).join(' → ')}`);
+  const appliedCount = activePos.length;
+  showToast(`✅ 구음 포인트 ${appliedCount}곳 삽입!${styleName} ${activePos.map(p=>posNames[p]).join(' → ')}`);
 }
 
 window.addEventListener('DOMContentLoaded',()=>{
