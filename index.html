@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 v12 - Joseon Core</title>
+<title>BV 뮤직 프롬프트 메이커 v14 - Joseon Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -358,11 +358,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v11</span></div>
+        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v14</span></div>
         <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 A+B 전 섹션 적용 · 변형 생성</div>
       </div>
     </div>
-    <div class="header-badge">JOSEON CORE v12 · 구음 A+B 조합 · pitch·gender 전 섹션 반영</div>
+    <div class="header-badge">JOSEON CORE v14 · 구음 A+B 조합 · pitch·gender 전 섹션 반영</div>
   </div>
 </header>
 
@@ -1106,7 +1106,6 @@ const DATA = {
     {en:'Deep soulful male vocals',kr:'깊은 소울 남성 보컬',gender:'male',desc:'몸을 울리는 저음 Soul/Blues 감성'},
     {en:'Smoky blues baritone',kr:'스모키 블루스 바리톤',gender:'male',desc:'묵직한 재즈·블루스 저음 스타일'},
     {en:'Warm raspy male vocals',kr:'따뜻하고 거친 남성 보컬',gender:'male',desc:'인간적이고 빈티지한 질감 강화'},
-    {en:'Gospel-inspired male vocals',kr:'가스펠 스타일 남성 보컬',gender:'male',desc:'흑인 Soul 감성과 깊은 울림 강화'},
     {en:'Slow groove phrasing',kr:'느긋한 그루브 창법',gender:'both',desc:'박자를 뒤로 끌며 Groove를 살리는 스타일'},
     {en:'Emotional vocal delivery',kr:'감성적 표현',gender:'both',desc:'한국적 감정선과 Soul 표현을 자연스럽게 연결'},
     {en:'Call and response vocals',kr:'콜 앤 리스폰스 보컬',gender:'both',desc:'Soul/Funk 특유의 주고받는 보컬 에너지'},
@@ -1176,7 +1175,6 @@ const DATA = {
     {en:'Lonely Korean night walk',kr:'고독한 한국의 밤 산책',desc:'혼자 걷는 서울 밤거리 같은 쓸쓸하고 서정적인 감성'},
   ],
   blackSoulElements: [
-    {en:'Gospel choir swells',kr:'가스펠 코러스 스웰',desc:'감정 고조를 위한 강렬한 가스펠 합창 swell'},
     {en:'Blues vocal grit',kr:'블루스 보컬 그릿',desc:'거칠고 진하고 영혼이 느껴지는 블루스 보컬 질감'},
     {en:'Soul belt adlibs',kr:'소울 벨트 애드립',desc:'강렬하고 폭발적인 소울 스타일 애드립'},
     {en:'Call-and-response band hits',kr:'콜 앤 리스폰스 밴드 히트',desc:'주고받는 밴드의 강렬한 악센트'},
@@ -1216,9 +1214,6 @@ const DATA = {
     {en:'Jazz Improv Gueum',kr:'재즈 즉흥 구음',
       en2:'Doo~bee~ dooby~\nAh~bah~ ah-ba-doo~\nYeah~ yeah~ oh yeah~\nShoo~mm~ shu-mm~\nAh~doo~ ah-doo-bah~\nYa-bah~ ya-ba-doo~\nDoo-bi-doo~ yeah~',
       desc:'재즈 스캣(scat) × 한국 구음의 크로스오버.',pitch:'midhigh',gender:'both'},
-    {en:'Soul Gospel Gueum',kr:'소울 가스펠 구음',
-      en2:'Oh~yeah~ oh yeah~\nAh~ a~yeah~\nHah~yeah~ hah yeah~\nAh~ha~ ah ha~\nOh yeah~oh yeah~\nAh hey yeah~ hey~\nHah~yeah hah yeah~\nAh~yeah ah yeah~',
-      desc:'흑인 가스펠 × 굿판 신명 구음.',pitch:'high',gender:'both'},
     {en:'Ajaeng Deep Soul Gueum',kr:'아쟁 딥 소울 구음',
       en2:'Mmm~mm~\nOhhh~hmm~\nOh~oh~mm~\nOhmmm~mm~ohm~\nMm~ohm~ mmm~\nOh~mm~ oh-mm~\nOhhh~ huh~',
       desc:'아쟁 찰현의 묵직한 저음을 입으로 표현.',pitch:'low',gender:'male'},
@@ -1972,7 +1967,7 @@ function applyAnalysisToUI(analysis) {
   const analysisGenre=(analysis.genre||'').toLowerCase();
   const analysisMoods=(analysis.moods||[]).join(' ').toLowerCase();
   if(analysisGenre.includes('court')||analysisGenre.includes('cinematic')){STATE.musicKey=4;STATE.koreanScale=1;}
-  else if(analysisGenre.includes('gospel')||analysisMoods.includes('hopeful')||analysisMoods.includes('bright')){STATE.musicKey=7;STATE.koreanScale=2;}
+  else if(analysisMoods.includes('hopeful')||analysisMoods.includes('bright')){STATE.musicKey=7;STATE.koreanScale=2;}
   else if(analysisGenre.includes('hip')||analysisGenre.includes('trap')){STATE.musicKey=1;STATE.koreanScale=0;}
   else if(analysisGenre.includes('jazz')){STATE.musicKey=2;STATE.koreanScale=0;}
   else if(analysisMoods.includes('sad')||analysisMoods.includes('mournful')||analysisMoods.includes('han')||analysisMoods.includes('슬')||analysisMoods.includes('애절')){STATE.musicKey=1;STATE.koreanScale=4;}
@@ -2101,7 +2096,7 @@ function applyRecCard(idx) {
   // 장르/분위기 기반 조성·음계 자동 매핑
   const genreKey=DATA.genres[STATE.genre]?.en?.toLowerCase()||'';
   if(genreKey.includes('court')||genreKey.includes('cinematic')){STATE.musicKey=4;STATE.koreanScale=1;}
-  else if(genreKey.includes('gospel')||genreKey.includes('funk')){STATE.musicKey=7;STATE.koreanScale=2;}
+  else if(genreKey.includes('funk')){STATE.musicKey=7;STATE.koreanScale=2;}
   else if(genreKey.includes('hip')||genreKey.includes('trap')){STATE.musicKey=1;STATE.koreanScale=0;}
   else if(genreKey.includes('jazz')||genreKey.includes('lounge')){STATE.musicKey=2;STATE.koreanScale=0;}
   else if(genreKey.includes('ambient')||genreKey.includes('chill')){STATE.musicKey=5;STATE.koreanScale=3;}
@@ -2440,16 +2435,16 @@ function applyQuickStart(type) {
     STATE.concept=1;
     // 05 보컬 스타일: Cinematic Soul Fusion (웅장하고 드라마틱)
     STATE.vocalStyle=7;
-    // 06 보컬 톤: Smooth male vocals + Gospel-inspired male vocals
-    STATE.vocalTones=[4,8];
+    // 06 보컬 톤: Smooth male vocals + Warm raspy male vocals
+    STATE.vocalTones=[4,7];
     // 07C 공간감: Wide stereo
     STATE.spaces=[2];
     // 07D 한국적 그루브
     STATE.koreanGrooves=[2,13];
     // 07E 베이스: Funky bassline + Syncopated bass movement
     STATE.bassStyles=[0,5];
-    // 07G 블랙소울: Gospel choir swells + Soul belt adlibs
-    STATE.blackSoulElements=[0,2];
+    // 07G 블랙소울: Soul belt adlibs + Call-and-response band hits
+    STATE.blackSoulElements=[1,2];
     // 07H 인간미: Imperfect timing + Dynamic velocity + Spontaneous fills
     STATE.humanFeelElements=[0,4,6];
     // 에너지 아크: Twin Peaks (두 번의 절정으로 운동 폭발력 극대화)
@@ -2478,7 +2473,7 @@ function applyQuickStart(type) {
     // 07E 베이스: Boom bap bass pocket + Funky bassline
     STATE.bassStyles=[3,0];
     // 07G 블랙소울: Call-and-response band hits + Chicago blues shuffle
-    STATE.blackSoulElements=[3,6];
+    STATE.blackSoulElements=[2,5];
     // 07H 인간미: Imperfect timing + Spontaneous fills
     STATE.humanFeelElements=[0,6];
     // 에너지 아크: Sustained Groove (힙합은 처음부터 끝까지 일정한 그루브)
@@ -2496,8 +2491,8 @@ function applyQuickStart(type) {
     STATE.concept=7;
     // 05 보컬 스타일: Cinematic Soul Fusion (웅장하고 드라마틱, both)
     STATE.vocalStyle=7;
-    // 06 보컬 톤: Gospel-inspired male vocals + Call and response vocals
-    STATE.vocalTones=[8,11];
+    // 06 보컬 톤: Warm raspy male vocals + Call and response vocals
+    STATE.vocalTones=[7,10];
     // 07B 그루브
     STATE.grooves=[4,5];
     // 07C 공간감: Small jazz club (집단 노동 현장감)
@@ -2506,8 +2501,8 @@ function applyQuickStart(type) {
     STATE.koreanGrooves=[2,3];
     // 07E 베이스: Funky bassline + Deep warm sub bass
     STATE.bassStyles=[0,4];
-    // 07G 블랙소울: Gospel choir swells + Call-and-response band hits
-    STATE.blackSoulElements=[0,3];
+    // 07G 블랙소울: Call-and-response band hits
+    STATE.blackSoulElements=[2];
     // 07H 인간미: Live ensemble bleed + Spontaneous fills
     STATE.humanFeelElements=[1,6];
     // 에너지 아크: Slow Burn Rise (서서히 고조되는 노동요 구조)
@@ -2809,7 +2804,6 @@ function insertGueumToLyrics() {
   // 장르 감지
   const genreEn = (STATE.genre !== null && DATA.genres[STATE.genre]) ? DATA.genres[STATE.genre].en.toLowerCase() : '';
   const isJazz    = genreEn.includes('jazz') || genreEn.includes('lounge');
-  const isGospel  = genreEn.includes('gospel') || genreEn.includes('soul');
   const isHiphop  = genreEn.includes('hip') || genreEn.includes('trap');
   const isKorean  = genreEn.includes('joseon') || genreEn.includes('pansori') || genreEn.includes('sanjo') || genreEn.includes('minyo');
 
@@ -2847,11 +2841,7 @@ function insertGueumToLyrics() {
   const GUEUM_RHYTHM = rawFallback;
 
   // [Final Chorus] — 폭발 애드립형. 고음·여성이면 rawStrong + 샤우트, 저음·남성이면 딥 소울
-  const ADLIB = isGospel
-    ? (isHighEnergy || isFemaleVoice)
-      ? [...rawStrong, 'Oh yeah~', 'Come on~', 'Oh soul~']
-      : ['Oh soul~', 'Oh~why~', ...rawFallback]
-    : isHiphop
+  const ADLIB = isHiphop
       ? (isLowEnergy || isMaleVoice)
         ? ['Uh~ yeah~', 'Okay~', ...rawFallback]
         : ['Let\'s go~', 'Yeah yeah~', ...rawStrong]
@@ -2986,7 +2976,12 @@ function insertGueumToLyrics() {
 
     if (tagRx.test(lyrics)) {
       // [섹션]\n[instrumental break] 뒤에 구음 포인트 삽입
-      lyrics = lyrics.replace(tagRx, `$1\n\n[${label} - Gueum]\n${block}`);
+      // mid(Chorus)는 곡 안에 여러 번 등장할 수 있으므로 g 플래그로 전체 교체
+      const tagRxG = new RegExp(tagRx.source, 'gi');
+      lyrics = lyrics.replace(tagRxG, () => {
+        const newBlock = makePoint(pool);
+        return `$&\n\n[${label} - Gueum]\n${newBlock}`;
+      });
     } else {
       // instrumental break 없이 섹션 태그만 있는 경우 fallback
       const fallbackRx = new RegExp(`(\\[${pos==='start'?'Intro':pos==='add1'?'Verse\\s*1':pos==='mid'?'Chorus':pos==='add2'?'Verse\\s*2':pos==='add3'?'(?:Bridge|Final Chorus)':'(?:Outro|Ending)'}[^\\]]*\\])`, 'i');
