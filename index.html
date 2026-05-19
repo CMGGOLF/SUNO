@@ -420,7 +420,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <button class="btn" style="background:rgba(200,80,80,.15);border-color:rgba(200,80,80,.5);color:#e07070" onclick="applyGueumPreset('pansori_han_blues')">🎙️ 판소리 한 블루스 <span style="font-size:10px;opacity:0.75">(구음·시작+끝)</span></button>
         <button class="btn" style="background:rgba(200,80,80,.15);border-color:rgba(200,80,80,.5);color:#e07070" onclick="applyGueumPreset('seoul_midnight_jazz')">🎷 서울 심야 재즈 <span style="font-size:10px;opacity:0.75">(구음·중간)</span></button>
         <button class="btn" style="background:rgba(200,80,80,.15);border-color:rgba(200,80,80,.5);color:#e07070" onclick="applyGueumPreset('sanjo_blue')">🎸 산조 블루 노트 <span style="font-size:10px;opacity:0.75">(즉흥 구음)</span></button>
-        <button class="btn" style="background:rgba(200,80,80,.15);border-color:rgba(200,80,80,.5);color:#e07070" onclick="applyGueumPreset('joseon_gospel')">✝️ 조선 소울 가스펠 <span style="font-size:10px;opacity:0.75">(굿+가스펠)</span></button>
+        <button class="btn" style="background:rgba(200,80,80,.15);border-color:rgba(200,80,80,.5);color:#e07070" onclick="applyGueumPreset('joseon_hiphop')">🎤 조선 힙합 <span style="font-size:10px;opacity:0.75">(궁중+힙합)</span></button>
         <button class="btn" style="background:rgba(200,80,80,.15);border-color:rgba(200,80,80,.5);color:#e07070" onclick="applyGueumPreset('ajaeng_soul_ballad')">🎻 아쟁 소울 발라드 <span style="font-size:10px;opacity:0.75">(저음 구음)</span></button>
       </div>
     </div>
@@ -1234,7 +1234,7 @@ const DATA = {
   ],
   hanSoulStyles: [
     {en:'Mississippi Han Blues',kr:'미시시피 한(恨) 블루스',desc:'미시시피 델타 블루스 + 남도 육자배기. 슬라이드 기타 대신 해금이, 하모니카 대신 피리가 운다.',style:'Korean Gugak 70% main + Delta Blues 30% undertone'},
-    {en:'Joseon Soul Gospel',kr:'조선 소울 가스펠',desc:'흑인 가스펠의 신명과 집단적 카타르시스 + 굿판의 신명. 판소리 창법이 가스펠 창법과 만나는 지점',style:'Pansori vocal + Gospel groove'},
+    {en:'Joseon Court HipHop',kr:'조선 힙합',desc:'장구 + Boom Bap 808 베이스 + 가야금·피리 리프(70%) + 힙합 랩·플로우(30%). 조선 궁중 리듬이 현대 힙합 그루브로 부활.',style:'Janggu + BoomBap + Gayageum riff + Joseon flow'},
     {en:'Seoul Midnight Jazz',kr:'서울 심야 재즈',desc:'새벽 3시 재즈바 + 해금 우는 소리. 마일스 데이비스가 서울에 있었다면',style:'Haegeum lead jazz + late night atmosphere'},
     {en:'Sanjo Blue Notes',kr:'산조 블루 노트',desc:'산조의 즉흥 프레이즈 = 재즈 임프로바이제이션. 5음계와 블루스 펜타토닉이 완벽히 겹침',style:'Sanjo improvisation + jazz blue notes'},
     {en:'Han Soul Ballad',kr:'한(恨) 소울 발라드',desc:'한국 한(恨)의 정서를 소울 발라드 형식으로. 오티스 레딩이 아쟁 소리를 들었다면.',style:'Ajaeng deep lead + soul ballad structure'},
@@ -1549,7 +1549,7 @@ const _GENRE_KEY_MAP = [
 /* 한소울스타일별 조성·음계 자동 매핑 */
 const _HANSOUL_KEY_MAP = [
   [1, 0], // 0 Mississippi Han Blues  → Dm + 계면조
-  [7, 2], // 1 Joseon Soul Gospel     → Bb + 우조
+  [1, 0], // 1 Joseon Court HipHop     → Dm + 계면조 (묵직·힙합·그루브)
   [2, 0], // 2 Seoul Midnight Jazz    → Em + 계면조
   [0, 0], // 3 Sanjo Blue Notes       → Am + 계면조
   [1, 4], // 4 Han Soul Ballad        → Dm + 메나리토리
@@ -2546,13 +2546,13 @@ function applyGueumPreset(type) {
     STATE.gueumStyle=0;STATE.hanSoulStyle=3;
     STATE.musicKey=0;STATE.koreanScale=0; // Am 라단조 + 계면조 (산조·즉흥·애절)
     selectInstrByCategory('string',0);
-  } else if (type==='joseon_gospel') {
-    STATE.genre=2;STATE.moods=[0,3,16];STATE.concept=2;STATE.vocalStyle=7;STATE.vocalTones=[8,11];
-    STATE.textures=[0,5];STATE.grooves=[1,4];STATE.koreanGrooves=[1,2,11];STATE.koreanFeelings=[1,5];
-    STATE.blackSoulElements=[0,3,4];STATE.bpm=88;STATE.intensity=8;STATE.koreanRatio=70;
-    STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='high';STATE.gueumGender='both';
+  } else if (type==='joseon_hiphop') {
+    STATE.genre=4;STATE.moods=[0,3,15];STATE.concept=4;STATE.vocalStyle=5;STATE.vocalTones=[4,9];
+    STATE.textures=[0,5];STATE.grooves=[2,6];STATE.koreanGrooves=[1,13];STATE.koreanFeelings=[0,3];
+    STATE.blackSoulElements=[3,6];STATE.bpm=92;STATE.intensity=7;STATE.koreanRatio=70;
+    STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
     STATE.gueumStyle=5;STATE.hanSoulStyle=1;
-    STATE.musicKey=7;STATE.koreanScale=2; // Bb 시♭장조 + 우조 (가스펠·신명·호탕)
+    STATE.musicKey=1;STATE.koreanScale=0; // Dm 레단조 + 계면조 (묵직·힙합·그루브)
     selectInstrByCategory('percussion',0);
   } else if (type==='ajaeng_soul_ballad') {
     STATE.genre=6;STATE.moods=[2,7,10];STATE.concept=6;STATE.vocalStyle=8;STATE.vocalTones=[5,6,8];
@@ -2564,7 +2564,7 @@ function applyGueumPreset(type) {
     selectInstrByCategory('string',2);
   }
   syncSliders();renderAll();syncGueumUI();buildPrompt(true);
-  const labels={pansori_han_blues:'🎙️ 판소리 한 블루스',seoul_midnight_jazz:'🎷 서울 심야 재즈',sanjo_blue:'🎸 산조 블루 노트',joseon_gospel:'✝️ 조선 소울 가스펠',ajaeng_soul_ballad:'🎻 아쟁 소울 발라드'};
+  const labels={pansori_han_blues:'🎙️ 판소리 한 블루스',seoul_midnight_jazz:'🎷 서울 심야 재즈',sanjo_blue:'🎸 산조 블루 노트',joseon_hiphop:'🎤 조선 힙합',ajaeng_soul_ballad:'🎻 아쟁 소울 발라드'};
   showToast((labels[type]||'✅')+' 프리셋 적용 완료!');
 }
 function applyRandomPreset() {
