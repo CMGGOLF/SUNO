@@ -2957,8 +2957,8 @@ function insertGueumToLyrics() {
     );
   }
 
-  // 기존 구음 포인트 제거 (재삽입 시 중복 방지)
-  lyrics = lyrics.replace(/\[.*?Gueum.*?\]\n.*?(?=\n\[|\n*$)/gi, '').replace(/\n{3,}/g, '\n\n').trim();
+  // 기존 구음 포인트 제거 (재삽입 시 중복 방지) — 태그 행 + 이후 모든 비어있지 않은 줄 제거
+  lyrics = lyrics.replace(/\[.*?- Gueum\]\n(?:[^\n]+\n)*/gi, '').replace(/\n{3,}/g, '\n\n').trim();
 
   // 선택된 위치에만 포인트 삽입
   const ALL_POS = ['start','add1','mid','add2','add3','end'];
@@ -2978,9 +2978,9 @@ function insertGueumToLyrics() {
       // [섹션]\n[instrumental break] 뒤에 구음 포인트 삽입
       // mid(Chorus)는 곡 안에 여러 번 등장할 수 있으므로 g 플래그로 전체 교체
       const tagRxG = new RegExp(tagRx.source, 'gi');
-      lyrics = lyrics.replace(tagRxG, () => {
+      lyrics = lyrics.replace(tagRxG, (match) => {
         const newBlock = makePoint(pool);
-        return `$&\n\n[${label} - Gueum]\n${newBlock}`;
+        return `${match}\n\n[${label} - Gueum]\n${newBlock}`;
       });
     } else {
       // instrumental break 없이 섹션 태그만 있는 경우 fallback
