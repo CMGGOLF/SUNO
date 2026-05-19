@@ -420,7 +420,8 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <button class="btn" style="background:rgba(200,80,80,.15);border-color:rgba(200,80,80,.5);color:#e07070" onclick="applyGueumPreset('pansori_han_blues')">🎙️ 판소리 한 블루스 <span style="font-size:10px;opacity:0.75">(구음·시작+끝)</span></button>
         <button class="btn" style="background:rgba(200,80,80,.15);border-color:rgba(200,80,80,.5);color:#e07070" onclick="applyGueumPreset('seoul_midnight_jazz')">🎷 서울 심야 재즈 <span style="font-size:10px;opacity:0.75">(구음·중간)</span></button>
         <button class="btn" style="background:rgba(200,80,80,.15);border-color:rgba(200,80,80,.5);color:#e07070" onclick="applyGueumPreset('sanjo_blue')">🎸 산조 블루 노트 <span style="font-size:10px;opacity:0.75">(즉흥 구음)</span></button>
-        <button class="btn" style="background:rgba(200,80,80,.15);border-color:rgba(200,80,80,.5);color:#e07070" onclick="applyGueumPreset('joseon_hiphop')">🎤 조선 힙합 <span style="font-size:10px;opacity:0.75">(궁중+힙합)</span></button>
+        <button class="btn" style="background:rgba(160,90,58,.15);border-color:rgba(160,90,58,.5);color:var(--korean2)" onclick="applyGueumPreset('arirang_hyper')">🌟 ARIRANG Hyper Fusion <span style="font-size:10px;opacity:0.75">(Rage + Hyper 2026)</span></button>
+<button class="btn" style="background:rgba(58,143,160,.15);border-color:rgba(58,143,160,.5);color:var(--teal)" onclick="applyGueumPreset('uk_garage_gugak')">🎛️ UK Garage Gugak <span style="font-size:10px;opacity:0.75">(KiiiKiii 스타일)</span></button>
         <button class="btn" style="background:rgba(200,80,80,.15);border-color:rgba(200,80,80,.5);color:#e07070" onclick="applyGueumPreset('ajaeng_soul_ballad')">🎻 아쟁 소울 발라드 <span style="font-size:10px;opacity:0.75">(저음 구음)</span></button>
       </div>
     </div>
@@ -2554,19 +2555,36 @@ function applyGueumPreset(type) {
     STATE.gueumStyle=0;STATE.hanSoulStyle=3;
     STATE.musicKey=0;STATE.koreanScale=0; // Am 라단조 + 계면조 (산조·즉흥·애절)
     selectInstrByCategory('string',0);
-  } else if (type==='joseon_hiphop') {
-    STATE.genre=4;STATE.moods=[0,3,15];STATE.concept=4;STATE.vocalStyle=5;STATE.vocalTones=[4,9];
-    STATE.textures=[0,5];STATE.grooves=[2,6];
-    STATE.spaces=[0]; // Small jazz club (지하 클럽 감성)
-    STATE.bassStyles=[3,0]; // Boom bap bass pocket + Funky bassline
-    STATE.koreanGrooves=[1,13];STATE.koreanFeelings=[0,3];
-    STATE.blackSoulElements=[2,5]; // Call-and-response + Chicago blues shuffle (인덱스 수정)
-    STATE.energyArc=5; // Sustained Groove — 힙합: 처음부터 끝까지 일정한 그루브
-    STATE.bpm=92;STATE.intensity=7;STATE.koreanRatio=70;
-    STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
+  } else if (type==='arirang_hyper') {
+    STATE.genre=4;STATE.moods=[0,11,12,15];STATE.concept=4;STATE.vocalStyle=5;STATE.vocalTones=[4,9,10];
+    STATE.textures=[0,6,7];STATE.grooves=[2,6,8];
+    STATE.spaces=[2];
+    STATE.bassStyles=[0,3,5];
+    STATE.koreanGrooves=[0,2,4,9,10,13];STATE.koreanFeelings=[0,3,5,8];
+    STATE.blackSoulElements=[1,2,5];
+    STATE.humanFeelElements=[4,6];
+    STATE.energyArc=4;
+    STATE.bpm=138;STATE.intensity=9;STATE.koreanRatio=63;
+    STATE.gueumPositions=['start','mid','add3','end'];STATE.gueumPitch='high';STATE.gueumGender='both';
     STATE.gueumStyle=5;STATE.hanSoulStyle=1;
-    STATE.musicKey=1;STATE.koreanScale=0; // Dm 레단조 + 계면조 (묵직·힙합·그루브)
-    selectInstrByCategory('percussion',0);
+    STATE.musicKey=6;STATE.koreanScale=2;
+    selectInstrByCategory('string',0);
+
+  } else if (type==='uk_garage_gugak') {
+    STATE.genre=5;STATE.moods=[11,14,15];STATE.concept=5;STATE.vocalStyle=6;STATE.vocalTones=[2,9];
+    STATE.textures=[6,7];STATE.grooves=[8,9];
+    STATE.spaces=[2];
+    STATE.bassStyles=[5];
+    STATE.koreanGrooves=[2,4,13];STATE.koreanFeelings=[3,8];
+    STATE.blackSoulElements=[2];
+    STATE.humanFeelElements=[6];
+    STATE.energyArc=3;
+    STATE.bpm=142;STATE.intensity=8;STATE.koreanRatio=60;
+    STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
+    STATE.gueumStyle=4;STATE.hanSoulStyle=2;
+    STATE.musicKey=2;STATE.koreanScale=0;
+    selectInstrByCategory('string',1);
+  } else if (type==='ajaeng_soul_ballad') {
   } else if (type==='ajaeng_soul_ballad') {
     STATE.genre=6;STATE.moods=[2,7,10];STATE.concept=6;STATE.vocalStyle=8;STATE.vocalTones=[5,6,8];
     STATE.textures=[0,2,6];STATE.grooves=[1,3];
