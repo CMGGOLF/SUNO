@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 v9 - Joseon Core</title>
+<title>BV 뮤직 프롬프트 메이커 v11 - Joseon Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -358,11 +358,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v9</span></div>
-        <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 가사 삽입 · 변형 생성</div>
+        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v11</span></div>
+        <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 A+B 전 섹션 적용 · 변형 생성</div>
       </div>
     </div>
-    <div class="header-badge">JOSEON CORE v9 · 버그수정+최적화 · 5개 변형 생성</div>
+    <div class="header-badge">JOSEON CORE v11 · 구음 A+B 조합 · pitch·gender 전 섹션 반영</div>
   </div>
 </header>
 
@@ -2754,111 +2754,188 @@ function insertGueumToLyrics() {
     ? styleInfo.en2.split('\n').map(s => s.trim()).filter(Boolean)
     : ['Mmm~hmm~','Oh~yeah~','Ah~yeah~','Mmm~mm~','Oh~why~','Huh~yeah~'];
 
-  // 장르 감지 — 스캣/구음/애드립 단어를 장르에 맞게 조정
+  // ── 옵션 B: pitch/gender → 섹션 에너지 가중치 결정 ──
+  const pitch  = STATE.gueumPitch  || 'midhigh';  // high / midhigh / midlow / low
+  const gGender = STATE.gueumGender || 'both';     // male / female / both
+  // 고음·여성 → Chorus/FinalChorus 비중↑ / 저음·남성 → Intro/Bridge 비중↑
+  const isHighEnergy  = pitch === 'high'   || pitch === 'midhigh';
+  const isLowEnergy   = pitch === 'low'    || pitch === 'midlow';
+  const isFemaleVoice = gGender === 'female';
+  const isMaleVoice   = gGender === 'male';
+
+  // 장르 감지
   const genreEn = (STATE.genre !== null && DATA.genres[STATE.genre]) ? DATA.genres[STATE.genre].en.toLowerCase() : '';
   const isJazz    = genreEn.includes('jazz') || genreEn.includes('lounge');
   const isGospel  = genreEn.includes('gospel') || genreEn.includes('soul');
   const isHiphop  = genreEn.includes('hip') || genreEn.includes('trap');
   const isKorean  = genreEn.includes('joseon') || genreEn.includes('pansori') || genreEn.includes('sanjo') || genreEn.includes('minyo');
 
-  // 섹션별 텍스처 단어 풀
-  const HUMMING   = ['Mmm~', 'Hmm~', 'Mm-mmm~', 'Hmm~ hmm~', 'Mmm~ oh~', 'Hm-mmm~'];
-  const CHORUS_PAD = isKorean
-    ? ['Ah~ oh~', 'Oh~ ah~', 'Mm-ah~', 'Ah-oh~', 'Oh~ mm~', 'Ah~ ah-oh~']
-    : ['Ah~ oh~', 'Oh~ ah-ah~', 'Mm-ah~ oh~', 'Ah~ oh-oh~', 'Oh~ mm-ah~', 'Ah-ah~ oh~'];
-  const SCAT = isJazz
-    ? ['Doo-ba doo-wah~', 'Sha-ba da-ba doo~', 'Doo-bee doo-wah yeah~', 'Ba-da-boom doo~', 'Scat-a-dat doo~', 'Doo-wah shoo-bee~']
-    : isKorean
-    ? rawSounds
-    : ['Doo-ba yeah~', 'Sha-la-la oh~', 'Da-da-da yeah~', 'Ba-da-boom~', 'Doo-wah oh~', 'La-la-la yeah~'];
-  const ADLIB = isGospel
-    ? ['Oh yeah~', 'Come on~', 'Alright~', 'Oh Lord~', 'Can I get a witness~', 'Hallelujah~']
-    : isHiphop
-    ? ['Uh~ yeah~', 'Okay~', 'Let\'s go~', 'Uh-huh~', 'Yeah yeah~', 'That\'s right~']
-    : isKorean
-    ? ['Yeah~ho~', 'Alright~', 'Oh yeah~', 'Let\'s go~', 'Come on~', 'That\'s it~']
-    : ['Oh yeah~', 'Come on~', 'Alright~', 'Yeah~', 'Ooh~', 'That\'s right~'];
-  const GUEUM_RHYTHM = rawSounds;
+  // ── 옵션 A: 구음 스타일이 모든 섹션 풀에 색깔을 입힘 ──
+  // rawSounds를 앞·뒤 절반으로 분리 → 조용한 버전 / 강한 버전
+  const half = Math.ceil(rawSounds.length / 2);
+  const rawSoft   = rawSounds.slice(0, half);   // 앞절반: 조용한 구음 → Intro/Outro용
+  const rawStrong = rawSounds.slice(half);        // 뒷절반: 강한 구음 → Chorus/FinalChorus용
+  const rawFallback = rawSounds;
 
-  // n줄 무작위 뽑기
+  // [Intro] — 조용한 허밍형. 저음·남성이면 rawSoft, 그 외 기존 허밍 혼합
+  const HUMMING_INTRO = (isLowEnergy || isMaleVoice)
+    ? [...rawSoft, 'Mmm~', 'Hmm~', 'Ohm~mm~']
+    : ['Mmm~', 'Hmm~', 'Mm-mmm~', 'Hmm~ hmm~', 'Mmm~ oh~', ...rawSoft];
+
+  // [Verse] — 중간 패드형. 구음 스타일 색깔 + 장르 혼합
+  const CHORUS_PAD = isKorean
+    ? [...rawFallback, 'Ah~ oh~', 'Oh~ ah~', 'Mm-ah~']
+    : [...rawSoft, 'Ah~ oh~', 'Oh~ ah-ah~', 'Mm-ah~ oh~'];
+
+  // [Chorus] — 고조형. 고음·여성이면 rawStrong 중심, 저음·남성이면 재즈/구음 혼합
+  const SCAT = isJazz
+    ? (isHighEnergy || isFemaleVoice)
+      ? [...rawStrong, 'Doo-ba doo-wah~', 'Sha-ba da-ba doo~', 'Doo-bee doo-wah yeah~']
+      : ['Doo-ba doo-wah~', 'Sha-ba da-ba doo~', ...rawFallback]
+    : isKorean
+      ? (isHighEnergy || isFemaleVoice)
+        ? [...rawStrong, ...rawFallback]
+        : rawFallback
+      : (isHighEnergy || isFemaleVoice)
+        ? [...rawStrong, 'Sha-la-la oh~', 'Da-da-da yeah~']
+        : ['Doo-ba yeah~', 'Sha-la-la oh~', ...rawFallback];
+
+  // [Bridge] — 리듬 긴장형. pitch와 무관하게 rawSounds 전체 사용 (현행 유지 + 강화)
+  const GUEUM_RHYTHM = rawFallback;
+
+  // [Final Chorus] — 폭발 애드립형. 고음·여성이면 rawStrong + 샤우트, 저음·남성이면 딥 소울
+  const ADLIB = isGospel
+    ? (isHighEnergy || isFemaleVoice)
+      ? [...rawStrong, 'Oh yeah~', 'Come on~', 'Hallelujah~']
+      : ['Oh Lord~', 'Can I get a witness~', ...rawFallback]
+    : isHiphop
+      ? (isLowEnergy || isMaleVoice)
+        ? ['Uh~ yeah~', 'Okay~', ...rawFallback]
+        : ['Let\'s go~', 'Yeah yeah~', ...rawStrong]
+      : isKorean
+        ? (isHighEnergy || isFemaleVoice)
+          ? [...rawStrong, 'Yeah~ho~', 'Alright~']
+          : ['Yeah~ho~', ...rawFallback, 'Alright~']
+        : (isHighEnergy || isFemaleVoice)
+          ? [...rawStrong, 'Oh yeah~', 'Come on~']
+          : ['Oh yeah~', ...rawFallback, 'That\'s right~'];
+
+  // [Outro] — 여운형. 고음·여성이면 rawSoft+허밍, 저음·남성이면 깊은 rawSoft
+  const HUMMING_OUTRO = (isLowEnergy || isMaleVoice)
+    ? [...rawSoft, 'Ohm~mm~', 'Mmm~', 'Hmm~']
+    : ['Hmm~', 'Mm-mmm~', ...rawSoft, 'Mmm~ oh~'];
+
+  // ── 핵심: 한 줄에 여러 구음을 이어 붙여서 줄 수↓, 재생 시간↑ ──
+  // perLine: 한 줄에 몇 개의 구음 소리를 이어 붙일지 (기본 2~3개)
+  function pickSpaced(pool, lines, perLine) {
+    const src = (pool && pool.length) ? pool : rawFallback;
+    const clamp = Math.min(Math.max(lines, 1), 4); // 섹션당 최대 4줄 강제 캡
+    const rows = [];
+    const shuffled = () => [...src].sort(() => Math.random() - 0.5);
+    let bag = shuffled();
+    for (let r = 0; r < clamp; r++) {
+      const rowItems = [];
+      for (let c = 0; c < perLine; c++) {
+        if (!bag.length) bag = shuffled();
+        rowItems.push(bag.pop());
+      }
+      rows.push(rowItems.join('  ')); // 두 칸 공백으로 이어 붙임
+    }
+    return rows.join('\n');
+  }
+  // 하위 호환: 단일 소리 pick (기존 가사 있을 때 삽입용)
   function pick(pool, n) {
-    const out = [];
-    while (out.length < n) out.push(...[...pool].sort(() => Math.random() - 0.5));
-    return out.slice(0, n).join('\n');
+    return pickSpaced(pool, n, 2);
   }
 
   const existingLyrics = textarea.value.trim();
   const isLyricsEmpty = existingLyrics.length === 0;
 
-  // ── 가사 없음 → 6번 혼합 구조 풀 생성 ──
+  // ── 가사 없음 → 옵션 A+B 적용된 전체 구조 생성 ──
   if (isLyricsEmpty) {
     const durStr = STATE.songDuration || '3:30';
     const [mStr, sStr] = durStr.split(':');
     const totalSec = parseInt(mStr) * 60 + parseInt(sStr || '0');
-    const SEC = 2.5; // 줄당 평균 초
 
-    const introLines   = Math.max(3, Math.round(totalSec * 0.07 / SEC));
-    const verseLines   = Math.max(5, Math.round(totalSec * 0.20 / SEC));
-    const chorusLines  = Math.max(4, Math.round(totalSec * 0.16 / SEC));
-    const bridgeLines  = Math.max(3, Math.round(totalSec * 0.10 / SEC));
-    const adlibLines   = Math.max(3, Math.round(totalSec * 0.12 / SEC));
-    const outroLines   = Math.max(2, Math.round(totalSec * 0.06 / SEC));
+    // 줄당 소리를 2~3개 이어 붙이므로 한 줄이 커버하는 시간을 늘림
+    // SEC_PER_LINE: 한 줄(2~3개 구음)이 차지하는 평균 초
+    const SEC_PER_LINE = 7; // 기존 2.5 → 7 (한 줄이 길어졌으므로)
+
+    // 섹션 비율은 동일하게 유지하되, 최대 줄 수 3~4줄로 캡
+    const introLines   = Math.min(3, Math.max(2, Math.round(totalSec * 0.07 / SEC_PER_LINE)));
+    const verseLines   = Math.min(4, Math.max(3, Math.round(totalSec * 0.20 / SEC_PER_LINE)));
+    const chorusLines  = Math.min(4, Math.max(3, Math.round(totalSec * 0.16 / SEC_PER_LINE)));
+    const bridgeLines  = Math.min(3, Math.max(2, Math.round(totalSec * 0.10 / SEC_PER_LINE)));
+    const adlibLines   = Math.min(3, Math.max(2, Math.round(totalSec * 0.12 / SEC_PER_LINE)));
+    const outroLines   = Math.min(2, Math.max(1, Math.round(totalSec * 0.06 / SEC_PER_LINE)));
     const repeatCount  = totalSec >= 240 ? 3 : 2;
 
-    // 6번 혼합 구조
+    // 한 줄에 이어 붙일 구음 수: 음악 길이가 길수록 한 줄을 더 풍성하게
+    // 짧은 곡(~3분): 2개 / 긴 곡(4분+): 3개
+    const perLineIntro  = 2; // Intro: 조용하게, 2개씩
+    const perLineVerse  = totalSec >= 240 ? 3 : 2;
+    const perLineChorus = totalSec >= 240 ? 3 : 2;
+    const perLineBridge = 2;
+    const perLineAdlib  = 2;
+    const perLineOutro  = 2; // Outro: 여운, 2개씩
+
+    // 옵션 B: pitch·gender 보정 (줄 수 ±1)
+    const introBonus  = (isLowEnergy || isMaleVoice)   ? 1 : 0;
+    const chorusBonus = (isHighEnergy || isFemaleVoice) ? 1 : 0;
+    const bridgeBonus = (isLowEnergy || isMaleVoice)   ? 1 : 0;
+    const adlibBonus  = (isHighEnergy || isFemaleVoice) ? 1 : 0;
+
     let fullLyrics = '';
 
-    // [Intro] → 허밍
-    fullLyrics += `[Intro]\n${pick(HUMMING, introLines)}\n\n`;
+    fullLyrics += `[Intro]\n${pickSpaced(HUMMING_INTRO, introLines + introBonus, perLineIntro)}\n\n`;
 
     for (let i = 1; i <= repeatCount; i++) {
-      // [Verse] → 코러스 패드
-      fullLyrics += `[Verse ${i}]\n${pick(CHORUS_PAD, verseLines)}\n\n`;
-      // [Chorus] → 스캣
-      fullLyrics += `[Chorus]\n${pick(SCAT, chorusLines)}\n\n`;
+      fullLyrics += `[Verse ${i}]\n${pickSpaced(CHORUS_PAD, verseLines, perLineVerse)}\n\n`;
+      fullLyrics += `[Chorus]\n${pickSpaced(SCAT, chorusLines + chorusBonus, perLineChorus)}\n\n`;
     }
 
-    // [Bridge] → 구음/타악 리듬 (긴장감)
-    fullLyrics += `[Bridge]\n${pick(GUEUM_RHYTHM, bridgeLines)}\n\n`;
-
-    // [Final Chorus] → 애드립 (폭발)
-    fullLyrics += `[Final Chorus]\n${pick(ADLIB, adlibLines)}\n\n`;
-
-    // [Outro] → 허밍 (여운)
-    fullLyrics += `[Outro]\n${pick(HUMMING, outroLines)}\n`;
+    fullLyrics += `[Bridge]\n${pickSpaced(GUEUM_RHYTHM, bridgeLines + bridgeBonus, perLineBridge)}\n\n`;
+    fullLyrics += `[Final Chorus]\n${pickSpaced(ADLIB, Math.max(2, adlibLines + adlibBonus), perLineAdlib)}\n\n`;
+    fullLyrics += `[Outro]\n${pickSpaced(HUMMING_OUTRO, outroLines, perLineOutro)}\n`;
 
     textarea.value = fullLyrics;
-    showToast(`✅ ${durStr} 혼합 구조 생성 완료! (허밍→코러스패드→스캣→구음→애드립→허밍)`);
+    const pitchLabel = { high:'고음', midhigh:'중고음', midlow:'중저음', low:'저음' }[pitch] || pitch;
+    const genderLabel = { male:'남성', female:'여성', both:'남/여' }[gGender] || gGender;
+    const styleName = styleInfo ? ` [${styleInfo.kr}]` : '';
+    showToast(`✅ ${durStr} A+B 구조 완성!${styleName} ${pitchLabel}·${genderLabel} 기반으로 전 섹션 구음 적용`);
     return;
   }
 
-  // ── 기존 가사 있음 → 지정 위치에만 삽입 ──
-  function pickRaw(n) {
-    const pool = [];
-    while (pool.length < n) pool.push(...[...rawSounds].sort(() => Math.random() - 0.5));
-    return pool.slice(0, n).join('\n');
-  }
-
+  // ── 기존 가사 있음 → 지정 위치에 A+B 색깔 적용 삽입 ──
   const INSERT_ORDER = ['start', 'mid', 'end'];
   const activePos = INSERT_ORDER.filter(p => STATE.gueumPositions.includes(p));
-  const COUNTS = { start: 4, mid: 4, end: 3 };
+
+  // 옵션 B: pitch·gender에 따라 삽입 줄 수 조정 (최대 3~4줄 캡)
+  const COUNTS = {
+    start: (isLowEnergy || isMaleVoice) ? 3 : 2,
+    mid:   3,
+    end:   (isHighEnergy || isFemaleVoice) ? 3 : 2
+  };
 
   let lyrics = existingLyrics;
   lyrics = lyrics.replace(/\[(Intro|Bridge|Outro)\s*-\s*(Gueum|구음)\][\s\S]*?(?=\n\[|\n$|$)/gi, '');
   lyrics = lyrics.replace(/\n{3,}/g, '\n\n').trim();
 
+  // start → 옵션 A: HUMMING_INTRO (구음 스타일 색깔 + pitch 기반)
   if (activePos.includes('start')) {
-    const block = pick(HUMMING, COUNTS.start);
+    const block = pick(HUMMING_INTRO, COUNTS.start);
     const tag = lyrics.match(/\[(Intro|인트로|Verse\s*1|절\s*1)\]/i);
     if (tag) lyrics = lyrics.replace(tag[0], `[Intro - Gueum]\n${block}\n\n${tag[0]}`);
     else lyrics = `[Intro - Gueum]\n${block}\n\n` + lyrics;
   }
+  // mid → GUEUM_RHYTHM (현행 유지, rawSounds 전체)
   if (activePos.includes('mid')) {
     const block = pick(GUEUM_RHYTHM, COUNTS.mid);
     const tag = lyrics.match(/\[(Bridge|브릿지|Chorus|후렴|Verse\s*2|절\s*2)\]/i);
     if (tag) lyrics = lyrics.replace(tag[0], `[Bridge - Gueum]\n${block}\n\n${tag[0]}`);
     else { const lines=lyrics.split('\n'); const mid=Math.floor(lines.length/2); lines.splice(mid,0,'','[Bridge - Gueum]',block,''); lyrics=lines.join('\n'); }
   }
+  // end → 옵션 A: ADLIB (구음 스타일 색깔 + pitch·gender 기반)
   if (activePos.includes('end')) {
     const block = pick(ADLIB, COUNTS.end);
     const tag = lyrics.match(/\[(Outro|아웃트로|Ending)\]/i);
@@ -2868,7 +2945,8 @@ function insertGueumToLyrics() {
 
   textarea.value = lyrics;
   const posNames = { start:'시작(Intro)', mid:'중간(Bridge)', end:'끝(Outro)' };
-  showToast(`✅ 구음 삽입 완료! ${activePos.map(p=>posNames[p]).join(' → ')}`);
+  const styleName = styleInfo ? ` [${styleInfo.kr}]` : '';
+  showToast(`✅ A+B 구음 삽입!${styleName} ${activePos.map(p=>posNames[p]).join(' → ')}`);
 }
 
 window.addEventListener('DOMContentLoaded',()=>{
