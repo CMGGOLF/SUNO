@@ -423,6 +423,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <button class="btn" style="background:rgba(160,90,58,.15);border-color:rgba(160,90,58,.5);color:var(--korean2)" onclick="applyGueumPreset('arirang_hyper')">🌟 ARIRANG Hyper Fusion <span style="font-size:10px;opacity:0.75">(Rage + Hyper 2026)</span></button>
 <button class="btn" style="background:rgba(58,143,160,.15);border-color:rgba(58,143,160,.5);color:var(--teal)" onclick="applyGueumPreset('uk_garage_gugak')">🎛️ UK Garage Gugak <span style="font-size:10px;opacity:0.75">(KiiiKiii 스타일)</span></button>
         <button class="btn" style="background:rgba(200,80,80,.15);border-color:rgba(200,80,80,.5);color:#e07070" onclick="applyGueumPreset('ajaeng_soul_ballad')">🎻 아쟁 소울 발라드 <span style="font-size:10px;opacity:0.75">(저음 구음)</span></button>
+        <button class="btn" style="background:rgba(200,80,80,.15);border-color:rgba(200,80,80,.5);color:#e07070" onclick="applyGueumPreset('jersey_bounce_gugak')">🔥 Jersey Bounce Gugak <span style="font-size:10px;opacity:0.75">(강한 비트 그루브)</span></button>
       </div>
     </div>
     <div style="border-top:1px solid rgba(201,168,76,.2)"></div>
@@ -2584,8 +2585,21 @@ function applyGueumPreset(type) {
     STATE.gueumStyle=4;STATE.hanSoulStyle=2;
     STATE.musicKey=2;STATE.koreanScale=0;
     selectInstrByCategory('string',1);
-  } else if (type==='ajaeng_soul_ballad') {
-  } else if (type==='ajaeng_soul_ballad') {
+  } else if (type==='jersey_bounce_gugak') {
+    STATE.genre=4;STATE.moods=[0,11,12,15];STATE.concept=4;STATE.vocalStyle=5;STATE.vocalTones=[4,9,10];
+    STATE.textures=[0,6,7];STATE.grooves=[2,8,9];
+    STATE.spaces=[2];
+    STATE.bassStyles=[0,5];
+    STATE.koreanGrooves=[0,2,4,13];STATE.koreanFeelings=[0,3,5,8];
+    STATE.blackSoulElements=[1,2];
+    STATE.humanFeelElements=[4,6];
+    STATE.energyArc=4;
+    STATE.bpm=146;STATE.intensity=9;STATE.koreanRatio=58;
+    STATE.gueumPositions=['start','mid','add3','end'];STATE.gueumPitch='high';STATE.gueumGender='both';
+    STATE.gueumStyle=5;STATE.hanSoulStyle=1;
+    STATE.musicKey=6;STATE.koreanScale=2;
+    selectInstrByCategory('percussion',0);
+  } else if (type==='ajaeng_soul_ballad') 
     STATE.genre=6;STATE.moods=[2,7,10];STATE.concept=6;STATE.vocalStyle=8;STATE.vocalTones=[5,6,8];
     STATE.textures=[0,2,6];STATE.grooves=[1,3];
     STATE.spaces=[0,3]; // Jazz club + Intimate vocal space
@@ -2600,7 +2614,7 @@ function applyGueumPreset(type) {
     selectInstrByCategory('string',2);
   }
   syncSliders();renderAll();syncGueumUI();buildPrompt(true);
-  const labels={pansori_han_blues:'🎙️ 판소리 한 블루스',seoul_midnight_jazz:'🎷 서울 심야 재즈',sanjo_blue:'🎸 산조 블루 노트',joseon_hiphop:'🎤 조선 힙합',ajaeng_soul_ballad:'🎻 아쟁 소울 발라드'};
+  const labels={pansori_han_blues:'🎙️ 판소리 한 블루스',seoul_midnight_jazz:'🎷 서울 심야 재즈',sanjo_blue:'🎸 산조 블루 노트',joseon_hiphop:'🎤 조선 힙합',ajaeng_soul_ballad:'🎻 아쟁 소울 발라드', jersey_bounce_gugak:'🔥 Jersey Bounce Gugak'};
   showToast((labels[type]||'✅')+' 프리셋 적용 완료!');
 }
 function applyRandomPreset() {
