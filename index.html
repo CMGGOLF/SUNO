@@ -670,7 +670,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 
 <!-- SECTION 07: 고급 사운드 설정 -->
 <div class="section">
-  <div class="section-head" onclick="toggleAdvancedSettings()" style="cursor:pointer">
+  <div class="section-head" onclick="toggleSection('advancedSettingsBody','advancedToggleIcon')" style="cursor:pointer">
     <div class="sec-num">07</div>
     <div class="sec-title">고급 사운드 설정 <span id="advancedToggleIcon" style="font-size:14px">▼</span></div>
     <div class="sec-sub">텍스처 · 그루브 · 공간감 · 한국적 요소 (클릭하여 펼치기/접기)</div>
@@ -1411,16 +1411,17 @@ function renderVocalStyles() {
 }
 function renderTones(gFilter) {
   const g = document.getElementById('toneGrid');
-  const filtered = DATA.vocalTones.filter(d => gFilter==='all'||d.gender===gFilter||d.gender==='both');
-  g.innerHTML = filtered.map(d => {
-    const origIdx = DATA.vocalTones.indexOf(d);
-    const sel = STATE.vocalTones.includes(origIdx);
-    const gl = d.gender==='both'?' (남/여)':d.gender==='male'?' (남성)':' (여성)';
-    return `<div class="chip ${sel?'active':''}" id="tone_${origIdx}" onclick="toggleTone(${origIdx})">
-      <span class="chip-en">${d.en}</span>
-      <span class="chip-kr">${d.kr}${gl}</span>
-    </div>`;
-  }).join('');
+  g.innerHTML = DATA.vocalTones
+    .map((d,i)=>({d,i}))
+    .filter(({d})=>gFilter==='all'||d.gender===gFilter||d.gender==='both')
+    .map(({d,i})=>{
+      const sel=STATE.vocalTones.includes(i);
+      const gl=d.gender==='both'?' (남/여)':d.gender==='male'?' (남성)':' (여성)';
+      return `<div class="chip ${sel?'active':''}" id="tone_${i}" onclick="toggleTone(${i})">
+        <span class="chip-en">${d.en}</span>
+        <span class="chip-kr">${d.kr}${gl}</span>
+      </div>`;
+    }).join('');
 }
 function renderAdvancedChips() {
   renderChipGroup('textureGrid',DATA.textures,STATE.textures,'toggleTexture','texture');
@@ -1573,13 +1574,12 @@ function selectHanSoulStyle(i) {
   buildPrompt();
 }
 
-/* Key + Korean Scale 충돌 감지 — 선택 후 경고 */
-const _MAJOR_KEYS  = new Set([5,6,7]); /* F, G, Bb */
-const _MINOR_KEYS  = new Set([0,1,2,3,4]); /* Am,Dm,Em,Gm,Cm */
-const _GYEMYEON = 0; /* 계면조: 슬픔·단조 */
-const _PYEONGJO = 1; /* 평조: 밝음·장조 */
 function _checkKeyScaleConflict() {
   if (STATE.musicKey===null||STATE.koreanScale===null) return;
+  const _MAJOR_KEYS  = new Set([5,6,7]);
+  const _MINOR_KEYS  = new Set([0,1,2,3,4]);
+  const _GYEMYEON = 0;
+  const _PYEONGJO = 1;
   const isMajorKey = _MAJOR_KEYS.has(STATE.musicKey);
   const isMinorKey = _MINOR_KEYS.has(STATE.musicKey);
   if (isMajorKey && STATE.koreanScale===_GYEMYEON)
@@ -1683,6 +1683,10 @@ function selectGueumStrength(level) {
   buildPrompt();
 }
 
+/* ── 공통 라벨 헬퍼 (updateX + syncSliders 중복 제거) ── */
+function _intensityLabel(v){return v<=3?'Chill (잔잔한)':v<=6?'Emotional (감성적인)':'Explosive Soul (폭발적인)';}
+function _koreanDomLabel(v){return v>=90?'압도적 국악기':v>=80?'강한 국악기 주도':'명확한 국악기';}
+
 function updateBpm(v) {
   STATE.bpm=parseInt(v);
   document.getElementById('bpmVal').textContent=v;
@@ -1701,19 +1705,13 @@ function updateBpmGuide(bpm) {
 function updateIntensity(v) {
   STATE.intensity=parseInt(v);
   document.getElementById('intensityValue').textContent=v;
-  const label=document.getElementById('intensityLabel');
-  if (v<=3) label.textContent='Chill (잔잔한)';
-  else if (v<=6) label.textContent='Emotional (감성적인)';
-  else label.textContent='Explosive Soul (폭발적인)';
+  document.getElementById('intensityLabel').textContent=_intensityLabel(parseInt(v));
   buildPrompt();
 }
 function updateKoreanDominance(v) {
   STATE.koreanDominance=parseInt(v);
   document.getElementById('koreanDomValue').textContent=v;
-  const label=document.getElementById('koreanDomLabel');
-  if (v>=90) label.textContent='압도적 국악기';
-  else if (v>=80) label.textContent='강한 국악기 주도';
-  else label.textContent='명확한 국악기';
+  document.getElementById('koreanDomLabel').textContent=_koreanDomLabel(parseInt(v));
   buildPrompt();
 }
 function switchTab(id,el) {
@@ -1918,14 +1916,10 @@ function applyAnalysisToUI(analysis) {
   // ── [수정1] 악기 매핑 (instruments → STATE.instr) ──
   if (analysis.instruments) {
     const instrStr=(analysis.instruments||'').toLowerCase();
-    // 현악기 카테고리 우선 탐색
-    const strData=DATA.instruments?.string||[];
-    const perData=DATA.instruments?.percussion||[];
-    const winData=DATA.instruments?.wind||[];
     let found=false;
     ['string','percussion','wind'].forEach(cat=>{
       if(found)return;
-      const catArr=DATA.instruments?.[cat]||[];
+      const catArr=cat==='string'?DATA.instrumentsString:cat==='percussion'?DATA.instrumentsPercussion:DATA.instrumentsWind;
       catArr.forEach((item,idx)=>{
         if(found)return;
         const enLow=(item.en||'').toLowerCase();
@@ -2061,7 +2055,7 @@ async function genRec() {
   loading.classList.add('show'); grid.innerHTML='';
   try {
     const text=await callClaude(`글로벌 리플레이 채널을 위한 7:3 Joseon Core 음악 스타일 6개 추천.\n반드시 JSON 배열만: [{"rank":1,"name":"스타일명","nameEn":"Style Name","views":"예상조회수","moods":["분위기1"],"bpm":"78-95","instruments":"주요 악기","reason":"조회수 이유"},...]`,'글로벌 채널 3:7 국악 퓨전 전략가. JSON만 출력.', 0.4);
-    const clean=text.replace(/```json|```/g,'').trim(); const match=clean.match(/\[[\s\S]*\]/);
+    const match=cleanModelText(text).match(/\[[\s\S]*\]/);
     if (!match) throw new Error('JSON 배열 응답 형식 오류');
     const items=JSON.parse(match[0]); recItems=items;
     grid.innerHTML=items.map((item,i)=>`
@@ -2110,6 +2104,8 @@ function applyRecCard(idx) {
 /* ═══════════════════════════════════════════
    5개 변형 생성 (핵심 기능)
 ═══════════════════════════════════════════ */
+/* 변형 카드 전역 저장소 — generateVariations보다 앞에 선언 */
+let _lastVariations = {};
 async function generateVariations(type) {
   const loadingEl = document.getElementById('varLoading_'+type);
   const resultEl  = document.getElementById('varResult_'+type);
@@ -2188,7 +2184,7 @@ BPM: ${bpm} | 국악:정통 비율: ${ratio}%:${100-ratio}%
 
   try {
     const text = await callClaude(aiPrompt, sysP);
-    const clean = text.replace(/```json|```/g,'').trim();
+    const clean = cleanModelText(text);
     const match = clean.match(/\[[\s\S]*\]/);
     if (!match) throw new Error('JSON 배열 형식이 응답에 없습니다.');
     const items = JSON.parse(match[0]);
@@ -2254,19 +2250,6 @@ function copyVariationPrompt(idx, type) {
   doCopy(items[idx].prompt || '');
 }
 
-// 변형 카드 적용을 위한 전역 저장소
-let _lastVariations = {};
-async function generateVariationsAndStore(type) {
-  await generateVariations(type);
-}
-
-function applyVariantToPromptBox(promptText) {
-  if (!promptText) return;
-  document.getElementById('promptBox').textContent = promptText;
-  document.getElementById('promptBox').scrollIntoView({behavior:'smooth',block:'center'});
-  showToast('✅ 변형 프롬프트가 적용되었습니다!');
-}
-
 /* ═══════════════════════════════════════════
    DURATION / LYRIC HELPERS
 ═══════════════════════════════════════════ */
@@ -2298,11 +2281,6 @@ function autoRecommendDuration(lang) {
   const input=document.getElementById(inputId);
   if(input){input.value=timeString;showToast(`✅ 추천 길이: ${timeString}`);}
 }
-function toggleAdvancedSettings() {
-  const body=document.getElementById('advancedSettingsBody'); const icon=document.getElementById('advancedToggleIcon');
-  if(body.style.display==='none'||body.style.display===''){body.style.display='block';icon.textContent='▲';}
-  else{body.style.display='none';icon.textContent='▼';}
-}
 function toggleSection(bodyId,iconId) {
   const body=document.getElementById(bodyId); const icon=document.getElementById(iconId);
   if(body.style.display==='none'||body.style.display===''){body.style.display='block';icon.textContent='▲';}
@@ -2312,6 +2290,11 @@ function toggleSection(bodyId,iconId) {
 /* ═══════════════════════════════════════════
    3:7 PRESETS
 ═══════════════════════════════════════════ */
+/* 프리셋 공통 마무리 — 모든 프리셋 함수 마지막에 호출 */
+function _finalizePreset(toastMsg) {
+  syncSliders(); renderAll(); syncGueumUI(); buildPrompt(true);
+  showToast(toastMsg);
+}
 function apply73Preset(type) {
   resetAll(false);
   if (type==='joseon') {
@@ -2529,9 +2512,8 @@ function applyQuickStart(type) {
     STATE.musicKey=6;STATE.koreanScale=2; // G 솔장조 + 우조 (호탕·노동·신명)
     selectInstrByCategory('wind',0);
   }
-  syncSliders();renderAll();buildPrompt(true);
-  const msg={drive:'✅ 드라이브',night:'✅ 늦은 밤',workout:'✅ 운동',hiphop:'✅ 힙합',labor:'✅ 노동가'};
-  showToast((msg[type]||'✅')+" 세팅 전체 자동 적용 완료!");
+  const msg={joseon:'✅ Joseon Court',sanjo:'✅ Sanjo Jazz',pansori:'✅ Pansori Soul',minyo:'✅ Minyo Blues',court:'✅ Court Elevation',drive:'✅ 드라이브',night:'✅ 늦은 밤',workout:'✅ 운동',hiphop:'✅ 힙합',labor:'✅ 노동가'};
+  _finalizePreset((msg[type]||'✅')+" 세팅 전체 자동 적용 완료!");
 }
 function applyGueumPreset(type) {
   resetAll(false);
@@ -2643,7 +2625,7 @@ function applyRandomPreset() {
     STATE.gueumStrength=['normal','strong','maximum'][Math.floor(Math.random()*3)];
   }
   if(Math.random()<0.3) STATE.hanSoulStyle=Math.floor(Math.random()*DATA.hanSoulStyles.length);
-  syncSliders();renderAll();syncGueumUI();buildPrompt(true);showToast("✨ 랜덤 프리셋 적용!");
+  _finalizePreset("✨ 랜덤 프리셋 적용!");
 }
 
 function syncGueumUI() {
@@ -2667,16 +2649,12 @@ function syncSliders() {
   updateBpmGuide(STATE.bpm);
   document.getElementById('intensitySlider').value=STATE.intensity;
   document.getElementById('intensityValue').textContent=STATE.intensity;
-  const label=document.getElementById('intensityLabel');
-  if(STATE.intensity<=3)label.textContent='Chill (잔잔한)';
-  else if(STATE.intensity<=6)label.textContent='Emotional (감성적인)';
-  else label.textContent='Explosive Soul (폭발적인)';
+  document.getElementById('intensityLabel').textContent=_intensityLabel(STATE.intensity);
   if(document.getElementById('koreanDomSlider')){
-    document.getElementById('koreanDomSlider').value=STATE.koreanDominance||80;
-    document.getElementById('koreanDomValue').textContent=STATE.koreanDominance||80;
-    const klabel=document.getElementById('koreanDomLabel');
     const v=STATE.koreanDominance||80;
-    if(v>=90)klabel.textContent='압도적 국악기'; else if(v>=80)klabel.textContent='강한 국악기 주도'; else klabel.textContent='명확한 국악기';
+    document.getElementById('koreanDomSlider').value=v;
+    document.getElementById('koreanDomValue').textContent=v;
+    document.getElementById('koreanDomLabel').textContent=_koreanDomLabel(v);
   }
   const ratioSlider=document.getElementById('ratioSlider');
   if(ratioSlider){
@@ -2736,7 +2714,7 @@ function resetAll(doRender=true) {
   STATE.concept=null;STATE.vocalStyle=null;STATE.vocalTones=[];STATE.textures=[];
   STATE.grooves=[];STATE.spaces=[];STATE.koreanGrooves=[];STATE.bassStyles=[];
   STATE.koreanFeelings=[];STATE.blackSoulElements=[];STATE.humanFeelElements=[];
-  STATE.bpm=95;STATE.intensity=5;STATE.gender='all';STATE.koreanDominance=80;
+  STATE.bpm=95;STATE.intensity=5;STATE.gender='all';STATE.koreanDominance=80;STATE.koreanRatio=70;
   STATE.gueumPositions=[];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
   STATE.gueumStyle=null;STATE.hanSoulStyle=null;STATE.gueumStrength='strong';
   STATE.musicKey=null;STATE.koreanScale=null;STATE.energyArc=null;
