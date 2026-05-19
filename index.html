@@ -1801,14 +1801,14 @@ function _doBuildPrompt() {
         /* Fix: 스타일 미선택 fallback에도 gender 추가 */
         const _gFallback={both:'male and female voices',male:'STRICTLY male voice ONLY (deep, gritty, powerful)',female:'STRICTLY female voice ONLY (clear, mournful)'};
         gueumText=`${strengthPrefix}Forcefully include traditional Korean gueum vocalization${posStr}. `+
-          `Use ${_gFallback[gGender]}. `+
+          `Use ${_gFallback[STATE.gueumGender] || _gFallback.both}. `+
           `Use authentic Korean onomatopoeia. This is NOT humming. Make the gueum clearly audible and emotionally dominant.`;
       }
       parts.push(`[GUEUM] ${gueumText}`);
-      /* Fix: 구음 성별을 별도 독립 태그로 강제 — [GUEUM] 안에만 있으면 Suno가 무시 */
-      if (gGender === 'male') {
+      /* Fix: 구음 성별을 별도 독립 태그로 강제 — STATE.gueumGender 사용 (gGender는 이 스코프에 없음) */
+      if (STATE.gueumGender === 'male') {
         parts.push(`[Gueum Voice] STRICTLY MALE vocalist for ALL gueum sections — deep masculine Korean baritone, NO female voice in any gueum/vocalization part, male voice ONLY throughout`);
-      } else if (gGender === 'female') {
+      } else if (STATE.gueumGender === 'female') {
         parts.push(`[Gueum Voice] STRICTLY FEMALE vocalist for ALL gueum sections — clear feminine Korean alto or soprano, NO male voice in any gueum/vocalization part, female voice ONLY throughout`);
       }
     }
