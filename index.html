@@ -2317,33 +2317,51 @@ function apply73Preset(type) {
   if (type==='joseon') {
     STATE.genre=0;STATE.moods=[0,3];STATE.concept=0;STATE.vocalStyle=0;STATE.vocalTones=[0,5];
     STATE.textures=[0,6];STATE.grooves=[3,6];STATE.spaces=[0];STATE.koreanGrooves=[0,4,9,10];
-    STATE.bassStyles=[2,4];STATE.koreanFeelings=[0,3,6];STATE.bpm=82;STATE.intensity=6;
+    STATE.bassStyles=[2,4];STATE.koreanFeelings=[0,3,6];
+    STATE.blackSoulElements=[0,3]; // Blues vocal grit + Hammond organ
+    STATE.humanFeelElements=[1,3]; // Live ensemble bleed + Analog instability
+    STATE.energyArc=1; // Wave Form — 궁중 소울: 감정이 파도처럼 밀려왔다 빠짐
+    STATE.bpm=82;STATE.intensity=6;
     STATE.musicKey=0;STATE.koreanScale=0; // Am 라단조 + 계면조 (애절·한)
     selectInstrByCategory('string',0);
   } else if (type==='sanjo') {
     STATE.genre=1;STATE.moods=[2,5];STATE.concept=1;STATE.vocalStyle=2;STATE.vocalTones=[2,9];
     STATE.textures=[4,6];STATE.grooves=[0,6];STATE.spaces=[2];STATE.koreanGrooves=[0,3,7];
-    STATE.bassStyles=[1,5];STATE.koreanFeelings=[4,7];STATE.bpm=88;STATE.intensity=5;
+    STATE.bassStyles=[1,5];STATE.koreanFeelings=[4,7];
+    STATE.blackSoulElements=[0,3]; // Blues vocal grit + Hammond organ
+    STATE.humanFeelElements=[0,6]; // Imperfect timing + Spontaneous fills
+    STATE.energyArc=2; // Mountain Peak — 산조: 즉흥 절정 후 여운으로 하강
+    STATE.bpm=88;STATE.intensity=5;
     STATE.musicKey=2;STATE.koreanScale=0; // Em 미단조 + 계면조 (즉흥성·재즈·한)
     selectInstrByCategory('string',1);
   } else if (type==='pansori') {
     STATE.genre=2;STATE.moods=[2,7];STATE.concept=2;STATE.vocalStyle=2;STATE.vocalTones=[5,6,8];
     STATE.textures=[0,1,6];STATE.grooves=[1,3];STATE.spaces=[0,3];STATE.koreanGrooves=[4,9,10];
-    STATE.bassStyles=[1,2];STATE.koreanFeelings=[1,6,7];STATE.blackSoulElements=[1,5];
+    STATE.bassStyles=[1,2];STATE.koreanFeelings=[1,6,7];
+    STATE.blackSoulElements=[0,4]; // Blues vocal grit + Delta blues slide guitar (인덱스 수정)
+    STATE.humanFeelElements=[0,1]; // Imperfect timing + Live ensemble bleed
+    STATE.energyArc=0; // Slow Burn Rise — 판소리: 서사적 고조, 클라이맥스 폭발
     STATE.bpm=78;STATE.intensity=7;
     STATE.musicKey=1;STATE.koreanScale=0; // Dm 레단조 + 계면조 (서사적 소울·한)
     selectInstrByCategory('string',2);
   } else if (type==='minyo') {
     STATE.genre=3;STATE.moods=[7,8];STATE.concept=3;STATE.vocalStyle=1;STATE.vocalTones=[5,6];
     STATE.textures=[0,1];STATE.grooves=[1,4];STATE.spaces=[0];STATE.koreanGrooves=[4,8];
-    STATE.bassStyles=[2];STATE.koreanFeelings=[1,6];STATE.blackSoulElements=[1,5,6];
+    STATE.bassStyles=[2];STATE.koreanFeelings=[1,6];
+    STATE.blackSoulElements=[0,4,5]; // Blues vocal grit + Delta blues + Chicago blues (인덱스 수정)
+    STATE.humanFeelElements=[0,6]; // Imperfect timing + Human breath imperfections
+    STATE.energyArc=1; // Wave Form — 민요 블루스: 한(恨)이 파도처럼 밀려왔다 빠짐
     STATE.bpm=75;STATE.intensity=6;
     STATE.musicKey=0;STATE.koreanScale=4; // Am 라단조 + 메나리토리 (처연·구슬픔·민요)
     selectInstrByCategory('string',0);
   } else if (type==='court') {
     STATE.genre=7;STATE.moods=[0,5];STATE.concept=7;STATE.vocalStyle=7;STATE.vocalTones=[9,10];
     STATE.textures=[5,6];STATE.grooves=[5,7];STATE.spaces=[1,2];STATE.koreanGrooves=[0,3,11];
-    STATE.bassStyles=[3,4];STATE.koreanFeelings=[0,5];STATE.bpm=95;STATE.intensity=7;
+    STATE.bassStyles=[3,4];STATE.koreanFeelings=[0,5];
+    STATE.blackSoulElements=[2,3]; // Call-and-response + Hammond organ
+    STATE.humanFeelElements=[1,4]; // Live ensemble bleed + Dynamic velocity variation
+    STATE.energyArc=2; // Mountain Peak — 궁중 격상: 빠른 고조 후 웅장한 절정 유지
+    STATE.bpm=95;STATE.intensity=7;
     STATE.musicKey=4;STATE.koreanScale=1; // Cm 도단조 + 평조 (장엄·웅장·기품)
     selectInstrByCategory('wind',0);
   }
@@ -2519,15 +2537,24 @@ function applyGueumPreset(type) {
   resetAll(false);
   if (type==='pansori_han_blues') {
     STATE.genre=2;STATE.moods=[7,8,10];STATE.concept=2;STATE.vocalStyle=1;STATE.vocalTones=[5,6];
-    STATE.textures=[0,1,6];STATE.grooves=[1,3];STATE.koreanGrooves=[4,9,10];STATE.koreanFeelings=[1,6,7];
-    STATE.blackSoulElements=[1,5];STATE.bpm=72;STATE.intensity=7;STATE.koreanRatio=75;
+    STATE.textures=[0,1,6];STATE.grooves=[1,3];
+    STATE.spaces=[0,3]; // Jazz club + Intimate vocal space
+    STATE.bassStyles=[1,4]; // Walking jazz bass + Deep warm sub bass
+    STATE.koreanGrooves=[4,9,10];STATE.koreanFeelings=[1,6,7];
+    STATE.blackSoulElements=[0,4]; // Blues vocal grit + Delta blues slide guitar (인덱스 수정)
+    STATE.energyArc=0; // Slow Burn Rise — 판소리 한: 서서히 타오르는 한(恨)
+    STATE.bpm=72;STATE.intensity=7;STATE.koreanRatio=75;
     STATE.gueumPositions=['start','end'];STATE.gueumPitch='midlow';STATE.gueumGender='male';
     STATE.gueumStyle=3;STATE.hanSoulStyle=0;
     STATE.musicKey=1;STATE.koreanScale=0; // Dm 레단조 + 계면조 (서사적·한·블루스)
     selectInstrByCategory('string',2);
   } else if (type==='seoul_midnight_jazz') {
     STATE.genre=5;STATE.moods=[4,9,10];STATE.concept=7;STATE.vocalStyle=2;STATE.vocalTones=[1,2,6];
-    STATE.textures=[0,6,7];STATE.grooves=[0,3];STATE.koreanGrooves=[4,6,10];STATE.koreanFeelings=[3,6,7];
+    STATE.textures=[0,6,7];STATE.grooves=[0,3];
+    STATE.spaces=[0,3]; // Jazz club + Intimate vocal space
+    STATE.bassStyles=[1,2]; // Walking jazz bass + Neo soul bass groove
+    STATE.koreanGrooves=[4,6,10];STATE.koreanFeelings=[3,6,7];
+    STATE.energyArc=1; // Wave Form — 심야 재즈: 감정이 파도처럼 밀려왔다 빠짐
     STATE.bpm=78;STATE.intensity=5;STATE.koreanRatio=70;
     STATE.gueumPositions=['mid'];STATE.gueumPitch='midhigh';STATE.gueumGender='female';
     STATE.gueumStyle=4;STATE.hanSoulStyle=2;
@@ -2535,7 +2562,11 @@ function applyGueumPreset(type) {
     selectInstrByCategory('string',1);
   } else if (type==='sanjo_blue') {
     STATE.genre=1;STATE.moods=[2,4,6];STATE.concept=1;STATE.vocalStyle=5;STATE.vocalTones=[9,10];
-    STATE.textures=[3,4];STATE.grooves=[0,5];STATE.koreanGrooves=[0,3,7];STATE.koreanFeelings=[4,7];
+    STATE.textures=[3,4];STATE.grooves=[0,5];
+    STATE.spaces=[0,2]; // Jazz club + Wide stereo
+    STATE.bassStyles=[1,5]; // Walking jazz bass + Syncopated bass movement
+    STATE.koreanGrooves=[0,3,7];STATE.koreanFeelings=[4,7];
+    STATE.energyArc=2; // Mountain Peak — 산조: 즉흥 절정 후 여운으로 하강
     STATE.bpm=85;STATE.intensity=6;STATE.koreanRatio=72;
     STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
     STATE.gueumStyle=0;STATE.hanSoulStyle=3;
@@ -2543,16 +2574,26 @@ function applyGueumPreset(type) {
     selectInstrByCategory('string',0);
   } else if (type==='joseon_hiphop') {
     STATE.genre=4;STATE.moods=[0,3,15];STATE.concept=4;STATE.vocalStyle=5;STATE.vocalTones=[4,9];
-    STATE.textures=[0,5];STATE.grooves=[2,6];STATE.koreanGrooves=[1,13];STATE.koreanFeelings=[0,3];
-    STATE.blackSoulElements=[3,6];STATE.bpm=92;STATE.intensity=7;STATE.koreanRatio=70;
+    STATE.textures=[0,5];STATE.grooves=[2,6];
+    STATE.spaces=[0]; // Small jazz club (지하 클럽 감성)
+    STATE.bassStyles=[3,0]; // Boom bap bass pocket + Funky bassline
+    STATE.koreanGrooves=[1,13];STATE.koreanFeelings=[0,3];
+    STATE.blackSoulElements=[2,5]; // Call-and-response + Chicago blues shuffle (인덱스 수정)
+    STATE.energyArc=5; // Sustained Groove — 힙합: 처음부터 끝까지 일정한 그루브
+    STATE.bpm=92;STATE.intensity=7;STATE.koreanRatio=70;
     STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
     STATE.gueumStyle=5;STATE.hanSoulStyle=1;
     STATE.musicKey=1;STATE.koreanScale=0; // Dm 레단조 + 계면조 (묵직·힙합·그루브)
     selectInstrByCategory('percussion',0);
   } else if (type==='ajaeng_soul_ballad') {
     STATE.genre=6;STATE.moods=[2,7,10];STATE.concept=6;STATE.vocalStyle=8;STATE.vocalTones=[5,6,8];
-    STATE.textures=[0,2,6];STATE.grooves=[1,3];STATE.koreanGrooves=[9,10];STATE.koreanFeelings=[1,7,8];
-    STATE.blackSoulElements=[0,1,2];STATE.bpm=68;STATE.intensity=6;STATE.koreanRatio=75;
+    STATE.textures=[0,2,6];STATE.grooves=[1,3];
+    STATE.spaces=[0,3]; // Jazz club + Intimate vocal space
+    STATE.bassStyles=[2,4]; // Neo soul bass groove + Deep warm sub bass
+    STATE.koreanGrooves=[9,10];STATE.koreanFeelings=[1,7,8];
+    STATE.blackSoulElements=[0,1]; // Blues vocal grit + Soul belt adlibs (인덱스 수정)
+    STATE.energyArc=0; // Slow Burn Rise — 소울 발라드: 천천히 타오르는 감정 고조
+    STATE.bpm=68;STATE.intensity=6;STATE.koreanRatio=75;
     STATE.gueumPositions=['mid','end'];STATE.gueumPitch='low';STATE.gueumGender='male';
     STATE.gueumStyle=1;STATE.hanSoulStyle=4;
     STATE.musicKey=1;STATE.koreanScale=4; // Dm 레단조 + 메나리토리 (아쟁·발라드·처연)
