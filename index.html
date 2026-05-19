@@ -1207,10 +1207,10 @@ const DATA = {
   ],
   gueumStyles: [
     {en:'Pansori Deep Blues Gueum',kr:'판소리 딥 블루스 구음',
-      en2:'Mmm~hmm~\nAh-nah~ Lord~\nHey~yeah~ ah~yeah~\nOh~yeah~ huh~yeah~\nOh Lord~ ah me~\nHuh~yeah~ huh huh~\nMmm~hmm~ oh~\nOh~ huh~oh~',
+      en2:'Mmm~hmm~\nAh-nah~ soul~\nHey~yeah~ ah~yeah~\nOh~yeah~ huh~yeah~\nOh soul~ ah me~\nHuh~yeah~ huh huh~\nMmm~hmm~ oh~\nOh~ huh~oh~',
       desc:'판소리 깊은 저음 × 블루스 감성. 목이 긁히듯 걸걸한 저음.',pitch:'low',gender:'male'},
     {en:'Mournful Han Blues Gueum',kr:'한(恨) 블루스 슬픔 구음',
-      en2:'Oh~Lord~ oh-Lord~yeah~\nOh~no~ ah~me~\nOh~why~ oh~why~\nHmm~yeah~ yeah~\nOh~hmm~ ah~yeah~\nAh~yeah~ ah hey~\nOh~oh~ oh Lord~\nMmm~ oh~why~yeah~',
+      en2:'Oh~soul~ oh-soul~yeah~\nOh~no~ ah~why~\nOh~why~ oh~why~\nHmm~yeah~ yeah~\nOh~hmm~ ah~yeah~\nAh~yeah~ ah hey~\nOh~oh~ oh soul~\nMmm~ oh~why~yeah~',
       desc:'남도 소리꾼의 애절함 × 델타 블루스 그릿.',pitch:'midlow',gender:'male'},
     {en:'Jazz Improv Gueum',kr:'재즈 즉흥 구음',
       en2:'Doo~bee~ dooby~\nAh~bah~ ah-ba-doo~\nYeah~ yeah~ oh yeah~\nShoo~mm~ shu-mm~\nAh~doo~ ah-doo-bah~\nYa-bah~ ya-ba-doo~\nDoo-bi-doo~ yeah~',
@@ -2830,8 +2830,8 @@ function insertGueumToLyrics() {
   // [Final Chorus] — 폭발 애드립형. 고음·여성이면 rawStrong + 샤우트, 저음·남성이면 딥 소울
   const ADLIB = isGospel
     ? (isHighEnergy || isFemaleVoice)
-      ? [...rawStrong, 'Oh yeah~', 'Come on~', 'Hallelujah~']
-      : ['Oh Lord~', 'Can I get a witness~', ...rawFallback]
+      ? [...rawStrong, 'Oh yeah~', 'Come on~', 'Oh soul~']
+      : ['Oh soul~', 'Oh~why~', ...rawFallback]
     : isHiphop
       ? (isLowEnergy || isMaleVoice)
         ? ['Uh~ yeah~', 'Okay~', ...rawFallback]
