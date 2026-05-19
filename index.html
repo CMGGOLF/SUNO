@@ -1798,7 +1798,9 @@ function _doBuildPrompt() {
       parts.push(`[Duration] target ${STATE.songDuration} full song — no early fade, include full outro`);
     }
     const box=document.getElementById('promptBox');
-    box.textContent=parts.length>3?parts.join('\n'):'← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
+    // [수정2] 사용자가 장르·분위기·악기 중 하나라도 선택했을 때만 프롬프트 표시
+    const hasUserSelection = STATE.genre!==null || STATE.moods.length>0 || STATE.instr!==null || STATE.concept!==null || STATE.vocalStyle!==null;
+    box.textContent=hasUserSelection?parts.join('\n'):'← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
   } catch(e) {
     document.getElementById('promptBox').textContent='← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
   }
@@ -1869,20 +1871,70 @@ async function runAI() {
 }
 function applyAnalysisToUI(analysis) {
   resetAll(false);
+  // ── 장르 매핑 ──
   if (analysis.genre) { const gi=DATA.genres.findIndex(g=>g.en.toLowerCase().includes(analysis.genre.toLowerCase())||g.kr.includes(analysis.genre)); if(gi!==-1)STATE.genre=gi; }
+  // ── 분위기 매핑 ──
   if (analysis.moods&&Array.isArray(analysis.moods)) { analysis.moods.forEach(m=>{const idx=DATA.moods.findIndex(d=>d.en.toLowerCase().includes(m.toLowerCase())||d.kr.includes(m));if(idx!==-1&&!STATE.moods.includes(idx))STATE.moods.push(idx);}); }
+  // ── BPM 매핑 ──
   if (analysis.bpm&&analysis.bpm>=65&&analysis.bpm<=145) STATE.bpm=parseInt(analysis.bpm);
-  if (analysis.koreanGrooves&&Array.isArray(analysis.koreanGrooves)) { analysis.koreanGrooves.forEach(n=>{const idx=DATA.koreanGrooves.findIndex(k=>k.en.toLowerCase().includes(n.toLowerCase())||k.kr.includes(n));if(idx!==-1&&!STATE.koreanGrooves.includes(idx))STATE.koreanGrooves.push(idx);}); }
-  // 분위기/장르 기반 조성·음계 자동 매핑
+  // ── [수정1] 악기 매핑 (instruments → STATE.instr) ──
+  if (analysis.instruments) {
+    const instrStr=(analysis.instruments||'').toLowerCase();
+    // 현악기 카테고리 우선 탐색
+    const strData=DATA.instruments?.string||[];
+    const perData=DATA.instruments?.percussion||[];
+    const winData=DATA.instruments?.wind||[];
+    let found=false;
+    ['string','percussion','wind'].forEach(cat=>{
+      if(found)return;
+      const catArr=DATA.instruments?.[cat]||[];
+      catArr.forEach((item,idx)=>{
+        if(found)return;
+        const enLow=(item.en||'').toLowerCase();
+        const krStr=(item.kr||'');
+        if(instrStr.split(/[,·\s]+/).some(w=>w.length>1&&(enLow.includes(w)||krStr.includes(w)))){
+          selectInstrByCategory(cat,idx);
+          found=true;
+        }
+      });
+    });
+  }
+  // ── [수정1] 컨셉 매핑 (concept → STATE.concept) ──
+  if (analysis.concept) {
+    const ci=DATA.concepts.findIndex(c=>(c.name||'').toLowerCase().includes((analysis.concept||'').toLowerCase().slice(0,4))||(analysis.concept||'').toLowerCase().includes((c.name||'').toLowerCase().slice(0,4)));
+    if(ci!==-1) STATE.concept=ci;
+  }
+  // ── [수정1] 보컬 스타일 매핑 (vocalStyle → STATE.vocalStyle) ──
+  if (analysis.vocalStyle) {
+    const vsi=DATA.vocalStyles.findIndex(v=>(v.en||'').toLowerCase().split(' ').some(w=>w.length>3&&(analysis.vocalStyle||'').toLowerCase().includes(w))||(v.kr||'').split('').some((_,i,a)=>{const chunk=a.slice(i,i+2).join('');return chunk.length===2&&(analysis.vocalStyle||'').includes(chunk);}));
+    if(vsi!==-1) STATE.vocalStyle=vsi;
+  }
+  // ── [수정1] 텍스처 매핑 (textures → STATE.textures) ──
+  if (analysis.textures&&Array.isArray(analysis.textures)) {
+    analysis.textures.forEach(t=>{
+      const idx=DATA.textures.findIndex(d=>d.en.toLowerCase().includes((t||'').toLowerCase())||d.kr.includes(t||''));
+      if(idx!==-1&&!STATE.textures.includes(idx))STATE.textures.push(idx);
+    });
+  }
+  // ── [수정1] 한국적 감성 매핑 (koreanFeelings → STATE.koreanFeelings) ──
+  if (analysis.koreanFeelings&&Array.isArray(analysis.koreanFeelings)) {
+    analysis.koreanFeelings.forEach(f=>{
+      const idx=DATA.koreanFeelings.findIndex(d=>d.en.toLowerCase().includes((f||'').toLowerCase())||d.kr.includes(f||''));
+      if(idx!==-1&&!STATE.koreanFeelings.includes(idx))STATE.koreanFeelings.push(idx);
+    });
+  }
+  // ── 한국적 그루브 매핑 ──
+  if (analysis.koreanGrooves&&Array.isArray(analysis.koreanGrooves)) { analysis.koreanGrooves.forEach(n=>{const idx=DATA.koreanGrooves.findIndex(k=>k.en.toLowerCase().includes((n||'').toLowerCase())||k.kr.includes(n||''));if(idx!==-1&&!STATE.koreanGrooves.includes(idx))STATE.koreanGrooves.push(idx);}); }
+  // ── 분위기/장르 기반 조성·음계 자동 매핑 ──
   const analysisGenre=(analysis.genre||'').toLowerCase();
   const analysisMoods=(analysis.moods||[]).join(' ').toLowerCase();
   if(analysisGenre.includes('court')||analysisGenre.includes('cinematic')){STATE.musicKey=4;STATE.koreanScale=1;}
   else if(analysisGenre.includes('gospel')||analysisMoods.includes('hopeful')||analysisMoods.includes('bright')){STATE.musicKey=7;STATE.koreanScale=2;}
   else if(analysisGenre.includes('hip')||analysisGenre.includes('trap')){STATE.musicKey=1;STATE.koreanScale=0;}
   else if(analysisGenre.includes('jazz')){STATE.musicKey=2;STATE.koreanScale=0;}
-  else if(analysisMoods.includes('sad')||analysisMoods.includes('mournful')||analysisMoods.includes('han')){STATE.musicKey=1;STATE.koreanScale=4;}
+  else if(analysisMoods.includes('sad')||analysisMoods.includes('mournful')||analysisMoods.includes('han')||analysisMoods.includes('슬')||analysisMoods.includes('애절')){STATE.musicKey=1;STATE.koreanScale=4;}
   else if(analysisMoods.includes('chill')||analysisMoods.includes('ambient')){STATE.musicKey=5;STATE.koreanScale=3;}
-  else{STATE.musicKey=0;STATE.koreanScale=0;} // 기본값: Am + 계면조
+  else{STATE.musicKey=0;STATE.koreanScale=0;}
   syncSliders(); renderAll(); buildPrompt(true);
   showToast("✅ 분석 결과가 자동으로 적용되었습니다!");
 }
