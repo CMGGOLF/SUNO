@@ -2992,14 +2992,16 @@ function insertGueumToLyrics() {
     lyrics = skeleton;
   } else {
     // 기존 가사 있을 때 → 빈 섹션 태그에 [instrumental break] 보충
+    // ※ 이미 [instrumental break]가 바로 이어지는 경우는 건너뜀 (중복 방지)
     lyrics = existingLyrics.replace(
-      /(\[[^\]]+\])\n(\n|\[)/g,
+      /(\[[^\]]+\])\n(?!\[instrumental break\])(\n|\[)/g,
       (_, tag, next) => `${tag}\n[instrumental break]\n${next}`
     );
   }
 
-  // 기존 구음 포인트 제거 (재삽입 시 중복 방지) — 태그 행 + 이후 모든 비어있지 않은 줄 제거
-  lyrics = lyrics.replace(/\[.*?- Gueum\]\n(?:[^\n]+\n)*/gi, '').replace(/\n{3,}/g, '\n\n').trim();
+  // 기존 구음 포인트 제거 (재삽입 시 중복 방지)
+  // ※ [태그] 형태 줄([instrumental break] 등)은 삭제하지 않음 (lookahead로 보호)
+  lyrics = lyrics.replace(/\[.*?- Gueum\]\n(?:(?!\[)[^\n]+\n)*/gi, '').replace(/\n{3,}/g, '\n\n').trim();
 
   // 선택된 위치에만 포인트 삽입
   const ALL_POS = ['start','add1','mid','add2','add3','end'];
