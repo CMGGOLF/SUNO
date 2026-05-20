@@ -2992,11 +2992,24 @@ function insertGueumToLyrics() {
         return `${match}\n\n[${label} - Gueum]\n${newBlock}`;
       });
     } else {
-      // instrumental break 없이 섹션 태그만 있는 경우 fallback
-      const fallbackRx = new RegExp(`(\\[${pos==='start'?'Intro':pos==='add1'?'Verse\\s*1':pos==='mid'?'Chorus':pos==='add2'?'Verse\\s*2':pos==='add3'?'(?:Bridge|Final Chorus)':'(?:Outro|Ending)'}[^\\]]*\\])`, 'i');
-      if (fallbackRx.test(lyrics)) {
-        lyrics = lyrics.replace(fallbackRx, `$1\n\n[${label} - Gueum]\n${block}`);
+      // [instrumental break] 없는 일반 가사 → 섹션 내용 블록 끝(다음 섹션 직전)에 삽입
+      const sNameMap = {
+        start:'Intro', add1:'Verse\\s*1', mid:'Chorus',
+        add2:'Verse\\s*2', add3:'(?:Bridge|Final\\s*Chorus)', end:'(?:Outro|Ending)'
+      };
+      const sName = sNameMap[pos] || pos;
+      // 섹션 헤더 + 내용 전체를 매칭 (다음 [섹션] 직전 또는 파일 끝까지)
+      const blockRx = new RegExp(
+        `(\\[${sName}[^\\]]*\\][\\s\\S]*?)(?=\\n{0,2}\\[[A-Za-z]|\\s*$)`,
+        pos === 'mid' ? 'gi' : 'i'
+      );
+      if (blockRx.test(lyrics)) {
+        lyrics = lyrics.replace(blockRx, (match) => {
+          const newBlock = makePoint(pool);
+          return `${match.trimEnd()}\n\n[${label} - Gueum]\n${newBlock}`;
+        });
       } else {
+        // 섹션 자체가 없으면 가사 끝에 추가
         lyrics = lyrics.trimEnd() + `\n\n[${label} - Gueum]\n${block}\n`;
       }
     }
