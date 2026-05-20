@@ -2336,7 +2336,7 @@ function apply73Preset(type) {
     STATE.musicKey=4;STATE.koreanScale=1; // Cm 도단조 + 평조 (장엄·웅장·기품)
     selectInstrByCategory('wind',0);
   }
-  syncSliders();renderAll();buildPrompt(true);
+  syncSliders();renderAll();syncGueumUI();buildPrompt(true);
   showToast(`✅ 7:3 ${type.toUpperCase()} Joseon Core 프리셋 적용 완료!`);
 }
 function applyUltimateGroovePreset() {
@@ -2374,6 +2374,8 @@ function applyQuickStart(type) {
     STATE.bassStyles=[2,4];
     // 07F 한국적 감성
     STATE.koreanFeelings=[0,5];
+    // 07G 블랙소울: Hammond organ textures (부드러운 드라이브 감성)
+    STATE.blackSoulElements=[3];
     // 07H 인간미
     STATE.humanFeelElements=[0,4];
     // 에너지 아크: Sustained Groove (드라이브 내내 안정된 에너지)
@@ -2426,10 +2428,16 @@ function applyQuickStart(type) {
     STATE.vocalStyle=7;
     // 06 보컬 톤: Smooth male vocals + Warm raspy male vocals
     STATE.vocalTones=[4,7];
+    // 07A 텍스처
+    STATE.textures=[0,5];
+    // 07B 그루브
+    STATE.grooves=[3,6];
     // 07C 공간감: Wide stereo
     STATE.spaces=[2];
     // 07D 한국적 그루브
     STATE.koreanGrooves=[2,13];
+    // 07F 한국적 감성: Traditional Korean breathing space + Modern Korean soul mood
+    STATE.koreanFeelings=[4,5];
     // 07E 베이스: Funky bassline + Syncopated bass movement
     STATE.bassStyles=[0,5];
     // 07G 블랙소울: Soul belt adlibs + Call-and-response band hits
@@ -2453,12 +2461,16 @@ function applyQuickStart(type) {
     STATE.vocalStyle=5;
     // 06 보컬 톤: Smooth male vocals + Slow groove phrasing
     STATE.vocalTones=[4,9];
+    // 07A 텍스처
+    STATE.textures=[0,5];
     // 07B 그루브
     STATE.grooves=[2,6];
     // 07C 공간감: Small jazz club
     STATE.spaces=[0];
     // 07D 한국적 그루브
     STATE.koreanGrooves=[1,13];
+    // 07F 한국적 감성: Seoul night atmosphere + Modern Korean soul mood
+    STATE.koreanFeelings=[0,5];
     // 07E 베이스: Boom bap bass pocket + Funky bassline
     STATE.bassStyles=[3,0];
     // 07G 블랙소울: Call-and-response band hits + Chicago blues shuffle
@@ -2482,12 +2494,16 @@ function applyQuickStart(type) {
     STATE.vocalStyle=7;
     // 06 보컬 톤: Warm raspy male vocals + Call and response vocals
     STATE.vocalTones=[7,10];
+    // 07A 텍스처
+    STATE.textures=[5,6];
     // 07B 그루브
     STATE.grooves=[4,5];
     // 07C 공간감: Small jazz club (집단 노동 현장감)
     STATE.spaces=[0];
     // 07D 한국적 그루브
     STATE.koreanGrooves=[2,3];
+    // 07F 한국적 감성: Traditional Korean breathing space + Modern Korean soul mood
+    STATE.koreanFeelings=[4,5];
     // 07E 베이스: Funky bassline + Deep warm sub bass
     STATE.bassStyles=[0,4];
     // 07G 블랙소울: Call-and-response band hits
@@ -2511,7 +2527,8 @@ function applyGueumPreset(type) {
     STATE.spaces=[0,3]; // Jazz club + Intimate vocal space
     STATE.bassStyles=[1,4]; // Walking jazz bass + Deep warm sub bass
     STATE.koreanGrooves=[4,9,10];STATE.koreanFeelings=[1,6,7];
-    STATE.blackSoulElements=[0,4]; // Blues vocal grit + Delta blues slide guitar (인덱스 수정)
+    STATE.blackSoulElements=[0,4]; // Blues vocal grit + Delta blues slide guitar
+    STATE.humanFeelElements=[0,1]; // Imperfect timing + Live ensemble bleed
     STATE.energyArc=0; // Slow Burn Rise — 판소리 한: 서서히 타오르는 한(恨)
     STATE.bpm=72;STATE.intensity=7;STATE.koreanRatio=75;
     STATE.gueumPositions=['start','end'];STATE.gueumPitch='midlow';STATE.gueumGender='male';
@@ -2524,6 +2541,8 @@ function applyGueumPreset(type) {
     STATE.spaces=[0,3]; // Jazz club + Intimate vocal space
     STATE.bassStyles=[1,2]; // Walking jazz bass + Neo soul bass groove
     STATE.koreanGrooves=[4,6,10];STATE.koreanFeelings=[3,6,7];
+    STATE.blackSoulElements=[2,3]; // Call-and-response + Hammond organ textures
+    STATE.humanFeelElements=[1,3]; // Live ensemble bleed + Analog instability
     STATE.energyArc=1; // Wave Form — 심야 재즈: 감정이 파도처럼 밀려왔다 빠짐
     STATE.bpm=78;STATE.intensity=5;STATE.koreanRatio=70;
     STATE.gueumPositions=['mid'];STATE.gueumPitch='midhigh';STATE.gueumGender='female';
@@ -2536,6 +2555,8 @@ function applyGueumPreset(type) {
     STATE.spaces=[0,2]; // Jazz club + Wide stereo
     STATE.bassStyles=[1,5]; // Walking jazz bass + Syncopated bass movement
     STATE.koreanGrooves=[0,3,7];STATE.koreanFeelings=[4,7];
+    STATE.blackSoulElements=[0,4]; // Blues vocal grit + Delta blues slide guitar
+    STATE.humanFeelElements=[0,1,6]; // Imperfect timing + Live ensemble + Spontaneous fills
     STATE.energyArc=2; // Mountain Peak — 산조: 즉흥 절정 후 여운으로 하강
     STATE.bpm=85;STATE.intensity=6;STATE.koreanRatio=72;
     STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
@@ -2558,19 +2579,90 @@ function applyGueumPreset(type) {
   } else if (type==='ajaeng_soul_ballad') {
     STATE.genre=6;STATE.moods=[2,7,10];STATE.concept=6;STATE.vocalStyle=8;STATE.vocalTones=[5,6,8];
     STATE.textures=[0,2,6];STATE.grooves=[1,3];
-    STATE.spaces=[0,3]; // Jazz club + Intimate vocal space
-    STATE.bassStyles=[2,4]; // Neo soul bass groove + Deep warm sub bass
+    STATE.spaces=[0,3];
+    STATE.bassStyles=[2,4];
     STATE.koreanGrooves=[9,10];STATE.koreanFeelings=[1,7,8];
-    STATE.blackSoulElements=[0,1]; // Blues vocal grit + Soul belt adlibs (인덱스 수정)
-    STATE.energyArc=0; // Slow Burn Rise — 소울 발라드: 천천히 타오르는 감정 고조
+    STATE.blackSoulElements=[0,1];
+    STATE.humanFeelElements=[0,1]; // Imperfect timing + Live ensemble bleed
+    STATE.energyArc=0;
     STATE.bpm=68;STATE.intensity=6;STATE.koreanRatio=75;
     STATE.gueumPositions=['mid','end'];STATE.gueumPitch='low';STATE.gueumGender='male';
     STATE.gueumStyle=1;STATE.hanSoulStyle=4;
-    STATE.musicKey=1;STATE.koreanScale=4; // Dm 레단조 + 메나리토리 (아쟁·발라드·처연)
+    STATE.musicKey=1;STATE.koreanScale=4;
     selectInstrByCategory('string',2);
+  } else if (type==='arirang_hyper') {
+    // ARIRANG Hyper Fusion — Rage + Hyper 2026
+    STATE.genre=4;STATE.moods=[11,15];STATE.concept=4;STATE.vocalStyle=5;STATE.vocalTones=[4,7];
+    STATE.textures=[0,5];STATE.grooves=[2,6];
+    STATE.spaces=[0];
+    STATE.bassStyles=[3,0]; // Boom bap + Funky
+    STATE.koreanGrooves=[1,2,13];STATE.koreanFeelings=[0,3];
+    STATE.blackSoulElements=[1,2]; // Soul belt adlibs + Call-and-response
+    STATE.humanFeelElements=[0,6]; // Imperfect timing + Spontaneous fills
+    STATE.energyArc=4; // Twin Peaks — 두 번의 절정으로 Rage 폭발력 극대화
+    STATE.bpm=145;STATE.intensity=9;STATE.koreanRatio=70;
+    STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='high';STATE.gueumGender='both';
+    STATE.gueumStyle=6;STATE.hanSoulStyle=1; // Hwimori Soul Shout + 조선 힙합
+    STATE.musicKey=1;STATE.koreanScale=0; // Dm 레단조 + 계면조 (묵직·Rage·힙합)
+    selectInstrByCategory('percussion',0);
+  } else if (type==='uk_garage_gugak') {
+    // UK Garage Gugak — KiiiKiii 스타일 (2-step + 국악)
+    STATE.genre=7;STATE.moods=[0,3];STATE.concept=7;STATE.vocalStyle=5;STATE.vocalTones=[0,10];
+    STATE.textures=[4,6];STATE.grooves=[0,2,6];
+    STATE.spaces=[0];
+    STATE.bassStyles=[0,5]; // Funky + Syncopated bass
+    STATE.koreanGrooves=[0,4,13];STATE.koreanFeelings=[0,5];
+    STATE.blackSoulElements=[2,5]; // Call-and-response + Chicago blues shuffle
+    STATE.humanFeelElements=[0,6];
+    STATE.energyArc=5; // Sustained Groove — UK Garage는 처음부터 끝까지 일정한 그루브
+    STATE.bpm=130;STATE.intensity=7;STATE.koreanRatio=65;
+    STATE.gueumPositions=['mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
+    STATE.gueumStyle=4;STATE.hanSoulStyle=1; // Jangdan Groove Gueum + 조선 힙합
+    STATE.musicKey=3;STATE.koreanScale=3; // Gm 솔단조 + 경토리 (경쾌·신명·발랄)
+    selectInstrByCategory('percussion',0);
+  } else if (type==='hyper_catchy_gugak') {
+    // Hyper Catchy Gugak — 밝고 중독성 강함
+    STATE.genre=7;STATE.moods=[0,16];STATE.concept=7;STATE.vocalStyle=0;STATE.vocalTones=[0,9];
+    STATE.textures=[0,4];STATE.grooves=[0,2,6];
+    STATE.spaces=[2]; // Wide stereo — 중독성 강한 공간감
+    STATE.bassStyles=[0,5]; // Funky + Syncopated
+    STATE.koreanGrooves=[3,13];STATE.koreanFeelings=[0,5];
+    STATE.blackSoulElements=[1,2]; // Soul belt adlibs + Call-and-response
+    STATE.humanFeelElements=[0,4]; // Imperfect timing + Dynamic velocity
+    STATE.energyArc=5; // Sustained Groove — 중독성 있는 일정한 에너지
+    STATE.bpm=118;STATE.intensity=8;STATE.koreanRatio=68;
+    STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='high';STATE.gueumGender='both';
+    STATE.gueumStyle=6;STATE.hanSoulStyle=null; // Hwimori Soul Shout — 밝고 신명나는 샤우트
+    STATE.musicKey=6;STATE.koreanScale=3; // G 솔장조 + 경토리 (밝음·신명·중독성)
+    selectInstrByCategory('string',0);
+  } else if (type==='jersey_bounce_gugak') {
+    // Jersey Bounce Gugak — 강한 비트 그루브
+    STATE.genre=4;STATE.moods=[0,11];STATE.concept=4;STATE.vocalStyle=7;STATE.vocalTones=[4,10];
+    STATE.textures=[0,5];STATE.grooves=[2,4,6];
+    STATE.spaces=[0]; // Small jazz club — 클럽 감성
+    STATE.bassStyles=[3,5]; // Boom bap + Syncopated bass
+    STATE.koreanGrooves=[2,3,13];STATE.koreanFeelings=[0,5];
+    STATE.blackSoulElements=[1,2]; // Soul belt adlibs + Call-and-response
+    STATE.humanFeelElements=[0,6];
+    STATE.energyArc=5; // Sustained Groove — Jersey Bounce는 처음부터 끝까지 강한 그루브
+    STATE.bpm=135;STATE.intensity=8;STATE.koreanRatio=70;
+    STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='high';STATE.gueumGender='both';
+    STATE.gueumStyle=4;STATE.hanSoulStyle=1; // Jangdan Groove Gueum + 조선 힙합
+    STATE.musicKey=1;STATE.koreanScale=0; // Dm 레단조 + 계면조 (강한 비트·그루브)
+    selectInstrByCategory('percussion',0);
   }
   syncSliders();renderAll();syncGueumUI();buildPrompt(true);
-  const labels={pansori_han_blues:'🎙️ 판소리 한 블루스',seoul_midnight_jazz:'🎷 서울 심야 재즈',sanjo_blue:'🎸 산조 블루 노트',joseon_hiphop:'🎤 조선 힙합',ajaeng_soul_ballad:'🎻 아쟁 소울 발라드'};
+  const labels={
+    pansori_han_blues:'🎙️ 판소리 한 블루스',
+    seoul_midnight_jazz:'🎷 서울 심야 재즈',
+    sanjo_blue:'🎸 산조 블루 노트',
+    joseon_hiphop:'🎤 조선 힙합',
+    ajaeng_soul_ballad:'🎻 아쟁 소울 발라드',
+    arirang_hyper:'🌟 ARIRANG Hyper Fusion',
+    uk_garage_gugak:'🎛️ UK Garage Gugak',
+    hyper_catchy_gugak:'✨ Hyper Catchy Gugak',
+    jersey_bounce_gugak:'🔥 Jersey Bounce Gugak',
+  };
   showToast((labels[type]||'✅')+' 프리셋 적용 완료!');
 }
 function applyRandomPreset() {
