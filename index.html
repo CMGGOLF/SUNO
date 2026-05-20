@@ -2289,55 +2289,80 @@ function apply73Preset(type) {
     STATE.genre=0;STATE.moods=[0,3];STATE.concept=0;STATE.vocalStyle=0;STATE.vocalTones=[0,5];
     STATE.textures=[0,6];STATE.grooves=[3,6];STATE.spaces=[0];STATE.koreanGrooves=[0,4,9,10];
     STATE.bassStyles=[2,4];STATE.koreanFeelings=[0,3,6];
-    STATE.blackSoulElements=[0,3]; // Blues vocal grit + Hammond organ
-    STATE.humanFeelElements=[1,3]; // Live ensemble bleed + Analog instability
-    STATE.energyArc=1; // Wave Form — 궁중 소울: 감정이 파도처럼 밀려왔다 빠짐
+    STATE.blackSoulElements=[0,3];
+    STATE.humanFeelElements=[1,3];
+    STATE.energyArc=1;
     STATE.bpm=82;STATE.intensity=6;
-    STATE.musicKey=0;STATE.koreanScale=0; // Am 라단조 + 계면조 (애절·한)
+    STATE.musicKey=0;STATE.koreanScale=0;
+    // 06B 구음 자동 조합 — 조선궁중: 중간+끝 포인트, 중저음, 남녀 혼성, 장단 그루브 스타일
+    STATE.gueumPositions=['mid','end'];STATE.gueumPitch='midlow';STATE.gueumGender='both';
+    STATE.gueumStyle=4;STATE.gueumStrength='strong';
+    // 06C 한(恨) 소울 스타일 자동 조합 — 조선 궁중 소울
+    STATE.hanSoulStyle=0;
     selectInstrByCategory('string',0);
   } else if (type==='sanjo') {
     STATE.genre=1;STATE.moods=[2,5];STATE.concept=1;STATE.vocalStyle=2;STATE.vocalTones=[2,9];
     STATE.textures=[4,6];STATE.grooves=[0,6];STATE.spaces=[2];STATE.koreanGrooves=[0,3,7];
     STATE.bassStyles=[1,5];STATE.koreanFeelings=[4,7];
-    STATE.blackSoulElements=[0,3]; // Blues vocal grit + Hammond organ
-    STATE.humanFeelElements=[0,6]; // Imperfect timing + Spontaneous fills
-    STATE.energyArc=2; // Mountain Peak — 산조: 즉흥 절정 후 여운으로 하강
+    STATE.blackSoulElements=[0,3];
+    STATE.humanFeelElements=[0,6];
+    STATE.energyArc=2;
     STATE.bpm=88;STATE.intensity=5;
-    STATE.musicKey=2;STATE.koreanScale=0; // Em 미단조 + 계면조 (즉흥성·재즈·한)
+    STATE.musicKey=2;STATE.koreanScale=0;
+    // 06B 구음 자동 조합 — 산조째즈: 시작+중간+끝, 중고음, 남녀 혼성, 즉흥 구음 스타일
+    STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
+    STATE.gueumStyle=0;STATE.gueumStrength='strong';
+    // 06C 한(恨) 소울 스타일 자동 조합 — 산조 블루 즉흥
+    STATE.hanSoulStyle=3;
     selectInstrByCategory('string',1);
   } else if (type==='pansori') {
     STATE.genre=2;STATE.moods=[2,7];STATE.concept=2;STATE.vocalStyle=2;STATE.vocalTones=[5,6,8];
     STATE.textures=[0,1,6];STATE.grooves=[1,3];STATE.spaces=[0,3];STATE.koreanGrooves=[4,9,10];
     STATE.bassStyles=[1,2];STATE.koreanFeelings=[1,6,7];
-    STATE.blackSoulElements=[0,4]; // Blues vocal grit + Delta blues slide guitar (인덱스 수정)
-    STATE.humanFeelElements=[0,1]; // Imperfect timing + Live ensemble bleed
-    STATE.energyArc=0; // Slow Burn Rise — 판소리: 서사적 고조, 클라이맥스 폭발
+    STATE.blackSoulElements=[0,4];
+    STATE.humanFeelElements=[0,1];
+    STATE.energyArc=0;
     STATE.bpm=78;STATE.intensity=7;
-    STATE.musicKey=1;STATE.koreanScale=0; // Dm 레단조 + 계면조 (서사적 소울·한)
+    STATE.musicKey=1;STATE.koreanScale=0;
+    // 06B 구음 자동 조합 — 판소리 소울: 시작+끝 포인트, 중저음, 남성 보컬, 판소리 한 스타일
+    STATE.gueumPositions=['start','end'];STATE.gueumPitch='midlow';STATE.gueumGender='male';
+    STATE.gueumStyle=3;STATE.gueumStrength='strong';
+    // 06C 한(恨) 소울 스타일 자동 조합 — 판소리 한 블루스
+    STATE.hanSoulStyle=0;
     selectInstrByCategory('string',2);
   } else if (type==='minyo') {
     STATE.genre=3;STATE.moods=[7,8];STATE.concept=3;STATE.vocalStyle=1;STATE.vocalTones=[5,6];
     STATE.textures=[0,1];STATE.grooves=[1,4];STATE.spaces=[0];STATE.koreanGrooves=[4,8];
     STATE.bassStyles=[2];STATE.koreanFeelings=[1,6];
-    STATE.blackSoulElements=[0,4,5]; // Blues vocal grit + Delta blues + Chicago blues (인덱스 수정)
-    STATE.humanFeelElements=[0,6]; // Imperfect timing + Human breath imperfections
-    STATE.energyArc=1; // Wave Form — 민요 블루스: 한(恨)이 파도처럼 밀려왔다 빠짐
+    STATE.blackSoulElements=[0,4,5];
+    STATE.humanFeelElements=[0,6];
+    STATE.energyArc=1;
     STATE.bpm=75;STATE.intensity=6;
-    STATE.musicKey=0;STATE.koreanScale=4; // Am 라단조 + 메나리토리 (처연·구슬픔·민요)
+    STATE.musicKey=0;STATE.koreanScale=4;
+    // 06B 구음 자동 조합 — 민요 블루스: 중간+끝 포인트, 중저음, 여성 보컬, 정간보 구음 스타일
+    STATE.gueumPositions=['mid','end'];STATE.gueumPitch='midlow';STATE.gueumGender='female';
+    STATE.gueumStyle=2;STATE.gueumStrength='strong';
+    // 06C 한(恨) 소울 스타일 자동 조합 — 민요 블루스 한
+    STATE.hanSoulStyle=4;
     selectInstrByCategory('string',0);
   } else if (type==='court') {
     STATE.genre=7;STATE.moods=[0,5];STATE.concept=7;STATE.vocalStyle=7;STATE.vocalTones=[9,10];
     STATE.textures=[5,6];STATE.grooves=[5,7];STATE.spaces=[1,2];STATE.koreanGrooves=[0,3,11];
     STATE.bassStyles=[3,4];STATE.koreanFeelings=[0,5];
-    STATE.blackSoulElements=[2,3]; // Call-and-response + Hammond organ
-    STATE.humanFeelElements=[1,4]; // Live ensemble bleed + Dynamic velocity variation
-    STATE.energyArc=2; // Mountain Peak — 궁중 격상: 빠른 고조 후 웅장한 절정 유지
+    STATE.blackSoulElements=[2,3];
+    STATE.humanFeelElements=[1,4];
+    STATE.energyArc=2;
     STATE.bpm=95;STATE.intensity=7;
-    STATE.musicKey=4;STATE.koreanScale=1; // Cm 도단조 + 평조 (장엄·웅장·기품)
+    STATE.musicKey=4;STATE.koreanScale=1;
+    // 06B 구음 자동 조합 — 궁중격상: 시작+중간 포인트, 중고음, 남녀 혼성, 휘모리 샤우트 스타일
+    STATE.gueumPositions=['start','mid'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
+    STATE.gueumStyle=6;STATE.gueumStrength='strong';
+    // 06C 한(恨) 소울 스타일 자동 조합 — 궁중 웅장 소울
+    STATE.hanSoulStyle=2;
     selectInstrByCategory('wind',0);
   }
   syncSliders();renderAll();syncGueumUI();buildPrompt(true);
-  showToast(`✅ 7:3 ${type.toUpperCase()} Joseon Core 프리셋 적용 완료!`);
+  showToast(`✅ 7:3 ${type.toUpperCase()} Joseon Core 프리셋 적용 완료! (구음+한소울 자동 조합)`);
 }
 function applyUltimateGroovePreset() {
   resetAll(false);
@@ -2352,172 +2377,78 @@ function applyUltimateGroovePreset() {
 function applyQuickStart(type) {
   resetAll(false);
   if (type==='drive') {
-    // 01 장르
-    STATE.genre=2;
-    // 02 분위기
-    STATE.moods=[11,14];
-    // 04 컨셉
-    STATE.concept=0;
-    // 05 보컬 스타일: Korean Soul Fusion (감성적이고 따뜻한, both)
-    STATE.vocalStyle=0;
-    // 06 보컬 톤: Slow groove phrasing + Emotional vocal delivery
-    STATE.vocalTones=[9,10];
-    // 07A 텍스처
-    STATE.textures=[0,6];
-    // 07B 그루브
-    STATE.grooves=[1,6];
-    // 07C 공간감: Wide stereo
-    STATE.spaces=[2];
-    // 07D 한국적 그루브
-    STATE.koreanGrooves=[0,4,8];
-    // 07E 베이스: Neo soul bass groove + Deep warm sub bass
-    STATE.bassStyles=[2,4];
-    // 07F 한국적 감성
-    STATE.koreanFeelings=[0,5];
-    // 07G 블랙소울: Hammond organ textures (부드러운 드라이브 감성)
-    STATE.blackSoulElements=[3];
-    // 07H 인간미
-    STATE.humanFeelElements=[0,4];
-    // 에너지 아크: Sustained Groove (드라이브 내내 안정된 에너지)
-    STATE.energyArc=5;
+    STATE.genre=2;STATE.moods=[11,14];STATE.concept=0;STATE.vocalStyle=0;STATE.vocalTones=[9,10];
+    STATE.textures=[0,6];STATE.grooves=[1,6];STATE.spaces=[2];
+    STATE.koreanGrooves=[0,4,8];STATE.bassStyles=[2,4];STATE.koreanFeelings=[0,5];
+    STATE.blackSoulElements=[3];STATE.humanFeelElements=[0,4];STATE.energyArc=5;
     STATE.bpm=98;STATE.intensity=6;
-    STATE.musicKey=2;STATE.koreanScale=0; // Em 미단조 + 계면조 (감성 드라이브)
+    STATE.musicKey=2;STATE.koreanScale=0;
+    // 06B 구음 자동 조합 — 드라이브: 중간 포인트, 중고음, 남녀 혼성, 장단 그루브 스타일
+    STATE.gueumPositions=['mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
+    STATE.gueumStyle=4;STATE.gueumStrength='strong';
+    // 06C 한(恨) 소울 스타일 자동 조합 — 서울 심야 재즈 감성
+    STATE.hanSoulStyle=2;
     selectInstrByCategory('string',0);
 
   } else if (type==='night') {
-    // 01 장르
-    STATE.genre=2;
-    // 02 분위기
-    STATE.moods=[1,5,8];
-    // 04 컨셉
-    STATE.concept=7;
-    // 05 보컬 스타일: Lo-fi Jazz Gugak (나른하고 속삭이는 로파이 톤, female)
-    STATE.vocalStyle=6;
-    // 06 보컬 톤: Breathy female vocals + Slow groove phrasing
-    STATE.vocalTones=[2,9];
-    // 07A 텍스처
-    STATE.textures=[0,6,7];
-    // 07B 그루브
-    STATE.grooves=[1,3];
-    // 07C 공간감: Jazz club + Intimate vocal space
-    STATE.spaces=[0,3];
-    // 07D 한국적 그루브
-    STATE.koreanGrooves=[4,6,9,10];
-    // 07E 베이스: Walking jazz bass + Neo soul bass groove
-    STATE.bassStyles=[1,2];
-    // 07F 한국적 감성
-    STATE.koreanFeelings=[0,6,7,8];
-    // 07G 블랙소울: Hammond organ textures
-    STATE.blackSoulElements=[4];
-    // 07H 인간미: Live ensemble bleed + Analog instability
-    STATE.humanFeelElements=[1,3];
-    // 에너지 아크: Wave Form (감정이 파도처럼 밀려왔다 빠짐)
-    STATE.energyArc=1;
+    STATE.genre=2;STATE.moods=[1,5,8];STATE.concept=7;STATE.vocalStyle=6;STATE.vocalTones=[2,9];
+    STATE.textures=[0,6,7];STATE.grooves=[1,3];STATE.spaces=[0,3];
+    STATE.koreanGrooves=[4,6,9,10];STATE.bassStyles=[1,2];STATE.koreanFeelings=[0,6,7,8];
+    STATE.blackSoulElements=[4];STATE.humanFeelElements=[1,3];STATE.energyArc=1;
     STATE.bpm=80;STATE.intensity=5;
-    STATE.musicKey=0;STATE.koreanScale=0; // Am 라단조 + 계면조 (심야·애절)
+    STATE.musicKey=0;STATE.koreanScale=0;
+    // 06B 구음 자동 조합 — 늦은밤: 끝 포인트, 중저음, 여성 보컬, 정간보 구음 스타일 (여운)
+    STATE.gueumPositions=['mid','end'];STATE.gueumPitch='midlow';STATE.gueumGender='female';
+    STATE.gueumStyle=2;STATE.gueumStrength='normal';
+    // 06C 한(恨) 소울 스타일 자동 조합 — 심야 애절 한
+    STATE.hanSoulStyle=4;
     selectInstrByCategory('string',2);
 
   } else if (type==='workout') {
-    // 01 장르
-    STATE.genre=3;
-    // 02 분위기
-    STATE.moods=[11,12];
-    // 04 컨셉
-    STATE.concept=1;
-    // 05 보컬 스타일: Cinematic Soul Fusion (웅장하고 드라마틱)
-    STATE.vocalStyle=7;
-    // 06 보컬 톤: Smooth male vocals + Warm raspy male vocals
-    STATE.vocalTones=[4,7];
-    // 07A 텍스처
-    STATE.textures=[0,5];
-    // 07B 그루브
-    STATE.grooves=[3,6];
-    // 07C 공간감: Wide stereo
-    STATE.spaces=[2];
-    // 07D 한국적 그루브
-    STATE.koreanGrooves=[2,13];
-    // 07F 한국적 감성: Traditional Korean breathing space + Modern Korean soul mood
-    STATE.koreanFeelings=[4,5];
-    // 07E 베이스: Funky bassline + Syncopated bass movement
-    STATE.bassStyles=[0,5];
-    // 07G 블랙소울: Soul belt adlibs + Call-and-response band hits
-    STATE.blackSoulElements=[1,2];
-    // 07H 인간미: Imperfect timing + Dynamic velocity + Spontaneous fills
-    STATE.humanFeelElements=[0,4,6];
-    // 에너지 아크: Twin Peaks (두 번의 절정으로 운동 폭발력 극대화)
-    STATE.energyArc=4;
+    STATE.genre=3;STATE.moods=[11,12];STATE.concept=1;STATE.vocalStyle=7;STATE.vocalTones=[4,7];
+    STATE.textures=[0,5];STATE.grooves=[3,6];STATE.spaces=[2];
+    STATE.koreanGrooves=[2,13];STATE.bassStyles=[0,5];STATE.koreanFeelings=[4,5];
+    STATE.blackSoulElements=[1,2];STATE.humanFeelElements=[0,4,6];STATE.energyArc=4;
     STATE.bpm=128;STATE.intensity=8;
-    STATE.musicKey=6;STATE.koreanScale=2; // G 솔장조 + 우조 (신명·에너지·당당)
+    STATE.musicKey=6;STATE.koreanScale=2;
+    // 06B 구음 자동 조합 — 운동/조깅: 시작+중간 포인트, 고음, 남성, 휘모리 샤우트 (에너지 폭발)
+    STATE.gueumPositions=['start','mid'];STATE.gueumPitch='high';STATE.gueumGender='male';
+    STATE.gueumStyle=6;STATE.gueumStrength='maximum';
+    // 06C 한(恨) 소울 스타일 자동 조합 — 조선 힙합 에너지
+    STATE.hanSoulStyle=1;
     selectInstrByCategory('percussion',1);
 
   } else if (type==='hiphop') {
-    // 01 장르
-    STATE.genre=4;
-    // 02 분위기
-    STATE.moods=[0,15];
-    // 04 컨셉
-    STATE.concept=4;
-    // 05 보컬 스타일: Oriental Jazz Hip-hop (힘 빼고 자연스럽게 흐르는 Chill 톤)
-    STATE.vocalStyle=5;
-    // 06 보컬 톤: Smooth male vocals + Slow groove phrasing
-    STATE.vocalTones=[4,9];
-    // 07A 텍스처
-    STATE.textures=[0,5];
-    // 07B 그루브
-    STATE.grooves=[2,6];
-    // 07C 공간감: Small jazz club
-    STATE.spaces=[0];
-    // 07D 한국적 그루브
-    STATE.koreanGrooves=[1,13];
-    // 07F 한국적 감성: Seoul night atmosphere + Modern Korean soul mood
-    STATE.koreanFeelings=[0,5];
-    // 07E 베이스: Boom bap bass pocket + Funky bassline
-    STATE.bassStyles=[3,0];
-    // 07G 블랙소울: Call-and-response band hits + Chicago blues shuffle
-    STATE.blackSoulElements=[2,5];
-    // 07H 인간미: Imperfect timing + Spontaneous fills
-    STATE.humanFeelElements=[0,6];
-    // 에너지 아크: Sustained Groove (힙합은 처음부터 끝까지 일정한 그루브)
-    STATE.energyArc=5;
+    STATE.genre=4;STATE.moods=[0,15];STATE.concept=4;STATE.vocalStyle=5;STATE.vocalTones=[4,9];
+    STATE.textures=[0,5];STATE.grooves=[2,6];STATE.spaces=[0];
+    STATE.koreanGrooves=[1,13];STATE.bassStyles=[3,0];STATE.koreanFeelings=[0,5];
+    STATE.blackSoulElements=[2,5];STATE.humanFeelElements=[0,6];STATE.energyArc=5;
     STATE.bpm=92;STATE.intensity=7;
-    STATE.musicKey=1;STATE.koreanScale=0; // Dm 레단조 + 계면조 (힙합·묵직·한)
+    STATE.musicKey=1;STATE.koreanScale=0;
+    // 06B 구음 자동 조합 — 힙합: 시작+중간+끝 포인트, 중고음, 남녀 혼성, 즉흥 스캣 스타일
+    STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
+    STATE.gueumStyle=5;STATE.gueumStrength='strong';
+    // 06C 한(恨) 소울 스타일 자동 조합 — 조선 힙합 스웩
+    STATE.hanSoulStyle=1;
     selectInstrByCategory('percussion',0);
 
   } else if (type==='labor') {
-    // 01 장르
-    STATE.genre=7;
-    // 02 분위기
-    STATE.moods=[13];
-    // 04 컨셉
-    STATE.concept=7;
-    // 05 보컬 스타일: Cinematic Soul Fusion (웅장하고 드라마틱, both)
-    STATE.vocalStyle=7;
-    // 06 보컬 톤: Warm raspy male vocals + Call and response vocals
-    STATE.vocalTones=[7,10];
-    // 07A 텍스처
-    STATE.textures=[5,6];
-    // 07B 그루브
-    STATE.grooves=[4,5];
-    // 07C 공간감: Small jazz club (집단 노동 현장감)
-    STATE.spaces=[0];
-    // 07D 한국적 그루브
-    STATE.koreanGrooves=[2,3];
-    // 07F 한국적 감성: Traditional Korean breathing space + Modern Korean soul mood
-    STATE.koreanFeelings=[4,5];
-    // 07E 베이스: Funky bassline + Deep warm sub bass
-    STATE.bassStyles=[0,4];
-    // 07G 블랙소울: Call-and-response band hits
-    STATE.blackSoulElements=[2];
-    // 07H 인간미: Live ensemble bleed + Spontaneous fills
-    STATE.humanFeelElements=[1,6];
-    // 에너지 아크: Slow Burn Rise (서서히 고조되는 노동요 구조)
-    STATE.energyArc=0;
+    STATE.genre=7;STATE.moods=[13];STATE.concept=7;STATE.vocalStyle=7;STATE.vocalTones=[7,10];
+    STATE.textures=[5,6];STATE.grooves=[4,5];STATE.spaces=[0];
+    STATE.koreanGrooves=[2,3];STATE.bassStyles=[0,4];STATE.koreanFeelings=[4,5];
+    STATE.blackSoulElements=[2];STATE.humanFeelElements=[1,6];STATE.energyArc=0;
     STATE.bpm=95;STATE.intensity=5;
-    STATE.musicKey=6;STATE.koreanScale=2; // G 솔장조 + 우조 (호탕·노동·신명)
+    STATE.musicKey=6;STATE.koreanScale=2;
+    // 06B 구음 자동 조합 — 노동가: 시작+끝 포인트, 중저음, 남성 보컬, 장단 그루브 (집단 노동 현장)
+    STATE.gueumPositions=['start','end'];STATE.gueumPitch='midlow';STATE.gueumGender='male';
+    STATE.gueumStyle=4;STATE.gueumStrength='strong';
+    // 06C 한(恨) 소울 스타일 자동 조합 — 민초의 한 블루스
+    STATE.hanSoulStyle=0;
     selectInstrByCategory('wind',0);
   }
   const msg={joseon:'✅ Joseon Court',sanjo:'✅ Sanjo Jazz',pansori:'✅ Pansori Soul',minyo:'✅ Minyo Blues',court:'✅ Court Elevation',drive:'✅ 드라이브',night:'✅ 늦은 밤',workout:'✅ 운동',hiphop:'✅ 힙합',labor:'✅ 노동가'};
-  _finalizePreset((msg[type]||'✅')+" 세팅 전체 자동 적용 완료!");
+  syncGueumUI();
+  _finalizePreset((msg[type]||'✅')+" 세팅 전체 자동 적용 완료! (구음+한소울 자동 조합)");
 }
 function applyGueumPreset(type) {
   resetAll(false);
@@ -2696,16 +2627,17 @@ function applyRandomPreset() {
   STATE.energyArc=Math.floor(Math.random()*DATA.energyArcs.length);
   if(Math.random()<0.5){const bsShuffled=[...Array(DATA.blackSoulElements.length).keys()].sort(()=>Math.random()-.5);STATE.blackSoulElements=bsShuffled.slice(0,1+Math.floor(Math.random()*2));}
   if(Math.random()<0.5){const hfShuffled=[...Array(DATA.humanFeelElements.length).keys()].sort(()=>Math.random()-.5);STATE.humanFeelElements=hfShuffled.slice(0,1+Math.floor(Math.random()*2));}
-  if(Math.random()<0.3){
-    const positions=['start','mid','end'];
-    STATE.gueumPositions=[...positions].sort(()=>Math.random()-.5).slice(0,1+Math.floor(Math.random()*2));
-    STATE.gueumPitch=['high','midhigh','midlow','low'][Math.floor(Math.random()*4)];
-    STATE.gueumGender=['both','male','female'][Math.floor(Math.random()*3)];
-    STATE.gueumStyle=Math.floor(Math.random()*DATA.gueumStyles.length);
-    STATE.gueumStrength=['normal','strong','maximum'][Math.floor(Math.random()*3)];
-  }
-  if(Math.random()<0.3) STATE.hanSoulStyle=Math.floor(Math.random()*DATA.hanSoulStyles.length);
-  _finalizePreset("✨ 랜덤 프리셋 적용!");
+  // 06B 구음 설정 — 랜덤 시 항상 자동 조합 적용
+  const allPositions=['start','add1','mid','add2','add3','end'];
+  STATE.gueumPositions=[...allPositions].sort(()=>Math.random()-.5).slice(0,1+Math.floor(Math.random()*3));
+  STATE.gueumPitch=['high','midhigh','midlow','low'][Math.floor(Math.random()*4)];
+  STATE.gueumGender=['both','male','female'][Math.floor(Math.random()*3)];
+  STATE.gueumStyle=Math.floor(Math.random()*DATA.gueumStyles.length);
+  STATE.gueumStrength=['normal','strong','maximum'][Math.floor(Math.random()*3)];
+  // 06C 한(恨) 소울 스타일 — 랜덤 시 항상 자동 조합 적용
+  STATE.hanSoulStyle=Math.floor(Math.random()*DATA.hanSoulStyles.length);
+  syncGueumUI();
+  _finalizePreset("✨ 랜덤 프리셋 적용! (구음+한소울 자동 조합)");
 }
 
 function syncGueumUI() {
