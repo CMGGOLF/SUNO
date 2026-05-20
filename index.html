@@ -2918,12 +2918,12 @@ function insertGueumToLyrics() {
 
   // 위치별 삽입 기준: 해당 섹션의 [instrumental break] 바로 뒤에 구음 포인트 삽입
   const TAG_MAP = {
-    start: /(\[Intro\b[^\]]*\]\n\[instrumental break\])/i,
-    add1:  /(\[Verse\s*1\b[^\]]*\]\n\[instrumental break\])/i,
-    mid:   /(\[Chorus\b[^\]]*\]\n\[instrumental break\])/i,
-    add2:  /(\[Verse\s*2\b[^\]]*\]\n\[instrumental break\])/i,
-    add3:  /(\[(?:Bridge|Final\s*Chorus)\b[^\]]*\]\n\[instrumental break\])/i,
-    end:   /(\[(?:Outro|Ending)\b[^\]]*\]\n\[instrumental break\])/i,
+    start: /(\[(?:Intro|인트로)\b[^\]]*\]\n\[instrumental break\])/i,
+    add1:  /(\[(?:Verse\s*1|절\s*1)\b[^\]]*\]\n\[instrumental break\])/i,
+    mid:   /(\[(?:Chorus(?!\s*[-–]\s*(?:Final|마지막))|후렴(?!\s*[-–]))\b[^\]]*\]\n\[instrumental break\])/i,
+    add2:  /(\[(?:Verse\s*2|절\s*2)\b[^\]]*\]\n\[instrumental break\])/i,
+    add3:  /(\[(?:Bridge|Final\s*Chorus|Chorus\s*[-–]\s*Final|브릿지|후렴\s*[-–]\s*마지막)\b[^\]]*\]\n\[instrumental break\])/i,
+    end:   /(\[(?:Outro|Ending|아웃트로)\b[^\]]*\]\n\[instrumental break\])/i,
   };
 
   // 가사가 비어있으면 → 곡 길이에 맞는 섹션 구조 자동 생성
@@ -2994,8 +2994,12 @@ function insertGueumToLyrics() {
     } else {
       // [instrumental break] 없는 일반 가사 → 섹션 내용 블록 끝(다음 섹션 직전)에 삽입
       const sNameMap = {
-        start:'Intro', add1:'Verse\\s*1', mid:'Chorus',
-        add2:'Verse\\s*2', add3:'(?:Bridge|Final\\s*Chorus)', end:'(?:Outro|Ending)'
+        start: '(?:Intro|인트로)',
+        add1:  '(?:Verse\\s*1|절\\s*1)',
+        mid:   '(?:Chorus(?!\\s*[-–]\\s*(?:Final|마지막))|후렴(?!\\s*[-–]))',
+        add2:  '(?:Verse\\s*2|절\\s*2)',
+        add3:  '(?:Bridge|Final\\s*Chorus|Chorus\\s*[-–]\\s*Final|브릿지|후렴\\s*[-–]\\s*마지막)',
+        end:   '(?:Outro|Ending|아웃트로)'
       };
       const sName = sNameMap[pos] || pos;
       // 섹션 헤더 + 내용 전체를 매칭 (다음 [섹션] 직전 또는 파일 끝까지)
