@@ -977,6 +977,8 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="tab-panel active" id="lyricsEn">
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
         <button class="btn btn-gold" onclick="genLyrics('en')">✦ 영어 가사 생성</button>
+        <button class="btn btn-red" onclick="genLyricsModern('en')">🔥 요즘 트렌드 가사 (2026)</button>
+<button class="btn btn-red" onclick="genLyricsModern('kr')">🔥 요즘 트렌드 가사 (한국어)</button>
         <div style="display:flex;align-items:center;gap:4px">
           <span style="font-size:12px;color:var(--muted)">곡 길이:</span>
           <input type="text" id="lyricsDurationEn" value="3:00" style="width:70px;padding:4px 8px;font-size:12px" onblur="enforceDuration(this)" oninput="softCheckDuration(this)" placeholder="3:00">
@@ -2053,6 +2055,51 @@ async function genLyrics(lang) {
   } catch(e) { out.value='오류: '+(e.message||'알 수 없는 오류'); }
   loading.classList.remove('show');
 }
+ async function genLyricsModern(lang) {
+  const current = document.getElementById('promptBox').textContent;
+  const isEn = lang === 'en';
+  const loading = document.getElementById(isEn ? 'lyricsEnLoading' : 'lyricsKrLoading');
+  const out = document.getElementById(isEn ? 'lyricsEnOut' : 'lyricsKrOut');
+  const durationInput = document.getElementById(isEn ? 'lyricsDurationEn' : 'lyricsDurationKr');
+
+  if (durationInput) enforceDuration(durationInput);
+  const duration = durationInput?.value || '3:00';
+
+  loading.classList.add('show');
+
+  try {
+    const modernSys = isEn 
+      ? `You are a 2026 hit lyricist for viral music (K-pop, hyperpop, jersey club, rage).
+Write catchy, addictive, modern lyrics.
+Use short lines, strong hooks, repetition.
+Naturally mix English + Korean.
+Be direct, emotional, playful or chaotic.
+Avoid old poetic language (no moonlight, frost, han, etc.).
+Make it feel viral and TikTok/Shorts friendly.
+Output ONLY [Section] lyrics.`
+
+      : `당신은 2026년 바이럴 음악 작사가입니다.
+중독성 있고 직설적인 현대 가사를 작성하세요.
+짧은 문장 + 강한 훅 + 반복 사용.
+자연스럽게 영어+한국어 섞어서.
+직설적이고 감정적이며 장난기 있거나 카오스한 느낌.
+오래된 시적 표현은 피하세요.
+TikTok/쇼츠에서 바이럴 될 스타일로.
+[섹션] 태그만 출력하세요.`;
+
+    const text = await callClaude(
+      `곡 길이: ${duration}\n음악 스타일: ${current}\n\n요즘 트렌드 스타일로 가사 작성해줘.`,
+      modernSys,
+      0.93
+    );
+
+    out.value = cleanLyrics(text);
+    showToast("✅ 요즘 트렌드 가사 생성 완료!");
+  } catch(e) {
+    out.value = '오류: ' + (e.message || '알 수 없는 오류');
+  }
+  loading.classList.remove('show');
+} 
 async function genRec() {
   const loading=document.getElementById('recLoading'); const grid=document.getElementById('recGrid');
   loading.classList.add('show'); grid.innerHTML='';
