@@ -331,8 +331,6 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 .btn-soul:hover{background:rgba(200,80,80,.28)}
 .btn-hyper{background:rgba(255,180,50,.15);border-color:rgba(255,180,50,.6);color:var(--hyper)}
 .btn-hyper:hover{background:rgba(255,180,50,.28)}
-/* 섹션 레이블 장식 바 */
-.label-bar{display:inline-block;width:3px;height:14px;border-radius:2px;vertical-align:middle;margin-right:6px}
 /* Suno 직접 열기 버튼 */
 .btn-suno{background:var(--surface2);color:var(--gold);font-size:15px;padding:10px 20px;border:1.5px solid var(--gold);border-radius:8px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:6px;box-shadow:0 3px 10px rgba(201,168,76,0.15);transition:all .2s}
 .btn-suno:hover{background:rgba(201,168,76,.08)}
@@ -961,7 +959,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="tab-panel active" id="lyricsEn">
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
         <button class="btn btn-gold" onclick="genLyrics('en')">✦ 영어 가사 생성</button>
-        <button class="btn btn-red" onclick="genLyrics('en')">🔥 요즘 트렌드 가사 (2026)</button>
+        <button class="btn btn-red" onclick="genTrendLyrics('en')">🔥 요즘 트렌드 가사 (2026)</button>
         <div style="display:flex;align-items:center;gap:4px">
           <span style="font-size:12px;color:var(--muted)">곡 길이:</span>
           <input type="text" id="lyricsDurationEn" value="3:00" style="width:70px;padding:4px 8px;font-size:12px" onblur="enforceDuration(this)" oninput="softCheckDuration(this)" placeholder="3:00">
@@ -976,7 +974,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="tab-panel" id="lyricsKr">
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
         <button class="btn btn-gold" onclick="genLyrics('kr')">✦ 한국어 가사 생성</button>
-        <button class="btn btn-red" onclick="genLyrics('kr')">🔥 요즘 트렌드 가사 (한국어)</button>
+        <button class="btn btn-red" onclick="genTrendLyrics('kr')">🔥 요즘 트렌드 가사 (한국어)</button>
         <div style="display:flex;align-items:center;gap:4px">
           <span style="font-size:12px;color:var(--muted)">곡 길이:</span>
           <input type="text" id="lyricsDurationKr" value="3:00" style="width:70px;padding:4px 8px;font-size:12px" onblur="enforceDuration(this)" oninput="softCheckDuration(this)" placeholder="3:00">
@@ -1284,10 +1282,6 @@ const STATE = {
 /* ═══════════════════════════════════════════
    HELPERS
 ═══════════════════════════════════════════ */
-/* 성능: 슬라이더 연속 이벤트용 디바운서 */
-function debounce(fn, ms) {
-  let t; return function(...args) { clearTimeout(t); t = setTimeout(()=>fn.apply(this,args), ms); };
-}
 /* 성능: BPM 가이드 역순 배열 1회 계산 (매 호출마다 slice().reverse() 불필요) */
 const _bpmGuidesReversed = DATA.bpmGuides.slice().reverse();
 function renderChipGroup(containerId, dataArray, stateArray, toggleFnName, idPrefix) {
@@ -2070,6 +2064,28 @@ async function genLyrics(lang) {
   } catch(e) { out.value='오류: '+(e.message||'알 수 없는 오류'); }
   loading.classList.remove('show');
 }
+
+/* ── 트렌드 가사 생성 (2026 스타일 특화) ── */
+async function genTrendLyrics(lang) {
+  const isEn = lang === 'en';
+  const current = document.getElementById('promptBox').textContent;
+  const loading = document.getElementById(isEn?'lyricsEnLoading':'lyricsKrLoading');
+  const out = document.getElementById(isEn?'lyricsEnOut':'lyricsKrOut');
+  const durationInput = document.getElementById(isEn?'lyricsDurationEn':'lyricsDurationKr');
+  if(durationInput) enforceDuration(durationInput);
+  const duration = durationInput?.value || '3:00';
+  loading.classList.add('show');
+  try {
+    const trendPromptEn = `Write cutting-edge 2026 song lyrics for a ${duration} Joseon Core track.\n\nTREND RULES:\n1. Use 2026 global pop/R&B/hip-hop writing style — punchy, conversational, hook-driven\n2. Mix English with selective Korean emotional words (한, 아리랑, 새벽, 그리움) for authenticity\n3. Short punchy lines — max 8 words per line\n4. Hooks must be instantly singable and catchy (repeat key phrase 2-3x)\n5. NO old-fashioned poetic language — fresh, modern, street-level emotion\n6. NO instrument names ever\n7. Structure: [Intro] [Verse 1] [Chorus] [Verse 2] [Chorus] [Bridge] [Final Chorus] [Outro]\n\nMusic vibe reference:\n${current}`;
+    const trendPromptKr = `2026년 최신 트렌드 스타일의 조선 코어 가사를 ${duration} 길이로 작성하세요.\n\n트렌드 규칙:\n1. 2026년 K팝/힙합/R&B 작법 — 짧고 강렬하고 훅 중심\n2. 현대적 구어체 사용 — 일상어와 감정어 혼합\n3. 한 줄 최대 8단어 — 짧고 임팩트 있게\n4. 후렴은 즉각 따라부를 수 있을 것 (핵심 구절 2~3회 반복)\n5. 구식 시어 금지 — 신선하고 현대적인 언어\n6. 악기 이름 절대 금지\n7. 구조: [인트로] [절 1] [후렴] [절 2] [후렴] [브릿지] [후렴 - 마지막] [아웃트로]\n\n음악 분위기 참고:\n${current}`;
+    const sysTrendEn = `You are a 2026 hit songwriter. Output ONLY raw lyrics — NO numbering, NO explanations, NO parentheticals. Only [Section] tags and lyric lines.`;
+    const sysTrendKr = `당신은 2026년 히트곡 작사가입니다. 순수 가사만 출력 — 번호 금지, 설명 금지, 괄호 지시문 금지. [섹션] 태그와 가사 줄만 출력하세요.`;
+    const text = await callClaude(isEn?trendPromptEn:trendPromptKr, isEn?sysTrendEn:sysTrendKr, 0.95);
+    out.value = cleanLyrics(text);
+    showToast(`✅ 2026 트렌드 가사 생성 완료!`);
+  } catch(e) { out.value='오류: '+(e.message||'알 수 없는 오류'); }
+  loading.classList.remove('show');
+}
 async function genRec() {
   const loading=document.getElementById('recLoading'); const grid=document.getElementById('recGrid');
   loading.classList.add('show'); grid.innerHTML='';
@@ -2403,8 +2419,13 @@ function applyUltimateGroovePreset() {
   STATE.bassStyles=[0,2,4];STATE.koreanFeelings=[0,3,5];STATE.humanFeelElements=[0,1,4];
   STATE.bpm=90;STATE.intensity=6;
   STATE.musicKey=0;STATE.koreanScale=2; // Am 라단조 + 우조 (강렬한 그루브·당당)
+  // 06B 구음 자동 조합 — Ultimate Groove: 시작+중간+끝, 중고음, 혼성, 장단 그루브
+  STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
+  STATE.gueumStyle=4;STATE.gueumStrength='strong';
+  // 06C 한(恨) 소울 스타일 — 네오조선 그루브 소울
+  STATE.hanSoulStyle=2;
   selectInstrByCategory('string',0);
-  syncSliders();renderAll();buildPrompt(true);showToast("🔥 Ultimate 7:3 Joseon Groove 적용 완료!");
+  _finalizePreset("🔥 Ultimate 7:3 Joseon Groove 적용 완료! (구음+한소울 자동 조합)");
 }
 function applyQuickStart(type) {
   resetAll(false);
@@ -2526,19 +2547,6 @@ function applyGueumPreset(type) {
     STATE.gueumStyle=0;STATE.hanSoulStyle=3;
     STATE.musicKey=0;STATE.koreanScale=0; // Am 라단조 + 계면조 (산조·즉흥·애절)
     selectInstrByCategory('string',0);
-  } else if (type==='joseon_hiphop') {
-    STATE.genre=4;STATE.moods=[0,3,15];STATE.concept=4;STATE.vocalStyle=5;STATE.vocalTones=[4,9];
-    STATE.textures=[0,5];STATE.grooves=[2,6];
-    STATE.spaces=[0]; // Small jazz club (지하 클럽 감성)
-    STATE.bassStyles=[3,0]; // Boom bap bass pocket + Funky bassline
-    STATE.koreanGrooves=[1,13];STATE.koreanFeelings=[0,3];
-    STATE.blackSoulElements=[2,5]; // Call-and-response + Chicago blues shuffle (인덱스 수정)
-    STATE.energyArc=5; // Sustained Groove — 힙합: 처음부터 끝까지 일정한 그루브
-    STATE.bpm=92;STATE.intensity=7;STATE.koreanRatio=70;
-    STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
-    STATE.gueumStyle=5;STATE.hanSoulStyle=1;
-    STATE.musicKey=1;STATE.koreanScale=0; // Dm 레단조 + 계면조 (묵직·힙합·그루브)
-    selectInstrByCategory('percussion',0);
   } else if (type==='ajaeng_soul_ballad') {
     STATE.genre=6;STATE.moods=[2,7,10];STATE.concept=6;STATE.vocalStyle=8;STATE.vocalTones=[5,6,8];
     STATE.textures=[0,2,6];STATE.grooves=[1,3];
@@ -2614,19 +2622,17 @@ function applyGueumPreset(type) {
     STATE.musicKey=1;STATE.koreanScale=0; // Dm 레단조 + 계면조 (강한 비트·그루브)
     selectInstrByCategory('percussion',0);
   }
-  syncSliders();renderAll();syncGueumUI();buildPrompt(true);
   const labels={
     pansori_han_blues:'🎙️ 판소리 한 블루스',
     seoul_midnight_jazz:'🎷 서울 심야 재즈',
     sanjo_blue:'🎸 산조 블루 노트',
-    joseon_hiphop:'🎤 조선 힙합',
     ajaeng_soul_ballad:'🎻 아쟁 소울 발라드',
     arirang_hyper:'🌟 ARIRANG Hyper Fusion',
     uk_garage_gugak:'🎛️ UK Garage Gugak',
     hyper_catchy_gugak:'✨ Hyper Catchy Gugak',
     jersey_bounce_gugak:'🔥 Jersey Bounce Gugak',
   };
-  showToast((labels[type]||'✅')+' 프리셋 적용 완료!');
+  _finalizePreset((labels[type]||'✅')+' 프리셋 적용 완료!');
 }
 function applyRandomPreset() {
   resetAll(false);
@@ -2736,7 +2742,7 @@ function loadPresets() {
 function loadPreset(index) {
   let presets=JSON.parse(localStorage.getItem('gugak_presets')||'[]');
   const preset=presets[index]; if(!preset)return;
-  Object.assign(STATE,preset.state); syncSliders();renderAll();buildPrompt(true);
+  Object.assign(STATE,preset.state); syncSliders();renderAll();syncGueumUI();buildPrompt(true);
   showToast("✅ 프리셋이 불러와졌습니다!"); document.querySelector('.modal')?.remove();
 }
 
@@ -2762,6 +2768,7 @@ function resetAll(doRender=true) {
   STATE.gueumPositions=[];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
   STATE.gueumStyle=null;STATE.hanSoulStyle=null;STATE.gueumStrength='strong';
   STATE.musicKey=null;STATE.koreanScale=null;STATE.energyArc=null;
+  STATE.songDuration='3:30';
   if(doRender){
     renderAll();syncSliders();
     document.querySelectorAll(".gueum-ctrl-btn[id^=gpos_]").forEach(b=>b.classList.remove('active'));
@@ -2769,6 +2776,11 @@ function resetAll(doRender=true) {
     document.getElementById('gpitch_midhigh')?.classList.add('active');
     document.querySelectorAll(".gueum-ctrl-btn[id^=ggender_]").forEach(b=>b.classList.remove('active'));
     document.getElementById('ggender_both')?.classList.add('active');
+    // 곡 길이 UI 초기화
+    document.querySelectorAll('.dur-btn').forEach(b=>b.classList.toggle('active', b.textContent.startsWith('3:30')));
+    const customInput=document.getElementById('songDurationCustom');
+    if(customInput) customInput.value='3:30';
+    document.getElementById('durationDisplay').textContent='현재: 3:30';
     document.getElementById('promptBox').textContent='← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
     // 변형 결과 초기화
     document.getElementById('varResult_mood').innerHTML='';
