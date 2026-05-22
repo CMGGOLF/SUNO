@@ -2331,6 +2331,46 @@ function _finalizePreset(toastMsg) {
   syncSliders(); renderAll(); syncGueumUI(); buildPrompt(true);
   showToast(toastMsg);
 }
+  /* ===== 랜덤 마법 추가 ===== */
+const STRONG_RANDOM_PRESETS = ['arirang_hyper','jersey_bounce_gugak','workout','hiphop','hyper_catchy_gugak'];
+
+function applyPresetRandomness(isStrong) {
+  // BPM 조금씩 다르게 하기
+  const bpmBase = STATE.bpm;
+  const bpmRange = isStrong ? 7 : 4;
+  STATE.bpm = Math.max(65, Math.min(145, bpmBase + (Math.random() * (bpmRange*2) - bpmRange) | 0));
+
+  // EnergyArc (곡 흐름) 다르게 하기
+  const arcCandidates = isStrong ? [0,1,2,4,5] : [STATE.energyArc, (STATE.energyArc + 1) % 6];
+  STATE.energyArc = arcCandidates[Math.floor(Math.random() * arcCandidates.length)];
+
+  // 구음 위치 조금씩 다르게 하기
+  const allPos = ['start','add1','mid','add2','add3','end'];
+  if (Math.random() < 0.6) {
+    const extra = allPos.filter(p => !STATE.gueumPositions.includes(p));
+    if (extra.length > 0 && STATE.gueumPositions.length < 4) {
+      STATE.gueumPositions.push(extra[Math.floor(Math.random()*extra.length)]);
+    }
+  }
+
+  // 구음 높낮이 조금씩 다르게 하기
+  if (Math.random() < (isStrong ? 0.7 : 0.4)) {
+    const pitchOptions = isStrong ? ['high','midhigh','midlow','low'] : [STATE.gueumPitch, 'midhigh', 'midlow'];
+    STATE.gueumPitch = pitchOptions[Math.floor(Math.random() * pitchOptions.length)];
+  }
+
+  // 강한 프리셋일 때 구음 스타일도 조금 바꾸기
+  if (isStrong && Math.random() < 0.5 && STATE.gueumStyle !== null) {
+    const styleOptions = [STATE.gueumStyle, (STATE.gueumStyle + 1) % DATA.gueumStyles.length];
+    STATE.gueumStyle = styleOptions[Math.floor(Math.random() * styleOptions.length)];
+  }
+
+  // 강한 프리셋일 때 한소울 스타일도 가끔 바꾸기
+  if (isStrong && STATE.hanSoulStyle !== null && Math.random() < 0.35) {
+    STATE.hanSoulStyle = (STATE.hanSoulStyle + 1) % DATA.hanSoulStyles.length;
+  }
+}
+/* ===== 여기까지 ===== */
 function apply73Preset(type) {
   resetAll(false);
   if (type==='joseon') {
@@ -2409,6 +2449,8 @@ function apply73Preset(type) {
     STATE.hanSoulStyle=2;
     selectInstrByCategory('wind',0);
   }
+   const isStrong73 = STRONG_RANDOM_PRESETS.includes(type);
+  applyPresetRandomness(isStrong73);
   syncSliders();renderAll();syncGueumUI();buildPrompt(true);
   showToast(`✅ 7:3 ${type.toUpperCase()} Joseon Core 프리셋 적용 완료! (구음+한소울 자동 조합)`);
 }
@@ -2499,6 +2541,8 @@ function applyQuickStart(type) {
     STATE.hanSoulStyle=0;
     selectInstrByCategory('wind',0);
   }
+   const isStrongQuick = STRONG_RANDOM_PRESETS.includes(type);
+  applyPresetRandomness(isStrongQuick);
   const msg={joseon:'✅ Joseon Court',sanjo:'✅ Sanjo Jazz',pansori:'✅ Pansori Soul',minyo:'✅ Minyo Blues',court:'✅ Court Elevation',drive:'✅ 드라이브',night:'✅ 늦은 밤',workout:'✅ 운동',hiphop:'✅ 힙합',labor:'✅ 노동가'};
   syncGueumUI();
   _finalizePreset((msg[type]||'✅')+" 세팅 전체 자동 적용 완료! (구음+한소울 자동 조합)");
@@ -2632,6 +2676,8 @@ function applyGueumPreset(type) {
     hyper_catchy_gugak:'✨ Hyper Catchy Gugak',
     jersey_bounce_gugak:'🔥 Jersey Bounce Gugak',
   };
+    const isStrongGueum = STRONG_RANDOM_PRESETS.includes(type);
+  applyPresetRandomness(isStrongGueum);
   _finalizePreset((labels[type]||'✅')+' 프리셋 적용 완료!');
 }
 function applyRandomPreset() {
