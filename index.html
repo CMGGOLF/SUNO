@@ -2344,6 +2344,16 @@ function applyPresetRandomness(isStrong) {
   const arcCandidates = isStrong ? [0,1,2,4,5] : [STATE.energyArc, (STATE.energyArc + 1) % 6];
   STATE.energyArc = arcCandidates[Math.floor(Math.random() * arcCandidates.length)];
 
+  // === 국악 비율, 감정 강도, 국악기 강도도 조금씩 다르게 하기 ===
+  const ratioBase = STATE.koreanRatio || 70;
+  STATE.koreanRatio = Math.max(60, Math.min(85, ratioBase + (Math.random() * 10 - 5) | 0));
+
+  const intBase = STATE.intensity || 6;
+  STATE.intensity = Math.max(3, Math.min(9, intBase + (Math.random() * 2 - 1) | 0));
+
+  const domBase = STATE.koreanDominance || 80;
+  STATE.koreanDominance = Math.max(65, Math.min(90, domBase + (Math.random() * 10 - 5) | 0));
+  
   // 구음 위치 조금씩 다르게 하기
   const allPos = ['start','add1','mid','add2','add3','end'];
   if (Math.random() < 0.6) {
