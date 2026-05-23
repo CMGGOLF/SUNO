@@ -847,38 +847,38 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 
     <!-- 쇼츠 프리셋 -->
     <div style="font-size:12px;color:rgba(255,140,0,.9);font-weight:600;margin-bottom:8px;margin-top:4px">
-      ⚡ 임팩트 프리셋 <span style="font-size:10px;color:var(--muted);font-weight:400">(하나 선택하면 BPM·에너지 자동 설정)</span>
+      ⚡ 임팩트 프리셋 <span style="font-size:10px;color:var(--muted);font-weight:400">(하나 선택하면 BPM·장르·구음·보컬 <b style="color:rgba(255,140,0,.9)">전체 자동 조합</b>)</span>
     </div>
     <div class="shorts-preset-grid">
       <button class="shorts-preset-btn" id="sp_0" onclick="applyShortsPreset(0)">
         <span class="sp-emoji">🔥</span>
         <span class="sp-name">폭발 드롭</span>
-        <span class="sp-desc">BPM 128 · 에너지 10 · 즉각 폭발형</span>
+        <span class="sp-desc">BPM 128 · 에너지 10 · 국악 궁중 힙합</span>
       </button>
       <button class="shorts-preset-btn" id="sp_1" onclick="applyShortsPreset(1)">
         <span class="sp-emoji">💔</span>
         <span class="sp-name">감성 절정</span>
-        <span class="sp-desc">BPM 95 · 에너지 8 · 애절 클라이맥스</span>
+        <span class="sp-desc">BPM 95 · 에너지 8 · 판소리 소울</span>
       </button>
       <button class="shorts-preset-btn" id="sp_2" onclick="applyShortsPreset(2)">
         <span class="sp-emoji">👑</span>
         <span class="sp-name">궁중 임팩트</span>
-        <span class="sp-desc">BPM 85 · 에너지 9 · 장엄 클라이맥스</span>
+        <span class="sp-desc">BPM 85 · 에너지 9 · 조선 궁중 소울</span>
       </button>
       <button class="shorts-preset-btn" id="sp_3" onclick="applyShortsPreset(3)">
         <span class="sp-emoji">🥁</span>
         <span class="sp-name">그루브 훅</span>
-        <span class="sp-desc">BPM 112 · 에너지 8 · 리듬 중심형</span>
+        <span class="sp-desc">BPM 112 · 에너지 8 · 네오조선 퓨전</span>
       </button>
       <button class="shorts-preset-btn" id="sp_4" onclick="applyShortsPreset(4)">
         <span class="sp-emoji">🌊</span>
         <span class="sp-name">한(恨) 폭발</span>
-        <span class="sp-desc">BPM 78 · 에너지 9 · 한 감성 폭발</span>
+        <span class="sp-desc">BPM 78 · 에너지 9 · 아쟁 딥 소울</span>
       </button>
       <button class="shorts-preset-btn" id="sp_5" onclick="applyShortsPreset(5)">
         <span class="sp-emoji">⚡</span>
         <span class="sp-name">힙합 드롭</span>
-        <span class="sp-desc">BPM 140 · 에너지 10 · 808 폭발형</span>
+        <span class="sp-desc">BPM 140 · 에너지 10 · 국악 궁중 힙합</span>
       </button>
     </div>
 
@@ -3390,6 +3390,7 @@ const SHORTS_PRESETS = [
     koreanRatio: 80,
     musicKey: 0, koreanScale: 2,
     hanSoulStyle: 1,             // 조선 힙합
+    instrCat: 'percussion', instrIdx: 0,  // 장구 코어
     hookPrompt: 'STOP-SCROLL HOOK: Explosive percussion hit on beat 1 — zero silence, zero intro. Korean instruments detonate at full power. Janggu and 808 collide simultaneously. Goosebumps guaranteed within 2 seconds. Pure kinetic energy from first millisecond.',
     dropPrompt: 'DROP: Maximum volume, maximum aggression. Every Korean instrument at peak. Rhythm relentless. No breathing room. Viewer physically cannot stop listening.',
   },
@@ -3407,6 +3408,7 @@ const SHORTS_PRESETS = [
     koreanRatio: 85,
     musicKey: 1, koreanScale: 0,
     hanSoulStyle: 2,             // 서울 심야 재즈
+    instrCat: 'string', instrIdx: 1,  // 해금 리드
     hookPrompt: 'STOP-SCROLL HOOK: Opens at emotional peak — haegeum or gayageum already in full cry. No buildup. Pure raw 한(恨) from note 1. Listener feels their chest tighten within 3 seconds. Overwhelming longing and grief with zero warning.',
     dropPrompt: 'DROP CLIMAX: Korean instrument solo at maximum emotional devastation. Voice breaks. Notes bend and fall. Unresolved grief pours out. Viewer stops everything to listen.',
   },
@@ -3424,6 +3426,7 @@ const SHORTS_PRESETS = [
     koreanRatio: 90,
     musicKey: 4, koreanScale: 1,
     hanSoulStyle: 0,             // 조선 궁중 소울
+    instrCat: 'wind', instrIdx: 0,  // 대금 리드
     hookPrompt: 'STOP-SCROLL HOOK: Full Joseon court ensemble detonates on beat 1 — gayageum, daegeum, haegeum, and percussion all firing together at maximum grandeur. Noble devastation. Cinematic scale. Viewer feels transported to Joseon court in 2 seconds.',
     dropPrompt: 'DROP CLIMAX: All Korean court instruments at absolute peak volume and emotion. Majestic and overwhelming. The weight of 500 years of Korean history in one moment.',
   },
@@ -3441,6 +3444,7 @@ const SHORTS_PRESETS = [
     koreanRatio: 75,
     musicKey: 0, koreanScale: 2,
     hanSoulStyle: 3,             // 산조 블루 노트
+    instrCat: 'percussion', instrIdx: 0,  // 장구 코어
     hookPrompt: 'STOP-SCROLL HOOK: Irresistible groove lock from beat 1 — janggu and bass hit together, creating instant head-nodding reflex. Viewer body moves involuntarily within 1 second. Korean rhythm so magnetic it feels impossible to scroll past.',
     dropPrompt: 'DROP: Groove intensifies to unstoppable momentum. Rhythm becomes hypnotic. Viewer replays immediately just for the groove.',
   },
@@ -3458,6 +3462,7 @@ const SHORTS_PRESETS = [
     koreanRatio: 90,
     musicKey: 1, koreanScale: 0,
     hanSoulStyle: 0,             // 판소리 한 블루스
+    instrCat: 'string', instrIdx: 2,  // 아쟁 딥 리드
     hookPrompt: 'STOP-SCROLL HOOK: Opens with ajaeng or haegeum in raw anguish — deep Korean 한(恨) unleashed at full volume from the first bow stroke. Ancient grief so pure and overwhelming that viewer freezes. No words needed. Pain is universal.',
     dropPrompt: 'DROP: 한(恨) at absolute maximum. Korean instrument screams and breaks. Centuries of suppressed sorrow exploding in one moment. Devastating and unforgettable.',
   },
@@ -3475,6 +3480,7 @@ const SHORTS_PRESETS = [
     koreanRatio: 70,
     musicKey: 0, koreanScale: 2,
     hanSoulStyle: 1,             // 조선 힙합
+    instrCat: 'percussion', instrIdx: 1,  // 꽹과리 악센트 + 장구
     hookPrompt: 'STOP-SCROLL HOOK: 808 sub-bass drop hits simultaneously with janggu on beat 1 — chest-rattling impact. Trap hi-hats and Korean percussion fuse into unstoppable trap groove. Viewer feels the bass physically before they process what they heard.',
     dropPrompt: 'DROP: 808 and Korean percussion at absolute maximum impact. Relentless trap energy fused with Korean rhythm. Cannot be ignored. Cannot be skipped.',
   },
@@ -3593,11 +3599,16 @@ function applyShortsPreset(idx) {
     if (ratioSlider) ratioSlider.value = preset.koreanRatio;
   }
 
-  /* ── 9. 프리셋 버튼 active ── */
+  /* ── 9. 악기 자동 선택 ── */
+  if (preset.instrCat !== undefined && preset.instrIdx !== undefined) {
+    selectInstrByCategory(preset.instrCat, preset.instrIdx);
+  }
+
+  /* ── 10. 프리셋 버튼 active ── */
   document.querySelectorAll('.shorts-preset-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('sp_' + idx)?.classList.add('active');
 
-  /* ── 10. 전체 UI 갱신 ── */
+  /* ── 11. 전체 UI 갱신 ── */
   syncSliders();
   renderAll();
   syncGueumUI();
