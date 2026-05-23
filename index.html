@@ -1917,7 +1917,32 @@ function _doBuildPrompt() {
     parts.push(`[Korean Core ${domLabel}] ${dom}% traditional instruments dominate (melody+emotion+rhythm) with 시김새·농현·정간보. Modern ${100-dom}% = subtle background only.`);
     if (STATE.genre!==null&&DATA.genres[STATE.genre]) { const g=DATA.genres[STATE.genre]; parts.push(`[Genre] ${g.en} (${g.kr})`); }
     if(STATE.moods.length){const ms=getEnList(STATE.moods,DATA.moods);if(ms)parts.push(`[Mood] ${ms}`);}
-    if (STATE.instr) parts.push(`[Instruments] ${STATE.instr.en}`);
+    if (STATE.instr) {
+      // 국악기별 Suno가 이해하는 음색 특성 매핑
+      const instrSonicMap = {
+        'Gayageum': 'plucked zither — bright crystalline pluck tone, finger slides, delicate 시김새 ornaments, harp-like resonance',
+        'Haegeum': 'bowed two-string fiddle — nasal crying tone like a human voice weeping, raw emotional slides, quivering vibrato, NOT a violin',
+        'Ajaeng': 'bowed large zither — deep gravelly cello-like sustained tone, rough bow friction, raw and emotionally devastating low register',
+        'Geomungo': 'plucked zither — deep resonant thump, darker and lower than gayageum, percussive attack with long sustain',
+        'Yanggeum': 'hammered dulcimer — bright bell-like tone, Korean hammered string chords, clear crystalline resonance',
+        'Daegeum': 'large bamboo transverse flute — breathy airy tone with audible breath noise, wide emotional vibrato, haunting sustained phrases, NOT a Western flute',
+        'Piri': 'double-reed wind — penetrating nasal buzz tone, sharp and raw, piercing traditional Korean oboe timbre, earthy and wild',
+        'Danso': 'small end-blown bamboo flute — pure clear delicate tone, airy breath, gentle and ethereal',
+        'Saenghwang': 'free-reed mouth organ — sustained harmonic cluster chords, unique buzzy resonance, drone-like East Asian timbre',
+        'Janggu': 'double-headed hourglass drum — deep resonant boom on left head, sharp dry crack on right head, traditional Korean rhythmic pulse',
+        'Kkwaenggwari': 'small hand-held gong — sharp metallic clang, bright penetrating accent, cutting through the mix',
+        'Buk': 'barrel drum — deep resonant thud, powerful and warm, traditional Korean ceremonial drum',
+      };
+      const instrEn = STATE.instr.en;
+      const sonicParts = [];
+      for (const [name, sonic] of Object.entries(instrSonicMap)) {
+        if (instrEn.includes(name)) sonicParts.push(`${name} (${sonic})`);
+      }
+      parts.push(`[Instruments] ${instrEn}`);
+      if (sonicParts.length) {
+        parts.push(`CRITICAL — Korean instrument timbre requirements: ${sonicParts.join(' | ')}. Each of these instruments MUST be clearly and prominently audible in the final mix. Their authentic Korean timbre — NOT Western equivalents — must define the sonic identity. Do NOT replace with Western instruments. Do NOT bury in reverb or background layers. The lead Korean instrument must carry the melody and be the most prominent sound.`);
+      }
+    }
     if (STATE.concept!==null&&DATA.concepts[STATE.concept]) { const c=DATA.concepts[STATE.concept]; parts.push(`[Concept] ${c.name}`); parts.push(`[Core Mood] ${c.core.join(', ')}`); parts.push(`[Instruments (Concept)] ${c.inst.join(', ')}`); }
     if (STATE.vocalStyle!==null&&DATA.vocalStyles[STATE.vocalStyle]) { const vs=DATA.vocalStyles[STATE.vocalStyle]; parts.push(`[Vocal Style] ${vs.en} — ${vs.tone}`); }
     if(STATE.textures.length){const ts=getEnList(STATE.textures,DATA.textures);if(ts)parts.push(`[Texture] ${ts}`);}
