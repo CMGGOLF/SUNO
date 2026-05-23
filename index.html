@@ -2202,14 +2202,52 @@ async function genTitle() {
   const current=document.getElementById('promptBox').textContent;
   const loading=document.getElementById('titleLoading'); loading.classList.add('show');
   try {
+    // ── 구음 감지 함수 ──────────────────────────────────────────
+    // 가사 줄의 50% 이상이 구음 패턴이면 true 반환
+    const isGueumHeavy = (text) => {
+      const lines = text.split('\n').filter(l => l.trim() && !l.startsWith('['));
+      if (!lines.length) return false;
+      // 구음 음절 패턴: 어/아/으/에/이/야/호/흥/헤/~ 로만 이루어진 짧은 단어
+      const gueumPattern = /^[어아으에이야호흥헤~]+$/;
+      const gueumLines = lines.filter(line => {
+        const words = line.trim().split(/\s+/);
+        const gueumWords = words.filter(w => gueumPattern.test(w));
+        return (gueumWords.length / Math.max(words.length, 1)) > 0.6;
+      });
+      return (gueumLines.length / lines.length) > 0.5;
+    };
+
+    // ── 가사 스니펫 추출 ────────────────────────────────────────
     const lyricsSnippet = (() => {
       const el = document.getElementById('lyricsEnOut') || document.getElementById('lyricsKrOut');
       const val = el ? (el.value || '').trim() : '';
       return val ? val.split('\n').filter(l => l.trim() && !l.startsWith('[')).slice(0, 6).join('\n') : '';
     })();
-    const titleContext = lyricsSnippet
-      ? `Music prompt:\n${current}\n\nFirst lines of the lyrics (use for mood/imagery reference):\n${lyricsSnippet}`
-      : `Music prompt:\n${current}`;
+
+    // ── STATE에서 곡 정보 꺼내기 ────────────────────────────────
+    const genreName    = (STATE.genre !== null && DATA.genres[STATE.genre])
+                           ? DATA.genres[STATE.genre].kr : '';
+    const moodNames    = STATE.moods.map(i => DATA.moods[i]?.kr).filter(Boolean).join(', ');
+    const gueumStyleName = (STATE.gueumStyle !== null && DATA.gueumStyles[STATE.gueumStyle])
+                           ? DATA.gueumStyles[STATE.gueumStyle].kr : '';
+
+    // ── 구음 여부에 따라 AI 컨텍스트 분기 ──────────────────────
+    let titleContext;
+    if (lyricsSnippet && !isGueumHeavy(lyricsSnippet)) {
+      // 일반 가사 → 기존 방식 그대로
+      titleContext = `Music prompt:\n${current}\n\nFirst lines of the lyrics (use for mood/imagery reference):\n${lyricsSnippet}`;
+    } else {
+      // 구음 위주 or 가사 없음 → STATE 정보로 대체
+      titleContext = `Music prompt:\n${current}
+
+[Note] This track uses gueum (구음) — Korean traditional vocal sounds (어~이~야~, 에헤~야~ etc.).
+The lyrics are NOT semantic text. DO NOT reference lyric syllables in the title.
+Base the title entirely on the musical atmosphere below:
+- Genre: ${genreName || '(설정 없음)'}
+- Mood: ${moodNames || '(설정 없음)'}
+- Gueum style: ${gueumStyleName || '(설정 없음)'}`;
+    }
+
     const titleSys = `You are a poetic music title writer.
 Rules for the English title:
 - MAX 4 words. Short is better.
