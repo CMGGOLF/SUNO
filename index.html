@@ -329,6 +329,49 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 /* 구음 프리셋 — 소울/한 스타일 버튼 */
 .btn-soul{background:rgba(200,80,80,.15);border-color:rgba(200,80,80,.5);color:var(--soul)}
 .btn-soul:hover{background:rgba(200,80,80,.28)}
+/* ── 쇼츠 전용 모드 ── */
+.btn-shorts{
+  background:linear-gradient(135deg,#ff4500,#ff8c00);
+  border-color:transparent;color:#fff;font-weight:700;letter-spacing:.5px;
+  box-shadow:0 2px 12px rgba(255,69,0,.35);
+}
+.btn-shorts:hover{background:linear-gradient(135deg,#ff5500,#ffa020);box-shadow:0 3px 16px rgba(255,69,0,.5);}
+.btn-shorts-off{
+  background:rgba(255,69,0,.12);border-color:rgba(255,69,0,.4);color:#ff7040;font-weight:700;
+}
+.btn-shorts-off:hover{background:rgba(255,69,0,.22);}
+.shorts-section-active{border-color:rgba(255,80,0,.6)!important;background:rgba(255,55,0,.05)!important;}
+.shorts-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:linear-gradient(135deg,rgba(255,69,0,.2),rgba(255,140,0,.15));
+  border:1px solid rgba(255,100,0,.5);border-radius:20px;
+  padding:3px 11px;font-size:11px;color:#ff7040;font-weight:700;letter-spacing:.5px;
+}
+.shorts-badge::before{content:'';width:7px;height:7px;border-radius:50%;background:#ff5020;animation:pulse-dot 1s infinite;}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.8)}}
+.shorts-impact-bar{
+  display:grid;grid-template-columns:1fr 2fr 1fr;gap:6px;margin:12px 0;
+}
+.shorts-segment{
+  border-radius:8px;padding:10px 12px;text-align:center;border:1px solid;
+}
+.shorts-seg-hook{border-color:rgba(255,140,0,.4);background:rgba(255,140,0,.08);}
+.shorts-seg-drop{border-color:rgba(255,69,0,.5);background:rgba(255,69,0,.1);}
+.shorts-seg-fade{border-color:rgba(200,140,0,.3);background:rgba(200,140,0,.06);}
+.shorts-seg-label{font-size:10px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:1px;}
+.shorts-seg-time{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;}
+.shorts-seg-name{font-size:11px;margin-top:3px;color:var(--text);}
+.shorts-preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+.shorts-preset-btn{
+  border:1px solid var(--border);border-radius:8px;padding:10px 12px;
+  background:var(--surface2);cursor:pointer;transition:all .2s;text-align:left;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.shorts-preset-btn:hover{border-color:rgba(255,100,0,.5);transform:translateY(-1px);}
+.shorts-preset-btn.active{border-color:rgba(255,100,0,.7);background:rgba(255,69,0,.1);}
+.sp-emoji{font-size:16px;display:block;margin-bottom:4px;}
+.sp-name{font-size:12px;font-weight:700;color:var(--text);}
+.sp-desc{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.4;}
 .btn-hyper{background:rgba(255,180,50,.15);border-color:rgba(255,180,50,.6);color:var(--hyper)}
 .btn-hyper:hover{background:rgba(255,180,50,.28)}
 /* Suno 직접 열기 버튼 */
@@ -738,6 +781,132 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       💡 수노는 기본적으로 <b style="color:var(--gold)">2분 내외</b>로 짧게 생성합니다.<br>
       이 설정이 스타일 프롬프트에 <b style="color:var(--gold)">HARD STOP 강제</b> 형태로 삽입되어 길이를 제한합니다.<br>
       <span style="color:var(--red)">⚠️ 5:00 초과 설정 시 Suno가 빈 공간을 생성할 수 있습니다.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     🎬 쇼츠 전용 모드 섹션
+════════════════════════════════════════ -->
+<div class="section" id="shortsModeSection" style="border-color:rgba(255,80,0,.3);background:rgba(255,55,0,.03)">
+  <div class="section-head" style="background:rgba(255,55,0,.07);cursor:pointer" onclick="toggleShortsMode()">
+    <div class="sec-num" style="background:linear-gradient(135deg,#ff4500,#ff8c00);color:#fff">🎬</div>
+    <div class="sec-title">
+      쇼츠 전용 임팩트 모드
+      <span style="font-size:11px;color:rgba(255,140,0,.8);margin-left:6px">45초~1분 · 훅·드롭·페이드만</span>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+      <div id="shortsModeIndicator" style="display:none" class="shorts-badge">🔴 SHORTS ON</div>
+      <div style="font-size:11px;color:var(--muted)">클릭하여 활성화/해제</div>
+    </div>
+  </div>
+
+  <div class="section-body" id="shortsModeBody" style="display:none">
+    <div style="background:rgba(255,60,0,.08);border:1px solid rgba(255,80,0,.25);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:11px;color:#ff9060;line-height:1.8">
+      🎯 <b>쇼츠 모드란?</b> 전체 곡 구조 없이 <b>임팩트 있는 부분만</b> 압축 생성합니다.<br>
+      <span style="color:var(--muted)">• <b style="color:#ff8040">직접 완성</b>: 1:00 — Suno에서 바로 완성본으로 사용<br>
+      • <b style="color:#ffaa40">편집용 풀버전</b>: 2:30 — 만든 뒤 편집툴에서 45초 구간 추출 (안정적)</span>
+    </div>
+
+    <!-- 길이 서브모드 선택 -->
+    <div style="display:flex;gap:10px;margin-bottom:14px">
+      <button class="shorts-preset-btn active" id="shorts_submode_direct"
+        onclick="setShortsSubMode('direct')"
+        style="flex:1;border-color:rgba(255,100,0,.6);background:rgba(255,69,0,.12)">
+        <span class="sp-emoji">✅</span>
+        <span class="sp-name" style="color:#ff8040">직접 완성 · 1:00</span>
+        <span class="sp-desc">Suno에서 바로 완성본<br>유튜브 쇼츠 알고리즘 최적</span>
+      </button>
+      <button class="shorts-preset-btn" id="shorts_submode_edit"
+        onclick="setShortsSubMode('edit')"
+        style="flex:1">
+        <span class="sp-emoji">✂️</span>
+        <span class="sp-name" style="color:#ffaa40">편집용 풀버전 · 2:30</span>
+        <span class="sp-desc">만든 뒤 편집툴에서<br>45초 클립 추출 (안정적)</span>
+      </button>
+    </div>
+
+    <!-- 구조 시각화 -->
+    <div class="shorts-impact-bar">
+      <div class="shorts-segment shorts-seg-hook">
+        <div class="shorts-seg-label">Hook</div>
+        <div class="shorts-seg-time" style="color:#ffaa00">0~5초</div>
+        <div class="shorts-seg-name">즉각 훅</div>
+      </div>
+      <div class="shorts-segment shorts-seg-drop">
+        <div class="shorts-seg-label">⚡ DROP / CLIMAX</div>
+        <div class="shorts-seg-time" style="color:#ff5020">5~35초</div>
+        <div class="shorts-seg-name">감정 폭발 · 절정</div>
+      </div>
+      <div class="shorts-segment shorts-seg-fade">
+        <div class="shorts-seg-label">Outro</div>
+        <div class="shorts-seg-time" style="color:#c8a030">35~45초</div>
+        <div class="shorts-seg-name">극적 페이드아웃</div>
+      </div>
+    </div>
+
+    <!-- 쇼츠 프리셋 -->
+    <div style="font-size:12px;color:rgba(255,140,0,.9);font-weight:600;margin-bottom:8px;margin-top:4px">
+      ⚡ 임팩트 프리셋 <span style="font-size:10px;color:var(--muted);font-weight:400">(하나 선택하면 BPM·에너지 자동 설정)</span>
+    </div>
+    <div class="shorts-preset-grid">
+      <button class="shorts-preset-btn" id="sp_0" onclick="applyShortsPreset(0)">
+        <span class="sp-emoji">🔥</span>
+        <span class="sp-name">폭발 드롭</span>
+        <span class="sp-desc">BPM 128 · 에너지 10 · 즉각 폭발형</span>
+      </button>
+      <button class="shorts-preset-btn" id="sp_1" onclick="applyShortsPreset(1)">
+        <span class="sp-emoji">💔</span>
+        <span class="sp-name">감성 절정</span>
+        <span class="sp-desc">BPM 95 · 에너지 8 · 애절 클라이맥스</span>
+      </button>
+      <button class="shorts-preset-btn" id="sp_2" onclick="applyShortsPreset(2)">
+        <span class="sp-emoji">👑</span>
+        <span class="sp-name">궁중 임팩트</span>
+        <span class="sp-desc">BPM 85 · 에너지 9 · 장엄 클라이맥스</span>
+      </button>
+      <button class="shorts-preset-btn" id="sp_3" onclick="applyShortsPreset(3)">
+        <span class="sp-emoji">🥁</span>
+        <span class="sp-name">그루브 훅</span>
+        <span class="sp-desc">BPM 112 · 에너지 8 · 리듬 중심형</span>
+      </button>
+      <button class="shorts-preset-btn" id="sp_4" onclick="applyShortsPreset(4)">
+        <span class="sp-emoji">🌊</span>
+        <span class="sp-name">한(恨) 폭발</span>
+        <span class="sp-desc">BPM 78 · 에너지 9 · 한 감성 폭발</span>
+      </button>
+      <button class="shorts-preset-btn" id="sp_5" onclick="applyShortsPreset(5)">
+        <span class="sp-emoji">⚡</span>
+        <span class="sp-name">힙합 드롭</span>
+        <span class="sp-desc">BPM 140 · 에너지 10 · 808 폭발형</span>
+      </button>
+    </div>
+
+    <!-- 쇼츠 구음만 생성 -->
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,80,0,.2)">
+      <div style="padding:16px;background:rgba(160,90,58,.08);border:1px solid rgba(160,90,58,.35);border-radius:8px">
+        <div style="font-size:13px;color:var(--korean2);font-weight:700;margin-bottom:6px">
+          🎙️ 구음만 쇼츠 가사 생성
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.7">
+          가사 없이 <b style="color:var(--korean2)">구음 소리만</b>으로 훅→드롭→페이드 구조를 채웁니다.<br>
+          06B에서 선택한 스타일·음역 그대로 반영 — 미선택 시 음역대별 기본 구음 자동 적용.
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-korean" onclick="genGueumOnlyShorts('en')" style="font-size:13px;padding:10px 22px">
+            🎙️ 영어 태그 + 구음만 생성
+          </button>
+          <button class="btn btn-korean" onclick="genGueumOnlyShorts('kr')" style="font-size:13px;padding:10px 22px">
+            🎙️ 한국어 태그 + 구음만 생성
+          </button>
+        </div>
+        <div style="font-size:10px;color:var(--dim);margin-top:10px">💡 가사창(섹션 11)에 자동 삽입됩니다. ※ 06B 구음 스타일 미선택 시 기본 구음이 적용됩니다.</div>
+      </div>
+    </div>
+
+    <!-- 해제 버튼 -->
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,80,0,.15)">
+      <button class="btn btn-shorts-off" onclick="toggleShortsMode()">✖ 쇼츠 모드 해제 (3:30 복원)</button>
     </div>
   </div>
 </div>
@@ -1277,6 +1446,8 @@ const STATE = {
   koreanScale:null,
   energyArc:null,
   songDuration:'3:30',
+  shortsMode:false,
+  shortsPreset:null,
 };
 
 /* ═══════════════════════════════════════════
@@ -1831,6 +2002,29 @@ function _doBuildPrompt() {
       const _durParts = STATE.songDuration.split(':');
       const _durSec = parseInt(_durParts[0])*60 + parseInt(_durParts[1]||0);
       parts.push(`[Duration] HARD STOP at ${STATE.songDuration} (${_durSec} seconds total) — song MUST end exactly at ${STATE.songDuration}, 5-second fade-out only, NO extended outro, NO silence padding after ${STATE.songDuration}, STRICT length limit`);
+    }
+    /* ── 🎬 쇼츠 전용 모드 프롬프트 주입 ── */
+    if (STATE.shortsMode) {
+      const presetPrompt = (STATE.shortsPreset !== null && SHORTS_PRESETS[STATE.shortsPreset])
+        ? SHORTS_PRESETS[STATE.shortsPreset].prompt
+        : '[SHORTS DROP] Instant emotional explosion from beat 1 — no intro, no buildup.';
+      const isEdit = STATE.shortsSubMode === 'edit';
+      if (isEdit) {
+        parts.push(
+          `[🎬 YOUTUBE SHORTS — EDIT VERSION 2:30]`,
+          `Structure for post-editing: [0:00~0:10 Cold open hook] → [0:10~1:30 SUSTAINED CLIMAX PEAK — maximum energy, no drops in intensity] → [1:30~2:00 second explosive peak] → [2:00~2:30 dramatic fade]. The ENTIRE track should stay at high intensity. Editor will extract the best 45-second window.`,
+          `CRITICAL: No slow intro. Energy must be at 80%+ from the very first beat. Peak moments at 0:10 and 1:30.`,
+          presetPrompt
+        );
+      } else {
+        parts.push(
+          `[🎬 YOUTUBE SHORTS MODE — 60 SECONDS ONLY]`,
+          `CRITICAL: This is a 60-second YouTube Shorts clip. NO full song structure. NO verse. NO chorus. NO bridge.`,
+          `MANDATORY STRUCTURE: [0:00~0:05 Instant Hook — zero silence, hits immediately at full intensity] → [0:05~0:45 CLIMAX DROP — maximum emotional peak, Korean instruments at loudest, most devastating expression] → [0:45~1:00 Dramatic fade-out — 15 seconds only, ends completely].`,
+          `VIEWER STOP RULE: The very first sound must make a viewer STOP SCROLLING. No gradual buildup. Pure impact from frame 1.`,
+          presetPrompt
+        );
+      }
     }
     const box=document.getElementById('promptBox');
     // [수정2] 사용자가 장르·분위기·악기 중 하나라도 선택했을 때만 프롬프트 표시
@@ -3153,6 +3347,357 @@ function insertGueumToLyrics() {
   const styleName = styleInfo ? ` [${styleInfo.kr}]` : '';
   const appliedCount = activePos.length;
   showToast(`✅ 구음 포인트 ${appliedCount}곳 삽입!${styleName} ${activePos.map(p=>posNames[p]).join(' → ')}`);
+}
+
+/* ═══════════════════════════════════════════
+   🎬 쇼츠 전용 모드
+═══════════════════════════════════════════ */
+/* ─────────────────────────────────────────
+   쇼츠 프리셋 — 완전 자동 조합 데이터
+   moods 인덱스: DATA.moods 배열 기준
+   0=Head-Nodding  1=Seoul Night  2=Dreamy Korean Soul  3=Funky Korean
+   4=Emotional Seoul Jazz  5=Late-night Lounge  6=Groovy Oriental
+   7=Modern Korean Melancholy  8=Late Night Blues  9=Whiskey Bar
+   10=Lonely Midnight  11=Energetic Drive  12=Motivational  13=Focused
+   14=Chill Drive  15=Aggressive HipHop  16=Uplifting
+   gueumPitch: high / midhigh / midlow / low
+   gueumGender: male / female / both
+   gueumStrength: maximum (쇼츠는 항상 maximum)
+   koreanDominance: 60~95
+───────────────────────────────────────── */
+const SHORTS_PRESETS = [
+  {
+    name: '폭발 드롭', emoji: '🔥',
+    bpm: 128, intensity: 10, arc: 3,
+    moods: [0, 11, 3],           // Head-Nodding · Energetic · Funky
+    gueumPitch: 'high',
+    gueumGender: 'both',
+    koreanDominance: 85,
+    hookPrompt: 'STOP-SCROLL HOOK: Explosive percussion hit on beat 1 — zero silence, zero intro. Korean instruments detonate at full power. Janggu and 808 collide simultaneously. Goosebumps guaranteed within 2 seconds. Pure kinetic energy from first millisecond.',
+    dropPrompt: 'DROP: Maximum volume, maximum aggression. Every Korean instrument at peak. Rhythm relentless. No breathing room. Viewer physically cannot stop listening.',
+  },
+  {
+    name: '감성 절정', emoji: '💔',
+    bpm: 95, intensity: 8, arc: 2,
+    moods: [7, 2, 4],            // Modern Melancholy · Dreamy · Emotional Jazz
+    gueumPitch: 'midhigh',
+    gueumGender: 'female',
+    koreanDominance: 90,
+    hookPrompt: 'STOP-SCROLL HOOK: Opens at emotional peak — haegeum or gayageum already in full cry. No buildup. Pure raw 한(恨) from note 1. Listener feels their chest tighten within 3 seconds. Overwhelming longing and grief with zero warning.',
+    dropPrompt: 'DROP CLIMAX: Korean instrument solo at maximum emotional devastation. Voice breaks. Notes bend and fall. Unresolved grief pours out. Viewer stops everything to listen.',
+  },
+  {
+    name: '궁중 임팩트', emoji: '👑',
+    bpm: 85, intensity: 9, arc: 2,
+    moods: [2, 1, 4],            // Dreamy · Seoul Night · Emotional Jazz
+    gueumPitch: 'midhigh',
+    gueumGender: 'both',
+    koreanDominance: 95,
+    hookPrompt: 'STOP-SCROLL HOOK: Full Joseon court ensemble detonates on beat 1 — gayageum, daegeum, haegeum, and percussion all firing together at maximum grandeur. Noble devastation. Cinematic scale. Viewer feels transported to Joseon court in 2 seconds.',
+    dropPrompt: 'DROP CLIMAX: All Korean court instruments at absolute peak volume and emotion. Majestic and overwhelming. The weight of 500 years of Korean history in one moment.',
+  },
+  {
+    name: '그루브 훅', emoji: '🥁',
+    bpm: 112, intensity: 8, arc: 5,
+    moods: [0, 3, 6],            // Head-Nodding · Funky · Groovy Oriental
+    gueumPitch: 'midlow',
+    gueumGender: 'male',
+    koreanDominance: 80,
+    hookPrompt: 'STOP-SCROLL HOOK: Irresistible groove lock from beat 1 — janggu and bass hit together, creating instant head-nodding reflex. Viewer body moves involuntarily within 1 second. Korean rhythm so magnetic it feels impossible to scroll past.',
+    dropPrompt: 'DROP: Groove intensifies to unstoppable momentum. Rhythm becomes hypnotic. Viewer replays immediately just for the groove.',
+  },
+  {
+    name: '한(恨) 폭발', emoji: '🌊',
+    bpm: 78, intensity: 9, arc: 3,
+    moods: [7, 8, 10],           // Modern Melancholy · Late Night Blues · Lonely Midnight
+    gueumPitch: 'low',
+    gueumGender: 'male',
+    koreanDominance: 95,
+    hookPrompt: 'STOP-SCROLL HOOK: Opens with ajaeng or haegeum in raw anguish — deep Korean 한(恨) unleashed at full volume from the first bow stroke. Ancient grief so pure and overwhelming that viewer freezes. No words needed. Pain is universal.',
+    dropPrompt: 'DROP: 한(恨) at absolute maximum. Korean instrument screams and breaks. Centuries of suppressed sorrow exploding in one moment. Devastating and unforgettable.',
+  },
+  {
+    name: '힙합 드롭', emoji: '⚡',
+    bpm: 140, intensity: 10, arc: 0,
+    moods: [15, 0, 11],          // Aggressive HipHop · Head-Nodding · Energetic
+    gueumPitch: 'midlow',
+    gueumGender: 'male',
+    koreanDominance: 80,
+    hookPrompt: 'STOP-SCROLL HOOK: 808 sub-bass drop hits simultaneously with janggu on beat 1 — chest-rattling impact. Trap hi-hats and Korean percussion fuse into unstoppable trap groove. Viewer feels the bass physically before they process what they heard.',
+    dropPrompt: 'DROP: 808 and Korean percussion at absolute maximum impact. Relentless trap energy fused with Korean rhythm. Cannot be ignored. Cannot be skipped.',
+  },
+];
+
+function toggleShortsMode() {
+  STATE.shortsMode = !STATE.shortsMode;
+  const section  = document.getElementById('shortsModeSection');
+  const body     = document.getElementById('shortsModeBody');
+  const indicator= document.getElementById('shortsModeIndicator');
+
+  if (STATE.shortsMode) {
+    section.classList.add('shorts-section-active');
+    body.style.display = 'block';
+    indicator.style.display = 'inline-flex';
+    STATE.shortsSubMode = 'direct';
+    STATE.songDuration = '1:00';
+    const display = document.getElementById('durationDisplay');
+    if (display) display.textContent = '현재: 1:00 🎬';
+    const customInput = document.getElementById('songDurationCustom');
+    if (customInput) customInput.value = '1:00';
+    document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('active'));
+    buildPrompt();
+    showToast('🎬 쇼츠 모드 ON — 프리셋을 선택하면 전체 자동 조합됩니다!');
+  } else {
+    STATE.shortsMode = false;
+    STATE.shortsPreset = null;
+    STATE.shortsSubMode = null;
+    section.classList.remove('shorts-section-active');
+    body.style.display = 'none';
+    indicator.style.display = 'none';
+    document.querySelectorAll('.shorts-preset-btn').forEach(b => b.classList.remove('active'));
+    setSongDuration('3:30');
+    showToast('쇼츠 모드 해제 — 3:30으로 복원됩니다.');
+  }
+}
+
+function setShortsSubMode(mode) {
+  STATE.shortsSubMode = mode;
+  document.getElementById('shorts_submode_direct')?.classList.toggle('active', mode === 'direct');
+  document.getElementById('shorts_submode_edit')?.classList.toggle('active', mode === 'edit');
+  const dur = mode === 'edit' ? '2:30' : '1:00';
+  STATE.songDuration = dur;
+  const display = document.getElementById('durationDisplay');
+  if (display) display.textContent = `현재: ${dur} 🎬`;
+  const customInput = document.getElementById('songDurationCustom');
+  if (customInput) customInput.value = dur;
+  document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('active'));
+  buildPrompt();
+  if (mode === 'edit') showToast('✂️ 편집용 2:30 — 완성 후 45초 구간을 잘라 쓰세요!');
+  else showToast('✅ 직접 완성 1:00 — Suno 완성본으로 바로 사용!');
+}
+
+function applyShortsPreset(idx) {
+  if (!STATE.shortsMode) toggleShortsMode();
+  const preset = SHORTS_PRESETS[idx];
+  if (!preset) return;
+  STATE.shortsPreset = idx;
+
+  /* ── 1. BPM ── */
+  STATE.bpm = preset.bpm;
+  const bpmSlider = document.getElementById('bpmSlider');
+  if (bpmSlider) { bpmSlider.value = preset.bpm; updateBpm(preset.bpm); }
+
+  /* ── 2. 감정 강도 ── */
+  STATE.intensity = preset.intensity;
+  const intSlider = document.getElementById('intensitySlider');
+  if (intSlider) { intSlider.value = preset.intensity; updateIntensity(preset.intensity); }
+
+  /* ── 3. 에너지 아크 ── */
+  if (typeof selectEnergyArc === 'function') selectEnergyArc(preset.arc);
+
+  /* ── 4. 분위기 자동 선택 ── */
+  STATE.moods = [...preset.moods];
+  document.querySelectorAll('#moodGrid .chip').forEach(c => c.classList.remove('active'));
+  preset.moods.forEach(i => document.getElementById('mood_' + i)?.classList.add('active'));
+
+  /* ── 5. 구음 — 쇼츠는 항상 maximum + Drop 위치 고정 ── */
+  STATE.gueumStrength  = 'maximum';
+  STATE.gueumPitch     = preset.gueumPitch;
+  STATE.gueumGender    = preset.gueumGender;
+  STATE.gueumPositions = ['mid'];   // Drop 절정 = Chorus 위치로 고정
+  // 구음 강도 버튼 UI 반영
+  document.querySelectorAll('.gstrength-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('gstrength_maximum')?.classList.add('active');
+  // 구음 음역 UI 반영
+  document.querySelectorAll("[id^='gpitch_']").forEach(b => b.classList.remove('active'));
+  document.getElementById('gpitch_' + preset.gueumPitch)?.classList.add('active');
+  const pitchVal = {high:4,midhigh:3,midlow:2,low:1}[preset.gueumPitch] || 3;
+  const gpSlider = document.getElementById('gueumPitchSlider');
+  if (gpSlider) { gpSlider.value = pitchVal; updateGueumPitchSlider(pitchVal); }
+  // 구음 성별 UI 반영
+  document.querySelectorAll("[id^='ggender_']").forEach(b => b.classList.remove('active'));
+  document.getElementById('ggender_' + preset.gueumGender)?.classList.add('active');
+
+  /* ── 6. 국악기 강도 ── */
+  STATE.koreanDominance = preset.koreanDominance;
+  const kdSlider = document.getElementById('koreanDomSlider');
+  if (kdSlider) { kdSlider.value = preset.koreanDominance; updateKoreanDominance(preset.koreanDominance); }
+
+  /* ── 7. 프리셋 버튼 active ── */
+  document.querySelectorAll('.shorts-preset-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sp_' + idx)?.classList.add('active');
+
+  buildPrompt();
+  showToast(`⚡ [${preset.emoji} ${preset.name}] 전체 자동 조합 완료! BPM ${preset.bpm} · 국악 ${preset.koreanDominance}% · 구음 maximum`);
+}
+
+function genShortsLyrics(lang) {
+  // 가사창 해당 탭으로 전환 후 쇼츠 구조 삽입
+  if (lang === 'en') {
+    const ta = document.getElementById('lyricsEnOut');
+    if (ta) {
+      ta.value =
+`[Hook - 0:00~0:05]
+[instrumental break]
+
+[Drop - Climax 0:05~0:35]
+[instrumental break]
+
+[Outro - Fade 0:35~0:45]
+[End]`;
+      // 탭 전환
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      const panel = document.getElementById('lyricsEn');
+      const tabs  = document.querySelectorAll('.tab');
+      if (panel) panel.classList.add('active');
+      if (tabs[0]) tabs[0].classList.add('active');
+    }
+  } else {
+    const ta = document.getElementById('lyricsKrOut');
+    if (ta) {
+      ta.value =
+`[훅 - 0:00~0:05]
+[instrumental break]
+
+[드롭 - 절정 0:05~0:35]
+[instrumental break]
+
+[아웃트로 - 페이드 0:35~0:45]
+[End]`;
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      const panel = document.getElementById('lyricsKr');
+      const tabs  = document.querySelectorAll('.tab');
+      if (panel) panel.classList.add('active');
+      if (tabs[1]) tabs[1].classList.add('active');
+    }
+  }
+  showToast('🎬 쇼츠 전용 가사 구조 삽입 완료!');
+}
+
+/* 쇼츠 전용 구음 — Drop 구간에 집중 삽입 */
+function _buildShortsGueumBlock() {
+  // 06B 설정 활용
+  const styleInfo = STATE.gueumStyle !== null && DATA.gueumStyles[STATE.gueumStyle]
+    ? DATA.gueumStyles[STATE.gueumStyle] : null;
+  const pitchMap  = {high:['이야~호~','에헤~야~','아~이~야~'],midhigh:['어~흥~','에~헤~','이~야~'],midlow:['으~흠~','어~어~','흐~음~'],low:['음~','으~으~','흠~']};
+  const pitch     = STATE.gueumPitch || 'midhigh';
+  const rawPool   = styleInfo
+    ? styleInfo.en2.split('\n').filter(Boolean).slice(0,4)
+    : pitchMap[pitch] || pitchMap.midhigh;
+  // 드롭 구간용: 강렬하게 2줄
+  const sh = [...rawPool].sort(() => Math.random() - 0.5);
+  const line1 = sh.slice(0,2).join('  ');
+  const line2 = sh.slice(2,4).length ? sh.slice(2,4).join('  ') : [...sh].sort(()=>Math.random()-.5).slice(0,2).join('  ');
+  return `[Drop Gueum - 구음]\n${line1}\n${line2}`;
+}
+
+function insertShortsGueum(lang) {
+  const taId = lang === 'en' ? 'lyricsEnOut' : 'lyricsKrOut';
+  const ta   = document.getElementById(taId);
+  if (!ta) return;
+
+  const dropTags = lang === 'en'
+    ? [/(\[Drop[^\]]*\]\n\[instrumental break\])/i, /(\[Drop[^\]]*\])/i]
+    : [/(\[드롭[^\]]*\]\n\[instrumental break\])/i, /(\[드롭[^\]]*\])/i];
+
+  const gueumBlock = _buildShortsGueumBlock();
+  let lyrics = ta.value;
+  let inserted = false;
+
+  for (const rx of dropTags) {
+    if (rx.test(lyrics)) {
+      lyrics = lyrics.replace(rx, `$1\n\n${gueumBlock}`);
+      inserted = true;
+      break;
+    }
+  }
+  if (!inserted) {
+    // Drop 태그 없으면 맨 끝에 추가
+    lyrics = lyrics.trimEnd() + `\n\n${gueumBlock}\n`;
+  }
+
+  ta.value = lyrics;
+  // 탭 전환
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  const panelId = lang === 'en' ? 'lyricsEn' : 'lyricsKr';
+  document.getElementById(panelId)?.classList.add('active');
+  const tabs = document.querySelectorAll('.tab');
+  if (lang === 'en' && tabs[0]) tabs[0].classList.add('active');
+  if (lang === 'kr' && tabs[1]) tabs[1].classList.add('active');
+
+  showToast('🎙️ Drop 구간에 구음 삽입 완료! 임팩트 극대화 🔥');
+}
+
+function genShortsLyricsWithGueum(lang) {
+  genShortsLyrics(lang);
+  // 짧은 딜레이 후 구음 삽입 (DOM 업데이트 후)
+  setTimeout(() => {
+    insertShortsGueum(lang);
+    showToast('✦ 쇼츠 가사 구조 + 드롭 구음 한번에 완료!');
+  }, 80);
+}
+
+/* 가사 없이 구음만 — 순수 구음 쇼츠 */
+function genGueumOnlyShorts(lang) {
+  const styleInfo = STATE.gueumStyle !== null && DATA.gueumStyles[STATE.gueumStyle]
+    ? DATA.gueumStyles[STATE.gueumStyle] : null;
+  const pitchMap = {
+    high:    ['이야~호~','에헤~야~','아~이~야~','이~야~아~','에~헤~이~'],
+    midhigh: ['어~흥~','에~헤~','이~야~','어~이~야~','에헤~야~흥~'],
+    midlow:  ['으~흠~','어~어~','흐~음~','으~으~흠~','어~흠~'],
+    low:     ['음~','으~으~','흠~','으~음~','흠~흠~'],
+  };
+  const pitch = STATE.gueumPitch || 'midhigh';
+  const pool  = styleInfo
+    ? styleInfo.en2.split('\n').filter(Boolean)
+    : pitchMap[pitch] || pitchMap.midhigh;
+
+  function pickLine(n) {
+    const sh = [...pool].sort(() => Math.random() - 0.5);
+    const items = [];
+    for (let i = 0; i < n; i++) items.push(sh[i % sh.length]);
+    return items.join('  ');
+  }
+
+  const isEn = lang === 'en';
+  const hookLabel  = isEn ? 'Hook - Gueum'        : '훅 - 구음';
+  const dropLabel  = isEn ? 'Drop - Gueum Climax'  : '드롭 - 구음 절정';
+  const outroLabel = isEn ? 'Outro - Gueum Fade'   : '아웃트로 - 구음 페이드';
+
+  const lyrics =
+`[${hookLabel}]
+${pickLine(2)}
+
+[instrumental break]
+
+[${dropLabel}]
+${pickLine(2)}
+${pickLine(2)}
+${pickLine(2)}
+
+[instrumental break]
+
+[${outroLabel}]
+${pickLine(2)}
+
+[End]`;
+
+  const taId    = isEn ? 'lyricsEnOut' : 'lyricsKrOut';
+  const panelId = isEn ? 'lyricsEn'   : 'lyricsKr';
+  const tabIdx  = isEn ? 0 : 1;
+  const ta = document.getElementById(taId);
+  if (ta) ta.value = lyrics;
+
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(panelId)?.classList.add('active');
+  const tabs = document.querySelectorAll('.tab');
+  if (tabs[tabIdx]) tabs[tabIdx].classList.add('active');
+
+  showToast('🎙️ 구음만 쇼츠 구조 완료! 가사 없이 순수 구음으로 채웠습니다.');
 }
 
 window.addEventListener('DOMContentLoaded',()=>{
