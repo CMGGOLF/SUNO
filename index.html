@@ -3503,6 +3503,9 @@ function toggleShortsMode() {
     const customInput = document.getElementById('songDurationCustom');
     if (customInput) customInput.value = '1:00';
     document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('active'));
+    // ── 서브모드 버튼 초기 상태 명시적 설정 ──
+    document.getElementById('shorts_submode_direct')?.classList.add('active');
+    document.getElementById('shorts_submode_edit')?.classList.remove('active');
     buildPrompt();
     showToast('🎬 쇼츠 모드 ON — 프리셋을 선택하면 전체 자동 조합됩니다!');
   } else {
@@ -3604,9 +3607,13 @@ function applyShortsPreset(idx) {
     selectInstrByCategory(preset.instrCat, preset.instrIdx);
   }
 
-  /* ── 10. 프리셋 버튼 active ── */
+  /* ── 10. 프리셋 버튼 active — 서브모드 버튼 상태 보존 ── */
   document.querySelectorAll('.shorts-preset-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('sp_' + idx)?.classList.add('active');
+  // 서브모드(직접완성/풀버전) 버튼은 현재 STATE 기준으로 복원
+  const isEdit = STATE.shortsSubMode === 'edit';
+  document.getElementById('shorts_submode_direct')?.classList.toggle('active', !isEdit);
+  document.getElementById('shorts_submode_edit')?.classList.toggle('active', isEdit);
 
   /* ── 11. 전체 UI 갱신 ── */
   syncSliders();
