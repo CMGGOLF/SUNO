@@ -3380,9 +3380,16 @@ const SHORTS_PRESETS = [
     name: '폭발 드롭', emoji: '🔥',
     bpm: 128, intensity: 10, arc: 3,
     moods: [0, 11, 3],           // Head-Nodding · Energetic · Funky
-    gueumPitch: 'high',
-    gueumGender: 'both',
-    koreanDominance: 85,
+    gueumPitch: 'high', gueumGender: 'both', koreanDominance: 85,
+    // ── 자동조합 추가 필드 ──
+    genre: 4,                    // Gugak Court HipHop
+    concept: 4,
+    vocalStyle: 5,               // Oriental Jazz Hip-hop
+    vocalTones: [4, 9],          // smooth male + emotional delivery
+    gueumStyle: 6,               // 휘모리 소울 샤우트 구음
+    koreanRatio: 80,
+    musicKey: 0, koreanScale: 2,
+    hanSoulStyle: 1,             // 조선 힙합
     hookPrompt: 'STOP-SCROLL HOOK: Explosive percussion hit on beat 1 — zero silence, zero intro. Korean instruments detonate at full power. Janggu and 808 collide simultaneously. Goosebumps guaranteed within 2 seconds. Pure kinetic energy from first millisecond.',
     dropPrompt: 'DROP: Maximum volume, maximum aggression. Every Korean instrument at peak. Rhythm relentless. No breathing room. Viewer physically cannot stop listening.',
   },
@@ -3390,9 +3397,16 @@ const SHORTS_PRESETS = [
     name: '감성 절정', emoji: '💔',
     bpm: 95, intensity: 8, arc: 2,
     moods: [7, 2, 4],            // Modern Melancholy · Dreamy · Emotional Jazz
-    gueumPitch: 'midhigh',
-    gueumGender: 'female',
-    koreanDominance: 90,
+    gueumPitch: 'midhigh', gueumGender: 'female', koreanDominance: 90,
+    // ── 자동조합 추가 필드 ──
+    genre: 2,                    // Pansori Soul
+    concept: 2,
+    vocalStyle: 3,               // Neo Soul + Gayageum (female)
+    vocalTones: [1, 9],          // soulful female + emotional delivery
+    gueumStyle: 5,               // 가야금 심야 재즈 구음
+    koreanRatio: 85,
+    musicKey: 1, koreanScale: 0,
+    hanSoulStyle: 2,             // 서울 심야 재즈
     hookPrompt: 'STOP-SCROLL HOOK: Opens at emotional peak — haegeum or gayageum already in full cry. No buildup. Pure raw 한(恨) from note 1. Listener feels their chest tighten within 3 seconds. Overwhelming longing and grief with zero warning.',
     dropPrompt: 'DROP CLIMAX: Korean instrument solo at maximum emotional devastation. Voice breaks. Notes bend and fall. Unresolved grief pours out. Viewer stops everything to listen.',
   },
@@ -3400,9 +3414,16 @@ const SHORTS_PRESETS = [
     name: '궁중 임팩트', emoji: '👑',
     bpm: 85, intensity: 9, arc: 2,
     moods: [2, 1, 4],            // Dreamy · Seoul Night · Emotional Jazz
-    gueumPitch: 'midhigh',
-    gueumGender: 'both',
-    koreanDominance: 95,
+    gueumPitch: 'midhigh', gueumGender: 'both', koreanDominance: 95,
+    // ── 자동조합 추가 필드 ──
+    genre: 0,                    // Joseon Court Soul
+    concept: 0,
+    vocalStyle: 7,               // Cinematic Soul Fusion
+    vocalTones: [9, 10],         // emotional vocal delivery + call&response
+    gueumStyle: 4,               // 장단 그루브 구음
+    koreanRatio: 90,
+    musicKey: 4, koreanScale: 1,
+    hanSoulStyle: 0,             // 조선 궁중 소울
     hookPrompt: 'STOP-SCROLL HOOK: Full Joseon court ensemble detonates on beat 1 — gayageum, daegeum, haegeum, and percussion all firing together at maximum grandeur. Noble devastation. Cinematic scale. Viewer feels transported to Joseon court in 2 seconds.',
     dropPrompt: 'DROP CLIMAX: All Korean court instruments at absolute peak volume and emotion. Majestic and overwhelming. The weight of 500 years of Korean history in one moment.',
   },
@@ -3410,9 +3431,16 @@ const SHORTS_PRESETS = [
     name: '그루브 훅', emoji: '🥁',
     bpm: 112, intensity: 8, arc: 5,
     moods: [0, 3, 6],            // Head-Nodding · Funky · Groovy Oriental
-    gueumPitch: 'midlow',
-    gueumGender: 'male',
-    koreanDominance: 80,
+    gueumPitch: 'midlow', gueumGender: 'male', koreanDominance: 80,
+    // ── 자동조합 추가 필드 ──
+    genre: 7,                    // NeoJoseon Fusion
+    concept: 7,
+    vocalStyle: 5,               // Oriental Jazz Hip-hop
+    vocalTones: [4, 9],          // smooth male + emotional delivery
+    gueumStyle: 4,               // 장단 그루브 구음
+    koreanRatio: 75,
+    musicKey: 0, koreanScale: 2,
+    hanSoulStyle: 3,             // 산조 블루 노트
     hookPrompt: 'STOP-SCROLL HOOK: Irresistible groove lock from beat 1 — janggu and bass hit together, creating instant head-nodding reflex. Viewer body moves involuntarily within 1 second. Korean rhythm so magnetic it feels impossible to scroll past.',
     dropPrompt: 'DROP: Groove intensifies to unstoppable momentum. Rhythm becomes hypnotic. Viewer replays immediately just for the groove.',
   },
@@ -3420,9 +3448,16 @@ const SHORTS_PRESETS = [
     name: '한(恨) 폭발', emoji: '🌊',
     bpm: 78, intensity: 9, arc: 3,
     moods: [7, 8, 10],           // Modern Melancholy · Late Night Blues · Lonely Midnight
-    gueumPitch: 'low',
-    gueumGender: 'male',
-    koreanDominance: 95,
+    gueumPitch: 'low', gueumGender: 'male', koreanDominance: 95,
+    // ── 자동조합 추가 필드 ──
+    genre: 6,                    // Ajaeng Deep Soul
+    concept: 6,
+    vocalStyle: 1,               // Oriental Blues (male, 허스키 저음)
+    vocalTones: [5, 6],          // deep soulful male + smoky blues baritone
+    gueumStyle: 3,               // 아쟁 딥 소울 구음
+    koreanRatio: 90,
+    musicKey: 1, koreanScale: 0,
+    hanSoulStyle: 0,             // 판소리 한 블루스
     hookPrompt: 'STOP-SCROLL HOOK: Opens with ajaeng or haegeum in raw anguish — deep Korean 한(恨) unleashed at full volume from the first bow stroke. Ancient grief so pure and overwhelming that viewer freezes. No words needed. Pain is universal.',
     dropPrompt: 'DROP: 한(恨) at absolute maximum. Korean instrument screams and breaks. Centuries of suppressed sorrow exploding in one moment. Devastating and unforgettable.',
   },
@@ -3430,9 +3465,16 @@ const SHORTS_PRESETS = [
     name: '힙합 드롭', emoji: '⚡',
     bpm: 140, intensity: 10, arc: 0,
     moods: [15, 0, 11],          // Aggressive HipHop · Head-Nodding · Energetic
-    gueumPitch: 'midlow',
-    gueumGender: 'male',
-    koreanDominance: 80,
+    gueumPitch: 'midlow', gueumGender: 'male', koreanDominance: 80,
+    // ── 자동조합 추가 필드 ──
+    genre: 4,                    // Gugak Court HipHop
+    concept: 4,
+    vocalStyle: 5,               // Oriental Jazz Hip-hop
+    vocalTones: [4, 7],          // smooth male + warm raspy (랩 플로우)
+    gueumStyle: 6,               // 휘모리 소울 샤우트 구음
+    koreanRatio: 70,
+    musicKey: 0, koreanScale: 2,
+    hanSoulStyle: 1,             // 조선 힙합
     hookPrompt: 'STOP-SCROLL HOOK: 808 sub-bass drop hits simultaneously with janggu on beat 1 — chest-rattling impact. Trap hi-hats and Korean percussion fuse into unstoppable trap groove. Viewer feels the bass physically before they process what they heard.',
     dropPrompt: 'DROP: 808 and Korean percussion at absolute maximum impact. Relentless trap energy fused with Korean rhythm. Cannot be ignored. Cannot be skipped.',
   },
@@ -3533,12 +3575,34 @@ function applyShortsPreset(idx) {
   const kdSlider = document.getElementById('koreanDomSlider');
   if (kdSlider) { kdSlider.value = preset.koreanDominance; updateKoreanDominance(preset.koreanDominance); }
 
-  /* ── 7. 프리셋 버튼 active ── */
+  /* ── 7. 장르 · 컨셉 · 보컬 자동 조합 (기존 누락 부분) ── */
+  if (preset.genre       !== undefined) STATE.genre       = preset.genre;
+  if (preset.concept     !== undefined) STATE.concept     = preset.concept;
+  if (preset.vocalStyle  !== undefined) STATE.vocalStyle  = preset.vocalStyle;
+  if (preset.vocalTones  !== undefined) STATE.vocalTones  = [...preset.vocalTones];
+  if (preset.gueumStyle  !== undefined) STATE.gueumStyle  = preset.gueumStyle;
+  if (preset.hanSoulStyle!== undefined) STATE.hanSoulStyle= preset.hanSoulStyle;
+  if (preset.musicKey    !== undefined) STATE.musicKey    = preset.musicKey;
+  if (preset.koreanScale !== undefined) STATE.koreanScale = preset.koreanScale;
+
+  /* ── 8. 국악 비율 슬라이더 ── */
+  if (preset.koreanRatio !== undefined) {
+    STATE.koreanRatio = preset.koreanRatio;
+    updateRatioSlider(preset.koreanRatio);
+    const ratioSlider = document.getElementById('ratioSlider');
+    if (ratioSlider) ratioSlider.value = preset.koreanRatio;
+  }
+
+  /* ── 9. 프리셋 버튼 active ── */
   document.querySelectorAll('.shorts-preset-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('sp_' + idx)?.classList.add('active');
 
-  buildPrompt();
-  showToast(`⚡ [${preset.emoji} ${preset.name}] 전체 자동 조합 완료! BPM ${preset.bpm} · 국악 ${preset.koreanDominance}% · 구음 maximum`);
+  /* ── 10. 전체 UI 갱신 ── */
+  syncSliders();
+  renderAll();
+  syncGueumUI();
+  buildPrompt(true);
+  showToast(`⚡ [${preset.emoji} ${preset.name}] 전체 자동 조합 완료! BPM ${preset.bpm} · 장르·컨셉·보컬·구음 전체 세팅 🔥`);
 }
 
 function genShortsLyrics(lang) {
