@@ -2234,16 +2234,10 @@ function _doBuildPrompt() {
 function getApiKey() { return (document.getElementById('apiKeyInput')?.value||'').trim()||localStorage.getItem('gugak_api_key')||''; }
 /* ── 무료 모델 폴백 목록 (순서대로 시도) ── */
 const _FREE_MODELS = [
-  'meta-llama/llama-3.3-70b-instruct:free',
-  'google/gemma-3-12b-it:free',
-  'mistralai/mistral-small-3.1-24b-instruct:free',
-  'deepseek/deepseek-r1-0528:free',
-];
-/* ── 무료 전부 실패 시 유료 폴백 (저렴한 순) ── */
-const _PAID_MODELS = [
-  'google/gemma-3-4b-it',          // ~$0.00003/1K tokens
-  'meta-llama/llama-3.1-8b-instruct', // ~$0.00006/1K tokens
-  'mistralai/mistral-7b-instruct', // ~$0.00007/1K tokens
+  'meta-llama/llama-3.1-8b-instruct:free',
+  'mistralai/mistral-7b-instruct:free',
+  'google/gemma-2-9b-it:free',
+  'microsoft/phi-3-mini-128k-instruct:free',
 ];
 
 async function _callOnce(model, messages, temperature, apiKey) {
@@ -2280,27 +2274,18 @@ async function callClaude(prompt, systemPrompt = '', temperature = 0.85) {
   messages.push({ role: 'user', content: prompt });
 
   let lastErr = null;
-  // 1단계: 무료 모델 시도
   for (const model of _FREE_MODELS) {
     try {
       const result = await _callOnce(model, messages, temperature, apiKey);
-      return result;
+      return result;           // 성공 시 즉시 반환
     } catch (e) {
+      // 인증·크레딧 오류는 폴백 불필요 — 즉시 상위로 던짐
       if (e.message.startsWith('401') || e.message.startsWith('402')) throw e;
       lastErr = e;
+      // 다음 모델로 계속
     }
   }
-  // 2단계: 무료 전부 실패 → 유료 저렴한 모델로 폴백
-  for (const model of _PAID_MODELS) {
-    try {
-      const result = await _callOnce(model, messages, temperature, apiKey);
-      return result;
-    } catch (e) {
-      if (e.message.startsWith('401') || e.message.startsWith('402')) throw e;
-      lastErr = e;
-    }
-  }
-  throw new Error(`모든 모델 실패 — 마지막 오류: ${lastErr?.message || '알 수 없음'}`);
+  throw new Error(`모든 무료 모델 실패 — 마지막 오류: ${lastErr?.message || '알 수 없음'}`);
 }
 function cleanLyrics(text) {
   if (!text) return '';
@@ -3356,6 +3341,13 @@ function setSongDurationCustom(val) {
 /* ═══════════════════════════════════════════
    구음 가사 삽입
 ═══════════════════════════════════════════ */
+function genInstrumentalStructure() {
+  // 큰 버튼 = 항상 새로 생성 (textarea 초기화 후 구조 + 구음 삽입)
+  const ta = document.getElementById('lyricsInstOut');
+  if (ta) ta.value = '';
+  insertGueumToLyrics();
+}
+
 function insertGueumToLyrics() {
   if (!STATE.gueumPositions.length) { showToast('⚠️ 06B 섹션에서 구음 위치를 먼저 선택해주세요!'); return; }
   /* 인스트루멘탈 탭이 활성화 상태면 해당 textarea 직접 지정 */
