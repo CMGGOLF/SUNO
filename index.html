@@ -1358,37 +1358,108 @@ const DATA = {
   ],
   gueumStyles: [
     {en:'Pansori Deep Blues Gueum',kr:'판소리 딥 블루스 구음',
-      en2:'어이~야~ 어이~야~\n이~야~~~~호~\n에헤~야~흐~~~~\n으~흐~이~야~~~~\n어이~야~ 어이~야~\n이~야~~~호~ 에헤~야~\n아이야~ 아이야~\n으~으~이~야~~~~~~',
+      // en2Variants: [V0=느림<82, V1=보통82-95, V2=중고속96-110, V3=빠름>110]
+      en2Variants:[
+        // V0 — 극저속: 긴 체념, 최대 늘어짐
+        '으~흐~이~~~~야~\n하~아~이~~~~야~~~~\n에헤~야~흐~~~~\n으~으~이~야~~~~~~\n어이~야~ 으~흐~\n으~흐~이~야~~~~~~',
+        // V1 — 보통: 상승→꺾음→체념 기본 곡선 (기존 en2)
+        '어이~야~ 어이~야~\n이~야~~~~호~\n에헤~야~흐~~~~\n으~흐~이~야~~~~\n어이~야~ 어이~야~\n아이야~ 아이야~\n으~으~이~야~~~~~~',
+        // V2 — 중고속: 짧은 터짐 반복 후 긴 한(恨) 폭발
+        '아이야~ 아이야~\n어이~야~ 어이~야~\n이~야~~~~호~\n에헤~야~흐~~~~\n아이야~ 아이야~ 아이야~\n으~이~야~~~~~',
+        // V3 — 빠름: 빠른 펄스 반복, 갑작스러운 긴 체념
+        '아이야~ 아이야~ 아이야~\n어이~야~ 어이~야~\n이야~호~ 이야~호~\n이~야~~~~호~~~~\n아이야~ 아이야~\n으~으~이~야~~~~~~',
+      ],
+      get en2(){return this.en2Variants[1];},
       kr2:'어이야 / 에헤야 / 으흐이야 / 하아이야 / 에헤야흐',
       han:'EMOTIONAL ARC — grief as a rising and collapsing breath: (1) YEARNING: "어이~야~" mid-register call, voice just beginning to crack. (2) ASCENT: "이~야~~~~호~" climbs HIGH and HOLDS — the vowel 이→야→호 rises step by step, trembling at the peak. (3) SNAP/BREAK (꺾음): "에헤~야~흐~~~~" the peak breaks DOWNWARD mid-phrase, voice cracking into the low "흐~~~~" — this is the 꺾음, the defining sound of Korean Han. (4) RESIGNATION: "으~흐~이~야~~~~" sinks to the lowest register, stretched to the absolute limit, trailing into silence. REPEAT the arc: short desperate "아이야~" bursts then the terminal collapse "으~으~이~야~~~~~~" — the longest, lowest exhale, the voice finally emptied of grief. Every "~" is the body holding grief past its endurance. The voice MUST crack on the high notes and dissolve on the low.',
       desc:'판소리 득음. 상승→꺾음→체념의 한(恨) 감정 곡선.',pitch:'low',gender:'male'},
     {en:'Mournful Han Blues Gueum',kr:'한(恨) 블루스 슬픔 구음',
-      en2:'어~이~야~ 어~이~야~\n이~야~~~흐~~~~\n에~헤~~~~야~\n으~이~야~ 으~이~야~\n이야~~~~흐~~~~\n에헤~야~으~~~~\n아~아~이~야~\n으~이~야~~~~~~',
+      en2Variants:[
+        // V0 — 극저속: 꺾음 극대화, 최장 흘림
+        '어~이~야~ 어~이~야~\n으~이~~~야~~~~~\n에~헤~~~~야~~~~\n으~이~야~~~~~~\n어~이~야~ 어~이~야~\n으~이~야~~~~~~',
+        // V1 — 보통: 꺾음 기본 곡선 (기존 en2)
+        '어~이~야~ 어~이~야~\n이~야~~~흐~~~~\n에~헤~~~~야~\n으~이~야~ 으~이~야~\n이야~~~~흐~~~~\n에헤~야~으~~~~\n으~이~야~~~~~~',
+        // V2 — 중고속: 아이야 반복 후 꺾음
+        '아~이~야~ 아~이~야~\n어~이~야~\n이~야~~~흐~~~~\n에헤~야~으~~~~\n아~이~야~ 어~이~야~\n으~이~야~~~~~',
+        // V3 — 빠름: 짧은 반복 후 갑작스러운 긴 꺾음 체념
+        '아~이~야~ 아~이~야~ 아~이~야~\n어~이~야~ 어~이~야~\n이야~~~흐~~~~\n아이야~ 아이야~\n에헤~야~으~~~~\n으~이~야~~~~~~',
+      ],
+      get en2(){return this.en2Variants[1];},
       kr2:'어이야 / 이야흐 / 에헤야 / 으이야 / 에헤야으',
       han:'EMOTIONAL ARC — the 꺾음 style: every note that rises MUST break downward. (1) YEARNING: "어~이~야~" slow, deliberate, mid-register — grief spoken quietly. (2) ASCENT + SNAP: "이~야~~~흐~~~~" rises on 이→야 then BREAKS into low "흐~~~~" — the 꺾음 bend snapping downward like a sob breaking free. (3) TREMBLING HOLD: "에~헤~~~~야~" the middle syllable held for maximum duration, voice quivering (떨림) — grief sustained past what the body can bear. (4) RESIGNATION: "으~이~야~~~~~~" the terminal exhale, lowest register, longest duration — the voice finally surrendering. CRITICAL: "이야~~~~흐~~~~" rises HIGH then falls to the deepest "흐~~~~" — this contrast, the distance between the high and the low, IS the Han. The sorrow is in the gap between where the voice reaches and where it collapses.',
       desc:'남도 꺾는목. 오를수록 더 깊이 꺾이는 한(恨).',pitch:'midlow',gender:'male'},
     {en:'Lyrical Soul Gueum',kr:'서정 소울 구음',
-      en2:'어이~야~ 어이~야~\n이~야~~~~호~\n에헤~야~ 에헤~야~\n이야~호~~~~\n어~이~~~~야~\n이야~~~호~~~~\n에헤~~~~야~~~~\n아~이~야~ 으~~~~~',
+      en2Variants:[
+        // V0 — 극저속: 이야호 최장 유영, 긴 체념
+        '어이~야~ 어이~야~\n이~야~~~~호~~~~\n에헤~~~~야~~~~\n어~이~~~~야~\n으~~~~~',
+        // V1 — 보통: 상승 유영 기본 곡선 (기존 en2)
+        '어이~야~ 어이~야~\n이~야~~~~호~\n에헤~야~ 에헤~야~\n이야~호~~~~\n이야~~~호~~~~\n에헤~~~~야~~~~\n아~이~야~ 으~~~~~',
+        // V2 — 중고속: 에헤야 위주, 중간 호흡
+        '에헤~야~ 에헤~야~\n이야~호~ 이야~호~\n어이~야~ 어이~야~\n이야~~~호~~~~\n에헤~~~~야~~~~\n아~이~야~ 으~~~~',
+        // V3 — 빠름: 에헤야 짧게 반복, 갑작스러운 긴 유영
+        '에헤~야~ 에헤~야~ 에헤~야~\n이야~호~ 이야~호~\n어이~야~ 에헤~야~\n이야~~~~호~~~~\n에헤~야~ 으~~~~',
+      ],
+      get en2(){return this.en2Variants[1];},
       kr2:'어이야 / 이야호 / 에헤야 / 어이야 / 에헤야 이야호',
       han:'EMOTIONAL ARC — Han as a soaring cry that cannot stay aloft. (1) YEARNING: "어이~야~" mid-register, the opening call — grief just finding its voice. (2) ASCENT: "이~야~~~~호~" soars upward, the vowels climbing 이→야→호 in a single sustained breath. (3) FLOATING PEAK: "이야~호~~~~" holds at the top — not a shout but a trembling suspension, grief suspended in mid-air before gravity pulls it down. (4) LONG TREMBLING: "에헤~~~~야~~~~" held at extreme length — both syllables stretched equally, voice quivering throughout. (5) COLLAPSE: "아~이~야~ 으~~~~~" — short phrase then sudden long low exhale "으~~~~~", the voice dropping from the heights into the depths. The distance from "이야~~~~호~" (highest, longest) to "으~~~~~" (lowest, silent) is the emotional span of Han — infinite yearning, inevitable loss.',
       desc:'유려한 성악 구음. 고음 유영에서 저음 체념으로.',pitch:'midhigh',gender:'both'},
     {en:'Ajaeng Deep Soul Gueum',kr:'아쟁 딥 소울 구음',
-      en2:'으~흐~이~야~ 으~흐~이~야~\n어이~~~~야~~~~~~\n으~흐~~~~~~이~야~\n어이~야~ 어이~야~\n아~~~~이~야~~~~\n으~이~야~~~~~~\n어~이~~~~야~흐~~~~\n으~흐~이~야~흐~~~~~',
+      en2Variants:[
+        // V0 — 극저속: 활 극한까지 끌기, 가장 길게
+        '으~흐~~~~~~이~야~\n어이~~~~야~~~~~~\n으~흐~이~야~흐~~~~~\n으~~~~~흐~이~야~~~~',
+        // V1 — 보통: 아쟁 활 기본 곡선 (기존 en2)
+        '으~흐~이~야~ 으~흐~이~야~\n어이~~~~야~~~~~~\n으~흐~~~~~~이~야~\n아~~~~이~야~~~~\n으~이~야~~~~~~\n으~흐~이~야~흐~~~~~',
+        // V2 — 중고속: 어이야 주도, 중간 길이
+        '어이~야~ 어이~야~\n아~~~~이~야~~~~\n으~이~야~~~~~~\n어~이~~~~야~흐~~~~\n으~흐~이~야~흐~~~~~',
+        // V3 — 상대적 빠름: 짧은 어이야 반복 후 갑작스러운 극장 체념
+        '어이~야~ 어이~야~\n으~흐~이~야~\n아~이~야~흐~\n어이~야~\n아~~~~이~야~~~~\n으~흐~이~야~흐~~~~~',
+      ],
+      get en2(){return this.en2Variants[1];},
       kr2:'어이야 / 으흐이야 / 아이야흐 / 으이야 / 어이야흐',
       han:'EMOTIONAL ARC — the ajaeng bow drawn impossibly slowly across a string. (1) ESTABLISH: "으~흐~이~야~" low register foundation, the bow touching the string — grief at rest but never absent. (2) EXTREME STRETCH: "어이~~~~야~~~~~~" held for maximum duration — the bow drawing out the note until it quivers at the edge of silence. The "~~~~~~" is the string still trembling after the peak. (3) BOTTOMLESS DESCENT: "으~흐~~~~~~이~야~" the "흐~~~~~~" is a six-tilde groan, the lowest and longest — as if the body has sunk into the earth with grief. (4) BREAK-AND-EXHALE: "어~이~~~~야~흐~~~~" rises mid-phrase then the "흐~~~~" is an exhale of resignation, a sob that has stopped trying. (5) TERMINAL: "으~흐~이~야~흐~~~~~" the absolute ending — every syllable extended, trailing into complete silence. CRITICAL: there is no resolution. Every phrase ends with more grief than it began. This is Han without end — not the cry but the silence after.',
       desc:'아쟁 활처럼. 모든 음이 끊어질 때까지 늘어진다.',pitch:'low',gender:'male'},
     {en:'Gutgeori Soul Gueum',kr:'굿거리 소울 구음',
-      en2:'어이~야~ 어이~야~\n에헤~야~ 에헤~야~\n이야~호~ 이야~호~\n이야~~~~호~~~~\n어이~야~ 어이~야~\n에헤~야~ 아~이~야~\n이야~호~ 에헤~야~\n으~이~야~~~~~',
+      en2Variants:[
+        // V0 — 극저속: 리듬감 최소화, 한(恨) 극대화
+        '어이~야~ 어이~야~\n에헤~야~ 에헤~야~\n이야~~~~호~~~~\n어이~야~ 어이~야~\n으~이~야~~~~~',
+        // V1 — 보통: 리듬→한 폭발 기본 곡선 (기존 en2)
+        '어이~야~ 어이~야~\n에헤~야~ 에헤~야~\n이야~호~ 이야~호~\n이야~~~~호~~~~\n어이~야~ 어이~야~\n이야~호~ 에헤~야~\n으~이~야~~~~~',
+        // V2 — 중고속: 이야호 위주, 더 역동적
+        '어이~야~ 에헤~야~\n이야~호~ 이야~호~\n어이~야~ 어이~야~\n이야~~~~호~~~~\n에헤~야~ 이야~호~\n으~이~야~~~~~',
+        // V3 — 빠름: 3연속 반복 후 갑작스러운 긴 폭발
+        '어이~야~ 어이~야~ 어이~야~\n이야~호~ 이야~호~\n에헤~야~ 이야~호~\n이야~~~~호~~~~\n어이~야~ 이야~호~\n으~이~야~~~~',
+      ],
+      get en2(){return this.en2Variants[1];},
       kr2:'어이야 / 에헤야 / 이야호 / 으이야',
       han:'EMOTIONAL ARC — Han breaking through rhythm like a flood through a dam. (1) PULSE: "어이~야~ 어이~야~" short, rhythmic, controlled — grief contained within the beat. (2) BUILD: "이야~호~ 이야~호~" rising, faster, more urgent — the dam beginning to crack. (3) ERUPTION (the Han break): "이야~~~~호~~~~" — the rhythm STOPS. A single phrase stretched to its maximum, the dam breaks. This is the moment Han overwhelms the groove. Suno MUST hold this note until it trembles. (4) RHYTHM RETURNS: "어이~야~" the groove resumes — but now Han has been heard, it cannot be unfelt. (5) COLLAPSE: "으~이~야~~~~~" the final long low exhale — the groove cannot contain the grief, it dissolves into Han. CRITICAL: the contrast between short rhythmic phrases and the sudden long "이야~~~~호~~~~" IS the emotional shock of Han. The body keeps the beat; the soul cannot.',
       desc:'굿거리 리듬이 한(恨)에 무너지는 순간.',pitch:'midhigh',gender:'both'},
     {en:'High Lament Gueum',kr:'고음 애절 구음',
-      en2:'이~야~~~~호~\n에~헤~야~ 이야~호~\n이~~~~야~~~~호~\n에헤~~~~야~~~~\n이야~~~~호~~~~\n에~헤~야~흐~~~~\n아~이~야~ 이야~호~\n이~야~호~ 으~~~~',
+      en2Variants:[
+        // V0 — 극저속: 고음 최장 유지, 극한 체념
+        '이~야~~~~호~~~~\n이~~~~야~~~~호~\n에헤~~~~야~~~~\n이야~~~~호~~~~\n이~야~호~ 으~~~~',
+        // V1 — 보통: 고음 상승→꺾음→체념 기본 곡선 (기존 en2)
+        '이~야~~~~호~\n에~헤~야~ 이야~호~\n이~~~~야~~~~호~\n에헤~~~~야~~~~\n이야~~~~호~~~~\n에~헤~야~흐~~~~\n이~야~호~ 으~~~~',
+        // V2 — 중고속: 에헤야 위주 고음
+        '에헤~야~ 이야~호~\n이~야~~~~호~\n아~이~야~ 이야~호~\n이야~~~~호~~~~\n에~헤~야~흐~~~~\n이~야~호~ 으~~~~',
+        // V3 — 빠름: 이야호 연속 반복 후 갑작스러운 극한 꺾음
+        '이야~호~ 이야~호~\n에헤~야~ 이야~호~\n이~야~~~~호~\n이야~~~~호~~~~\n에헤~야~ 이야~호~\n이~야~호~ 으~~~~',
+      ],
+      get en2(){return this.en2Variants[1];},
       kr2:'이야호 / 에헤야 / 아이야 / 이야호 에헤야',
       han:'EMOTIONAL ARC — Han in the highest register, where grief becomes unbearable altitude. (1) IMMEDIATE ASCENT: "이~야~~~~호~" opens at the top — no introduction, grief begins at full height. The high vowels 이→야→호 climb in one breath. (2) EXTREME PEAK: "이~~~~야~~~~호~" — each syllable held to maximum, the voice trembling (떨림) at altitude. This is the moment of impossible suspension, grief held at a height the body cannot sustain. (3) LONG TREMBLING: "에헤~~~~야~~~~" the two syllables stretched equally — the voice shaking at the peak, unable to descend, unable to hold. (4) THE BREAK (꺾음): "에~헤~야~흐~~~~" rises on 에→헤→야 then SNAPS downward into "흐~~~~" — the fall from the highest point to the lowest in one phrase. This is the defining Korean 꺾음: the higher the ascent, the more devastating the break. (5) RESIGNATION: "이~야~호~ 으~~~~" — a shorter rise then the final "으~~~~", the lowest point, the voice surrendering. Han at high register is not strength — it is grief that cannot bear its own weight.',
       desc:'고음에서 떨다 꺾이는 애절함. 높을수록 깊은 한(恨).',pitch:'high',gender:'female'},
     {en:'Hwimori Soul Shout Gueum',kr:'휘모리 소울 샤우트 구음',
-      en2:'어~호~ 어~호~\n이야~호~ 이야~호~\n아~하~ 이야~호~\n어~이~야~~~~\n어~호~ 이야~호~\n이야~~~호~~~~\n에헤~야~ 어~호~\n이야~~~호~~~~~~',
+      en2Variants:[
+        // V0 — 극저속: 어호 느리게, 긴 절규
+        '어~호~ 어~호~\n이야~호~ 이야~호~\n어~이~야~~~~\n이야~~~호~~~~\n이야~~~호~~~~~~',
+        // V1 — 보통: 속도→폭발 기본 곡선 (기존 en2)
+        '어~호~ 어~호~\n이야~호~ 이야~호~\n아~하~ 이야~호~\n어~이~야~~~~\n이야~~~호~~~~\n에헤~야~ 어~호~\n이야~~~호~~~~~~',
+        // V2 — 중고속: 어호+아하 반복, 이야호 폭발
+        '어~호~ 이야~호~\n아~하~ 아~하~\n이야~호~ 이야~호~\n어~이~야~~~~\n이야~~~호~~~~\n이야~~~호~~~~~~',
+        // V3 — 빠름: 3연속 빠른 반복 후 극한 긴 절규
+        '어~호~ 어~호~ 어~호~\n이야~호~ 이야~호~\n아~하~ 이야~호~\n어~이~야~~~~\n이야~~~호~~~~~~',
+      ],
+      get en2(){return this.en2Variants[1];},
       kr2:'어호 / 아하 / 이야호 / 에헤야 / 어이야',
       han:'EMOTIONAL ARC — Han at maximum velocity, grief that cannot be contained by speed. (1) RAPID PULSE: "어~호~ 어~호~" fast, explosive bursts — grief compressed into short punches. (2) ACCELERATION: "이야~호~ 이야~호~" higher and faster — urgency building. (3) ERUPTION: "어~이~야~~~~" — the tempo BREAKS. Amid the speed, this phrase stretches WIDE — a sudden long hold that stops everything. The silence around it is the Han the speed was trying to outrun. (4) RETURN AND RISE: rhythm resumes but "이야~~~호~~~~" stretches longer each time — the grief is winning against the speed. (5) TERMINAL SHOUT: "이야~~~호~~~~~~" — six tildes, the longest phrase, held at the highest pitch until the voice cracks and empties. This is Han that ran out of places to run — it stops and screams and then falls into silence. CRITICAL: the contrast between the rapid "어~호~" punches and the long "이야~~~호~~~~~~" is total. Speed is the mask. The long held note is the face. Han is always the face.',
       desc:'빠른 소리 속 갑자기 멈추는 긴 한(恨)의 절규.',pitch:'high',gender:'both'},
@@ -1847,6 +1918,27 @@ function selectGueumStrength(level) {
   buildPrompt();
 }
 
+/* ── 구음 변형 자동 선택: BPM + intensity 기반 ──────────────────────
+   V0 (<82 BPM)   : 극저속 — 최장 늘어짐, 깊은 체념 위주
+   V1 (82–95 BPM) : 보통   — 상승→꺾음→체념 기본 한(恨) 곡선
+   V2 (96–110 BPM): 중고속  — 짧은 터짐과 중간 흘림 교차
+   V3 (>110 BPM)  : 빠름   — 빠른 펄스 반복 후 갑작스러운 긴 폭발
+   intensity ≥ 8 이면 한 단계 더 역동적인 변형으로 이동
+──────────────────────────────────────────────────────────────── */
+function selectGueumVariant(styleInfo) {
+  if (!styleInfo || !styleInfo.en2Variants) return styleInfo?.en2 || '';
+  const bpm = STATE.bpm || 95;
+  const intensity = STATE.intensity || 5;
+  let idx;
+  if      (bpm < 82)  idx = 0;
+  else if (bpm <= 95) idx = 1;
+  else if (bpm <= 110) idx = 2;
+  else                idx = 3;
+  // 강도 8 이상이면 한 단계 더 역동적 패턴
+  if (intensity >= 8 && idx < 3) idx++;
+  return styleInfo.en2Variants[idx];
+}
+
 /* ── 공통 라벨 헬퍼 (updateX + syncSliders 중복 제거) ── */
 function _intensityLabel(v){return v<=3?'Chill (잔잔한)':v<=6?'Emotional (감성적인)':'Explosive Soul (폭발적인)';}
 function _koreanDomLabel(v){return v>=90?'압도적 국악기':v>=80?'강한 국악기 주도':'명확한 국악기';}
@@ -1912,38 +2004,70 @@ function _doBuildPrompt() {
   try {
     const parts=[];
     const dom=STATE.koreanDominance||80;
-    /* [수정] [Ratio] + [Korean Lead Instruction] + [Direction] 3줄 → 1줄로 통합 (토큰 절약) */
     const domLabel = dom>=90?'ABSOLUTE DOMINANCE':dom>=80?'STRONG LEAD':dom>=70?'MAIN FOCUS':'MODERATE LEAD';
-    parts.push(`[Korean Core ${domLabel}] ${dom}% traditional instruments dominate (melody+emotion+rhythm) with 시김새·농현·정간보. Modern ${100-dom}% = subtle background only.`);
-    if (STATE.genre!==null&&DATA.genres[STATE.genre]) { const g=DATA.genres[STATE.genre]; parts.push(`[Genre] ${g.en} (${g.kr})`); }
-    if(STATE.moods.length){const ms=getEnList(STATE.moods,DATA.moods);if(ms)parts.push(`[Mood] ${ms}`);}
+
+    // ── 국악기 음색 매핑 ─────────────────────────────────────────
+    const instrSonicMap = {
+      'Gayageum': 'plucked zither — bright crystalline pluck tone, finger slides, delicate 시김새 ornaments, harp-like resonance',
+      'Haegeum':  'bowed two-string fiddle — nasal crying tone like a human voice weeping, raw emotional slides, quivering vibrato, NOT a violin',
+      'Ajaeng':   'bowed large zither — deep gravelly cello-like sustained tone, rough bow friction, emotionally devastating low register',
+      'Geomungo': 'plucked zither — deep resonant thump, darker and lower than gayageum, percussive attack with long sustain',
+      'Yanggeum': 'hammered dulcimer — bright bell-like tone, Korean hammered string chords, clear crystalline resonance',
+      'Daegeum':  'large bamboo transverse flute — breathy airy tone with audible breath noise, wide emotional vibrato, haunting sustained phrases, NOT a Western flute',
+      'Piri':     'double-reed wind — penetrating nasal buzz tone, sharp and raw, piercing traditional Korean oboe timbre, earthy and wild',
+      'Danso':    'small end-blown bamboo flute — pure clear delicate tone, airy breath, gentle and ethereal',
+      'Saenghwang':'free-reed mouth organ — sustained harmonic cluster chords, unique buzzy resonance, drone-like East Asian timbre',
+      'Janggu':   'double-headed hourglass drum — deep resonant boom on left head, sharp dry crack on right head, traditional Korean rhythmic pulse',
+      'Kkwaenggwari':'small hand-held gong — sharp metallic clang, bright penetrating accent, cutting through the mix',
+      'Buk':      'barrel drum — deep resonant thud, powerful and warm, traditional Korean ceremonial drum',
+    };
+
+    // ── 선택된 악기의 리드 악기명 + 음색 설명 미리 추출 ──────────
+    let leadInstrName = '';
+    let sonicParts = [];
     if (STATE.instr) {
-      // 국악기별 Suno가 이해하는 음색 특성 매핑
-      const instrSonicMap = {
-        'Gayageum': 'plucked zither — bright crystalline pluck tone, finger slides, delicate 시김새 ornaments, harp-like resonance',
-        'Haegeum': 'bowed two-string fiddle — nasal crying tone like a human voice weeping, raw emotional slides, quivering vibrato, NOT a violin',
-        'Ajaeng': 'bowed large zither — deep gravelly cello-like sustained tone, rough bow friction, raw and emotionally devastating low register',
-        'Geomungo': 'plucked zither — deep resonant thump, darker and lower than gayageum, percussive attack with long sustain',
-        'Yanggeum': 'hammered dulcimer — bright bell-like tone, Korean hammered string chords, clear crystalline resonance',
-        'Daegeum': 'large bamboo transverse flute — breathy airy tone with audible breath noise, wide emotional vibrato, haunting sustained phrases, NOT a Western flute',
-        'Piri': 'double-reed wind — penetrating nasal buzz tone, sharp and raw, piercing traditional Korean oboe timbre, earthy and wild',
-        'Danso': 'small end-blown bamboo flute — pure clear delicate tone, airy breath, gentle and ethereal',
-        'Saenghwang': 'free-reed mouth organ — sustained harmonic cluster chords, unique buzzy resonance, drone-like East Asian timbre',
-        'Janggu': 'double-headed hourglass drum — deep resonant boom on left head, sharp dry crack on right head, traditional Korean rhythmic pulse',
-        'Kkwaenggwari': 'small hand-held gong — sharp metallic clang, bright penetrating accent, cutting through the mix',
-        'Buk': 'barrel drum — deep resonant thud, powerful and warm, traditional Korean ceremonial drum',
-      };
       const instrEn = STATE.instr.en;
-      const sonicParts = [];
       for (const [name, sonic] of Object.entries(instrSonicMap)) {
-        if (instrEn.includes(name)) sonicParts.push(`${name} (${sonic})`);
-      }
-      parts.push(`[Instruments] ${instrEn}`);
-      if (sonicParts.length) {
-        parts.push(`CRITICAL — Korean instrument timbre requirements: ${sonicParts.join(' | ')}. Each of these instruments MUST be clearly and prominently audible in the final mix. Their authentic Korean timbre — NOT Western equivalents — must define the sonic identity. Do NOT replace with Western instruments. Do NOT bury in reverb or background layers. The lead Korean instrument must carry the melody and be the most prominent sound.`);
+        if (instrEn.includes(name)) {
+          sonicParts.push(`${name} (${sonic})`);
+          if (!leadInstrName) leadInstrName = name; // 첫 번째 = 리드 악기
+        }
       }
     }
-    if (STATE.concept!==null&&DATA.concepts[STATE.concept]) { const c=DATA.concepts[STATE.concept]; parts.push(`[Concept] ${c.name}`); parts.push(`[Core Mood] ${c.core.join(', ')}`); parts.push(`[Instruments (Concept)] ${c.inst.join(', ')}`); }
+
+    // ── ① 프롬프트 맨 앞: 리드 악기 태그 (Suno 최우선 인식) ─────
+    // Suno는 프롬프트 첫 줄을 가장 강하게 따름
+    if (leadInstrName) {
+      parts.push(`${leadInstrName} lead, Korean traditional instruments, ${STATE.instr.en.replace(/\s*\+\s*/g,', ')}`);
+    }
+
+    // ── ② Korean Core: 리드 악기명 포함 ─────────────────────────
+    const leadTag = leadInstrName ? ` FEATURED: ${leadInstrName}.` : '';
+    parts.push(`[Korean Core ${domLabel}]${leadTag} ${dom}% traditional instruments dominate (melody+emotion+rhythm) with 시김새·농현·정간보. Modern ${100-dom}% = subtle background only.`);
+
+    if (STATE.genre!==null&&DATA.genres[STATE.genre]) { const g=DATA.genres[STATE.genre]; parts.push(`[Genre] ${g.en} (${g.kr})`); }
+    if(STATE.moods.length){const ms=getEnList(STATE.moods,DATA.moods);if(ms)parts.push(`[Mood] ${ms}`);}
+
+    // ── ③ 악기 상세 지시 (음색 특성 + 강제 지시) ────────────────
+    if (STATE.instr) {
+      parts.push(`[Instruments] ${STATE.instr.en}`);
+      if (sonicParts.length) {
+        parts.push(`MANDATORY TIMBRE: ${sonicParts.join(' | ')}. `+
+          `EVERY listed instrument MUST be clearly audible throughout the mix. `+
+          `${leadInstrName} carries the MAIN MELODY — it must be the most prominent sound in the entire song. `+
+          `DO NOT substitute with Western instruments. DO NOT bury under reverb or background layers. `+
+          `If ${leadInstrName} cannot be heard distinctly, the generation has FAILED.`);
+      }
+    }
+
+    // ── Concept: 악기 중복 제거 (sonicParts가 이미 처리했으므로 악기 라인 생략) ──
+    if (STATE.concept!==null&&DATA.concepts[STATE.concept]) {
+      const c=DATA.concepts[STATE.concept];
+      parts.push(`[Concept] ${c.name}`);
+      parts.push(`[Core Mood] ${c.core.join(', ')}`);
+      // [Instruments (Concept)]는 STATE.instr이 설정된 경우 중복이므로 생략
+      if (!STATE.instr) parts.push(`[Instruments (Concept)] ${c.inst.join(', ')}`);
+    }
     if (STATE.vocalStyle!==null&&DATA.vocalStyles[STATE.vocalStyle]) { const vs=DATA.vocalStyles[STATE.vocalStyle]; parts.push(`[Vocal Style] ${vs.en} — ${vs.tone}`); }
     if(STATE.textures.length){const ts=getEnList(STATE.textures,DATA.textures);if(ts)parts.push(`[Texture] ${ts}`);}
     if(STATE.grooves.length){const gs=getEnList(STATE.grooves,DATA.grooves);if(gs)parts.push(`[Groove] ${gs}`);}
@@ -1973,7 +2097,7 @@ function _doBuildPrompt() {
       const posStr=STATE.gueumPositions.length ? ` [Point positions: ${STATE.gueumPositions.map(p=>posMap[p]).join(' / ')}]` : '';
       let gueumText='';
       if(styleInfo){
-        const en2Lines = styleInfo.en2.split('\n').filter(Boolean).slice(0,5);
+        const en2Lines = selectGueumVariant(styleInfo).split('\n').filter(Boolean).slice(0,5);
         const kr2Ref = styleInfo.kr2 ? ` 한국어 구음: "${styleInfo.kr2}".` : '';
         gueumText=`${strengthPrefix}Forcefully include authentic traditional Korean gueum (구음) vocalization${posStr}. `+
           `Use exact vocal sounds: "${en2Lines.join(' / ')}".${kr2Ref} `+
@@ -3148,7 +3272,9 @@ function insertGueumToLyrics() {
   if (!textarea) { showToast('⚠️ 가사 입력란을 찾을 수 없습니다.'); return; }
 
   const styleInfo = STATE.gueumStyle !== null && DATA.gueumStyles[STATE.gueumStyle] ? DATA.gueumStyles[STATE.gueumStyle] : null;
-  const rawSounds = styleInfo?.en2
+  const rawSounds = styleInfo?.en2Variants
+    ? selectGueumVariant(styleInfo).split('\n').map(s => s.trim()).filter(Boolean)
+    : styleInfo?.en2
     ? styleInfo.en2.split('\n').map(s => s.trim()).filter(Boolean)
     : ['어이~야~','에헤~야~','아~이~야~','으~이~야~','어~이~야~','에헤~야~흥~'];
 
@@ -3707,7 +3833,7 @@ function _buildShortsGueumBlock() {
   };
   const pitch     = STATE.gueumPitch || 'midhigh';
   const rawPool   = styleInfo
-    ? styleInfo.en2.split('\n').filter(Boolean)
+    ? selectGueumVariant(styleInfo).split('\n').filter(Boolean)
     : pitchMap[pitch] || pitchMap.midhigh;
   // 드롭 구간: 감정 곡선 — 긴장(앞) → 절정(중) → 여운(끝) 순서 유지
   const ordered = rawPool.slice();
@@ -3778,7 +3904,7 @@ function genGueumOnlyShorts(lang) {
   };
   const pitch = STATE.gueumPitch || 'midhigh';
   const pool  = styleInfo
-    ? styleInfo.en2.split('\n').filter(Boolean)
+    ? selectGueumVariant(styleInfo).split('\n').filter(Boolean)
     : pitchMap[pitch] || pitchMap.midhigh;
 
   // 감정 곡선: 도입(조용한 긴장) → 절정(꺾음·파음) → 여운(여린 맺음)
