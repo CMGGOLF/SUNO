@@ -2200,27 +2200,60 @@ function _doBuildPrompt() {
    API
 ═══════════════════════════════════════════ */
 function getApiKey() { return (document.getElementById('apiKeyInput')?.value||'').trim()||localStorage.getItem('gugak_api_key')||''; }
-async function callClaude(prompt, systemPrompt='', temperature=0.85) {
-  const apiKey=getApiKey();
-  if (!apiKey) { document.getElementById('apiKeyInput')?.focus(); throw new Error('OpenRouter API 키를 먼저 입력해 주세요.'); }
-  if (!apiKey.startsWith('sk-or-v1-')) throw new Error('OpenRouter 키 형식 오류 (sk-or-v1- 로 시작)');
-  const messages=[];
-  if (systemPrompt) messages.push({role:'system',content:systemPrompt});
-  messages.push({role:'user',content:prompt});
-  const res=await fetch('https://openrouter.ai/api/v1/chat/completions',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`,'HTTP-Referer':window.location.href,'X-Title':'Gugak Prompt Maker v14'},
-    body:JSON.stringify({model:'google/gemma-2-9b-it:free',messages,max_tokens:2500,temperature})
+/* ── 무료 모델 폴백 목록 (순서대로 시도) ── */
+const _FREE_MODELS = [
+  'meta-llama/llama-3.1-8b-instruct:free',
+  'mistralai/mistral-7b-instruct:free',
+  'google/gemma-2-9b-it:free',
+  'microsoft/phi-3-mini-128k-instruct:free',
+];
+
+async function _callOnce(model, messages, temperature, apiKey) {
+  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+      'HTTP-Referer': window.location.href,
+      'X-Title': 'Gugak Prompt Maker v14',
+    },
+    body: JSON.stringify({ model, messages, max_tokens: 2500, temperature }),
   });
-  const data=await res.json().catch(()=>({}));
+  const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    let msg=data?.error?.message||`OpenRouter API 오류 (${res.status})`;
-    if (res.status===401) msg='401 인증 오류 - API 키 확인';
-    if (res.status===402) msg='402 크레딧 부족';
-    if (res.status===429) msg='429 사용량 제한';
+    let msg = data?.error?.message || `오류 ${res.status}`;
+    if (res.status === 401) throw new Error('401 인증 오류 - API 키를 확인해 주세요.');
+    if (res.status === 402) throw new Error('402 크레딧 부족 - OpenRouter 잔액을 확인해 주세요.');
+    if (res.status === 429) throw new Error('429 사용량 제한 - 잠시 후 다시 시도해 주세요.');
     throw new Error(msg);
   }
-  return data.choices?.[0]?.message?.content||'결과를 가져올 수 없습니다.';
+  const text = data.choices?.[0]?.message?.content || '';
+  if (!text) throw new Error('빈 응답');
+  return text;
+}
+
+async function callClaude(prompt, systemPrompt = '', temperature = 0.85) {
+  const apiKey = getApiKey();
+  if (!apiKey) { document.getElementById('apiKeyInput')?.focus(); throw new Error('OpenRouter API 키를 먼저 입력해 주세요.'); }
+  if (!apiKey.startsWith('sk-or-v1-')) throw new Error('키 형식 오류 — sk-or-v1- 로 시작해야 합니다.');
+
+  const messages = [];
+  if (systemPrompt) messages.push({ role: 'system', content: systemPrompt });
+  messages.push({ role: 'user', content: prompt });
+
+  let lastErr = null;
+  for (const model of _FREE_MODELS) {
+    try {
+      const result = await _callOnce(model, messages, temperature, apiKey);
+      return result;           // 성공 시 즉시 반환
+    } catch (e) {
+      // 인증·크레딧 오류는 폴백 불필요 — 즉시 상위로 던짐
+      if (e.message.startsWith('401') || e.message.startsWith('402')) throw e;
+      lastErr = e;
+      // 다음 모델로 계속
+    }
+  }
+  throw new Error(`모든 무료 모델 실패 — 마지막 오류: ${lastErr?.message || '알 수 없음'}`);
 }
 function cleanLyrics(text) {
   if (!text) return '';
@@ -2345,7 +2378,9 @@ async function aiExpandPrompt() {
     showToast('✅ Suno 프롬프트 생성 완료!');
   } catch(e) {
     // 오류 시 STATE 기반 프롬프트는 유지하고 토스트로만 알림
-    showToast('⚠️ AI 연결 실패 — 기본 프롬프트를 사용하세요. (' + (e.message||'오류') + ')');
+    const msg = (e.message||'알 수 없는 오류');
+    showToast('⚠️ AI 연결 실패: ' + msg);
+    console.warn('[aiExpandPrompt 오류]', e);
   }
   loading.classList.remove('show');
 }
