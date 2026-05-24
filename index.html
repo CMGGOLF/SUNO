@@ -2285,7 +2285,16 @@ async function callClaude(prompt, systemPrompt = '', temperature = 0.85) {
       // 다음 모델로 계속
     }
   }
-  throw new Error(`모든 무료 모델 실패 — 마지막 오류: ${lastErr?.message || '알 수 없음'}`);
+  // 무료 모델 전부 실패 → 유료 모델(gpt-4o-mini)로 자동 전환
+  showToast('⚠️ 무료 모델 실패 → gpt-4o-mini 유료 전환 중...');
+  try {
+    const result = await _callOnce('openai/gpt-4o-mini', messages, temperature, apiKey);
+    showToast('✅ gpt-4o-mini 전환 성공!');
+    return result;
+  } catch (e) {
+    if (e.message.startsWith('401') || e.message.startsWith('402')) throw e;
+    throw new Error(`모든 모델 실패 — 마지막 오류: ${e.message || '알 수 없음'}`);
+  }
 }
 function cleanLyrics(text) {
   if (!text) return '';
