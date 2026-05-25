@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 v14 - Joseon Core</title>
+<title>BV 뮤직 프롬프트 메이커 v17 - Joseon Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -67,6 +67,7 @@ header{
   border-radius:6px;padding:6px 14px;
   font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;
 }
+/* v16 — genre DNA differentiation */
 .app{max-width:1400px;margin:0 auto;padding:32px 40px 80px;display:grid;grid-template-columns:1fr;gap:32px}
 .section{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
 .section-head{
@@ -1036,6 +1037,22 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       <button class="btn btn-outline" onclick="loadPresets()">📂 내 프리셋</button>
       <button class="btn btn-outline" onclick="resetAll()">↺ 초기화</button>
     </div>
+    <!-- 🎲 랜덤 조합 버튼 — v17 다양성 시스템 -->
+    <div style="margin-top:12px;padding:14px 16px;background:rgba(255,180,50,.06);border:1px solid rgba(255,180,50,.25);border-radius:8px">
+      <div style="font-size:11px;color:rgba(255,180,50,.9);font-weight:700;margin-bottom:8px;letter-spacing:1px">🎲 다양성 엔진 v17</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button class="btn" style="background:linear-gradient(135deg,#b8860b,#daa520);border-color:#daa520;color:#08080e;font-weight:700;font-size:13px;padding:10px 20px" onclick="randomizeCombination()">
+          🎲 랜덤 조합 생성
+        </button>
+        <button class="btn btn-outline" style="font-size:12px" onclick="refreshDNAOnly()">
+          🔄 DNA만 새로고침
+        </button>
+        <span style="font-size:11px;color:var(--muted);line-height:1.5">
+          장르 유지 · 악기·무드·BPM·에너지 무작위 변경<br>
+          <span style="color:rgba(255,180,50,.7)">같은 장르에서 매번 다른 음악이 나옵니다</span>
+        </span>
+      </div>
+    </div>
     <div style="margin-top:12px">
       <button class="btn-suno" onclick="openSunoWithEverything()">
         <span style="font-size:16px">🎵</span><span>Suno로 바로 만들기</span>
@@ -1588,6 +1605,8 @@ const STATE = {
   shortsMode:false,
   shortsPreset:null,
   shortsSubMode:null,
+  dnaSeed: Math.random(),       // 매 생성마다 다른 DNA 변형 선택용
+  negativeSeed: Math.random(),  // 매 생성마다 다른 금지어 조합용
 };
 
 /* ═══════════════════════════════════════════
@@ -2057,7 +2076,147 @@ function switchVarTab(type) {
 ═══════════════════════════════════════════ */
 function getEnList(arr,data){return arr.filter(i=>data[i]).map(i=>data[i].en).join(', ');}
 
+/* ── 장르별 고유 음악 언어 DNA ─────────────────────────────────────
+   Suno는 프롬프트 앞부분을 가장 강하게 인식.
+   각 장르가 실제로 다른 음악으로 생성되려면 Suno가 이미 아는
+   "음악적 레퍼런스 언어"로 각자의 정체성을 명시해야 함.
+   같은 [Korean Core] 헤더로 시작하면 Suno 입장에서 동일 명령.
+────────────────────────────────────────────────────────────────── */
+/* ── 각 장르당 3개 변형 DNA — 매 생성마다 다른 것 무작위 선택 ── */
+const GENRE_DNA = {
+  0: [ // 조선 궁중 소울
+    'regal plucked zither shimmer over Neo Soul chord wash, brushed snare at 3am, moonlit palace corridor, silk curtain, Sade-slow groove',
+    'late-Sade pace, gayageum running over warm Rhodes left-hand, upright bass breathing slow, palace hallway echo at 2am',
+    'slow-burn court elegance, plucked string melody over Hammond-organ warmth, brush on snare like silk on stone, D\'Angelo restraint',
+  ],
+  1: [ // 산조 재즈 격상
+    'Miles Davis at 3am brushed snare whisper, suspended chord left unresolved, single instrument improvising into silence, smoke-filled air',
+    'late Coltrane space — one melodic phrase repeated slightly differently each time, upright bass walking under Korean ornaments, cigarette smoke',
+    'Bill Evans left-hand voicing under sanjo improvisation, chord held until it breathes, silence between notes more important than the notes',
+  ],
+  2: [ // 판소리 소울
+    'raw field holler voice cracking under its own weight, church shout broken mid-syllable, Delta swamp grief, single candle in darkness, Sam Cooke edge-of-collapse',
+    'Mahalia Jackson gospel power filtered through Joseon sorrow, voice breaking on the highest note, congregation silence after the shout',
+    'Howlin Wolf chest-voice devastation, one-mic barn recording feel, voice older than the body, each phrase costs something real',
+  ],
+  3: [ // 민요 블루스
+    'Delta swamp moan, Mississippi mud pentatonic bend that never resolves, heavy summer air before the storm breaks, Robert Johnson crossroads at midnight',
+    'Muddy Waters electric slide over Korean folk melody, slow 12-bar under haegeum weeping, Louisiana bayou heat and Korean mountain rain',
+    'Junior Kimbrough hypnotic loop, one riff repeated until it becomes a prayer, pentatonic shared between Mississippi and Jeolla Province',
+  ],
+  4: [ // 국악 궁중 힙합
+    'concrete crack 808, trap hi-hat triplet subdivisions, sub bass earthquake, SP-1200 vinyl chop, boom bap head-nod throne room, Dilla-pocket groove',
+    'J Dilla swing quantization under gayageum riff, vinyl crackle sample loop, 808 sub hitting hard on beat 1 under janggu pattern',
+    'MF DOOM crate-dig layering — Korean court music as the sample, boom bap drums that breathe, bass note that shakes the floor alone',
+  ],
+  5: [ // 대금 앰비언트 격상
+    'cathedral reverb tail, single note held 8 full seconds, Brian Eno oblique space, breath as the only melody, silence louder than any instrument',
+    'Stars of the Lid slow-motion — one bamboo flute phrase drifting through 4 bars of reverb, no percussion, no chord, just air and space',
+    'William Basinski decay loop feel — daegeum breath recorded once and allowed to dissolve, the note disappearing slower than the grief',
+  ],
+  6: [ // 아쟁 딥 소울
+    'bowed low-string in a lightless room, hair-trigger sob just below middle C, Sam Cooke voice about to collapse, heavy reverb on a single low note',
+    'Nick Drake fingerpicked emptiness replaced by ajaeng bow, dark room at 4am, one note sustained until it becomes a question with no answer',
+    'Solomon Burke slow-drag soul groove under bowed Korean zither, the kind of bass note that makes your chest feel hollow, barely any reverb needed',
+  ],
+  7: [ // 네오조선 퓨전
+    'plucked court zither over warm Rhodes electric piano, 2am neon Seoul rain on taxi window, late-night lounge amber glow, D\'Angelo slow-burn groove',
+    'Erykah Badu neo-soul pocket with gayageum melody on top, Seoul rooftop bar 1am, bass guitar breathing like a sleeping person',
+    'The Roots live band warmth — every instrument slightly behind the beat on purpose, court melody riding on top like a dream you almost remember',
+  ],
+};
+
+/* ── 한소울스타일별 DNA — 각 3개 변형 ─────────────────────────── */
+const HANSOUL_DNA = {
+  0: [ // Mississippi Han Blues
+    'raw bottleneck slide one-take recording, Delta swamp mud reverb, dust-road grief, one microphone in an empty barn at dusk, Blind Willie Johnson moan',
+    'Son House field recording — single voice and slide, no studio polish, voice and instrument indistinguishable from one cry',
+    'Skip James high lonesome wail — falsetto grief at the top of the register, haegeum playing the same note the voice just cracked on',
+  ],
+  1: [ // 조선 힙합
+    'booming 808 under ceremonial drum, vinyl crackle loop, trap hi-hat triplets riding janggu pattern, throne room boom bap, MF DOOM layered sample',
+    'Pete Rock horn chop over Korean court recording, 808 kick landing like a palace gate slamming, hi-hat floating like silk',
+    'Madlib lo-fi sample excavation — Joseon court music as the break, bass note that says yes before the snare even lands',
+  ],
+  2: [ // 서울 심야 재즈
+    'Miles Davis last-call set, suspended chord never resolving, 4am Seoul bar last customer, brushed snare barely audible, haegeum weeping over walking bass',
+    'Chet Baker whisper — melody barely audible over upright bass, haegeum taking the melody where the trumpet would have gone, 5am empty street',
+    'Ahmad Jamal space — more silence than sound, each note surrounded by room, Korean string sliding into the gap the piano left',
+  ],
+  3: [ // 산조 블루 노트
+    'jazz improvisation where every fifth cannot decide if it is flat or natural, unrushed walking upright bass under sanjo phrase, Bill Evans left-hand voicing',
+    'Thelonious Monk angular space — notes placed wrong on purpose, sanjo phrase landing slightly off the grid, both refusing to resolve',
+    'Wayne Shorter harmonic ambiguity — chord that could go four directions at once, gayageum choosing none of them and sliding away',
+  ],
+  4: [ // 한(恨) 소울 발라드
+    'Otis Redding voice about to break, ajaeng bow dragging slow across grief, long slow soul groove, tear held one beat too long, Al Green late-night ache',
+    'Marvin Gaye What\'s Going On orchestration under ajaeng lead melody — strings and brass replaced by Korean instruments, same ache different tongue',
+    'Ann Peebles slow devastation — barely moving groove, ajaeng sustain holding the note the singer cannot finish, Rhodes pads underneath like fog',
+  ],
+  5: [ // 날 것의 한국 R&B
+    'raw piri buzz over un-quantized 808, rough-edged R&B with imperfect timing on purpose, lived-in soul, body reacting before the mind catches up',
+    'D\'Angelo Voodoo rawness — drums slightly behind beat, bass notes sliding in late, piri playing sharp then bending down, nothing quantized',
+    'Lauryn Hill Miseducation live-band feel — every instrument breathing, piri taking the guitar\'s role but angrier and more nasal',
+  ],
+};
+
 /* 성능: 슬라이더 연속 이벤트는 디바운스 처리 */
+const GENRE_SUNO_GUIDE = {
+  0: 'Write as if describing a Sade track played by a Korean court ensemble. Avoid words: traditional, fusion, Korean core.',
+  1: 'Write as if Miles Davis just arrived in Seoul at 3am. Use jazz musician vocabulary. Avoid words: traditional, fusion, Korean.',
+  2: 'Write as if a Delta Blues singer was born in the Joseon dynasty. Use field recording, church, raw voice language.',
+  3: 'Write as if Robert Johnson learned from a Korean shaman. Use Mississippi Delta vocabulary. Avoid words: traditional, fusion.',
+  4: 'Write as if J Dilla produced a beat in the Joseon palace. Use hip-hop production vocabulary. Avoid words: traditional, fusion.',
+  5: 'Write as if Brian Eno was handed a Korean bamboo flute. Use ambient/drone vocabulary. Short sentences. Maximum space.',
+  6: 'Write as if a bowed string player from Appalachia and a Korean court musician played the same note. Use deep soul vocabulary.',
+  7: 'Write as if D\'Angelo scored a Korean period film. Use Neo Soul production vocabulary. Avoid words: traditional, fusion.',
+};
+const HANSOUL_SUNO_GUIDE = {
+  0: 'Write as if Blind Willie Johnson was born in Jeolla Province. Raw, dusty, one-take. Avoid words: traditional, fusion.',
+  1: 'Write as if MF DOOM sampled a Joseon court recording. Use hip-hop crate-digger vocabulary.',
+  2: 'Write as if Miles Davis played his last set in a Seoul basement bar. Use late-night jazz vocabulary.',
+  3: 'Write as if Bill Evans studied sanjo. Use jazz theory vocabulary with Korean improvisation context.',
+  4: 'Write as if Otis Redding heard an ajaeng for the first time and wept. Use slow soul vocabulary.',
+  5: 'Write as if D\'Angelo recorded Voodoo in a Korean village. Un-quantized, raw, imperfect. Avoid words: traditional, fusion.',
+};
+
+/* ── Suno에서 과용되는 단어 풀 — 매 생성마다 다른 5개 rotate ──
+   이 단어들은 Suno가 거의 모든 음악에 기본으로 집어넣는 표현들.
+   금지하면 Suno가 더 구체적이고 독특한 음악을 만들게 됨.
+────────────────────────────────────────────────────────────────── */
+const OVERUSED_SUNO_WORDS = [
+  // 감정/분위기 과용어
+  'dreamy','ethereal','haunting','melancholic','atmospheric',
+  'mystical','serene','lush','cinematic','epic',
+  'emotional','nostalgic','enchanting','beautiful','soothing',
+  'gentle','flowing','peaceful','uplifting','inspiring',
+  // 장르/스타일 과용어
+  'fusion','blend','mix','traditional','ancient',
+  'meditative','spiritual','transcendent','otherworldly','hypnotic',
+  // 프로덕션 과용어
+  'layered','rich','warm','deep','powerful',
+  'soaring','floating','drifting','shimmering','glowing',
+];
+
+/* ── 장르별 권장 BPM 범위 (랜덤 조합 시 사용) ───────────────── */
+const GENRE_BPM_RANGE = {
+  0: [72, 88],   // 조선 궁중 소울 — 느린 그루브
+  1: [80, 100],  // 산조 재즈 — 재즈 스윙 범위
+  2: [70, 90],   // 판소리 소울 — 느리고 묵직
+  3: [75, 95],   // 민요 블루스 — 델타 블루스 템포
+  4: [88, 108],  // 국악 힙합 — 붐뱁 범위
+  5: [55, 78],   // 대금 앰비언트 — 매우 느림
+  6: [65, 85],   // 아쟁 딥 소울 — 깊고 느림
+  7: [82, 100],  // 네오조선 퓨전 — 네오소울 범위
+};
+const HANSOUL_BPM_RANGE = {
+  0: [65, 82],   // Mississippi Han Blues
+  1: [88, 105],  // 조선 힙합
+  2: [75, 92],   // 서울 심야 재즈
+  3: [80, 98],   // 산조 블루 노트
+  4: [60, 80],   // 한(恨) 소울 발라드
+  5: [85, 105],  // 날 것의 한국 R&B
+};
 let _buildPromptTimer = null;
 function buildPrompt(immediate) {
   clearTimeout(_buildPromptTimer);
@@ -2070,6 +2229,17 @@ function _doBuildPrompt() {
     const parts=[];
     const dom=STATE.koreanDominance||80;
     const domLabel = dom>=90?'ABSOLUTE DOMINANCE':dom>=80?'STRONG LEAD':dom>=70?'MAIN FOCUS':'MODERATE LEAD';
+
+    /* ── ❶ 장르 DNA 주입 — 프롬프트 최상단 (Suno 최우선 인식) ──────
+       각 장르당 3개 변형 중 dnaSeed 기반으로 하나 선택.
+       "랜덤 조합" 버튼 → dnaSeed 변경 → 다른 변형 선택됨.
+    ──────────────────────────────────────────────────────────────── */
+    const _dnaPool   = (STATE.genre !== null)        ? GENRE_DNA[STATE.genre]        :
+                       (STATE.hanSoulStyle !== null)  ? HANSOUL_DNA[STATE.hanSoulStyle] : null;
+    if (_dnaPool) {
+      const _dnaIdx = Math.floor((STATE.dnaSeed || 0) * _dnaPool.length) % _dnaPool.length;
+      parts.push(`[SONIC IDENTITY] ${_dnaPool[_dnaIdx]}`);
+    }
 
     // ── 국악기 음색 매핑 ─────────────────────────────────────────
     const instrSonicMap = {
@@ -2106,13 +2276,40 @@ function _doBuildPrompt() {
       parts.push(`${leadInstrName} lead, Korean traditional instruments, ${STATE.instr.en.replace(/\s*\+\s*/g,', ')}`);
     }
 
-    // ── ② Korean Core: 리드 악기명 포함 ─────────────────────────
+    // ── ② Korean Core: 리드 악기명 포함 + 장르별 구조 언어 ──────
+    const _genreStructureLabel = (() => {
+      const gMap = {
+        0: 'court elegance with soul undercurrent',
+        1: 'jazz improvisation with Korean melodic grammar',
+        2: 'raw vocal power, blues emotional arc',
+        3: 'folk pentatonic over delta groove',
+        4: 'hip-hop rhythm framework, traditional melodic color',
+        5: 'ambient drone, maximum breath and space',
+        6: 'deep bowed texture, soul harmonic language',
+        7: 'neo soul production, court melodic vocabulary',
+      };
+      const hsMap = {
+        0: 'delta blues structure, Korean melodic soul',
+        1: 'hip-hop boom bap, court percussion foundation',
+        2: 'late-night jazz, Korean lament phrasing',
+        3: 'jazz improvisation, sanjo rhythmic freedom',
+        4: 'slow soul ballad, ajaeng emotional depth',
+        5: 'raw R&B groove, piri tonal identity',
+      };
+      if (STATE.genre !== null && gMap[STATE.genre]) return gMap[STATE.genre];
+      if (STATE.hanSoulStyle !== null && hsMap[STATE.hanSoulStyle]) return hsMap[STATE.hanSoulStyle];
+      return 'traditional melody and modern elevation';
+    })();
     const leadTag = leadInstrName ? ` FEATURED: ${leadInstrName}.` : '';
-    parts.push(`[Korean Core ${domLabel}]${leadTag} ${dom}% traditional instruments dominate (melody+emotion+rhythm) with 시김새·농현·정간보. Modern ${100-dom}% = subtle background only.`);
+    parts.push(`[Korean Core ${domLabel}]${leadTag} ${dom}% traditional instruments dominate (${_genreStructureLabel}) with 시김새·농현·정간보. Modern ${100-dom}% = subtle background only.`);
 
     if (STATE.genre!==null&&DATA.genres[STATE.genre]) { const g=DATA.genres[STATE.genre]; parts.push(`[Genre] ${g.en} (${g.kr})`); }
+    /* ── 한소울스타일 — 기존에 설명 텍스트만 있고 프롬프트 미반영 버그 수정 ── */
+    if (STATE.hanSoulStyle!==null&&DATA.hanSoulStyles[STATE.hanSoulStyle]) {
+      const hs=DATA.hanSoulStyles[STATE.hanSoulStyle];
+      parts.push(`[Han Soul Genre] ${hs.en} (${hs.kr}) — style foundation: ${hs.style}`);
+    }
     if(STATE.moods.length){const ms=getEnList(STATE.moods,DATA.moods);if(ms)parts.push(`[Mood] ${ms}`);}
-
     // ── ③ 악기 상세 지시 (음색 특성 + 강제 지시) ────────────────
     if (STATE.instr) {
       parts.push(`[Instruments] ${STATE.instr.en}`);
@@ -2255,6 +2452,17 @@ function _doBuildPrompt() {
         );
       }
     }
+    /* ── ❻ Negative Prompt — 매번 다른 5개 과용어 rotate ────────
+       Suno가 기본적으로 넣는 단어들을 명시 금지 → 더 독특한 음악 생성.
+       negativeSeed 기반으로 매 생성마다 다른 조합 선택.
+    ──────────────────────────────────────────────────────────────── */
+    const _negStart = Math.floor((STATE.negativeSeed || 0) * OVERUSED_SUNO_WORDS.length);
+    const _negWords = [];
+    for (let i = 0; i < 6; i++) {
+      _negWords.push(OVERUSED_SUNO_WORDS[(_negStart + i) % OVERUSED_SUNO_WORDS.length]);
+    }
+    parts.push(`[AVOID THESE OVERUSED SUNO DEFAULTS] Do NOT generate: ${_negWords.join(', ')}. Force Suno away from its generic patterns.`);
+
     const box=document.getElementById('promptBox');
     // [수정2] 사용자가 장르·분위기·악기 중 하나라도 선택했을 때만 프롬프트 표시
     const hasUserSelection = STATE.genre!==null || STATE.moods.length>0 || STATE.instr!==null || STATE.concept!==null || STATE.vocalStyle!==null;
@@ -2353,6 +2561,72 @@ function sanitizeSunoPrompt(text,maxLen=230) {
   return t;
 }
 
+/* ═══════════════════════════════════════════
+   🎲 랜덤 조합 생성 — v17
+   현재 장르를 유지하면서 악기·무드·에너지·BPM을 무작위로 섞음.
+   같은 장르에서도 매번 완전히 다른 음악이 나오도록.
+═══════════════════════════════════════════ */
+function randomizeCombination() {
+  const hasGenre = STATE.genre !== null || STATE.hanSoulStyle !== null;
+  if (!hasGenre) { showToast('⚠️ 먼저 장르(섹션 01) 또는 한소울 스타일을 선택해주세요!'); return; }
+
+  // ① DNA 시드 변경 → 3개 변형 중 다른 것 선택
+  STATE.dnaSeed = Math.random();
+  STATE.negativeSeed = Math.random();
+
+  // ② 악기 카테고리 랜덤 선택
+  const instrCategories = ['string', 'percussion', 'wind'];
+  const randCat = instrCategories[Math.floor(Math.random() * instrCategories.length)];
+  const catArr = randCat === 'string' ? DATA.instrumentsString
+               : randCat === 'percussion' ? DATA.instrumentsPercussion
+               : DATA.instrumentsWind;
+  const randInstrIdx = Math.floor(Math.random() * catArr.length);
+  selectInstrByCategory(randCat, randInstrIdx);
+
+  // ③ 분위기 2~3개 랜덤 선택
+  STATE.moods = [];
+  document.querySelectorAll('[id^="mood_"]').forEach(el => el.classList.remove('active'));
+  const moodCount = 2 + Math.floor(Math.random() * 2);
+  const allMoodIdx = DATA.moods.map((_, i) => i);
+  const shuffledMoods = allMoodIdx.sort(() => Math.random() - 0.5).slice(0, moodCount);
+  shuffledMoods.forEach(i => {
+    STATE.moods.push(i);
+    document.getElementById('mood_' + i)?.classList.add('active');
+  });
+
+  // ④ 에너지 아크 랜덤 선택
+  const arcCount = DATA.energyArcs.length;
+  const randArc = Math.floor(Math.random() * arcCount);
+  document.querySelectorAll('[id^="arc_"]').forEach(el => el.classList.remove('active'));
+  STATE.energyArc = randArc;
+  document.getElementById('arc_' + randArc)?.classList.add('active');
+
+  // ⑤ BPM: 장르별 권장 범위 내 랜덤
+  let bpmRange = GENRE_BPM_RANGE[STATE.genre] || HANSOUL_BPM_RANGE[STATE.hanSoulStyle] || [75, 105];
+  const randBpm = bpmRange[0] + Math.floor(Math.random() * (bpmRange[1] - bpmRange[0]));
+  STATE.bpm = randBpm;
+  const bpmSlider = document.getElementById('bpmSlider');
+  if (bpmSlider) { bpmSlider.value = randBpm; updateBpm(randBpm); }
+  else { STATE.bpm = randBpm; }
+
+  // ⑥ 조성·음계 자동 적용 (기존 매핑 유지)
+  if (STATE.genre !== null && _GENRE_KEY_MAP[STATE.genre]) {
+    const map = _GENRE_KEY_MAP[STATE.genre];
+    _autoSetKeyScale(map[0], map[1]);
+  }
+
+  buildPrompt(true);
+  showToast(`🎲 랜덤 조합 완료! DNA변형 ${Math.floor(STATE.dnaSeed * 3)+1}/3 · ${DATA.energyArcs[randArc].kr} · ${randBpm}BPM`);
+}
+
+/* DNA + Negative seed만 새로고침 — 악기·무드는 유지 */
+function refreshDNAOnly() {
+  STATE.dnaSeed = Math.random();
+  STATE.negativeSeed = Math.random();
+  buildPrompt(true);
+  showToast('🔄 DNA 변형 새로고침! 금지어도 바뀌었습니다.');
+}
+
 async function runAI() {
   const kw=document.getElementById('kwInput').value.trim();
   if (!kw) return;
@@ -2449,10 +2723,20 @@ async function aiExpandPrompt() {
   }
   const loading = document.getElementById('promptLoading');
   loading.classList.add('show');
+
+  /* ── 장르별 시스템 프롬프트 언어 선택 ── */
+  const _guideGenre  = (STATE.genre !== null)        ? GENRE_SUNO_GUIDE[STATE.genre]        : null;
+  const _guideHsoul  = (STATE.hanSoulStyle !== null)  ? HANSOUL_SUNO_GUIDE[STATE.hanSoulStyle] : null;
+  const _activeGuide = _guideGenre || _guideHsoul || '';
+  const _dnaPool2    = (STATE.genre !== null)        ? GENRE_DNA[STATE.genre]        :
+                       (STATE.hanSoulStyle !== null)  ? HANSOUL_DNA[STATE.hanSoulStyle] : null;
+  const _dnaIdx2     = _dnaPool2 ? Math.floor((STATE.dnaSeed||0) * _dnaPool2.length) % _dnaPool2.length : 0;
+  const _dnaHint     = _dnaPool2 ? _dnaPool2[_dnaIdx2] : '';
+
   try {
     const text = await callClaude(
-      `Create ONE Suno AI style prompt from 7:3 Joseon Core settings below.\nRules:\n- English only, maximum 230 characters, one line only\n- Korean traditional music carries 70% melodic & emotional core\n- Modern jazz/blues/soul elements serve as elegant elevation (30%)\n- Include Korean instrument name, traditional phrasing, BPM, emotional tone\nSettings:\n${current}`,
-      'You are a Suno AI music prompt expert. Output only one concise English prompt under 230 characters.'
+      `Create ONE Suno AI style prompt from 7:3 Joseon Core settings below.\nRules:\n- English only, maximum 230 characters, one line only\n- Korean traditional music carries 70% melodic & emotional core\n- Modern jazz/blues/soul elements serve as elegant elevation (30%)\n- Include Korean instrument name, traditional phrasing, BPM, emotional tone\n- MANDATORY: begin the prompt with this sonic DNA to differentiate from other genres: "${_dnaHint}"\nSettings:\n${current}`,
+      `You are a Suno AI music prompt expert. Output only one concise English prompt under 230 characters. ${_activeGuide}`
     );
     box.textContent = sanitizeSunoPrompt(text, 230);
     showToast('✅ Suno 프롬프트 생성 완료!');
