@@ -3123,8 +3123,11 @@ function applyPresetRandomness(isStrong) {
   STATE.koreanDominance = Math.max(65, Math.min(90, domBase + (Math.random() * 10 - 5) | 0));
   
   // 구음 위치 조금씩 다르게 하기
-  const allPos = ['start','add1','mid','add2','add3','end'];
-  if (Math.random() < 0.6) {
+  // ⚠️ 버그 수정: 'start'를 랜덤 추가 대상에서 제외
+  //   → start가 무작위로 추가되면 사용자가 '코러스 직후'만 선택했어도
+  //     인트로 직후부터 구음이 나오는 문제 발생
+  const allPos = ['add1','mid','add2','add3','end']; // start 제외
+  if (Math.random() < 0.35) {  // 확률도 60%→35%로 낮춤
     const extra = allPos.filter(p => !STATE.gueumPositions.includes(p));
     if (extra.length > 0 && STATE.gueumPositions.length < 4) {
       STATE.gueumPositions.push(extra[Math.floor(Math.random()*extra.length)]);
@@ -3912,10 +3915,14 @@ function insertGueumToLyrics() {
       };
       const sName = sNameMap[pos] || pos;
       // 섹션 헤더 + 내용 전체를 매칭 (다음 [섹션] 직전 또는 파일 끝까지)
-      const blockRx = new RegExp(
-        `(\\[${sName}[^\\]]*\\][\\s\\S]*?)(?=\\n{0,2}\\[[A-Za-z]|\\s*$)`,
-        pos === 'mid' ? 'gi' : 'i'
-      );
+  // [버그 수정] lookahead에서 \\[[A-Za-z] → \\[ 로 변경
+  //   기존: [A-Za-z]만 매칭 → [절 2], [후렴 - 마지막] 등 한글 섹션 헤더를
+  //         구분하지 못해 lazy [\s\S]*?가 [fade out]까지 무한 확장되는 문제
+  //   수정: \\[ 하나만 사용 → 어떤 언어의 섹션 헤더도 경계로 인식
+  const blockRx = new RegExp(
+    `(\\[${sName}[^\\]]*\\][\\s\\S]*?)(?=\\n{0,2}\\[|\\s*$)`,
+    pos === 'mid' ? 'gi' : 'i'
+  );
       if (blockRx.test(lyrics)) {
         lyrics = lyrics.replace(blockRx, (match) => {
           const newBlock = makePoint(pool);
