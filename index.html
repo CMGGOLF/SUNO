@@ -423,7 +423,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
       <span style="font-size:11px;color:var(--muted);white-space:nowrap">🎵 국악:정통 비율 조절</span>
       <div style="flex:1;min-width:180px;position:relative">
-        <input type="range" id="ratioSlider" min="10" max="95" value="70" step="5"
+        <input type="range" id="ratioSlider" min="0" max="100" value="70" step="5"
           style="width:100%;background:linear-gradient(to right,var(--korean2) 0%,var(--korean2) var(--rpct,70%),var(--teal) var(--rpct,70%),var(--teal) 100%)"
           oninput="updateRatioSlider(this.value)">
       </div>
@@ -1947,7 +1947,7 @@ const toggleHumanFeel=createToggleFunction('humanFeelElements','humanFeelGrid','
 function updateRatioSlider(v) {
   const kr=parseInt(v); const mod=100-kr;
   STATE.koreanRatio=kr;
-  const pct=((kr-10)/(95-10)*100).toFixed(1)+'%';
+  const pct=kr+'%';
   document.getElementById('ratioSlider').style.setProperty('--rpct',pct);
   document.getElementById('ratioKoreanLabel').textContent=`국악 ${kr}%`;
   document.getElementById('ratioModernLabel').textContent=`정통 ${mod}%`;
@@ -1955,7 +1955,7 @@ function updateRatioSlider(v) {
   document.getElementById('ratioDescLabel').textContent=desc;
   const kdSlider=document.getElementById('koreanDomSlider');
   if (kdSlider) {
-    const domVal=Math.max(60,Math.min(95,Math.round(kr*0.9+10)));
+    const domVal=Math.max(40,Math.min(95,Math.round(kr*0.55+40)));
     kdSlider.value=domVal; STATE.koreanDominance=domVal;
     document.getElementById('koreanDomValue').textContent=domVal;
     const kdLabel=document.getElementById('koreanDomLabel');
@@ -2414,6 +2414,13 @@ function _doBuildPrompt() {
       parts.push(`[Han Soul Style] ${hs.en} — ${hs.style} — Korean Han(恨) emotion expressed through ${hs.en.toLowerCase()} sensibility.`);
     }
     parts.push(`[BPM] ${STATE.bpm}`);
+    const _ratio = STATE.koreanRatio !== undefined ? STATE.koreanRatio : 70;
+    const _ratioDesc = _ratio >= 90 ? 'Korean instruments ONLY — modern elements are barely audible background texture'
+      : _ratio >= 75 ? 'Korean instruments dominate all melody and rhythm — modern elements support only'
+      : _ratio >= 50 ? 'Korean and modern production in balanced fusion'
+      : _ratio >= 25 ? 'Modern production leads — Korean instruments add cultural color'
+      : 'Modern production dominant — Korean instruments are minimal accent only';
+    parts.push(`[Blend Ratio] ${_ratio}% Korean traditional : ${100-_ratio}% modern — ${_ratioDesc}`);
     parts.push(`[Emotional Intensity] ${STATE.intensity}/10 (${STATE.intensity<=3?'Chill':STATE.intensity<=6?'Emotional':'Explosive Soul'})`);
 
     /* ── 다이나믹 대비 전용 블록 (항상 삽입) ── */
@@ -3486,7 +3493,7 @@ function applyRandomPreset() {
   STATE.koreanFeelings=[Math.floor(Math.random()*DATA.koreanFeelings.length)];
   const domSteps=[60,65,70,75,80,85,90,95];
   STATE.koreanDominance=domSteps[Math.floor(Math.random()*domSteps.length)];
-  STATE.koreanRatio=10+Math.floor(Math.random()*86);
+  STATE.koreanRatio=Math.floor(Math.random()*101);
   STATE.musicKey=Math.floor(Math.random()*DATA.musicKeys.length);
   STATE.koreanScale=Math.floor(Math.random()*DATA.koreanScales.length);
   STATE.energyArc=Math.floor(Math.random()*DATA.energyArcs.length);
@@ -3536,7 +3543,7 @@ function syncSliders() {
   const ratioSlider=document.getElementById('ratioSlider');
   if(ratioSlider){
     const kr=STATE.koreanRatio||70; ratioSlider.value=kr;
-    const pct2=((kr-10)/(95-10)*100).toFixed(1)+'%';
+    const pct2=kr+'%';
     ratioSlider.style.setProperty('--rpct',pct2);
     document.getElementById('ratioKoreanLabel').textContent=`국악 ${kr}%`;
     document.getElementById('ratioModernLabel').textContent=`정통 ${100-kr}%`;
@@ -4173,7 +4180,7 @@ function applyShortsPreset(idx) {
     const ratioSlider = document.getElementById('ratioSlider');
     if (ratioSlider) {
       ratioSlider.value = preset.koreanRatio;
-      const pct2 = ((preset.koreanRatio - 10) / (95 - 10) * 100).toFixed(1) + '%';
+      const pct2 = preset.koreanRatio + '%';
       ratioSlider.style.setProperty('--rpct', pct2);
       document.getElementById('ratioKoreanLabel').textContent = `국악 ${preset.koreanRatio}%`;
       document.getElementById('ratioModernLabel').textContent = `정통 ${100 - preset.koreanRatio}%`;
