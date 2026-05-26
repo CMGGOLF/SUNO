@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 v18 - Joseon Core</title>
+<title>BV 뮤직 프롬프트 메이커 v20 - Joseon Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -67,7 +67,7 @@ header{
   border-radius:6px;padding:6px 14px;
   font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;
 }
-/* v18 — full bug-fix + ratio 0~100 */
+/* v20 — Climax Engine: 에너지 아크 최상단 자동 주입 + Big Finish 클라이맥스 */
 .app{max-width:1400px;margin:0 auto;padding:32px 40px 80px;display:grid;grid-template-columns:1fr;gap:32px}
 .section{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
 .section-head{
@@ -410,11 +410,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v18</span></div>
+        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v20</span></div>
         <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 A+B 전 섹션 적용 · 변형 생성</div>
       </div>
     </div>
-    <div class="header-badge">JOSEON CORE v18 · 전면 버그수정 · 비율 0~100</div>
+    <div class="header-badge">JOSEON CORE v20 · CLIMAX ENGINE ⚡</div>
   </div>
 </header>
 
@@ -1009,12 +1009,20 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 <div class="section" style="border-color:rgba(201,168,76,.4);background:rgba(201,168,76,.03)">
   <div class="section-head" onclick="toggleSection('arcBody','arcIcon')" style="cursor:pointer;background:rgba(201,168,76,.08)">
     <div class="sec-num">09B</div>
-    <div class="sec-title">에너지 아크 — 곡 구조 설계 <span id="arcIcon" style="font-size:14px">▼</span></div>
-    <div class="sec-sub">감정의 흐름 · 기승전결 설계 (클릭하여 펼치기/접기)</div>
+    <div class="sec-title">⚡ 에너지 아크 — 클라이맥스 설계 <span style="color:var(--gold);font-size:11px">★ 클라이맥스 핵심</span> <span id="arcIcon" style="font-size:14px">▲</span></div>
+    <div class="sec-sub">감정 흐름 · 기승전결 · 클라이맥스 타이밍 자동 주입</div>
   </div>
-  <div class="section-body" id="arcBody" style="display:none">
-    <div class="info-bar" style="margin-bottom:16px">
-      📈 <b>에너지 아크</b>는 곡이 처음부터 끝까지 어떤 감정 흐름을 가질지 설계합니다. Suno는 이 지시를 잘 따릅니다.
+  <div class="section-body" id="arcBody">
+    <div class="info-bar" style="margin-bottom:12px;border-color:rgba(201,168,76,.4);background:rgba(201,168,76,.08);color:var(--gold2)">
+      ⚡ <b>에너지 아크는 클라이맥스를 만드는 핵심 설정입니다.</b> 기본값: 천천히 타오르는 고조 (Slow Burn Rise) 자동 적용 중.
+    </div>
+    <!-- 빠른 선택 버튼 -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      <button class="btn btn-gold" style="font-size:11px;padding:6px 14px" onclick="selectEnergyArc(0)">🔥 Slow Burn</button>
+      <button class="btn btn-outline" style="font-size:11px;padding:6px 14px" onclick="selectEnergyArc(1)">🌊 Wave Form</button>
+      <button class="btn btn-outline" style="font-size:11px;padding:6px 14px" onclick="selectEnergyArc(4)">⛰️ Twin Peaks</button>
+      <button class="btn btn-outline" style="font-size:11px;padding:6px 14px" onclick="selectEnergyArc(2)">🏔️ Mountain Peak</button>
+      <button class="btn btn-outline" style="font-size:11px;padding:6px 14px" onclick="selectEnergyArc(5)">🎯 Sustained</button>
     </div>
     <div class="card-grid col2" id="energyArcGrid"></div>
   </div>
@@ -1600,7 +1608,7 @@ const STATE = {
   gueumStrength:'strong',
   musicKey:null,
   koreanScale:null,
-  energyArc:null,
+  energyArc:0,
   songDuration:'3:30',
   shortsMode:false,
   shortsPreset:null,
@@ -2254,6 +2262,14 @@ function _doBuildPrompt() {
       parts.push(`[SONIC IDENTITY] ${_dnaPool[_dnaIdx]}`);
     }
 
+    /* ── ★★ 에너지 아크 — 프롬프트 최상단 삽입 (Suno 최우선 인식) ★★
+       Suno는 프롬프트 앞부분을 가장 강하게 반영함.
+       클라이맥스 구조 지시를 DNA 바로 다음에 배치하여 생성 방향 고정.
+    ──────────────────────────────────────────────────────────────── */
+    const _arcEarly = (STATE.energyArc !== null && DATA.energyArcs[STATE.energyArc])
+      ? DATA.energyArcs[STATE.energyArc] : DATA.energyArcs[0];
+    parts.push(`[STRUCTURE — MANDATORY] ${_arcEarly.suno}`);
+
     // ── 국악기 음색 매핑 ─────────────────────────────────────────
     const instrSonicMap = {
       'Gayageum': 'plucked zither — bright crystalline pluck tone, finger slides, delicate 시김새 ornaments, harp-like resonance',
@@ -2429,14 +2445,23 @@ function _doBuildPrompt() {
     parts.push(`[Blend Ratio] ${_ratio}% Korean traditional : ${100-_ratio}% modern — ${_ratioDesc}`);
     parts.push(`[Emotional Intensity] ${STATE.intensity}/10 (${STATE.intensity<=3?'Chill':STATE.intensity<=6?'Emotional':'Explosive Soul'})`);
 
-    /* ── 다이나믹 대비 전용 블록 (항상 삽입) ── */
-    const _dynIntensity = STATE.intensity || 5;
-    const _dynBpm = STATE.bpm || 95;
-    const _quietDesc  = _dynIntensity >= 8 ? 'near-silent, bare solo instrument only' : _dynIntensity >= 5 ? 'quiet and intimate, sparse texture' : 'soft and gentle, minimal layers';
-    const _loudDesc   = _dynIntensity >= 8 ? 'ALL instruments at MAXIMUM VOLUME, explosive and overwhelming' : _dynIntensity >= 5 ? 'full ensemble, emotionally charged, loud and impactful' : 'warm full sound, moderately expressive';
-    const _contrastWord = _dynIntensity >= 8 ? 'EXTREME' : _dynIntensity >= 5 ? 'CLEAR' : 'NOTICEABLE';
-    parts.push(`[DYNAMIC CONTRAST — MANDATORY] This song MUST have ${_contrastWord} dynamic range. QUIET sections: ${_quietDesc}. LOUD sections: ${_loudDesc}. The difference between quiet and loud must be physically felt. DO NOT keep the same volume level throughout — flat energy is a generation failure. Every verse should feel different in density from every chorus. Build tension, then release it. Suno must generate audible layering and unlayering of instruments across the song.`);
-    /* [수정] [Direction] 제거 — 위 [Korean Core] 줄에 통합됨 */
+    /* ── ★ 에너지 아크: 항상 최우선 삽입 — 클라이맥스 설계의 핵심 ──
+       energyArc가 선택된 경우: 구체적 타이밍 포함 arc.suno 삽입
+       미선택 시: Slow Burn Rise 기본값 적용 (STATE.energyArc=0 기본값)
+       DYNAMIC CONTRAST는 arc가 없을 때만 보조 삽입 (이중 지시 충돌 방지)
+    ──────────────────────────────────────────────────────────────── */
+    if (STATE.energyArc !== null && DATA.energyArcs[STATE.energyArc]) {
+      const arc = DATA.energyArcs[STATE.energyArc];
+      parts.push(`[Energy Arc — MANDATORY STRUCTURE] ${arc.suno}`);
+    } else {
+      /* energyArc 완전 미선택 fallback — DYNAMIC CONTRAST + 기본 구조 */
+      const _dynIntensity = STATE.intensity || 5;
+      const _quietDesc  = _dynIntensity >= 8 ? 'near-silent, bare solo instrument only' : _dynIntensity >= 5 ? 'quiet and intimate, sparse texture' : 'soft and gentle, minimal layers';
+      const _loudDesc   = _dynIntensity >= 8 ? 'ALL instruments at MAXIMUM VOLUME, explosive and overwhelming' : _dynIntensity >= 5 ? 'full ensemble, emotionally charged, loud and impactful' : 'warm full sound, moderately expressive';
+      const _contrastWord = _dynIntensity >= 8 ? 'EXTREME' : _dynIntensity >= 5 ? 'CLEAR' : 'NOTICEABLE';
+      parts.push(`[DYNAMIC CONTRAST — MANDATORY] ${_contrastWord} dynamic range required. QUIET: ${_quietDesc}. LOUD: ${_loudDesc}. Build tension → release at chorus. MANDATORY STRUCTURE: whisper intro → gradual layering → CLIMAX EXPLOSION at 60–70% mark (ALL instruments, maximum volume) → brief breakdown → explosive final chorus → fade.`);
+    }
+    /* ── 조성 / 음계 ── */
     if (STATE.musicKey!==null && DATA.musicKeys[STATE.musicKey]) {
       const mk=DATA.musicKeys[STATE.musicKey];
       parts.push(`[Key] ${mk.en} (${mk.short}) — ${mk.mood}`);
@@ -2444,12 +2469,6 @@ function _doBuildPrompt() {
     if (STATE.koreanScale!==null && DATA.koreanScales[STATE.koreanScale]) {
       const ks=DATA.koreanScales[STATE.koreanScale];
       parts.push(`[Korean Scale] ${ks.en} (${ks.kr}) — ${ks.suno}`);
-    }
-    if (STATE.energyArc!==null && DATA.energyArcs[STATE.energyArc]) {
-      const arc=DATA.energyArcs[STATE.energyArc];
-      parts.push(`[Energy Arc] ${arc.suno}`);
-    } else {
-      parts.push(`[Structure] MANDATORY DYNAMIC STRUCTURE: quiet sparse intro → gradual layering → loud emotional climax at midpoint (ALL instruments, maximum energy) → brief intimate breakdown → explosive final section → fade to end. The climax must be significantly louder and denser than the intro. Korean instrument spotlight moment at peak. Dynamic contrast is essential.`);
     }
     /* ── Duration: 스타일 프롬프트에는 간결한 힌트만, 실제 제어는 가사 구조로 함 ── */
     if (STATE.songDuration && !STATE.shortsMode) {
@@ -2519,7 +2538,7 @@ async function _callOnce(model, messages, temperature, apiKey) {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
       'HTTP-Referer': window.location.href,
-      'X-Title': 'Gugak Prompt Maker v18',
+      'X-Title': 'Gugak Prompt Maker v20',
     },
     body: JSON.stringify({ model, messages, max_tokens: 2500, temperature }),
   });
@@ -2827,19 +2846,26 @@ async function genLyrics(lang) {
   let structureEn = `[Intro]\n(${Math.round(totalSec*0.08)} seconds)\n\n`;
   let structureKr = `[인트로]\n(${Math.round(totalSec*0.08)}초)\n\n`;
   for(let i=1;i<=repeatCount;i++){
-    structureEn += `[Verse ${i}]\n(WRITE EXACTLY ${verseLines} lines — poetic vivid imagery, build emotional tension)\n\n[Chorus]\n(WRITE EXACTLY ${chorusLines} lines — HOOK RULES: anchor line first, repeat it at least once, max 6 words per line)\n\n`;
-    structureKr += `[절 ${i}]\n(정확히 ${verseLines}줄 — 시적 이미지, 감정 긴장 쌓기)\n\n[후렴]\n(정확히 ${chorusLines}줄 — 훅 규칙: 앵커 라인 먼저, 최소 1회 반복, 줄당 최대 6단어)\n\n`;
+    /* ── 코러스 강도 점층: 반복마다 에너지 레벨 상승 표시 ── */
+    const chorusIntEn = i === 1
+      ? `Intensity 6/10 — establish the hook clearly`
+      : `Intensity ${Math.min(8, 6+i)}/10 — BIGGER and more urgent than Chorus ${i-1}`;
+    const chorusIntKr = i === 1
+      ? `강도 6/10 — 훅을 명확히 확립`
+      : `강도 ${Math.min(8, 6+i)}/10 — 앞 후렴보다 더 크고 강하게`;
+    structureEn += `[Verse ${i}]\n(WRITE EXACTLY ${verseLines} lines — poetic vivid imagery, build emotional tension)\n\n[Chorus]\n(${chorusIntEn} — WRITE EXACTLY ${chorusLines} lines — HOOK RULES: anchor line first, repeat it at least once, max 6 words per line)\n\n`;
+    structureKr += `[절 ${i}]\n(정확히 ${verseLines}줄 — 시적 이미지, 감정 긴장 쌓기)\n\n[후렴]\n(${chorusIntKr} — 정확히 ${chorusLines}줄 — 훅 규칙: 앵커 라인 먼저, 최소 1회 반복, 줄당 최대 6단어)\n\n`;
   }
-  structureEn += `[Bridge]\n(WRITE EXACTLY ${bridgeLines} lines — contrast and tension)\n\n[Chorus - Final]\n(WRITE EXACTLY ${chorusLines} lines — SAME anchor line as all previous choruses, maximum emotional release)\n\n[Outro]\n(WRITE EXACTLY ${outroLines} lines)\n[fade out]\n[end]`;
-  structureKr += `[브릿지]\n(정확히 ${bridgeLines}줄 — 대비와 긴장)\n\n[후렴 - 마지막]\n(정확히 ${chorusLines}줄 — 모든 후렴과 동일한 앵커 라인 유지, 최대 감정 폭발)\n\n[아웃트로]\n(정확히 ${outroLines}줄)\n[fade out]\n[end]`;
+  structureEn += `[Bridge]\n(WRITE EXACTLY ${bridgeLines} lines — contrast and tension, pull back energy before the final explosion)\n\n[Chorus - Final]\n[Big Finish]\n(INTENSITY 10/10 — MAXIMUM EMOTIONAL EXPLOSION — WRITE EXACTLY ${chorusLines} lines — SAME anchor line as ALL previous choruses, sung louder and held longer — this is the CLIMAX, the moment the whole song has been building toward — every word MUST feel inevitable and devastating)\n\n[Outro]\n(WRITE EXACTLY ${outroLines} lines — let the energy slowly dissolve)\n[fade out]\n[end]`;
+  structureKr += `[브릿지]\n(정확히 ${bridgeLines}줄 — 대비와 긴장, 마지막 폭발 전 에너지 잠시 수축)\n\n[후렴 - 마지막]\n[Big Finish]\n(강도 10/10 — 최대 감정 폭발 — 정확히 ${chorusLines}줄 — 모든 이전 후렴과 동일한 앵커 라인, 더 크고 길게 — 이것이 클라이맥스, 곡 전체가 이 순간을 향해 달려온 것 — 모든 단어가 필연적이고 강렬하게 느껴져야 함)\n\n[아웃트로]\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내리게)\n[fade out]\n[end]`;
   loading.classList.add('show');
   try {
     const lyricPrompt = isEn
-      ? `You are writing lyrics for a ${duration} song (${totalSec} seconds total).\n\nRULES — ALL SECTIONS:\n1. Follow the EXACT structure below\n2. Write the EXACT number of lines specified\n3. English only\n4. NEVER mention any instrument names\n5. No instrument names ever\n\n★★ CHORUS / HOOK RULES (most important) ★★\n- Decide ONE anchor phrase (max 6 words) before writing anything — this is the emotional core of the whole song\n- The anchor MUST be the first line of every chorus\n- Repeat the anchor at least once more within each chorus (exact or slight variation)\n- All other chorus lines: max 8 words, short, singable, emotionally direct\n- The chorus must feel like a RELEASE — not poetry, but a moment that makes people sing along\n- Good anchor examples: "I still burn in the dark", "You are my tide that turns", "Let the silence say your name"\n- Bad anchors: long sentences, abstract metaphors, multi-clause lines\n\n★ VERSE RULES ★\n- Verses can be poetic and layered — longer lines OK (max 10 words)\n- Use nature, light, shadow, wind, water, night, longing, han(恨) imagery\n- Build emotional tension so the chorus feels like relief\n\nMusic style (emotional reference only):\n${current}\n\nSTRUCTURE:\n${structureEn}`
-      : `${duration} 길이(${totalSec}초)의 가사를 작성합니다.\n\n전체 규칙:\n1. 아래 구조를 정확히 따를 것\n2. 각 섹션에 지정된 줄 수를 정확히 작성\n3. 한국어만 사용\n4. 악기 이름 절대 금지\n\n★★ 후렴 / 훅 규칙 (가장 중요) ★★\n- 가사 쓰기 전에 앵커 구절(최대 6단어)을 먼저 정할 것 — 곡 전체의 감정 핵심\n- 앵커는 모든 후렴의 첫 줄이어야 함\n- 각 후렴 내에서 앵커를 최소 1회 이상 반복 (동일하거나 소폭 변형)\n- 나머지 후렴 줄: 최대 8단어, 짧고, 따라부를 수 있고, 감정이 직접적\n- 후렴은 해방감·폭발감이어야 함 — 시가 아닌, 따라 부르고 싶은 순간\n- 좋은 앵커 예시: "아직 여기서 타오르는", "넌 내 밀물이었어", "침묵이 네 이름을 말해"\n- 나쁜 앵커: 긴 문장, 추상적 은유, 복잡한 절\n\n★ 절(Verse) 규칙 ★\n- 절은 시적이고 깊이 있게 — 긴 줄 허용 (최대 10단어)\n- 자연·빛·그림자·바람·물·밤·그리움·한(恨) 이미지 사용\n- 감정 긴장감을 쌓아 후렴이 해방처럼 느껴지게 할 것\n\n음악 스타일 (감정 참고용):\n${current}\n\n구조:\n${structureKr}`;
+      ? `You are writing lyrics for a ${duration} song (${totalSec} seconds total).\n\nRULES — ALL SECTIONS:\n1. Follow the EXACT structure below\n2. Write the EXACT number of lines specified\n3. English only\n4. NEVER mention any instrument names\n5. No instrument names ever\n\n★★ CHORUS / HOOK RULES (most important) ★★\n- Decide ONE anchor phrase (max 6 words) before writing anything — this is the emotional core of the whole song\n- The anchor MUST be the first line of every chorus\n- Repeat the anchor at least once more within each chorus (exact or slight variation)\n- All other chorus lines: max 8 words, short, singable, emotionally direct\n- The chorus must feel like a RELEASE — not poetry, but a moment that makes people sing along\n- Good anchor examples: "I still burn in the dark", "You are my tide that turns", "Let the silence say your name"\n- Bad anchors: long sentences, abstract metaphors, multi-clause lines\n\n★★★ CLIMAX / [Big Finish] RULE (MOST CRITICAL) ★★★\n- The [Chorus - Final] / [Big Finish] is the CLIMAX of the entire song\n- It uses the SAME anchor line as all previous choruses\n- But it must feel LOUDER, more URGENT, more INEVITABLE — sing it like it costs everything\n- Other lines in the final chorus: shorter, more raw, more desperate than earlier choruses\n- The song MUST feel like it has been building to this exact moment\n\n★ VERSE RULES ★\n- Verses can be poetic and layered — longer lines OK (max 10 words)\n- Use nature, light, shadow, wind, water, night, longing, han(恨) imagery\n- Build emotional tension so the chorus feels like relief\n- Each verse should be slightly MORE tense than the last\n\n★ ESCALATION RULE ★\n- Each chorus must feel more intense than the previous one\n- Each verse must build more tension than the previous one\n- The song energy must RISE — never plateau — until the [Big Finish]\n\nMusic style (emotional reference only):\n${current}\n\nSTRUCTURE:\n${structureEn}`
+      : `${duration} 길이(${totalSec}초)의 가사를 작성합니다.\n\n전체 규칙:\n1. 아래 구조를 정확히 따를 것\n2. 각 섹션에 지정된 줄 수를 정확히 작성\n3. 한국어만 사용\n4. 악기 이름 절대 금지\n\n★★ 후렴 / 훅 규칙 (가장 중요) ★★\n- 가사 쓰기 전에 앵커 구절(최대 6단어)을 먼저 정할 것 — 곡 전체의 감정 핵심\n- 앵커는 모든 후렴의 첫 줄이어야 함\n- 각 후렴 내에서 앵커를 최소 1회 이상 반복 (동일하거나 소폭 변형)\n- 나머지 후렴 줄: 최대 8단어, 짧고, 따라부를 수 있고, 감정이 직접적\n- 후렴은 해방감·폭발감이어야 함 — 시가 아닌, 따라 부르고 싶은 순간\n\n★★★ 클라이맥스 / [Big Finish] 규칙 (최최최우선) ★★★\n- [후렴 - 마지막] / [Big Finish] 섹션은 곡 전체의 클라이맥스\n- 이전 모든 후렴과 동일한 앵커 라인 사용\n- 하지만 더 크고, 더 절박하고, 더 필연적으로 느껴져야 함\n- 마지막 후렴의 나머지 줄들: 더 짧고 더 날것으로, 이전 후렴보다 더 원초적으로\n- 곡 전체가 이 순간을 향해 달려온 것처럼 느껴져야 함\n\n★ 절(Verse) 규칙 ★\n- 절은 시적이고 깊이 있게 — 긴 줄 허용 (최대 10단어)\n- 자연·빛·그림자·바람·물·밤·그리움·한(恨) 이미지 사용\n- 각 절은 이전 절보다 더 강한 감정 긴장감을 쌓아야 함\n\n★ 점층 규칙 ★\n- 각 후렴은 이전 후렴보다 더 강렬해야 함\n- 각 절은 이전 절보다 더 긴장감이 높아야 함\n- 곡 에너지는 [Big Finish]까지 계속 상승해야 함\n\n음악 스타일 (감정 참고용):\n${current}\n\n구조:\n${structureKr}`;
     const sysP = isEn
-      ? `You are a world-class hit songwriter who blends poetic depth with undeniable hooks. CRITICAL OUTPUT: Only [Section] headers and lyric lines — NO numbering, NO parenthetical instructions, NO explanations, NO instrument names. Your #1 job: the chorus ANCHOR LINE must be so memorable that listeners replay the song just to hear it. Verses are poetic; choruses are hooks. Write the exact line count per section.`
-      : `당신은 시적 깊이와 중독적인 훅을 동시에 쓰는 세계적 작사가입니다. 출력 규칙: [섹션명] 태그와 가사 줄만 — 번호 금지, 괄호 지시문 금지, 설명 금지, 악기 이름 금지. 최우선 과제: 후렴 앵커 라인은 듣는 사람이 그 순간만을 위해 곡을 다시 틀 만큼 강렬해야 합니다. 절은 시적으로, 후렴은 훅으로. 각 섹션의 줄 수를 정확히 지킬 것.`;
+      ? `You are a world-class hit songwriter who blends poetic depth with undeniable hooks. CRITICAL OUTPUT: Only [Section] headers and lyric lines — NO numbering, NO parenthetical instructions, NO explanations, NO instrument names. Your #1 job: the chorus ANCHOR LINE must be so memorable that listeners replay the song just to hear it. Verses are poetic; choruses are hooks. The [Big Finish] section is the CLIMAX — it MUST feel louder, more urgent, and more emotionally devastating than every chorus before it. Write the exact line count per section.`
+      : `당신은 시적 깊이와 중독적인 훅을 동시에 쓰는 세계적 작사가입니다. 출력 규칙: [섹션명] 태그와 가사 줄만 — 번호 금지, 괄호 지시문 금지, 설명 금지, 악기 이름 금지. 최우선 과제: 후렴 앵커 라인은 듣는 사람이 그 순간만을 위해 곡을 다시 틀 만큼 강렬해야 합니다. [Big Finish] 섹션은 클라이맥스 — 이전 모든 후렴보다 더 크고 강렬하게 느껴져야 합니다. 절은 시적으로, 후렴은 훅으로. 각 섹션의 줄 수를 정확히 지킬 것.`;
     const text=await callClaude(lyricPrompt,sysP, 0.92);
     out.value=cleanLyrics(text);
     showToast(`✅ ${duration} 분량 가사 생성 완료!`);
@@ -2858,8 +2884,8 @@ async function genTrendLyrics(lang) {
   const duration = durationInput?.value || '3:00';
   loading.classList.add('show');
   try {
-    const trendPromptEn = `Write cutting-edge 2026 song lyrics for a ${duration} Joseon Core track.\n\nTREND RULES:\n1. Use 2026 global pop/R&B/hip-hop writing style — punchy, conversational, hook-driven\n2. Mix English with selective Korean emotional words (한, 아리랑, 새벽, 그리움) for authenticity\n3. Short punchy lines — max 8 words per line\n4. Hooks must be instantly singable and catchy (repeat key phrase 2-3x)\n5. NO old-fashioned poetic language — fresh, modern, street-level emotion\n6. NO instrument names ever\n7. Structure: [Intro] [Verse 1] [Chorus] [Verse 2] [Chorus] [Bridge] [Final Chorus] [Outro] [fade out] [end]\n\nMusic vibe reference:\n${current}`;
-    const trendPromptKr = `2026년 최신 트렌드 스타일의 조선 코어 가사를 ${duration} 길이로 작성하세요.\n\n트렌드 규칙:\n1. 2026년 K팝/힙합/R&B 작법 — 짧고 강렬하고 훅 중심\n2. 현대적 구어체 사용 — 일상어와 감정어 혼합\n3. 한 줄 최대 8단어 — 짧고 임팩트 있게\n4. 후렴은 즉각 따라부를 수 있을 것 (핵심 구절 2~3회 반복)\n5. 구식 시어 금지 — 신선하고 현대적인 언어\n6. 악기 이름 절대 금지\n7. 구조: [인트로] [절 1] [후렴] [절 2] [후렴] [브릿지] [후렴 - 마지막] [아웃트로] [fade out] [end]\n\n음악 분위기 참고:\n${current}`;
+    const trendPromptEn = `Write cutting-edge 2026 song lyrics for a ${duration} Joseon Core track.\n\nTREND RULES:\n1. Use 2026 global pop/R&B/hip-hop writing style — punchy, conversational, hook-driven\n2. Mix English with selective Korean emotional words (한, 아리랑, 새벽, 그리움) for authenticity\n3. Short punchy lines — max 8 words per line\n4. Hooks must be instantly singable and catchy (repeat key phrase 2-3x)\n5. NO old-fashioned poetic language — fresh, modern, street-level emotion\n6. NO instrument names ever\n7. ESCALATION RULE: each chorus bigger than the last — [Big Finish] is MAXIMUM EXPLOSION\n8. Structure: [Intro] [Verse 1] [Chorus] [Verse 2] [Chorus] [Bridge] [Chorus - Final]\n[Big Finish]\n[Outro] [fade out] [end]\n\nMusic vibe reference:\n${current}`;
+    const trendPromptKr = `2026년 최신 트렌드 스타일의 조선 코어 가사를 ${duration} 길이로 작성하세요.\n\n트렌드 규칙:\n1. 2026년 K팝/힙합/R&B 작법 — 짧고 강렬하고 훅 중심\n2. 현대적 구어체 사용 — 일상어와 감정어 혼합\n3. 한 줄 최대 8단어 — 짧고 임팩트 있게\n4. 후렴은 즉각 따라부를 수 있을 것 (핵심 구절 2~3회 반복)\n5. 구식 시어 금지 — 신선하고 현대적인 언어\n6. 악기 이름 절대 금지\n7. 점층 규칙: 각 후렴은 이전보다 강하게 — [Big Finish]는 최대 폭발\n8. 구조: [인트로] [절 1] [후렴] [절 2] [후렴] [브릿지] [후렴 - 마지막]\n[Big Finish]\n[아웃트로] [fade out] [end]\n\n음악 분위기 참고:\n${current}`;
     const sysTrendEn = `You are a 2026 hit songwriter. Output ONLY raw lyrics — NO numbering, NO explanations, NO parentheticals. Only [Section] tags and lyric lines.`;
     const sysTrendKr = `당신은 2026년 히트곡 작사가입니다. 순수 가사만 출력 — 번호 금지, 설명 금지, 괄호 지시문 금지. [섹션] 태그와 가사 줄만 출력하세요.`;
     const text = await callClaude(isEn?trendPromptEn:trendPromptKr, isEn?sysTrendEn:sysTrendKr, 0.95);
@@ -3124,9 +3150,13 @@ function applyPresetRandomness(isStrong) {
   const bpmRange = isStrong ? 7 : 4;
   STATE.bpm = Math.max(65, Math.min(145, bpmBase + (Math.random() * (bpmRange*2) - bpmRange) | 0));
 
-  // EnergyArc (곡 흐름) 다르게 하기
+  // ★ EnergyArc — 항상 클라이맥스가 있는 아크 우선 선택
+  // [0]=Slow Burn, [1]=Wave Form, [2]=Mountain Peak, [3]=Reverse Bloom, [4]=Twin Peaks, [5]=Sustained
+  // 강한 프리셋: 폭발형 아크 우선 / 일반: 현재 아크 인근 2개 중 선택
   const _safeArc = STATE.energyArc !== null ? STATE.energyArc : 0;
-  const arcCandidates = isStrong ? [0,1,2,4,5] : [_safeArc, (_safeArc + 1) % DATA.energyArcs.length];
+  const arcCandidates = isStrong
+    ? [0, 1, 2, 4]   // Slow Burn / Wave / Mountain / Twin Peaks — 클라이맥스 보장
+    : [_safeArc, (_safeArc === 0 ? 1 : 0)]; // 현재 또는 인접 아크
   STATE.energyArc = arcCandidates[Math.floor(Math.random() * arcCandidates.length)];
 
   // === 국악 비율, 감정 강도, 국악기 강도도 조금씩 다르게 하기 ===
@@ -3255,7 +3285,8 @@ function applyUltimateGroovePreset() {
   STATE.textures=[0,6];STATE.grooves=[3,6];STATE.spaces=[0,2];STATE.koreanGrooves=[0,2,4,9,10];
   STATE.bassStyles=[0,2,4];STATE.koreanFeelings=[0,3,5];STATE.humanFeelElements=[0,1,4];
   STATE.bpm=90;STATE.intensity=6;
-  STATE.musicKey=0;STATE.koreanScale=2; // Am 라단조 + 우조 (강렬한 그루브·당당)
+  STATE.energyArc=1; // Wave Form — 그루브는 파도처럼 밀려왔다 빠짐
+  STATE.musicKey=0;STATE.koreanScale=2;
   // 06B 구음 자동 조합 — Ultimate Groove: 시작+중간+끝, 중고음, 혼성, 장단 그루브
   STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
   STATE.gueumStyle=4;STATE.gueumStrength='strong';
@@ -3312,7 +3343,7 @@ function applyQuickStart(type) {
     STATE.genre=4;STATE.moods=[0,15];STATE.concept=4;STATE.vocalStyle=5;STATE.vocalTones=[4,9];
     STATE.textures=[0,5];STATE.grooves=[2,6];STATE.spaces=[0];
     STATE.koreanGrooves=[1,13];STATE.bassStyles=[3,0];STATE.koreanFeelings=[0,5];
-    STATE.blackSoulElements=[2,5];STATE.humanFeelElements=[0,6];STATE.energyArc=5;
+    STATE.blackSoulElements=[2,5];STATE.humanFeelElements=[0,6];STATE.energyArc=4; // Twin Peaks — 두 번의 폭발
     STATE.bpm=92;STATE.intensity=7;
     STATE.musicKey=1;STATE.koreanScale=0;
     // 06B 구음 자동 조합 — 힙합: 시작+중간+끝 포인트, 중고음, 남녀 혼성, 즉흥 스캣 스타일
@@ -3611,7 +3642,7 @@ function resetAll(doRender=true) {
   STATE.bpm=95;STATE.intensity=5;STATE.gender='all';STATE.koreanDominance=80;STATE.koreanRatio=70;
   STATE.gueumPositions=[];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
   STATE.gueumStyle=null;STATE.hanSoulStyle=null;STATE.gueumStrength='strong';
-  STATE.musicKey=null;STATE.koreanScale=null;STATE.energyArc=null;
+  STATE.musicKey=null;STATE.koreanScale=null;STATE.energyArc=0;
   STATE.songDuration='3:30';
   STATE.shortsMode=false;
   STATE.shortsPreset=null;
@@ -3651,6 +3682,11 @@ function renderAll() {
   if(STATE.musicKey!==null){document.querySelectorAll('[id^="mkey_"]').forEach(el=>el.classList.remove('active'));document.getElementById('mkey_'+STATE.musicKey)?.classList.add('active');}
   if(STATE.koreanScale!==null){document.querySelectorAll('[id^="kscale_"]').forEach(el=>el.classList.remove('active'));document.getElementById('kscale_'+STATE.koreanScale)?.classList.add('active');}
   if(STATE.energyArc!==null){document.querySelectorAll('[id^="arc_"]').forEach(el=>el.classList.remove('active'));document.getElementById('arc_'+STATE.energyArc)?.classList.add('active');}
+  /* arcBody 초기 열림 유지 — 항상 펼쳐진 상태 */
+  const _arcBody = document.getElementById('arcBody');
+  if(_arcBody && _arcBody.style.display === 'none') _arcBody.style.display = '';
+  const _arcIcon = document.getElementById('arcIcon');
+  if(_arcIcon && _arcIcon.textContent === '▼') _arcIcon.textContent = '▲';
 }
 
 /* ═══════════════════════════════════════════
