@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 v17 - Joseon Core</title>
+<title>BV 뮤직 프롬프트 메이커 v18 - Joseon Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -67,7 +67,7 @@ header{
   border-radius:6px;padding:6px 14px;
   font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;
 }
-/* v17 — genre DNA differentiation */
+/* v18 — full bug-fix + ratio 0~100 */
 .app{max-width:1400px;margin:0 auto;padding:32px 40px 80px;display:grid;grid-template-columns:1fr;gap:32px}
 .section{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
 .section-head{
@@ -410,11 +410,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v17</span></div>
+        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v18</span></div>
         <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 A+B 전 섹션 적용 · 변형 생성</div>
       </div>
     </div>
-    <div class="header-badge">JOSEON CORE v17 · 구음 A+B 조합 · pitch·gender 전 섹션 반영</div>
+    <div class="header-badge">JOSEON CORE v18 · 전면 버그수정 · 비율 0~100</div>
   </div>
 </header>
 
@@ -1039,7 +1039,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     </div>
     <!-- 🎲 랜덤 조합 버튼 — v17 다양성 시스템 -->
     <div style="margin-top:12px;padding:14px 16px;background:rgba(255,180,50,.06);border:1px solid rgba(255,180,50,.25);border-radius:8px">
-      <div style="font-size:11px;color:rgba(255,180,50,.9);font-weight:700;margin-bottom:8px;letter-spacing:1px">🎲 다양성 엔진 v17</div>
+      <div style="font-size:11px;color:rgba(255,180,50,.9);font-weight:700;margin-bottom:8px;letter-spacing:1px">🎲 다양성 엔진 v18</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
         <button class="btn" style="background:linear-gradient(135deg,#b8860b,#daa520);border-color:#daa520;color:#08080e;font-weight:700;font-size:13px;padding:10px 20px" onclick="randomizeCombination()">
           🎲 랜덤 조합 생성
@@ -1686,7 +1686,7 @@ function renderInstruments(){
   renderInstrGroup('instrGridWind',DATA.instrumentsWind,'wind','w');
 }
 function getCatData(cat){return cat==='string'?DATA.instrumentsString:cat==='percussion'?DATA.instrumentsPercussion:DATA.instrumentsWind;}
-function selectInstrByCategory(cat, i) {
+function selectInstrByCategory(cat, i, skipBuild=false) {
   /* 성능: 전체 DOM 탐색 대신 3개 그리드 내에서만 active 해제 */
   ['instrGridString','instrGridPercussion','instrGridWind'].forEach(gid=>{
     document.getElementById(gid)?.querySelectorAll('.selcard').forEach(el=>el.classList.remove('active'));
@@ -1700,7 +1700,7 @@ function selectInstrByCategory(cat, i) {
     STATE.instr = catData[i];
     document.getElementById(`instr_${cat[0]}_${i}`)?.classList.add('active');
   }
-  buildPrompt();
+  if (!skipBuild) buildPrompt();
 }
 function renderConcepts() {
   const g = document.getElementById('conceptGrid');
@@ -2413,6 +2413,12 @@ function _doBuildPrompt() {
       const hs=DATA.hanSoulStyles[STATE.hanSoulStyle];
       parts.push(`[Han Soul Style] ${hs.en} — ${hs.style} — Korean Han(恨) emotion expressed through ${hs.en.toLowerCase()} sensibility.`);
     }
+    /* ── 장르별 작법 가이드 — buildPrompt에 직접 주입 ── */
+    const _buildGuide = (STATE.genre !== null && GENRE_SUNO_GUIDE[STATE.genre])
+      ? GENRE_SUNO_GUIDE[STATE.genre]
+      : (STATE.hanSoulStyle !== null && HANSOUL_SUNO_GUIDE[STATE.hanSoulStyle])
+      ? HANSOUL_SUNO_GUIDE[STATE.hanSoulStyle] : null;
+    if (_buildGuide) parts.push(`[Writing Style] ${_buildGuide}`);
     parts.push(`[BPM] ${STATE.bpm}`);
     const _ratio = STATE.koreanRatio !== undefined ? STATE.koreanRatio : 70;
     const _ratioDesc = _ratio >= 90 ? 'Korean instruments ONLY — modern elements are barely audible background texture'
@@ -2451,8 +2457,9 @@ function _doBuildPrompt() {
     }
     /* ── 🎬 쇼츠 전용 모드 프롬프트 주입 ── */
     if (STATE.shortsMode) {
-      const presetPrompt = (STATE.shortsPreset !== null && SHORTS_PRESETS[STATE.shortsPreset])
-        ? SHORTS_PRESETS[STATE.shortsPreset].prompt
+      const _sp = (STATE.shortsPreset !== null && SHORTS_PRESETS[STATE.shortsPreset]) ? SHORTS_PRESETS[STATE.shortsPreset] : null;
+      const presetPrompt = _sp
+        ? (_sp.hookPrompt + ' ' + _sp.dropPrompt)
         : '[SHORTS DROP] Instant emotional explosion from beat 1 — no intro, no buildup.';
       const isEdit = STATE.shortsSubMode === 'edit';
       if (isEdit) {
@@ -2485,7 +2492,7 @@ function _doBuildPrompt() {
 
     const box=document.getElementById('promptBox');
     // [수정2] 사용자가 장르·분위기·악기 중 하나라도 선택했을 때만 프롬프트 표시
-    const hasUserSelection = STATE.genre!==null || STATE.moods.length>0 || STATE.instr!==null || STATE.concept!==null || STATE.vocalStyle!==null;
+    const hasUserSelection = STATE.genre!==null || STATE.moods.length>0 || STATE.instr!==null || STATE.concept!==null || STATE.vocalStyle!==null || STATE.hanSoulStyle!==null;
     box.textContent=hasUserSelection?parts.join('\n'):'← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
   } catch(e) {
     console.error('[_doBuildPrompt 오류]', e);
@@ -2512,7 +2519,7 @@ async function _callOnce(model, messages, temperature, apiKey) {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
       'HTTP-Referer': window.location.href,
-      'X-Title': 'Gugak Prompt Maker v17',
+      'X-Title': 'Gugak Prompt Maker v18',
     },
     body: JSON.stringify({ model, messages, max_tokens: 2500, temperature }),
   });
@@ -2602,7 +2609,7 @@ function randomizeCombination() {
                : randCat === 'percussion' ? DATA.instrumentsPercussion
                : DATA.instrumentsWind;
   const randInstrIdx = Math.floor(Math.random() * catArr.length);
-  selectInstrByCategory(randCat, randInstrIdx);
+  selectInstrByCategory(randCat, randInstrIdx, true);
 
   // ③ 분위기 2~3개 랜덤 선택
   STATE.moods = [];
@@ -2686,7 +2693,7 @@ function applyAnalysisToUI(analysis) {
         const enLow=(item.en||'').toLowerCase();
         const krStr=(item.kr||'');
         if(instrStr.split(/[,·\s]+/).some(w=>w.length>1&&(enLow.includes(w)||krStr.includes(w)))){
-          selectInstrByCategory(cat,idx);
+          selectInstrByCategory(cat,idx,true);
           found=true;
         }
       });
@@ -3103,6 +3110,8 @@ function toggleSection(bodyId,iconId) {
 ═══════════════════════════════════════════ */
 /* 프리셋 공통 마무리 — 모든 프리셋 함수 마지막에 호출 */
 function _finalizePreset(toastMsg) {
+  STATE.dnaSeed = Math.random();
+  STATE.negativeSeed = Math.random();
   syncSliders(); renderAll(); syncGueumUI(); buildPrompt(true);
   showToast(toastMsg);
 }
@@ -3116,12 +3125,13 @@ function applyPresetRandomness(isStrong) {
   STATE.bpm = Math.max(65, Math.min(145, bpmBase + (Math.random() * (bpmRange*2) - bpmRange) | 0));
 
   // EnergyArc (곡 흐름) 다르게 하기
-  const arcCandidates = isStrong ? [0,1,2,4,5] : [STATE.energyArc, (STATE.energyArc + 1) % 6];
+  const _safeArc = STATE.energyArc !== null ? STATE.energyArc : 0;
+  const arcCandidates = isStrong ? [0,1,2,4,5] : [_safeArc, (_safeArc + 1) % DATA.energyArcs.length];
   STATE.energyArc = arcCandidates[Math.floor(Math.random() * arcCandidates.length)];
 
   // === 국악 비율, 감정 강도, 국악기 강도도 조금씩 다르게 하기 ===
   const ratioBase = STATE.koreanRatio || 70;
-  STATE.koreanRatio = Math.max(60, Math.min(85, ratioBase + (Math.random() * 10 - 5) | 0));
+  STATE.koreanRatio = Math.max(0, Math.min(100, ratioBase + (Math.random() * 20 - 10) | 0));
 
   const intBase = STATE.intensity || 6;
   STATE.intensity = Math.max(3, Math.min(9, intBase + (Math.random() * 2 - 1) | 0));
@@ -3153,10 +3163,7 @@ function applyPresetRandomness(isStrong) {
     STATE.gueumStyle = styleOptions[Math.floor(Math.random() * styleOptions.length)];
   }
 
-  // 강한 프리셋일 때 한소울 스타일도 가끔 바꾸기
-  if (isStrong && STATE.hanSoulStyle !== null && Math.random() < 0.35) {
-    STATE.hanSoulStyle = (STATE.hanSoulStyle + 1) % DATA.hanSoulStyles.length;
-  }
+  // 한소울 스타일은 프리셋 의도를 유지 — 랜덤으로 바꾸지 않음
 }
 /* ===== 여기까지 ===== */
 function apply73Preset(type) {
@@ -3168,14 +3175,14 @@ function apply73Preset(type) {
     STATE.blackSoulElements=[0,3];
     STATE.humanFeelElements=[1,3];
     STATE.energyArc=1;
-    STATE.bpm=82;STATE.intensity=6;
+    STATE.bpm=82;STATE.intensity=6;STATE.koreanRatio=80;
     STATE.musicKey=0;STATE.koreanScale=0;
     // 06B 구음 자동 조합 — 조선궁중: 중간+끝 포인트, 중저음, 남녀 혼성, 장단 그루브 스타일
     STATE.gueumPositions=['mid','end'];STATE.gueumPitch='midlow';STATE.gueumGender='both';
     STATE.gueumStyle=4;STATE.gueumStrength='strong';
     // 06C 한(恨) 소울 스타일 자동 조합 — 조선 궁중 소울
     STATE.hanSoulStyle=0;
-    selectInstrByCategory('string',0);
+    selectInstrByCategory('string',0, true);
   } else if (type==='sanjo') {
     STATE.genre=1;STATE.moods=[2,5];STATE.concept=1;STATE.vocalStyle=2;STATE.vocalTones=[2,9];
     STATE.textures=[4,6];STATE.grooves=[0,6];STATE.spaces=[2];STATE.koreanGrooves=[0,3,7];
@@ -3183,14 +3190,14 @@ function apply73Preset(type) {
     STATE.blackSoulElements=[0,3];
     STATE.humanFeelElements=[0,6];
     STATE.energyArc=2;
-    STATE.bpm=88;STATE.intensity=5;
+    STATE.bpm=88;STATE.intensity=5;STATE.koreanRatio=75;
     STATE.musicKey=2;STATE.koreanScale=0;
     // 06B 구음 자동 조합 — 산조째즈: 시작+중간+끝, 중고음, 남녀 혼성, 즉흥 구음 스타일
     STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
     STATE.gueumStyle=0;STATE.gueumStrength='strong';
     // 06C 한(恨) 소울 스타일 자동 조합 — 산조 블루 즉흥
     STATE.hanSoulStyle=3;
-    selectInstrByCategory('string',1);
+    selectInstrByCategory('string',1, true);
   } else if (type==='pansori') {
     STATE.genre=2;STATE.moods=[2,7];STATE.concept=2;STATE.vocalStyle=2;STATE.vocalTones=[5,6,8];
     STATE.textures=[0,1,6];STATE.grooves=[1,3];STATE.spaces=[0,3];STATE.koreanGrooves=[4,9,10];
@@ -3198,14 +3205,14 @@ function apply73Preset(type) {
     STATE.blackSoulElements=[0,4];
     STATE.humanFeelElements=[0,1];
     STATE.energyArc=0;
-    STATE.bpm=78;STATE.intensity=7;
+    STATE.bpm=78;STATE.intensity=7;STATE.koreanRatio=78;
     STATE.musicKey=1;STATE.koreanScale=0;
     // 06B 구음 자동 조합 — 판소리 소울: 시작+끝 포인트, 중저음, 남성 보컬, 판소리 한 스타일
     STATE.gueumPositions=['start','end'];STATE.gueumPitch='midlow';STATE.gueumGender='male';
     STATE.gueumStyle=3;STATE.gueumStrength='strong';
     // 06C 한(恨) 소울 스타일 자동 조합 — 판소리 한 블루스
     STATE.hanSoulStyle=0;
-    selectInstrByCategory('string',2);
+    selectInstrByCategory('string',2, true);
   } else if (type==='minyo') {
     STATE.genre=3;STATE.moods=[7,8];STATE.concept=3;STATE.vocalStyle=1;STATE.vocalTones=[5,6];
     STATE.textures=[0,1];STATE.grooves=[1,4];STATE.spaces=[0];STATE.koreanGrooves=[4,8];
@@ -3213,14 +3220,14 @@ function apply73Preset(type) {
     STATE.blackSoulElements=[0,4,5];
     STATE.humanFeelElements=[0,6];
     STATE.energyArc=1;
-    STATE.bpm=75;STATE.intensity=6;
+    STATE.bpm=75;STATE.intensity=6;STATE.koreanRatio=80;
     STATE.musicKey=0;STATE.koreanScale=4;
     // 06B 구음 자동 조합 — 민요 블루스: 중간+끝 포인트, 중저음, 여성 보컬, 정간보 구음 스타일
     STATE.gueumPositions=['mid','end'];STATE.gueumPitch='midlow';STATE.gueumGender='female';
     STATE.gueumStyle=2;STATE.gueumStrength='strong';
     // 06C 한(恨) 소울 스타일 자동 조합 — 민요 블루스 한
     STATE.hanSoulStyle=4;
-    selectInstrByCategory('string',0);
+    selectInstrByCategory('string',0, true);
   } else if (type==='court') {
     STATE.genre=7;STATE.moods=[0,5];STATE.concept=7;STATE.vocalStyle=7;STATE.vocalTones=[9,10];
     STATE.textures=[5,6];STATE.grooves=[5,7];STATE.spaces=[1,2];STATE.koreanGrooves=[0,3,11];
@@ -3228,14 +3235,14 @@ function apply73Preset(type) {
     STATE.blackSoulElements=[2,3];
     STATE.humanFeelElements=[1,4];
     STATE.energyArc=2;
-    STATE.bpm=95;STATE.intensity=7;
+    STATE.bpm=95;STATE.intensity=7;STATE.koreanRatio=85;
     STATE.musicKey=4;STATE.koreanScale=1;
     // 06B 구음 자동 조합 — 궁중격상: 시작+중간 포인트, 중고음, 남녀 혼성, 휘모리 샤우트 스타일
     STATE.gueumPositions=['start','mid'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
     STATE.gueumStyle=6;STATE.gueumStrength='strong';
     // 06C 한(恨) 소울 스타일 자동 조합 — 궁중 웅장 소울
     STATE.hanSoulStyle=2;
-    selectInstrByCategory('wind',0);
+    selectInstrByCategory('wind',0, true);
   }
    const isStrong73 = STRONG_RANDOM_PRESETS.includes(type);
   applyPresetRandomness(isStrong73);
@@ -3254,7 +3261,7 @@ function applyUltimateGroovePreset() {
   STATE.gueumStyle=4;STATE.gueumStrength='strong';
   // 06C 한(恨) 소울 스타일 — 네오조선 그루브 소울
   STATE.hanSoulStyle=2;
-  selectInstrByCategory('string',0);
+  selectInstrByCategory('string',0, true);
   _finalizePreset("🔥 Ultimate 7:3 Joseon Groove 적용 완료! (구음+한소울 자동 조합)");
 }
 function applyQuickStart(type) {
@@ -3271,7 +3278,7 @@ function applyQuickStart(type) {
     STATE.gueumStyle=4;STATE.gueumStrength='strong';
     // 06C 한(恨) 소울 스타일 자동 조합 — 서울 심야 재즈 감성
     STATE.hanSoulStyle=2;
-    selectInstrByCategory('string',0);
+    selectInstrByCategory('string',0, true);
 
   } else if (type==='night') {
     STATE.genre=2;STATE.moods=[1,5,8];STATE.concept=7;STATE.vocalStyle=6;STATE.vocalTones=[2,9];
@@ -3285,7 +3292,7 @@ function applyQuickStart(type) {
     STATE.gueumStyle=2;STATE.gueumStrength='normal';
     // 06C 한(恨) 소울 스타일 자동 조합 — 심야 애절 한
     STATE.hanSoulStyle=4;
-    selectInstrByCategory('string',2);
+    selectInstrByCategory('string',2, true);
 
   } else if (type==='workout') {
     STATE.genre=3;STATE.moods=[11,12];STATE.concept=1;STATE.vocalStyle=7;STATE.vocalTones=[4,7];
@@ -3299,7 +3306,7 @@ function applyQuickStart(type) {
     STATE.gueumStyle=6;STATE.gueumStrength='maximum';
     // 06C 한(恨) 소울 스타일 자동 조합 — 조선 힙합 에너지
     STATE.hanSoulStyle=1;
-    selectInstrByCategory('percussion',1);
+    selectInstrByCategory('percussion',1, true);
 
   } else if (type==='hiphop') {
     STATE.genre=4;STATE.moods=[0,15];STATE.concept=4;STATE.vocalStyle=5;STATE.vocalTones=[4,9];
@@ -3313,7 +3320,7 @@ function applyQuickStart(type) {
     STATE.gueumStyle=5;STATE.gueumStrength='strong';
     // 06C 한(恨) 소울 스타일 자동 조합 — 조선 힙합 스웩
     STATE.hanSoulStyle=1;
-    selectInstrByCategory('percussion',0);
+    selectInstrByCategory('percussion',0, true);
 
   } else if (type==='labor') {
     STATE.genre=7;STATE.moods=[13];STATE.concept=7;STATE.vocalStyle=7;STATE.vocalTones=[7,10];
@@ -3327,7 +3334,7 @@ function applyQuickStart(type) {
     STATE.gueumStyle=4;STATE.gueumStrength='strong';
     // 06C 한(恨) 소울 스타일 자동 조합 — 민초의 한 블루스
     STATE.hanSoulStyle=0;
-    selectInstrByCategory('wind',0);
+    selectInstrByCategory('wind',0, true);
   }
    const isStrongQuick = STRONG_RANDOM_PRESETS.includes(type);
   applyPresetRandomness(isStrongQuick);
@@ -3350,7 +3357,7 @@ function applyGueumPreset(type) {
     STATE.gueumPositions=['start','end'];STATE.gueumPitch='midlow';STATE.gueumGender='male';
     STATE.gueumStyle=3;STATE.hanSoulStyle=0;
     STATE.musicKey=1;STATE.koreanScale=0; // Dm 레단조 + 계면조 (서사적·한·블루스)
-    selectInstrByCategory('string',2);
+    selectInstrByCategory('string',2, true);
   } else if (type==='seoul_midnight_jazz') {
     STATE.genre=5;STATE.moods=[4,9,10];STATE.concept=7;STATE.vocalStyle=2;STATE.vocalTones=[1,2,6];
     STATE.textures=[0,6,7];STATE.grooves=[0,3];
@@ -3364,7 +3371,7 @@ function applyGueumPreset(type) {
     STATE.gueumPositions=['mid'];STATE.gueumPitch='midhigh';STATE.gueumGender='female';
     STATE.gueumStyle=4;STATE.hanSoulStyle=2;
     STATE.musicKey=2;STATE.koreanScale=0; // Em 미단조 + 계면조 (재즈·심야·애절)
-    selectInstrByCategory('string',1);
+    selectInstrByCategory('string',1, true);
   } else if (type==='sanjo_blue') {
     STATE.genre=1;STATE.moods=[2,4,6];STATE.concept=1;STATE.vocalStyle=5;STATE.vocalTones=[9,10];
     STATE.textures=[3,4];STATE.grooves=[0,5];
@@ -3378,7 +3385,7 @@ function applyGueumPreset(type) {
     STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
     STATE.gueumStyle=0;STATE.hanSoulStyle=3;
     STATE.musicKey=0;STATE.koreanScale=0; // Am 라단조 + 계면조 (산조·즉흥·애절)
-    selectInstrByCategory('string',0);
+    selectInstrByCategory('string',0, true);
   } else if (type==='ajaeng_soul_ballad') {
     STATE.genre=6;STATE.moods=[2,7,10];STATE.concept=6;STATE.vocalStyle=8;STATE.vocalTones=[5,6,8];
     STATE.textures=[0,2,6];STATE.grooves=[1,3];
@@ -3392,7 +3399,7 @@ function applyGueumPreset(type) {
     STATE.gueumPositions=['mid','end'];STATE.gueumPitch='low';STATE.gueumGender='male';
     STATE.gueumStyle=1;STATE.hanSoulStyle=4;
     STATE.musicKey=1;STATE.koreanScale=4;
-    selectInstrByCategory('string',2);
+    selectInstrByCategory('string',2, true);
   } else if (type==='arirang_hyper') {
     // ARIRANG Hyper Fusion — Rage + Hyper 2026
     STATE.genre=4;STATE.moods=[11,15];STATE.concept=4;STATE.vocalStyle=5;STATE.vocalTones=[4,7];
@@ -3407,7 +3414,7 @@ function applyGueumPreset(type) {
     STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='high';STATE.gueumGender='both';
     STATE.gueumStyle=6;STATE.hanSoulStyle=1; // Hwimori Soul Shout + 조선 힙합
     STATE.musicKey=1;STATE.koreanScale=0; // Dm 레단조 + 계면조 (묵직·Rage·힙합)
-    selectInstrByCategory('percussion',0);
+    selectInstrByCategory('percussion',0, true);
   } else if (type==='uk_garage_gugak') {
     // UK Garage Gugak — KiiiKiii 스타일 (2-step + 국악)
     STATE.genre=7;STATE.moods=[0,3];STATE.concept=7;STATE.vocalStyle=5;STATE.vocalTones=[0,10];
@@ -3422,7 +3429,7 @@ function applyGueumPreset(type) {
     STATE.gueumPositions=['mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
     STATE.gueumStyle=4;STATE.hanSoulStyle=1; // Jangdan Groove Gueum + 조선 힙합
     STATE.musicKey=3;STATE.koreanScale=3; // Gm 솔단조 + 경토리 (경쾌·신명·발랄)
-    selectInstrByCategory('percussion',0);
+    selectInstrByCategory('percussion',0, true);
   } else if (type==='hyper_catchy_gugak') {
     // Hyper Catchy Gugak — 밝고 중독성 강함
     STATE.genre=7;STATE.moods=[0,16];STATE.concept=7;STATE.vocalStyle=0;STATE.vocalTones=[0,9];
@@ -3437,7 +3444,7 @@ function applyGueumPreset(type) {
     STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='high';STATE.gueumGender='both';
     STATE.gueumStyle=6;STATE.hanSoulStyle=null; // Hwimori Soul Shout — 밝고 신명나는 샤우트
     STATE.musicKey=6;STATE.koreanScale=3; // G 솔장조 + 경토리 (밝음·신명·중독성)
-    selectInstrByCategory('string',0);
+    selectInstrByCategory('string',0, true);
   } else if (type==='jersey_bounce_gugak') {
     // Jersey Bounce Gugak — 강한 비트 그루브
     STATE.genre=4;STATE.moods=[0,11];STATE.concept=4;STATE.vocalStyle=7;STATE.vocalTones=[4,10];
@@ -3452,7 +3459,7 @@ function applyGueumPreset(type) {
     STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='high';STATE.gueumGender='both';
     STATE.gueumStyle=4;STATE.hanSoulStyle=1; // Jangdan Groove Gueum + 조선 힙합
     STATE.musicKey=1;STATE.koreanScale=0; // Dm 레단조 + 계면조 (강한 비트·그루브)
-    selectInstrByCategory('percussion',0);
+    selectInstrByCategory('percussion',0, true);
   }
   const labels={
     pansori_han_blues:'🎙️ 판소리 한 블루스',
@@ -3480,7 +3487,7 @@ function applyRandomPreset() {
   const genders=['all','male','female'];
   STATE.gender=genders[Math.floor(Math.random()*3)];
   const cats=['string','percussion','wind'];const cat=cats[Math.floor(Math.random()*3)];
-  selectInstrByCategory(cat,Math.floor(Math.random()*getCatData(cat).length));
+  selectInstrByCategory(cat,Math.floor(Math.random()*getCatData(cat).length), true);
   const vtShuffled=[...Array(DATA.vocalTones.length).keys()].sort(()=>Math.random()-.5);
   STATE.vocalTones=vtShuffled.slice(0,1+Math.floor(Math.random()*2));
   const txShuffled=[...Array(DATA.textures.length).keys()].sort(()=>Math.random()-.5);
@@ -3547,6 +3554,9 @@ function syncSliders() {
     ratioSlider.style.setProperty('--rpct',pct2);
     document.getElementById('ratioKoreanLabel').textContent=`국악 ${kr}%`;
     document.getElementById('ratioModernLabel').textContent=`정통 ${100-kr}%`;
+    const _rDesc = kr>=90?'정통 국악 압도 · 현대는 숨결만':kr>=75?'조선 미학 정통화 · 글로벌 승화':kr>=50?'국악과 정통의 균형 퓨전':kr>=25?'정통 기반 · 국악 포인트':'현대 정통 중심 · 국악 컬러';
+    const _rdEl = document.getElementById('ratioDescLabel');
+    if (_rdEl) _rdEl.textContent = _rDesc;
   }
 }
 
@@ -3604,6 +3614,7 @@ function resetAll(doRender=true) {
   STATE.musicKey=null;STATE.koreanScale=null;STATE.energyArc=null;
   STATE.songDuration='3:30';
   STATE.shortsMode=false;
+  STATE.shortsPreset=null;
   STATE.shortsSubMode=null;
   if(doRender){
     renderAll();syncSliders();
@@ -4140,13 +4151,9 @@ function applyShortsPreset(idx) {
 
   /* ── 1. BPM ── */
   STATE.bpm = preset.bpm;
-  const bpmSlider = document.getElementById('bpmSlider');
-  if (bpmSlider) { bpmSlider.value = preset.bpm; updateBpm(preset.bpm); }
 
   /* ── 2. 감정 강도 ── */
   STATE.intensity = preset.intensity;
-  const intSlider = document.getElementById('intensitySlider');
-  if (intSlider) { intSlider.value = preset.intensity; updateIntensity(preset.intensity); }
 
   /* ── 3. 에너지 아크 ── */
   if (typeof selectEnergyArc === 'function') selectEnergyArc(preset.arc);
@@ -4192,10 +4199,14 @@ function applyShortsPreset(idx) {
     }
   }
 
-  /* ── 7. 국악기 강도 (비율 슬라이더 이후 처리 — 프리셋 원본값 보존) ── */
+  /* ── 7. 국악기 강도 (비율 슬라이더 이후 처리 — 중간 buildPrompt 방지) ── */
   STATE.koreanDominance = preset.koreanDominance;
   const kdSlider = document.getElementById('koreanDomSlider');
-  if (kdSlider) { kdSlider.value = preset.koreanDominance; updateKoreanDominance(preset.koreanDominance); }
+  if (kdSlider) {
+    kdSlider.value = preset.koreanDominance;
+    document.getElementById('koreanDomValue').textContent = preset.koreanDominance;
+    document.getElementById('koreanDomLabel').textContent = _koreanDomLabel(preset.koreanDominance);
+  }
 
   /* ── 8. 장르 · 컨셉 · 보컬 자동 조합 ── */
   if (preset.genre       !== undefined) STATE.genre       = preset.genre;
@@ -4209,7 +4220,7 @@ function applyShortsPreset(idx) {
 
   /* ── 9. 악기 자동 선택 ── */
   if (preset.instrCat !== undefined && preset.instrIdx !== undefined) {
-    selectInstrByCategory(preset.instrCat, preset.instrIdx);
+    selectInstrByCategory(preset.instrCat, preset.instrIdx, true);
   }
 
   /* ── 10. 프리셋 버튼 active — 서브모드 버튼 상태 보존 ── */
