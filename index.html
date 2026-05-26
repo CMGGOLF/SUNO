@@ -3925,9 +3925,11 @@ function insertGueumToLyrics() {
   } else {
     // 기존 가사 있을 때 → 빈 섹션 태그에 [instrumental break] 보충
     // ※ 이미 [instrumental break]가 바로 이어지는 경우는 건너뜀 (중복 방지)
+    // [버그 수정] (\n|\[) 캡처 그룹이 다음 섹션의 '[' 첫 글자를 소비하던 문제 →
+    //   lookahead(?=)로 변경해 문자를 소비하지 않도록 수정
     lyrics = existingLyrics.replace(
-      /(\[[^\]]+\])\n(?!\[instrumental break\])(\n|\[)/g,
-      (_, tag, next) => `${tag}\n[instrumental break]\n${next}`
+      /(\[[^\]]+\])\n(?!\[instrumental break\])(?=\n|\[)/g,
+      (_, tag) => `${tag}\n[instrumental break]\n`
     );
   }
 
@@ -3969,14 +3971,12 @@ function insertGueumToLyrics() {
       };
       const sName = sNameMap[pos] || pos;
       // 섹션 헤더 + 내용 전체를 매칭 (다음 [섹션] 직전 또는 파일 끝까지)
-  // [버그 수정] lookahead에서 \\[[A-Za-z] → \\[ 로 변경
-  //   기존: [A-Za-z]만 매칭 → [절 2], [후렴 - 마지막] 등 한글 섹션 헤더를
-  //         구분하지 못해 lazy [\s\S]*?가 [fade out]까지 무한 확장되는 문제
-  //   수정: \\[ 하나만 사용 → 어떤 언어의 섹션 헤더도 경계로 인식
-  const blockRx = new RegExp(
-    `(\\[${sName}[^\\]]*\\][\\s\\S]*?)(?=\\n{0,2}\\[|\\s*$)`,
-    pos === 'mid' ? 'gi' : 'i'
-  );
+      // [버그 수정] [\s\S]*? lazy 패턴이 섹션 경계를 넘어 앞 내용까지 통째로 캡처하던 문제 →
+      //   (?:(?!\n\[)[\s\S])* 로 변경해 '[' 로 시작하는 새 섹션 줄을 만나는 즉시 멈추도록 수정
+      const blockRx = new RegExp(
+        `(\\[${sName}[^\\]]*\\](?:(?!\\n\\[)[\\s\\S])*)(?=\\n{0,2}\\[|\\s*$)`,
+        pos === 'mid' ? 'gi' : 'i'
+      );
       if (blockRx.test(lyrics)) {
         lyrics = lyrics.replace(blockRx, (match) => {
           const newBlock = makePoint(pool);
