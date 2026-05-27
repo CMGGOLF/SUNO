@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 v22 - Joseon Core</title>
+<title>BV 뮤직 프롬프트 메이커 v23 - Joseon Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -2415,7 +2415,7 @@ function _doBuildPrompt() {
       const _quietDesc  = _dynIntensity >= 8 ? 'near-silent, bare solo instrument only' : _dynIntensity >= 5 ? 'quiet and intimate, sparse texture' : 'soft and gentle, minimal layers';
       const _loudDesc   = _dynIntensity >= 8 ? 'ALL instruments at MAXIMUM VOLUME, explosive and overwhelming' : _dynIntensity >= 5 ? 'full ensemble, emotionally charged, loud and impactful' : 'warm full sound, moderately expressive';
       const _contrastWord = _dynIntensity >= 8 ? 'EXTREME' : _dynIntensity >= 5 ? 'CLEAR' : 'NOTICEABLE';
-      parts.push(`[DYNAMIC CONTRAST — MANDATORY] ${_contrastWord} dynamic range required. QUIET: ${_quietDesc}. LOUD: ${_loudDesc}. Build tension → release at chorus. MANDATORY STRUCTURE: whisper intro → gradual layering → CLIMAX EXPLOSION at 60–70% mark (ALL instruments, maximum volume) → brief breakdown → explosive final chorus → fade.`);
+      parts.push(`[DYNAMIC CONTRAST — MANDATORY] ${_contrastWord} dynamic range required. QUIET: ${_quietDesc}. LOUD: ${_loudDesc}. Build tension → release at chorus. MANDATORY STRUCTURE: instrumental intro (no humming, no vocal sounds) → gradual layering → CLIMAX EXPLOSION at 60–70% mark (ALL instruments, maximum volume) → brief breakdown → explosive final chorus → fade.`);
     }
     /* ── 조성 / 음계 ── */
     if (STATE.musicKey!==null && DATA.musicKeys[STATE.musicKey]) {
@@ -3147,17 +3147,7 @@ function applyPresetRandomness(isStrong) {
   const domBase = STATE.koreanDominance || 80;
   STATE.koreanDominance = Math.max(65, Math.min(90, domBase + (Math.random() * 10 - 5) | 0));
   
-  // 구음 위치 조금씩 다르게 하기
-  // ⚠️ 버그 수정: 'start'를 랜덤 추가 대상에서 제외
-  //   → start가 무작위로 추가되면 사용자가 '코러스 직후'만 선택했어도
-  //     인트로 직후부터 구음이 나오는 문제 발생
-  const allPos = ['add1','mid','add2','add3','end']; // start 제외
-  if (Math.random() < 0.35) {  // 확률도 60%→35%로 낮춤
-    const extra = allPos.filter(p => !STATE.gueumPositions.includes(p));
-    if (extra.length > 0 && STATE.gueumPositions.length < 4) {
-      STATE.gueumPositions.push(extra[Math.floor(Math.random()*extra.length)]);
-    }
-  }
+  // 구음 위치 — 사용자가 선택한 위치를 그대로 유지 (랜덤 추가 없음)
 
   // 구음 높낮이 조금씩 다르게 하기
   if (Math.random() < (isStrong ? 0.7 : 0.4)) {
