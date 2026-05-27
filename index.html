@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 v21 - Joseon Core</title>
+<title>BV 뮤직 프롬프트 메이커 v22 - Joseon Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -886,25 +886,6 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       </button>
     </div>
 
-    <!-- 쇼츠 구음만 생성 -->
-    <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,80,0,.2)">
-      <div style="padding:16px;background:rgba(160,90,58,.08);border:1px solid rgba(160,90,58,.35);border-radius:8px">
-        <div style="font-size:13px;color:var(--korean2);font-weight:700;margin-bottom:6px">
-          🎙️ 구음만 쇼츠 가사 생성
-        </div>
-        <div style="font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.7">
-          가사 없이 <b style="color:var(--korean2)">구음 소리만</b>으로 훅→드롭→페이드 구조를 채웁니다.<br>
-          06B에서 선택한 스타일·음역 그대로 반영 — 미선택 시 음역대별 기본 구음 자동 적용.
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn btn-korean" onclick="genGueumOnlyShorts('en')" style="font-size:13px;padding:10px 22px">
-            🎙️ 구음만 쇼츠 가사 생성
-          </button>
-        </div>
-        <div style="font-size:10px;color:var(--dim);margin-top:10px">💡 가사창(섹션 11)에 자동 삽입됩니다. 섹션 구조 태그는 Suno 인식률이 높은 영어로 고정, 구음 소리는 한글 그대로 적용됩니다. ※ 06B 구음 스타일 미선택 시 기본 구음이 적용됩니다.</div>
-      </div>
-    </div>
-
     <!-- 해제 버튼 -->
     <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,80,0,.15)">
       <button class="btn btn-shorts-off" onclick="toggleShortsMode()">✖ 쇼츠 모드 해제 (3:30 복원)</button>
@@ -1146,44 +1127,12 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       </span>
     </div>
     <div class="tab-row">
-      <div class="tab active" onclick="switchTab('lyricsInst',this)">🎻 인스트루멘탈 + 구음 포인트</div>
-      <div class="tab" id="lyricsTabEn" onclick="switchTab('lyricsEn',this)">🇺🇸 영어 가사 (AI 생성)</div>
+      <div class="tab active" id="lyricsTabEn" onclick="switchTab('lyricsEn',this)">🇺🇸 영어 가사 (AI 생성)</div>
       <div class="tab" id="lyricsTabKr" onclick="switchTab('lyricsKr',this)">🇰🇷 한국어 가사 (AI 생성)</div>
       <div class="tab" onclick="switchTab('lyricsFree',this)">✏️ 직접 입력</div>
     </div>
 
-    <!-- ══ 인스트루멘탈 + 구음 포인트 탭 (기본값) ══ -->
-    <div class="tab-panel active" id="lyricsInst">
-      <div style="background:rgba(160,90,58,.1);border:1px solid rgba(160,90,58,.35);border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:11px;color:var(--korean2);line-height:1.8">
-        🎻 <b>가사 없이 구음만 포인트로 쓰는 경우의 구조입니다.</b><br>
-        <span style="color:var(--muted)">
-        곡 전체는 <code>[instrumental]</code> 블록으로 채우고, 06B에서 선택한 위치에만 구음이 삽입됩니다.<br>
-        이 구조가 Suno에게 <b style="color:var(--gold)">길이 신호</b>를 주는 실제 수단입니다 — 섹션이 많을수록 곡이 길어집니다.
-        </span>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
-        <button class="btn btn-korean" onclick="genInstrumentalStructure()" style="font-size:13px;padding:10px 22px">
-          🎻 인스트루멘탈 구조 + 구음 포인트 생성
-        </button>
-        <div style="display:flex;align-items:center;gap:6px">
-          <span style="font-size:11px;color:var(--muted)">곡 길이:</span>
-          <input type="text" id="lyricsDurationInst" value="3:30"
-            style="width:70px;padding:4px 8px;font-size:12px;font-family:'Space Mono',monospace;text-align:center"
-            onblur="enforceDuration(this)" oninput="softCheckDuration(this)" placeholder="3:30">
-          <button class="btn btn-outline" style="padding:4px 10px;font-size:11px" onclick="autoRecommendDuration('inst')">자동 추천</button>
-        </div>
-      </div>
-      <div style="font-size:10px;color:var(--dim);margin-bottom:10px;line-height:1.6">
-        💡 06B에서 구음 위치를 먼저 선택해야 구음이 정확한 위치에 삽입됩니다.<br>
-        구음 미선택 시 기본 구음(현재 음역·스타일 기준)이 자동 적용됩니다.
-      </div>
-      <textarea id="lyricsInstOut" style="min-height:220px;font-family:'Space Mono',monospace;font-size:12px" placeholder="버튼을 누르면 인스트루멘탈 구조 + 구음 포인트가 생성됩니다..."></textarea>
-      <div class="prompt-actions" style="margin-top:8px">
-        <button class="btn btn-outline" onclick="copyField('lyricsInstOut')">📋 복사</button>
-        <button class="btn btn-korean" onclick="insertGueumToLyrics()" style="font-size:11px">🎵 구음 재삽입</button>
-      </div>
-    </div>
-    <div class="tab-panel" id="lyricsEn">
+    <div class="tab-panel active" id="lyricsEn">
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
         <button class="btn btn-gold" onclick="genLyrics('en')">✦ 영어 가사 생성</button>
         <button class="btn btn-red" onclick="genTrendLyrics('en')">🔥 요즘 트렌드 가사 (2026)</button>
@@ -3150,7 +3099,7 @@ function autoRecommendDuration(lang) {
   baseMinutes=Math.max(3.0,Math.min(4.5,baseMinutes));
   const minutes=Math.floor(baseMinutes); const seconds=Math.round((baseMinutes-minutes)*60);
   const timeString=`${minutes}:${seconds.toString().padStart(2,'0')}`;
-  const inputId = lang==='en' ? 'lyricsDurationEn' : lang==='inst' ? 'lyricsDurationInst' : 'lyricsDurationKr';
+  const inputId = lang==='en' ? 'lyricsDurationEn' : 'lyricsDurationKr';
   const input=document.getElementById(inputId);
   if(input){input.value=timeString;showToast(`✅ 추천 길이: ${timeString}`);}
 }
@@ -3777,12 +3726,6 @@ function setSongDurationCustom(val) {
 /* ═══════════════════════════════════════════
    구음 가사 삽입
 ═══════════════════════════════════════════ */
-function genInstrumentalStructure() {
-  const ta = document.getElementById('lyricsInstOut');
-  if (ta) ta.value = '';
-  insertGueumToLyrics('inst');
-}
-
 function insertGueumToLyrics(lang) {
   if (!STATE.gueumPositions.length) { showToast('⚠️ 06B 섹션에서 구음 위치를 먼저 선택해주세요!'); return; }
   /* lang 파라미터로 명시적 탭 우선 처리, 없으면 현재 활성 탭 */
@@ -3793,15 +3736,11 @@ function insertGueumToLyrics(lang) {
   } else if (lang === 'kr') {
     textarea = document.getElementById('lyricsKrOut');
     _switchLyricsTab('kr');
-  } else if (lang === 'inst') {
-    textarea = document.getElementById('lyricsInstOut');
   } else {
     /* fallback: 현재 활성 패널의 textarea */
-    const instPanel = document.getElementById('lyricsInst');
     const activePanel = document.querySelector('.tab-panel.active');
-    const targetPanel = (activePanel === instPanel) ? instPanel : activePanel;
-    if (!targetPanel) { showToast('⚠️ 가사창이 열려있지 않습니다.'); return; }
-    textarea = targetPanel.querySelector('textarea');
+    if (!activePanel) { showToast('⚠️ 가사창이 열려있지 않습니다.'); return; }
+    textarea = activePanel.querySelector('textarea');
   }
   if (!textarea) { showToast('⚠️ 가사 입력란을 찾을 수 없습니다.'); return; }
 
@@ -4411,69 +4350,6 @@ function genShortsLyricsWithGueum(lang) {
   }, 80);
 }
 
-/* 가사 없이 구음만 — 순수 구음 쇼츠 */
-function genGueumOnlyShorts(lang) {
-  const styleInfo = STATE.gueumStyle !== null && DATA.gueumStyles[STATE.gueumStyle]
-    ? DATA.gueumStyles[STATE.gueumStyle] : null;
-  const pitch = STATE.gueumPitch || 'midhigh';
-  const pool  = styleInfo
-    ? selectGueumVariant(styleInfo).split('\n').filter(Boolean)
-    : GUEUM_PITCH_MAP[pitch] || GUEUM_PITCH_MAP.midhigh;
-
-  // 감정 곡선: 도입(조용한 긴장) → 절정(꺾음·파음) → 여운(여린 맺음)
-  // 랜덤 셔플 대신 순서를 유지해 한(恨)의 서사가 흐르도록 함
-  function pickArc(intro, climax, outro) {
-    const src = pool.slice();
-    const len = src.length;
-    // intro: 앞부분, climax: 중간 밀도 높게, outro: 뒷부분 여린 음절
-    const introLines = src.slice(0, Math.min(intro, Math.ceil(len * 0.3)));
-    const climaxLines = src.slice(Math.ceil(len * 0.3), Math.min(Math.ceil(len * 0.3) + climax, len));
-    const outroLines = src.slice(-Math.min(outro, Math.ceil(len * 0.25)));
-    const fill = (arr, n) => {
-      const out = [];
-      for (let i = 0; i < n; i++) out.push(arr[i % arr.length]);
-      return out;
-    };
-    return {
-      introLine: fill(introLines.length ? introLines : src, intro).join('  '),
-      climaxLine1: fill(climaxLines.length ? climaxLines : src, climax).join('  '),
-      climaxLine2: fill([...src].reverse().slice(0, climax), climax).join('  '),
-      outroLine: fill(outroLines.length ? outroLines : src, outro).join('  '),
-    };
-  }
-
-  const arc = pickArc(1, 2, 1);
-  const isEn = lang === 'en';
-  const hookLabel  = isEn ? 'Hook - Gueum'        : '훅 - 구음';
-  const dropLabel  = isEn ? 'Drop - Gueum Climax'  : '드롭 - 구음 절정';
-  const outroLabel = isEn ? 'Outro - Gueum Fade'   : '아웃트로 - 구음 페이드';
-
-  const lyrics =
-`[${hookLabel}]
-${arc.introLine}
-
-[instrumental break]
-
-[${dropLabel}]
-${arc.climaxLine1}
-${arc.climaxLine2}
-${arc.climaxLine1}
-
-[instrumental break]
-
-[${outroLabel}]
-${arc.outroLine}
-
-[End]`;
-
-  const taId    = isEn ? 'lyricsEnOut' : 'lyricsKrOut';
-  const ta = document.getElementById(taId);
-  if (ta) ta.value = lyrics;
-
-  // 탭 전환 — 공통 헬퍼 사용
-  _switchLyricsTab(isEn ? 'en' : 'kr');
-  showToast('🎙️ 구음만 쇼츠 구조 완료! 가사 없이 순수 구음으로 채웠습니다.');
-}
 
 /* ═══════════════════════════════════════════
    🇰🇷 영어 가사 → 한글 번역 (참고용)
