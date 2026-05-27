@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 v23 - Joseon Core</title>
+<title>BV 뮤직 프롬프트 메이커 v26 - Joseon Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -1641,6 +1641,199 @@ const STATE = {
 };
 
 /* ═══════════════════════════════════════════
+   🎲 PRESET VARIATION POOLS v26
+   같은 프리셋이어도 매번 체감 다른 결과를 위한 조합 풀
+   장르 / 무드 / 악기 / 한소울 / 음계 / 키 — 모두 랜덤 선택
+═══════════════════════════════════════════ */
+const PRESET_POOLS = {
+  /* ─── 7:3 Joseon Core 프리셋 ─── */
+  joseon: {
+    genre:   [0, 7],                    // Joseon Court Soul, NeoJoseon Fusion
+    moods:   [0, 1, 3, 5, 6],          // Groove, Seoul Night, Funky, Late-night Lounge, Groovy Oriental
+    hanSoul: [0, 2],                    // Mississippi Han Blues, Seoul Midnight Jazz
+    instr:   [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'wind',idx:1}],
+    keys:    [0, 4],                    // Am, Cm
+    scales:  [0, 1],                    // 계면조, 평조
+    moodN:   [2, 3],
+  },
+  sanjo: {
+    genre:   [1, 5],                    // Sanjo Jazz, Daegeum Ambient
+    moods:   [2, 4, 5, 6, 8],          // Dreamy, Emotional Seoul Jazz, Late-night Lounge, Groovy Oriental, Late Night Blues
+    hanSoul: [2, 3],                    // Seoul Midnight Jazz, Sanjo Blue Notes
+    instr:   [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'wind',idx:0}],
+    keys:    [0, 2],                    // Am, Em
+    scales:  [0, 2],                    // 계면조, 우조
+    moodN:   [2, 2],
+  },
+  pansori: {
+    genre:   [2, 3, 6],                 // Pansori Soul, Minyo Blues, Ajaeng Deep Soul
+    moods:   [2, 7, 8, 10],            // Dreamy, Modern Korean Melancholy, Late Night Blues, Lonely Midnight
+    hanSoul: [0, 1, 4],                // Mississippi Han Blues, 조선 힙합, Han Soul Ballad
+    instr:   [{cat:'string',idx:1},{cat:'string',idx:2},{cat:'string',idx:0}],
+    keys:    [0, 1],                    // Am, Dm
+    scales:  [0, 4],                    // 계면조, 메나리토리
+    moodN:   [2, 3],
+  },
+  minyo: {
+    genre:   [3, 2],                    // Minyo Blues, Pansori Soul
+    moods:   [7, 8, 2, 3, 10],         // Modern Korean Melancholy, Late Night Blues, Dreamy, Funky, Lonely Midnight
+    hanSoul: [3, 4],                    // Sanjo Blue Notes, Han Soul Ballad
+    instr:   [{cat:'string',idx:0},{cat:'string',idx:2},{cat:'wind',idx:2}],
+    keys:    [0, 2],                    // Am, Em
+    scales:  [0, 4],                    // 계면조, 메나리토리
+    moodN:   [2, 2],
+  },
+  court: {
+    genre:   [7, 0, 4],                 // NeoJoseon Fusion, Joseon Court Soul, Gugak HipHop
+    moods:   [0, 1, 5, 6, 16],         // Groove, Seoul Night, Late-night Lounge, Groovy Oriental, Uplifting
+    hanSoul: [1, 2],                    // 조선 힙합, Seoul Midnight Jazz
+    instr:   [{cat:'wind',idx:0},{cat:'wind',idx:1},{cat:'string',idx:0}],
+    keys:    [0, 4, 6],                 // Am, Cm, G
+    scales:  [0, 1],                    // 계면조, 평조
+    moodN:   [2, 3],
+  },
+  /* ─── 용도별 빠른 시작 ─── */
+  drive: {
+    genre:   [2, 1, 5, 7],
+    moods:   [11, 14, 0, 6],
+    hanSoul: [2, 3],
+    instr:   [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'percussion',idx:1}],
+    keys:    [2, 0, 5],
+    scales:  [0, 3],
+    moodN:   [2, 2],
+  },
+  workout: {
+    genre:   [4, 7],
+    moods:   [12, 11, 15, 0],
+    hanSoul: [1, 2],
+    instr:   [{cat:'percussion',idx:0},{cat:'percussion',idx:1},{cat:'string',idx:0}],
+    keys:    [1, 2, 6],
+    scales:  [0, 3],
+    moodN:   [2, 2],
+  },
+  hiphop: {
+    genre:   [4, 7],
+    moods:   [15, 0, 3, 11],
+    hanSoul: [1, 2],
+    instr:   [{cat:'percussion',idx:0},{cat:'string',idx:0},{cat:'percussion',idx:1}],
+    keys:    [1, 0, 2],
+    scales:  [0, 3],
+    moodN:   [2, 2],
+  },
+  labor: {
+    genre:   [7, 2],
+    moods:   [13, 0, 7],
+    hanSoul: [0, 4],
+    instr:   [{cat:'wind',idx:0},{cat:'percussion',idx:0},{cat:'string',idx:2}],
+    keys:    [5, 0, 6],
+    scales:  [0, 2],
+    moodN:   [1, 2],
+  },
+  night: {
+    genre:   [5, 1, 6],
+    moods:   [9, 10, 8, 2, 5],
+    hanSoul: [3, 4],
+    instr:   [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'wind',idx:0}],
+    keys:    [0, 1, 2],
+    scales:  [0, 4],
+    moodN:   [2, 3],
+  },
+  /* ─── 구음 × 한소울 프리셋 ─── */
+  pansori_han_blues: {
+    genre:   [2, 3, 6],
+    moods:   [7, 8, 10, 2],
+    hanSoul: [0, 1],
+    instr:   [{cat:'string',idx:1},{cat:'string',idx:2}],
+    keys:    [0, 1],
+    scales:  [0, 4],
+    moodN:   [2, 3],
+  },
+  seoul_midnight_jazz: {
+    genre:   [5, 1, 0],
+    moods:   [4, 9, 10, 5],
+    hanSoul: [2, 3],
+    instr:   [{cat:'string',idx:0},{cat:'string',idx:1}],
+    keys:    [2, 0],
+    scales:  [0, 2],
+    moodN:   [2, 3],
+  },
+  sanjo_blue: {
+    genre:   [1, 5],
+    moods:   [2, 4, 6, 8],
+    hanSoul: [2, 3],
+    instr:   [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'wind',idx:0}],
+    keys:    [0, 2],
+    scales:  [0, 2],
+    moodN:   [2, 3],
+  },
+  ajaeng_soul_ballad: {
+    genre:   [6, 2, 3],
+    moods:   [2, 7, 10, 8],
+    hanSoul: [3, 4],
+    instr:   [{cat:'string',idx:2},{cat:'string',idx:1}],
+    keys:    [0, 1],
+    scales:  [0, 4],
+    moodN:   [2, 3],
+  },
+  arirang_hyper: {
+    genre:   [4, 7],
+    moods:   [11, 15, 0, 12],
+    hanSoul: [1, 2],
+    instr:   [{cat:'percussion',idx:0},{cat:'percussion',idx:1}],
+    keys:    [0, 1],
+    scales:  [0, 3],
+    moodN:   [2, 2],
+  },
+  uk_garage_gugak: {
+    genre:   [7, 4],
+    moods:   [0, 3, 11, 16],
+    hanSoul: [1, 2],
+    instr:   [{cat:'percussion',idx:0},{cat:'percussion',idx:1},{cat:'string',idx:0}],
+    keys:    [3, 6],
+    scales:  [3, 2],
+    moodN:   [2, 2],
+  },
+  hyper_catchy_gugak: {
+    genre:   [7, 4],
+    moods:   [0, 16, 11, 3],
+    hanSoul: [1, 2],
+    instr:   [{cat:'string',idx:0},{cat:'percussion',idx:0}],
+    keys:    [5, 6],
+    scales:  [3, 2],
+    moodN:   [2, 2],
+  },
+  jersey_bounce_gugak: {
+    genre:   [4, 7],
+    moods:   [0, 11, 15, 3],
+    hanSoul: [1, 2],
+    instr:   [{cat:'percussion',idx:0},{cat:'percussion',idx:1},{cat:'string',idx:0}],
+    keys:    [0, 1],
+    scales:  [0, 3],
+    moodN:   [2, 2],
+  },
+};
+
+/* 풀에서 랜덤 1개 선택 */
+function _rp(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+/* 풀에서 랜덤 min~max개 선택 (중복 없이) */
+function _rpn(arr, min, max) {
+  const n = min + Math.floor(Math.random() * (max - min + 1));
+  return [...arr].sort(() => Math.random() - 0.5).slice(0, Math.min(n, arr.length));
+}
+/* 프리셋 타입에 맞는 풀에서 장르/무드/악기/한소울/키/음계 랜덤 적용 */
+function _applyPools(type) {
+  const p = PRESET_POOLS[type];
+  if (!p) return;
+  STATE.genre        = _rp(p.genre);
+  STATE.moods        = _rpn(p.moods, p.moodN[0], p.moodN[1]);
+  STATE.hanSoulStyle = _rp(p.hanSoul);
+  STATE.musicKey     = _rp(p.keys);
+  STATE.koreanScale  = _rp(p.scales);
+  const ip = _rp(p.instr);
+  selectInstrByCategory(ip.cat, ip.idx, true);
+}
+
+/* ═══════════════════════════════════════════
    HELPERS
 ═══════════════════════════════════════════ */
 /* 성능: BPM 가이드 역순 배열 1회 계산 (매 호출마다 slice().reverse() 불필요) */
@@ -3197,48 +3390,86 @@ function _finalizePreset(toastMsg) {
 const STRONG_RANDOM_PRESETS = ['arirang_hyper','jersey_bounce_gugak','workout','hiphop','hyper_catchy_gugak'];
 
 function applyPresetRandomness(isStrong) {
-  // BPM 조금씩 다르게 하기
-  const bpmBase = STATE.bpm;
-  const bpmRange = isStrong ? 7 : 4;
-  STATE.bpm = Math.max(65, Math.min(145, bpmBase + (Math.random() * (bpmRange*2) - bpmRange) | 0));
+  // ── BPM: 변동 범위 대폭 확대 (±8 일반 / ±14 강한)
+  const bpmBase  = STATE.bpm;
+  const bpmRange = isStrong ? 14 : 8;
+  STATE.bpm = Math.max(65, Math.min(145, bpmBase + ((Math.random() * bpmRange * 2 - bpmRange) | 0)));
 
-  // ★ EnergyArc — 항상 클라이맥스가 있는 아크 우선 선택
-  // [0]=Slow Burn, [1]=Wave Form, [2]=Mountain Peak, [3]=Reverse Bloom, [4]=Twin Peaks, [5]=Sustained
-  // 강한 프리셋: 폭발형 아크 우선 / 일반: 현재 아크 인근 2개 중 선택
+  // ── EnergyArc: 후보 풀 확대
+  //   [0]=Slow Burn, [1]=Wave Form, [2]=Mountain Peak,
+  //   [3]=Reverse Bloom, [4]=Twin Peaks, [5]=Sustained
   const _safeArc = STATE.energyArc !== null ? STATE.energyArc : 0;
   const arcCandidates = isStrong
-    ? [0, 1, 2, 4]   // Slow Burn / Wave / Mountain / Twin Peaks — 클라이맥스 보장
-    : [_safeArc, (_safeArc === 0 ? 1 : 0)]; // 현재 또는 인접 아크
-  STATE.energyArc = arcCandidates[Math.floor(Math.random() * arcCandidates.length)];
+    ? [0, 1, 2, 4, 5]                                  // 클라이맥스 보장 5종 완전 개방
+    : [_safeArc, (_safeArc + 1) % 6, (_safeArc + 5) % 6]; // 현재 ± 인접 2개
+  STATE.energyArc = _rp(arcCandidates);
 
-  // === 국악 비율, 감정 강도, 국악기 강도도 조금씩 다르게 하기 ===
-  const ratioBase = STATE.koreanRatio || 70;
-  STATE.koreanRatio = Math.max(0, Math.min(100, ratioBase + (Math.random() * 20 - 10) | 0));
+  // ── 국악 비율: ±15 (일반) / ±20 (강한)
+  const ratioRange = isStrong ? 20 : 15;
+  STATE.koreanRatio = Math.max(50, Math.min(95,
+    (STATE.koreanRatio || 70) + ((Math.random() * ratioRange * 2 - ratioRange) | 0)));
 
-  const intBase = STATE.intensity || 6;
-  STATE.intensity = Math.max(3, Math.min(9, intBase + (Math.random() * 2 - 1) | 0));
+  // ── 감정 강도: ±2
+  STATE.intensity = Math.max(3, Math.min(9,
+    (STATE.intensity || 6) + ((Math.random() * 4 - 2) | 0)));
 
-  const domBase = STATE.koreanDominance || 80;
-  STATE.koreanDominance = Math.max(65, Math.min(90, domBase + (Math.random() * 10 - 5) | 0));
-  
-  // 구음 위치 — 사용자가 선택한 위치를 그대로 유지 (랜덤 추가 없음)
+  // ── 국악기 지배도: ±8
+  STATE.koreanDominance = Math.max(60, Math.min(95,
+    (STATE.koreanDominance || 80) + ((Math.random() * 16 - 8) | 0)));
 
-  // 구음 높낮이 조금씩 다르게 하기
-  if (Math.random() < (isStrong ? 0.7 : 0.4)) {
-    const pitchOptions = isStrong ? ['high','midhigh','midlow','low'] : [STATE.gueumPitch, 'midhigh', 'midlow'];
-    STATE.gueumPitch = pitchOptions[Math.floor(Math.random() * pitchOptions.length)];
+  // ── 한국적 그루브 1개 교체 (70% 확률) — 신선한 리듬감
+  if (Math.random() < 0.7 && DATA.koreanGrooves && STATE.koreanGrooves.length > 0) {
+    const next = Math.floor(Math.random() * DATA.koreanGrooves.length);
+    const ri   = Math.floor(Math.random() * STATE.koreanGrooves.length);
+    const updated = [...STATE.koreanGrooves];
+    updated[ri] = next;
+    STATE.koreanGrooves = [...new Set(updated)];
   }
 
-  // 강한 프리셋일 때 구음 스타일도 조금 바꾸기
-  if (isStrong && Math.random() < 0.5 && STATE.gueumStyle !== null) {
-    const styleOptions = [STATE.gueumStyle, (STATE.gueumStyle + 1) % DATA.gueumStyles.length];
-    STATE.gueumStyle = styleOptions[Math.floor(Math.random() * styleOptions.length)];
+  // ── 텍스처 1개 추가 또는 교체 (55% 확률)
+  if (Math.random() < 0.55 && DATA.textures) {
+    const newTex = Math.floor(Math.random() * DATA.textures.length);
+    if (!STATE.textures.includes(newTex)) {
+      const t = [...STATE.textures];
+      if (t.length >= 3) t[Math.floor(Math.random() * t.length)] = newTex;
+      else t.push(newTex);
+      STATE.textures = t;
+    }
   }
 
-  // 한소울 스타일은 프리셋 의도를 유지 — 랜덤으로 바꾸지 않음
-  // 강한 프리셋이면 구음 강도를 maximum으로 설정
+  // ── 그루브 1개 교체 (50% 확률)
+  if (Math.random() < 0.5 && DATA.grooves && STATE.grooves.length > 0) {
+    const ng = Math.floor(Math.random() * DATA.grooves.length);
+    const g  = [...STATE.grooves];
+    g[Math.floor(Math.random() * g.length)] = ng;
+    STATE.grooves = [...new Set(g)];
+  }
+
+  // ── 구음 높낮이: 확률 상승 (55% 일반 / 85% 강한) + 4방향 완전 개방
+  if (Math.random() < (isStrong ? 0.85 : 0.55)) {
+    const pitchPool = isStrong
+      ? ['high', 'midhigh', 'midlow', 'low']
+      : [STATE.gueumPitch, 'midhigh', 'midlow', 'low'];
+    STATE.gueumPitch = _rp(pitchPool);
+  }
+
+  // ── 구음 스타일: 강한=65% 전체 개방 / 일반=40% 인접 2개
+  const gStyleChance = isStrong ? 0.65 : 0.40;
+  if (Math.random() < gStyleChance && STATE.gueumStyle !== null) {
+    const totalStyles = DATA.gueumStyles?.length || 7;
+    const stylePool = isStrong
+      ? Array.from({length: totalStyles}, (_, i) => i)
+      : [STATE.gueumStyle,
+         (STATE.gueumStyle + 1) % totalStyles,
+         (STATE.gueumStyle + totalStyles - 1) % totalStyles];
+    STATE.gueumStyle = _rp(stylePool);
+  }
+
+  // ── 구음 강도
   if (isStrong) {
     STATE.gueumStrength = 'maximum';
+  } else if (Math.random() < 0.45) {
+    STATE.gueumStrength = _rp(['strong', 'maximum']);
   }
 }
 /* ===== 여기까지 ===== */
@@ -3321,6 +3552,7 @@ function apply73Preset(type) {
     selectInstrByCategory('wind',0, true);
   }
    const isStrong73 = STRONG_RANDOM_PRESETS.includes(type);
+  _applyPools(type);
   applyPresetRandomness(isStrong73);
   syncSliders();renderAll();syncGueumUI();buildPrompt(true);
   showToast(`✅ 7:3 ${type.toUpperCase()} Joseon Core 프리셋 적용 완료! (구음+한소울 자동 조합)`);
@@ -3414,6 +3646,7 @@ function applyQuickStart(type) {
     selectInstrByCategory('wind',0, true);
   }
    const isStrongQuick = STRONG_RANDOM_PRESETS.includes(type);
+  _applyPools(type);
   applyPresetRandomness(isStrongQuick);
   const msg={joseon:'✅ Joseon Court',sanjo:'✅ Sanjo Jazz',pansori:'✅ Pansori Soul',minyo:'✅ Minyo Blues',court:'✅ Court Elevation',drive:'✅ 드라이브',night:'✅ 늦은 밤',workout:'✅ 운동',hiphop:'✅ 힙합',labor:'✅ 노동가'};
   syncGueumUI();
@@ -3549,6 +3782,7 @@ function applyGueumPreset(type) {
     jersey_bounce_gugak:'🔥 Jersey Bounce Gugak',
   };
     const isStrongGueum = STRONG_RANDOM_PRESETS.includes(type);
+  _applyPools(type);
   applyPresetRandomness(isStrongGueum);
   _finalizePreset((labels[type]||'✅')+' 프리셋 적용 완료!');
 }
