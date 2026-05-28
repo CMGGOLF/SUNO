@@ -410,11 +410,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v21</span></div>
+        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v26</span></div>
         <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 A+B 전 섹션 적용 · 변형 생성 · 버그수정</div>
       </div>
     </div>
-    <div class="header-badge">JOSEON CORE v20 · CLIMAX ENGINE ⚡</div>
+    <div class="header-badge">JOSEON CORE v26 · CLIMAX ENGINE ⚡</div>
   </div>
 </header>
 
@@ -1648,168 +1648,384 @@ const STATE = {
 const PRESET_POOLS = {
   /* ─── 7:3 Joseon Core 프리셋 ─── */
   joseon: {
-    genre:   [0, 7],                    // Joseon Court Soul, NeoJoseon Fusion
-    moods:   [0, 1, 3, 5, 6],          // Groove, Seoul Night, Funky, Late-night Lounge, Groovy Oriental
-    hanSoul: [0, 2],                    // Mississippi Han Blues, Seoul Midnight Jazz
-    instr:   [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'wind',idx:1}],
-    keys:    [0, 4],                    // Am, Cm
-    scales:  [0, 1],                    // 계면조, 평조
-    moodN:   [2, 3],
+    genre:              [0, 7],
+    moods:              [0, 1, 3, 5, 6],
+    hanSoul:            [0, 2],
+    instr:              [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'wind',idx:1}],
+    keys:               [0, 4],
+    scales:             [0, 1],
+    moodN:              [2, 3],
+    vocalStyle:         [0, 7, 9],
+    concept:            [0, 7],
+    vocalTones:         [[0,5],[4,9],[8,9]],           // 2-3개 세트 중 랜덤
+    textures:           [[0,6],[3,6],[0,3]],
+    grooves:            [[3,6],[0,6],[1,5]],
+    spaces:             [[0],[1],[0,1]],
+    koreanGrooves:      [[0,4,9,10],[1,4,9],[0,5,10]],
+    bassStyles:         [[2,4],[0,2],[1,4]],
+    koreanFeelings:     [[0,3,6],[0,5,6],[1,3,5]],
+    blackSoulElements:  [[0,3],[2,3],[0,2]],
+    humanFeelElements:  [[1,3],[0,4],[1,4]],
+    gueumPositions:     [['mid','end'],['start','end'],['start','mid','end']],
   },
   sanjo: {
-    genre:   [1, 5],                    // Sanjo Jazz, Daegeum Ambient
-    moods:   [2, 4, 5, 6, 8],          // Dreamy, Emotional Seoul Jazz, Late-night Lounge, Groovy Oriental, Late Night Blues
-    hanSoul: [2, 3],                    // Seoul Midnight Jazz, Sanjo Blue Notes
-    instr:   [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'wind',idx:0}],
-    keys:    [0, 2],                    // Am, Em
-    scales:  [0, 2],                    // 계면조, 우조
-    moodN:   [2, 2],
+    genre:              [1, 5],
+    moods:              [2, 4, 5, 6, 8],
+    hanSoul:            [2, 3],
+    instr:              [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'wind',idx:0}],
+    keys:               [0, 2],
+    scales:             [0, 2],
+    moodN:              [2, 2],
+    vocalStyle:         [1, 2, 5],
+    concept:            [1, 5],
+    vocalTones:         [[2,9],[0,8],[1,9]],
+    textures:           [[4,6],[3,7],[0,4]],
+    grooves:            [[0,6],[0,3],[3,7]],
+    spaces:             [[2],[0,2],[0]],
+    koreanGrooves:      [[0,3,7],[4,7,8],[0,4,7]],
+    bassStyles:         [[1,5],[0,1],[3,5]],
+    koreanFeelings:     [[4,7],[0,4],[2,7]],
+    blackSoulElements:  [[0,3],[1,3],[0,1]],
+    humanFeelElements:  [[0,6],[1,6],[0,1]],
+    gueumPositions:     [['start','mid','end'],['mid','end'],['start','end']],
   },
   pansori: {
-    genre:   [2, 3, 6],                 // Pansori Soul, Minyo Blues, Ajaeng Deep Soul
-    moods:   [2, 7, 8, 10],            // Dreamy, Modern Korean Melancholy, Late Night Blues, Lonely Midnight
-    hanSoul: [0, 1, 4],                // Mississippi Han Blues, 조선 힙합, Han Soul Ballad
-    instr:   [{cat:'string',idx:1},{cat:'string',idx:2},{cat:'string',idx:0}],
-    keys:    [0, 1],                    // Am, Dm
-    scales:  [0, 4],                    // 계면조, 메나리토리
-    moodN:   [2, 3],
+    genre:              [2, 3, 6],
+    moods:              [2, 7, 8, 10],
+    hanSoul:            [0, 1, 4],
+    instr:              [{cat:'string',idx:1},{cat:'string',idx:2},{cat:'string',idx:0}],
+    keys:               [0, 1],
+    scales:             [0, 4],
+    moodN:              [2, 3],
+    vocalStyle:         [1, 4, 8],
+    concept:            [2, 6],
+    vocalTones:         [[5,6,8],[4,6],[5,8]],
+    textures:           [[0,1,6],[0,2],[1,6]],
+    grooves:            [[1,3],[1,4],[2,3]],
+    spaces:             [[0,3],[0],[0,1]],
+    koreanGrooves:      [[4,9,10],[8,9,10],[4,8,9]],
+    bassStyles:         [[1,2],[2,5],[0,2]],
+    koreanFeelings:     [[1,6,7],[1,6],[0,6,7]],
+    blackSoulElements:  [[0,4],[0,5],[4,5]],
+    humanFeelElements:  [[0,1],[0,6],[1,6]],
+    gueumPositions:     [['start','end'],['start','mid'],['start','mid','end']],
   },
   minyo: {
-    genre:   [3, 2],                    // Minyo Blues, Pansori Soul
-    moods:   [7, 8, 2, 3, 10],         // Modern Korean Melancholy, Late Night Blues, Dreamy, Funky, Lonely Midnight
-    hanSoul: [3, 4],                    // Sanjo Blue Notes, Han Soul Ballad
-    instr:   [{cat:'string',idx:0},{cat:'string',idx:2},{cat:'wind',idx:2}],
-    keys:    [0, 2],                    // Am, Em
-    scales:  [0, 4],                    // 계면조, 메나리토리
-    moodN:   [2, 2],
+    genre:              [3, 2],
+    moods:              [7, 8, 2, 3, 10],
+    hanSoul:            [3, 4],
+    instr:              [{cat:'string',idx:0},{cat:'string',idx:2},{cat:'wind',idx:2}],
+    keys:               [0, 2],
+    scales:             [0, 4],
+    moodN:              [2, 2],
+    vocalStyle:         [0, 1, 4],
+    concept:            [3, 2],
+    vocalTones:         [[5,6],[1,6],[0,5]],
+    textures:           [[0,1],[1,3],[0,2]],
+    grooves:            [[1,4],[0,4],[1,2]],
+    spaces:             [[0],[0,3],[1]],
+    koreanGrooves:      [[4,8],[7,8],[4,7,8]],
+    bassStyles:         [[2],[1,2],[0,2]],
+    koreanFeelings:     [[1,6],[6,7],[1,7]],
+    blackSoulElements:  [[0,4,5],[0,4],[4,5]],
+    humanFeelElements:  [[0,6],[0,3],[3,6]],
+    gueumPositions:     [['mid','end'],['start','end'],['mid']],
   },
   court: {
-    genre:   [7, 0, 4],                 // NeoJoseon Fusion, Joseon Court Soul, Gugak HipHop
-    moods:   [0, 1, 5, 6, 16],         // Groove, Seoul Night, Late-night Lounge, Groovy Oriental, Uplifting
-    hanSoul: [1, 2],                    // 조선 힙합, Seoul Midnight Jazz
-    instr:   [{cat:'wind',idx:0},{cat:'wind',idx:1},{cat:'string',idx:0}],
-    keys:    [0, 4, 6],                 // Am, Cm, G
-    scales:  [0, 1],                    // 계면조, 평조
-    moodN:   [2, 3],
+    genre:              [7, 0, 4],
+    moods:              [0, 1, 5, 6, 16],
+    hanSoul:            [1, 2],
+    instr:              [{cat:'wind',idx:0},{cat:'wind',idx:1},{cat:'string',idx:0}],
+    keys:               [0, 4, 6],
+    scales:             [0, 1],
+    moodN:              [2, 3],
+    vocalStyle:         [7, 0, 9],
+    concept:            [7, 0],
+    vocalTones:         [[9,10],[5,9],[8,10]],
+    textures:           [[5,6],[0,5],[3,5]],
+    grooves:            [[5,7],[3,6],[5,6]],
+    spaces:             [[1,2],[0,2],[1]],
+    koreanGrooves:      [[0,3,11],[0,5,11],[3,5,11]],
+    bassStyles:         [[3,4],[0,4],[2,4]],
+    koreanFeelings:     [[0,5],[0,3],[3,5]],
+    blackSoulElements:  [[2,3],[1,3],[2,5]],
+    humanFeelElements:  [[1,4],[0,4],[1,3]],
+    gueumPositions:     [['start','mid'],['mid','end'],['start','mid','end']],
   },
   /* ─── 용도별 빠른 시작 ─── */
   drive: {
-    genre:   [2, 1, 5, 7],
-    moods:   [11, 14, 0, 6],
-    hanSoul: [2, 3],
-    instr:   [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'percussion',idx:1}],
-    keys:    [2, 0, 5],
-    scales:  [0, 3],
-    moodN:   [2, 2],
+    genre:              [2, 1, 5, 7],
+    moods:              [11, 14, 0, 6],
+    hanSoul:            [2, 3],
+    instr:              [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'percussion',idx:1}],
+    keys:               [2, 0, 5],
+    scales:             [0, 3],
+    moodN:              [2, 2],
+    vocalStyle:         [0, 5, 7],
+    concept:            [1, 7],
+    vocalTones:         [[9,10],[4,9],[8,10]],
+    textures:           [[0,6],[3,6],[0,3]],
+    grooves:            [[1,6],[5,6],[0,6]],
+    spaces:             [[0,2],[2],[0]],
+    koreanGrooves:      [[0,2,4],[0,4,9],[2,4,10]],
+    bassStyles:         [[0,2,4],[2,4],[0,4]],
+    koreanFeelings:     [[0,3,5],[0,5],[3,5]],
+    blackSoulElements:  [[2,3],[0,3],[1,3]],
+    humanFeelElements:  [[1,6],[0,6],[1,4]],
+    gueumPositions:     [['start'],['mid'],['start','mid']],
   },
   workout: {
-    genre:   [4, 7],
-    moods:   [12, 11, 15, 0],
-    hanSoul: [1, 2],
-    instr:   [{cat:'percussion',idx:0},{cat:'percussion',idx:1},{cat:'string',idx:0}],
-    keys:    [1, 2, 6],
-    scales:  [0, 3],
-    moodN:   [2, 2],
+    genre:              [4, 7],
+    moods:              [12, 11, 15, 0],
+    hanSoul:            [1, 2],
+    instr:              [{cat:'percussion',idx:0},{cat:'percussion',idx:1},{cat:'string',idx:0}],
+    keys:               [1, 2, 6],
+    scales:             [0, 3],
+    moodN:              [2, 2],
+    vocalStyle:         [5, 1, 7],
+    concept:            [4, 7],
+    vocalTones:         [[8,10],[5,10],[4,10]],
+    textures:           [[1,5],[0,5],[3,5]],
+    grooves:            [[2,5],[5,6],[2,6]],
+    spaces:             [[1,2],[2],[0,2]],
+    koreanGrooves:      [[0,2,13],[0,5,13],[2,5,13]],
+    bassStyles:         [[0,3],[0,4],[3,4]],
+    koreanFeelings:     [[0,5],[0,3],[3,5]],
+    blackSoulElements:  [[1,2],[0,2],[2,5]],
+    humanFeelElements:  [[0,4],[4,6],[0,6]],
+    gueumPositions:     [['start'],['start','mid'],['mid']],
   },
   hiphop: {
-    genre:   [4, 7],
-    moods:   [15, 0, 3, 11],
-    hanSoul: [1, 2],
-    instr:   [{cat:'percussion',idx:0},{cat:'string',idx:0},{cat:'percussion',idx:1}],
-    keys:    [1, 0, 2],
-    scales:  [0, 3],
-    moodN:   [2, 2],
+    genre:              [4, 7],
+    moods:              [15, 0, 3, 11],
+    hanSoul:            [1, 2],
+    instr:              [{cat:'percussion',idx:0},{cat:'string',idx:0},{cat:'percussion',idx:1}],
+    keys:               [1, 0, 2],
+    scales:             [0, 3],
+    moodN:              [2, 2],
+    vocalStyle:         [5, 1, 0],
+    concept:            [4, 7],
+    vocalTones:         [[5,10],[4,8],[8,9]],
+    textures:           [[1,2],[0,2],[1,3]],
+    grooves:            [[2,6],[2,4],[4,6]],
+    spaces:             [[1],[0,1],[2]],
+    koreanGrooves:      [[0,1,13],[1,5,13],[0,5,13]],
+    bassStyles:         [[0,3],[3,4],[0,4]],
+    koreanFeelings:     [[0,3],[0,5],[3,5]],
+    blackSoulElements:  [[0,1],[1,2],[0,2]],
+    humanFeelElements:  [[0,4],[1,4],[0,6]],
+    gueumPositions:     [['start'],['start','mid'],['mid','end']],
   },
   labor: {
-    genre:   [7, 2],
-    moods:   [13, 0, 7],
-    hanSoul: [0, 4],
-    instr:   [{cat:'wind',idx:0},{cat:'percussion',idx:0},{cat:'string',idx:2}],
-    keys:    [5, 0, 6],
-    scales:  [0, 2],
-    moodN:   [1, 2],
+    genre:              [7, 2],
+    moods:              [13, 0, 7],
+    hanSoul:            [0, 4],
+    instr:              [{cat:'wind',idx:0},{cat:'percussion',idx:0},{cat:'string',idx:2}],
+    keys:               [5, 0, 6],
+    scales:             [0, 2],
+    moodN:              [1, 2],
+    vocalStyle:         [1, 4, 8],
+    concept:            [2, 3],
+    vocalTones:         [[5,6],[4,6],[4,5]],
+    textures:           [[0,2],[1,2],[0,1]],
+    grooves:            [[1,3],[3,4],[1,4]],
+    spaces:             [[0],[0,3],[3]],
+    koreanGrooves:      [[2,11,12],[5,11,12],[2,5,12]],
+    bassStyles:         [[1,2],[0,2],[0,1]],
+    koreanFeelings:     [[1,4],[1,6],[4,6]],
+    blackSoulElements:  [[0,4],[4,5],[0,5]],
+    humanFeelElements:  [[0,3],[3,6],[0,6]],
+    gueumPositions:     [['start','end'],['start'],['start','mid','end']],
   },
   night: {
-    genre:   [5, 1, 6],
-    moods:   [9, 10, 8, 2, 5],
-    hanSoul: [3, 4],
-    instr:   [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'wind',idx:0}],
-    keys:    [0, 1, 2],
-    scales:  [0, 4],
-    moodN:   [2, 3],
+    genre:              [5, 1, 6],
+    moods:              [9, 10, 8, 2, 5],
+    hanSoul:            [3, 4],
+    instr:              [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'wind',idx:0}],
+    keys:               [0, 1, 2],
+    scales:             [0, 4],
+    moodN:              [2, 3],
+    vocalStyle:         [2, 6, 9],
+    concept:            [5, 6],
+    vocalTones:         [[0,2],[2,6],[0,9]],
+    textures:           [[4,7],[6,7],[4,6]],
+    grooves:            [[0,3],[1,3],[0,1]],
+    spaces:             [[0,2],[0],[0,3]],
+    koreanGrooves:      [[6,7,8],[7,8,9],[6,8,9]],
+    bassStyles:         [[1,2],[0,1],[2,5]],
+    koreanFeelings:     [[2,6,7],[0,6,7],[2,7]],
+    blackSoulElements:  [[0,6],[1,6],[0,3]],
+    humanFeelElements:  [[0,2],[2,3],[0,3]],
+    gueumPositions:     [['end'],['mid','end'],['start','end']],
   },
   /* ─── 구음 × 한소울 프리셋 ─── */
   pansori_han_blues: {
-    genre:   [2, 3, 6],
-    moods:   [7, 8, 10, 2],
-    hanSoul: [0, 1],
-    instr:   [{cat:'string',idx:1},{cat:'string',idx:2}],
-    keys:    [0, 1],
-    scales:  [0, 4],
-    moodN:   [2, 3],
+    genre:              [2, 3, 6],
+    moods:              [7, 8, 10, 2],
+    hanSoul:            [0, 1],
+    instr:              [{cat:'string',idx:1},{cat:'string',idx:2}],
+    keys:               [0, 1],
+    scales:             [0, 4],
+    moodN:              [2, 3],
+    vocalStyle:         [1, 4, 8],
+    concept:            [2, 3],
+    vocalTones:         [[5,6],[4,6],[5,8]],
+    textures:           [[0,1],[0,2],[1,2]],
+    grooves:            [[1,3],[1,4],[2,4]],
+    spaces:             [[0,3],[0],[3]],
+    koreanGrooves:      [[4,9,10],[8,9],[4,8,9]],
+    bassStyles:         [[1,2],[2],[0,2]],
+    koreanFeelings:     [[1,6,7],[1,6],[6,7]],
+    blackSoulElements:  [[0,4],[4,5],[0,5]],
+    humanFeelElements:  [[0,1],[0,6],[1,6]],
+    gueumPositions:     [['start','end'],['start','mid'],['start','mid','end']],
   },
   seoul_midnight_jazz: {
-    genre:   [5, 1, 0],
-    moods:   [4, 9, 10, 5],
-    hanSoul: [2, 3],
-    instr:   [{cat:'string',idx:0},{cat:'string',idx:1}],
-    keys:    [2, 0],
-    scales:  [0, 2],
-    moodN:   [2, 3],
+    genre:              [5, 1, 0],
+    moods:              [4, 9, 10, 5],
+    hanSoul:            [2, 3],
+    instr:              [{cat:'string',idx:0},{cat:'string',idx:1}],
+    keys:               [2, 0],
+    scales:             [0, 2],
+    moodN:              [2, 3],
+    vocalStyle:         [2, 6, 9],
+    concept:            [1, 5],
+    vocalTones:         [[0,2],[2,9],[0,9]],
+    textures:           [[4,6,7],[4,7],[6,7]],
+    grooves:            [[0,3],[0,1],[1,3]],
+    spaces:             [[0,2],[0],[2]],
+    koreanGrooves:      [[3,6,7],[6,7],[3,7]],
+    bassStyles:         [[1,2],[0,1],[2,5]],
+    koreanFeelings:     [[2,3,7],[0,3],[2,7]],
+    blackSoulElements:  [[0,6],[3,6],[0,3]],
+    humanFeelElements:  [[0,2],[0,6],[2,6]],
+    gueumPositions:     [['end'],['mid','end'],['start','end']],
   },
   sanjo_blue: {
-    genre:   [1, 5],
-    moods:   [2, 4, 6, 8],
-    hanSoul: [2, 3],
-    instr:   [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'wind',idx:0}],
-    keys:    [0, 2],
-    scales:  [0, 2],
-    moodN:   [2, 3],
+    genre:              [1, 5],
+    moods:              [2, 4, 6, 8],
+    hanSoul:            [2, 3],
+    instr:              [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'wind',idx:0}],
+    keys:               [0, 2],
+    scales:             [0, 2],
+    moodN:              [2, 3],
+    vocalStyle:         [1, 2, 5],
+    concept:            [1, 5],
+    vocalTones:         [[1,9],[0,2],[2,8]],
+    textures:           [[3,4],[4,7],[3,7]],
+    grooves:            [[0,7],[0,3],[3,7]],
+    spaces:             [[0,2],[2],[0]],
+    koreanGrooves:      [[0,3,4],[3,4,7],[0,4,7]],
+    bassStyles:         [[1,5],[0,1],[3,5]],
+    koreanFeelings:     [[2,4,7],[0,4],[2,7]],
+    blackSoulElements:  [[0,3],[1,3],[0,1]],
+    humanFeelElements:  [[0,2],[2,6],[0,6]],
+    gueumPositions:     [['start','mid','end'],['mid','end'],['start','end']],
   },
   ajaeng_soul_ballad: {
-    genre:   [6, 2, 3],
-    moods:   [2, 7, 10, 8],
-    hanSoul: [3, 4],
-    instr:   [{cat:'string',idx:2},{cat:'string',idx:1}],
-    keys:    [0, 1],
-    scales:  [0, 4],
-    moodN:   [2, 3],
+    genre:              [6, 2, 3],
+    moods:              [2, 7, 10, 8],
+    hanSoul:            [3, 4],
+    instr:              [{cat:'string',idx:2},{cat:'string',idx:1}],
+    keys:               [0, 1],
+    scales:             [0, 4],
+    moodN:              [2, 3],
+    vocalStyle:         [8, 4, 0],
+    concept:            [6, 2],
+    vocalTones:         [[5,8],[4,8],[5,6]],
+    textures:           [[0,5],[5,7],[0,7]],
+    grooves:            [[1,3],[1,2],[2,3]],
+    spaces:             [[0,3],[0],[1,3]],
+    koreanGrooves:      [[9,10],[8,9,10],[4,9,10]],
+    bassStyles:         [[2,4],[1,4],[2,5]],
+    koreanFeelings:     [[1,6,7],[6,7],[1,7]],
+    blackSoulElements:  [[0,4],[3,4],[0,3]],
+    humanFeelElements:  [[0,1],[1,6],[0,6]],
+    gueumPositions:     [['start','end'],['mid','end'],['start','mid','end']],
   },
   arirang_hyper: {
-    genre:   [4, 7],
-    moods:   [11, 15, 0, 12],
-    hanSoul: [1, 2],
-    instr:   [{cat:'percussion',idx:0},{cat:'percussion',idx:1}],
-    keys:    [0, 1],
-    scales:  [0, 3],
-    moodN:   [2, 2],
+    genre:              [4, 7],
+    moods:              [11, 15, 0, 12],
+    hanSoul:            [1, 2],
+    instr:              [{cat:'percussion',idx:0},{cat:'percussion',idx:1}],
+    keys:               [0, 1],
+    scales:             [0, 3],
+    moodN:              [2, 2],
+    vocalStyle:         [5, 1, 7],
+    concept:            [4, 7],
+    vocalTones:         [[8,10],[5,10],[4,10]],
+    textures:           [[1,2],[2,5],[1,5]],
+    grooves:            [[2,5],[4,5],[2,4]],
+    spaces:             [[1,2],[2],[1]],
+    koreanGrooves:      [[0,1,13],[1,13],[0,5,13]],
+    bassStyles:         [[0,3],[3,4],[0,4]],
+    koreanFeelings:     [[0,5],[0,3],[3,5]],
+    blackSoulElements:  [[1,2],[0,2],[2,5]],
+    humanFeelElements:  [[4,6],[0,4],[0,6]],
+    gueumPositions:     [['start'],['start','mid'],['mid']],
   },
   uk_garage_gugak: {
-    genre:   [7, 4],
-    moods:   [0, 3, 11, 16],
-    hanSoul: [1, 2],
-    instr:   [{cat:'percussion',idx:0},{cat:'percussion',idx:1},{cat:'string',idx:0}],
-    keys:    [3, 6],
-    scales:  [3, 2],
-    moodN:   [2, 2],
+    genre:              [7, 4],
+    moods:              [0, 3, 11, 16],
+    hanSoul:            [1, 2],
+    instr:              [{cat:'percussion',idx:0},{cat:'percussion',idx:1},{cat:'string',idx:0}],
+    keys:               [3, 6],
+    scales:             [3, 2],
+    moodN:              [2, 2],
+    vocalStyle:         [5, 0, 7],
+    concept:            [4, 7],
+    vocalTones:         [[8,10],[5,10],[9,10]],
+    textures:           [[1,5],[2,5],[1,2]],
+    grooves:            [[5,6],[2,6],[2,5]],
+    spaces:             [[1,2],[1],[2]],
+    koreanGrooves:      [[0,1,5],[1,5,13],[0,5,13]],
+    bassStyles:         [[0,3,4],[3,4],[0,4]],
+    koreanFeelings:     [[0,5],[3,5],[0,3]],
+    blackSoulElements:  [[1,2],[2,5],[1,5]],
+    humanFeelElements:  [[0,4],[4,6],[0,6]],
+    gueumPositions:     [['start'],['start','mid'],['mid']],
   },
   hyper_catchy_gugak: {
-    genre:   [7, 4],
-    moods:   [0, 16, 11, 3],
-    hanSoul: [1, 2],
-    instr:   [{cat:'string',idx:0},{cat:'percussion',idx:0}],
-    keys:    [5, 6],
-    scales:  [3, 2],
-    moodN:   [2, 2],
+    genre:              [7, 4],
+    moods:              [0, 16, 11, 3],
+    hanSoul:            [1, 2],
+    instr:              [{cat:'string',idx:0},{cat:'percussion',idx:0}],
+    keys:               [5, 6],
+    scales:             [3, 2],
+    moodN:              [2, 2],
+    vocalStyle:         [5, 0, 7],
+    concept:            [4, 7],
+    vocalTones:         [[9,10],[8,10],[5,10]],
+    textures:           [[1,5],[2,5],[1,6]],
+    grooves:            [[4,6],[5,6],[4,5]],
+    spaces:             [[1,2],[2],[1]],
+    koreanGrooves:      [[0,1,5],[1,5],[0,5,13]],
+    bassStyles:         [[0,4],[3,4],[0,3]],
+    koreanFeelings:     [[0,3],[0,5],[3,5]],
+    blackSoulElements:  [[0,2],[1,2],[0,5]],
+    humanFeelElements:  [[0,4],[4,6],[0,6]],
+    gueumPositions:     [['start'],['mid'],['start','mid']],
   },
   jersey_bounce_gugak: {
-    genre:   [4, 7],
-    moods:   [0, 11, 15, 3],
-    hanSoul: [1, 2],
-    instr:   [{cat:'percussion',idx:0},{cat:'percussion',idx:1},{cat:'string',idx:0}],
-    keys:    [0, 1],
-    scales:  [0, 3],
-    moodN:   [2, 2],
+    genre:              [4, 7],
+    moods:              [0, 11, 15, 3],
+    hanSoul:            [1, 2],
+    instr:              [{cat:'percussion',idx:0},{cat:'percussion',idx:1},{cat:'string',idx:0}],
+    keys:               [0, 1],
+    scales:             [0, 3],
+    moodN:              [2, 2],
+    vocalStyle:         [5, 1, 7],
+    concept:            [4, 7],
+    vocalTones:         [[5,10],[8,10],[4,10]],
+    textures:           [[1,2],[2,5],[1,5]],
+    grooves:            [[2,4],[4,6],[2,6]],
+    spaces:             [[1],[1,2],[2]],
+    koreanGrooves:      [[0,1,13],[1,5,13],[0,5,13]],
+    bassStyles:         [[0,3],[3,4],[0,4]],
+    koreanFeelings:     [[0,3],[0,5],[3,5]],
+    blackSoulElements:  [[0,1],[1,2],[0,2]],
+    humanFeelElements:  [[0,4],[4,6],[0,6]],
+    gueumPositions:     [['start'],['start','mid'],['mid','end']],
   },
 };
 
@@ -1829,6 +2045,19 @@ function _applyPools(type) {
   STATE.hanSoulStyle = _rp(p.hanSoul);
   STATE.musicKey     = _rp(p.keys);
   STATE.koreanScale  = _rp(p.scales);
+  if (p.vocalStyle        && p.vocalStyle.length)        STATE.vocalStyle        = _rp(p.vocalStyle);
+  if (p.concept           && p.concept.length)           STATE.concept           = _rp(p.concept);
+  // 배열의 배열 → 세트 중 랜덤 1개 선택
+  if (p.vocalTones        && p.vocalTones.length)        STATE.vocalTones        = [..._rp(p.vocalTones)];
+  if (p.textures          && p.textures.length)          STATE.textures          = [..._rp(p.textures)];
+  if (p.grooves           && p.grooves.length)           STATE.grooves           = [..._rp(p.grooves)];
+  if (p.spaces            && p.spaces.length)            STATE.spaces            = [..._rp(p.spaces)];
+  if (p.koreanGrooves     && p.koreanGrooves.length)     STATE.koreanGrooves     = [..._rp(p.koreanGrooves)];
+  if (p.bassStyles        && p.bassStyles.length)        STATE.bassStyles        = [..._rp(p.bassStyles)];
+  if (p.koreanFeelings    && p.koreanFeelings.length)    STATE.koreanFeelings    = [..._rp(p.koreanFeelings)];
+  if (p.blackSoulElements && p.blackSoulElements.length) STATE.blackSoulElements = [..._rp(p.blackSoulElements)];
+  if (p.humanFeelElements && p.humanFeelElements.length) STATE.humanFeelElements = [..._rp(p.humanFeelElements)];
+  if (p.gueumPositions    && p.gueumPositions.length)    STATE.gueumPositions    = [..._rp(p.gueumPositions)];
   const ip = _rp(p.instr);
   selectInstrByCategory(ip.cat, ip.idx, true);
 }
@@ -2579,7 +2808,9 @@ function _doBuildPrompt() {
     if (STATE.concept!==null&&DATA.concepts[STATE.concept]) {
       const c=DATA.concepts[STATE.concept];
       parts.push(`[Concept] ${c.name}`);
-      parts.push(`[Core Mood] ${c.core.join(', ')}`);
+      parts.push(`[Core Mood] ${c.core.join(', ')}${c.sub&&c.sub.length?' · Sub-mood: '+c.sub.join(', '):''}`);
+      if (c.genres&&c.genres.length) parts.push(`[Concept Genre References] ${c.genres.join(' / ')} — use these genre references as the sonic palette`);
+      if (c.desc) parts.push(`[Concept Description] ${c.desc}`);
       // [Instruments (Concept)]는 STATE.instr이 설정된 경우 중복이므로 생략
       if (!STATE.instr) parts.push(`[Instruments (Concept)] ${c.inst.join(', ')}`);
     }
@@ -2761,7 +2992,7 @@ async function _callOnce(model, messages, temperature, apiKey) {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
       'HTTP-Referer': window.location.href,
-      'X-Title': 'Gugak Prompt Maker v20',
+      'X-Title': 'Gugak Prompt Maker v26',
     },
     body: JSON.stringify({ model, messages, max_tokens: 2500, temperature }),
   });
@@ -2799,7 +3030,11 @@ async function callClaude(prompt, systemPrompt = '', temperature = 0.85) {
       // 다음 모델로 계속
     }
   }
-  // 무료 모델 전부 실패 → 유료 모델(gpt-4o-mini)로 자동 전환
+  // 무료 모델 전부 실패 → 유료 모델(gpt-4o-mini) 전환 전 사용자 확인
+  const confirmed = window.confirm(
+    '⚠️ 무료 모델이 모두 응답하지 않습니다.\n\n유료 모델(gpt-4o-mini)로 전환하면 OpenRouter 크레딧이 소모됩니다.\n계속하시겠습니까?'
+  );
+  if (!confirmed) throw new Error('사용자가 유료 모델 전환을 취소했습니다.');
   showToast('⚠️ 무료 모델 실패 → gpt-4o-mini 유료 전환 중...');
   try {
     const result = await _callOnce('openai/gpt-4o-mini', messages, temperature, apiKey);
@@ -3387,7 +3622,11 @@ function _finalizePreset(toastMsg) {
   showToast(toastMsg);
 }
   /* ===== 랜덤 마법 추가 ===== */
-const STRONG_RANDOM_PRESETS = ['arirang_hyper','jersey_bounce_gugak','workout','hiphop','hyper_catchy_gugak'];
+const STRONG_RANDOM_PRESETS = [
+  'arirang_hyper','jersey_bounce_gugak','workout','hiphop','hyper_catchy_gugak', // 기존 강한 랜덤
+  'court','pansori','labor','uk_garage_gugak',                                   // 추가: 강한 감정선
+  'pansori_han_blues','ajaeng_soul_ballad',                                      // 추가: 깊은 한(恨) 계열
+];
 
 function applyPresetRandomness(isStrong) {
   // ── BPM: 변동 범위 대폭 확대 (±8 일반 / ±14 강한)
@@ -3571,6 +3810,8 @@ function applyUltimateGroovePreset() {
   // 06C 한(恨) 소울 스타일 — 네오조선 그루브 소울
   STATE.hanSoulStyle=2;
   selectInstrByCategory('string',0, true);
+  _applyPools('joseon'); // Ultimate Groove → joseon 풀에서 랜덤 변화
+  applyPresetRandomness(false);
   _finalizePreset("🔥 Ultimate 7:3 Joseon Groove 적용 완료! (구음+한소울 자동 조합)");
 }
 function applyQuickStart(type) {
