@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 v27 - Joseon Core</title>
+<title>BV 뮤직 프롬프트 메이커 v28 - Joseon Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -1355,6 +1355,32 @@ const DATA = {
     {en:'Ajaeng Soul',kr:'아쟁 소울',gender:'male',tone:'아쟁처럼 묵직하고 찰현적인 깊은 저음 소울 톤',tags:['Soul Blues','Deep','Gritty','Raw']},
     {en:'Korean Neo Soul',kr:'코리안 네오소울',gender:'female',tone:'부드럽고 세련된 R&B 스타일 톤',tags:['Neo Soul','R&B','Emotional','Smooth']},
   ],
+  gugakVocalStyles: [
+    {en:'Pansori Changsik',kr:'판소리창법',
+      suno:'pansori vocal technique, raw gut-sung resonance, nasal chest projection, Korean operatic, jangdan-driven delivery, han(恨) in every breath, 득음 throat texture',
+      desc:'판소리 득음 창법. 장단에 실린 농현과 꺾음, 애절하고 날것의 공명.',
+      tags:['Pansori','Raw','Operatic','Han','Gut-sung'],gender:'both',pitch:'전음역'},
+    {en:'Namdo Minyo Changsik',kr:'남도민요창법',
+      suno:'Namdo folk singing, deep Han vibrato 농현, pentatonic ornaments 시김새, raw emotional 꺾음 vocal bending, mournful southern Korean folk phrasing',
+      desc:'남도 육자배기·흥타령 창법. 깊은 떨림과 꺾음이 핵심인 슬픈 남도 선율.',
+      tags:['Namdo','Folk','Vibrato','Ornament','Mournful'],gender:'both',pitch:'중저음'},
+    {en:'Gyeonggi Minyo Changsik',kr:'경기민요창법',
+      suno:'Gyeonggi folk singing, bright clear tone, lively rhythmic phrasing, 경쾌한 Seoul folk vocal, cheerful pentatonic ornamentation, playful call-and-response',
+      desc:'경기 아리랑·창부타령 창법. 맑고 경쾌하며 신명나는 경기 민요 발성.',
+      tags:['Gyeonggi','Bright','Lively','Cheerful','Folk'],gender:'female',pitch:'중고음'},
+    {en:'Jeongak Changsik',kr:'정악창법',
+      suno:'Jeongak court singing, formal dignified vocal, noble elegant Korean court phrasing, slow restrained delivery, aristocratic breath control, Joseon royal vocal style',
+      desc:'궁중 정악 창법. 절제되고 품위 있는 조선 궁중의 발성, 느리고 우아한 호흡.',
+      tags:['Court','Dignified','Noble','Elegant','Joseon'],gender:'both',pitch:'중음'},
+    {en:'Susimga Changsik',kr:'수심가창법',
+      suno:'Susimga northern folk singing, melancholic resonant projection, West Korean folk vocal, lonesome wide vibrato, slow sorrowful phrasing, haunting 서도소리 tone',
+      desc:'서도소리 수심가 창법. 서북 지방 특유의 처연하고 광활한 울림의 발성.',
+      tags:['Seodo','Melancholic','Lonesome','Vibrato','Northern'],gender:'male',pitch:'중저음'},
+    {en:'Gasasichang Changsik',kr:'가사시창창법',
+      suno:'Korean gasa poetry singing, lyrical narrative vocal, unhurried syllabic delivery, refined Confucian scholar vocal style, gentle melodic phrasing, 시조 sung poetry',
+      desc:'가사·시조 창법. 시문을 읊는 듯한 선비풍의 서정적이고 단아한 발성.',
+      tags:['Gasa','Sijo','Lyrical','Narrative','Scholar'],gender:'male',pitch:'중음'},
+  ],
   vocalTones: [
     {en:'Smooth female vocals',kr:'매끄러운 여성 보컬',gender:'female',desc:'서울 밤 감성·Neo Soul·Jazz 계열에 적합'},
     {en:'Soulful female vocals',kr:'소울풀한 여성 보컬',gender:'female',desc:'감정선과 Groove를 동시에 살리는 스타일'},
@@ -1617,7 +1643,7 @@ const DATA = {
 let recItems = null;
 const STATE = {
   genre:null, moods:[], instr:null, instrCategory:null,
-  concept:null, vocalStyle:null, vocalTones:[],
+  concept:null, vocalStyle:null, gugakVocalStyle:null, vocalTones:[],
   textures:[], grooves:[], spaces:[], koreanGrooves:[],
   bassStyles:[], koreanFeelings:[], blackSoulElements:[], humanFeelElements:[],
   bpm:95, intensity:5, gender:'all',
@@ -2179,7 +2205,7 @@ function renderConcepts() {
 }
 function renderVocalStyles() {
   const g = document.getElementById('vocalStyleGrid');
-  g.innerHTML = DATA.vocalStyles.map((d,i) => `
+  const modernCards = DATA.vocalStyles.map((d,i) => `
     <div class="selcard" id="vs_${i}" onclick="selectVocalStyle(${i})">
       <div class="check-dot"></div>
       <div class="card-en">${d.en}</div>
@@ -2187,6 +2213,25 @@ function renderVocalStyles() {
       <div class="card-desc" style="margin-bottom:6px">${d.tone}</div>
       <div style="display:flex;flex-wrap:wrap;gap:4px">${d.tags.map(t=>`<span class="ctag">${t}</span>`).join('')}</div>
     </div>`).join('');
+  const gugakCards = DATA.gugakVocalStyles.map((d,i) => `
+    <div class="selcard korean-card" id="gvs_${i}" onclick="selectGugakVocalStyle(${i})">
+      <div class="check-dot"></div>
+      <div class="card-en" style="color:var(--korean2)">${d.en}</div>
+      <div class="card-kr">${d.kr} · ${d.gender==='both'?'남/여':d.gender==='male'?'남성':'여성'} · ${d.pitch}</div>
+      <div class="card-desc" style="margin-bottom:6px">${d.desc}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">${d.tags.map(t=>`<span class="ctag" style="background:rgba(160,90,58,.15);border-color:rgba(160,90,58,.4);color:var(--korean2)">${t}</span>`).join('')}</div>
+    </div>`).join('');
+  g.innerHTML = `
+    <div style="grid-column:1/-1">
+      <div class="section-divider" style="margin-top:0">🎤 현대 퓨전 보컬 스타일 (Modern Fusion Vocal)</div>
+    </div>
+    ${modernCards}
+    <div style="grid-column:1/-1;margin-top:6px">
+      <div class="section-divider">🎙️ 구악 창법 (Traditional Korean Vocal Technique)</div>
+      <div class="info-bar korean-info" style="margin-bottom:12px;margin-top:8px">🔔 구악 창법은 전통 발성법을 Suno에 최적화한 키워드로 변환합니다. 현대 퓨전 보컬과 중복 선택하면 두 스타일이 함께 반영됩니다.</div>
+    </div>
+    ${gugakCards}
+  `;
 }
 function renderTones(gFilter) {
   const g = document.getElementById('toneGrid');
@@ -2294,8 +2339,15 @@ function createSelectOne(stateKey, selector, idPrefix) {
   };
 }
 const selectConcept     = createSelectOne('concept',     '.concept-card',          'concept_');
-const selectVocalStyle  = createSelectOne('vocalStyle',  '#vocalStyleGrid .selcard','vs_');
+const selectVocalStyle  = createSelectOne('vocalStyle',  '#vocalStyleGrid .selcard:not(.korean-card)','vs_');
 const selectGueumStyle  = createSelectOne('gueumStyle',  '[id^="gueum_"]',         'gueum_');
+
+function selectGugakVocalStyle(i) {
+  document.querySelectorAll('[id^="gvs_"]').forEach(el=>el.classList.remove('active'));
+  STATE.gugakVocalStyle = (STATE.gugakVocalStyle === i) ? null : i;
+  if (STATE.gugakVocalStyle !== null) document.getElementById('gvs_'+i)?.classList.add('active');
+  buildPrompt();
+}
 const _selectMusicKey   = createSelectOne('musicKey',    '[id^="mkey_"]',          'mkey_');
 const _selectKoreanScale= createSelectOne('koreanScale', '[id^="kscale_"]',        'kscale_');
 const selectEnergyArc   = createSelectOne('energyArc',  '[id^="arc_"]',           'arc_');
@@ -2829,6 +2881,10 @@ function _doBuildPrompt() {
       const vs=DATA.vocalStyles[STATE.vocalStyle];
       _vsLine.push(`${vs.en}`);
     }
+    if (STATE.gugakVocalStyle!==null&&DATA.gugakVocalStyles[STATE.gugakVocalStyle]) {
+      const gvs=DATA.gugakVocalStyles[STATE.gugakVocalStyle];
+      _vsLine.push(`GUGAK VOCAL: ${gvs.suno}`);
+    }
     if (STATE.gender === 'male') _vsLine.push('STRICTLY male voice');
     else if (STATE.gender === 'female') _vsLine.push('STRICTLY female voice');
     if(STATE.vocalTones.length){const vts=getEnList(STATE.vocalTones,DATA.vocalTones);if(vts)_vsLine.push(vts);}
@@ -2931,7 +2987,7 @@ function _doBuildPrompt() {
     /* ── NOTE: [Writing Style] 가이드는 AI 호출 시 시스템 프롬프트로만 전달 (promptBox 제외) ── */
 
     const box=document.getElementById('promptBox');
-    const hasUserSelection = STATE.genre!==null || STATE.moods.length>0 || STATE.instr!==null || STATE.concept!==null || STATE.vocalStyle!==null || STATE.hanSoulStyle!==null;
+    const hasUserSelection = STATE.genre!==null || STATE.moods.length>0 || STATE.instr!==null || STATE.concept!==null || STATE.vocalStyle!==null || STATE.gugakVocalStyle!==null || STATE.hanSoulStyle!==null;
     box.textContent=hasUserSelection?parts.join('\n'):'← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
   } catch(e) {
     console.error('[_doBuildPrompt 오류]', e);
@@ -4178,6 +4234,7 @@ function renderAll() {
   STATE.moods.forEach(i=>document.getElementById('mood_'+i)?.classList.add('active'));
   if(STATE.concept!==null)document.getElementById('concept_'+STATE.concept)?.classList.add('active');
   if(STATE.vocalStyle!==null)document.getElementById('vs_'+STATE.vocalStyle)?.classList.add('active');
+  if(STATE.gugakVocalStyle!==null)document.getElementById('gvs_'+STATE.gugakVocalStyle)?.classList.add('active');
   if(STATE.instrCategory){const[cat,idx]=STATE.instrCategory.split('_');document.getElementById(`instr_${cat[0]}_${idx}`)?.classList.add('active');}
   document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active'));
   const activeGBtn=[...document.querySelectorAll('.gender-btn')].find(b=>(STATE.gender==='all'&&b.textContent.includes('전체'))||(STATE.gender==='male'&&b.textContent.includes('남성'))||(STATE.gender==='female'&&b.textContent.includes('여성')));
