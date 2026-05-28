@@ -3766,7 +3766,7 @@ function apply73Preset(type) {
     STATE.hanSoulStyle=2;
     selectInstrByCategory('wind',0, true);
   }
-   const isStrong73 = STRONG_RANDOM_PRESETS.includes(type);
+  const isStrong73 = STRONG_RANDOM_PRESETS.includes(type);
   _applyPools(type);
   applyPresetRandomness(isStrong73);
   syncSliders();renderAll();syncGueumUI();buildPrompt(true);
@@ -3862,7 +3862,7 @@ function applyQuickStart(type) {
     STATE.hanSoulStyle=0;
     selectInstrByCategory('wind',0, true);
   }
-   const isStrongQuick = STRONG_RANDOM_PRESETS.includes(type);
+  const isStrongQuick = STRONG_RANDOM_PRESETS.includes(type);
   _applyPools(type);
   applyPresetRandomness(isStrongQuick);
   const msg={joseon:'✅ Joseon Court',sanjo:'✅ Sanjo Jazz',pansori:'✅ Pansori Soul',minyo:'✅ Minyo Blues',court:'✅ Court Elevation',drive:'✅ 드라이브',night:'✅ 늦은 밤',workout:'✅ 운동',hiphop:'✅ 힙합',labor:'✅ 노동가'};
@@ -4154,6 +4154,9 @@ function resetAll(doRender=true) {
     document.getElementById('gpitch_midhigh')?.classList.add('active');
     document.querySelectorAll(".gueum-ctrl-btn[id^=ggender_]").forEach(b=>b.classList.remove('active'));
     document.getElementById('ggender_both')?.classList.add('active');
+    // 구음 강도 UI 초기화 (STATE.gueumStrength='strong' 과 동기화)
+    document.querySelectorAll('[id^="gstrength_"]').forEach(b=>b.classList.remove('active'));
+    document.getElementById('gstrength_strong')?.classList.add('active');
     // 곡 길이 UI 초기화
     document.querySelectorAll('.dur-btn').forEach(b=>b.classList.toggle('active', b.textContent.startsWith('3:30')));
     const customInput=document.getElementById('songDurationCustom');
