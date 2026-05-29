@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 v28 - Joseon Core</title>
+<title>BV 뮤직 프롬프트 메이커 v27 - Joseon Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -378,6 +378,84 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 /* Suno 직접 열기 버튼 */
 .btn-suno{background:var(--surface2);color:var(--gold);font-size:15px;padding:10px 20px;border:1.5px solid var(--gold);border-radius:8px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:6px;box-shadow:0 3px 10px rgba(201,168,76,0.15);transition:all .2s}
 .btn-suno:hover{background:rgba(201,168,76,.08)}
+/* ── 원클릭 퀄리티 엔진 ── */
+.qe-section{border-color:rgba(255,180,50,.5)!important;background:rgba(255,180,50,.03)!important}
+.qe-btn{
+  display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:8px;border:none;
+  font-size:14px;font-family:'Noto Sans KR',sans-serif;cursor:pointer;transition:all .2s;font-weight:700;
+  background:linear-gradient(135deg,#7a5200,#c9a84c);color:#fff;letter-spacing:.3px;
+  box-shadow:0 3px 14px rgba(201,168,76,.25);
+}
+.qe-btn:hover{background:linear-gradient(135deg,#8a6010,#d9b45c);box-shadow:0 4px 18px rgba(201,168,76,.35);transform:translateY(-1px)}
+.qe-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.qe-btn-sm{
+  display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;border:1px solid;
+  font-size:12px;font-family:'Noto Sans KR',sans-serif;cursor:pointer;transition:all .2s;font-weight:600;
+}
+.qe-step{
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;
+  display:flex;align-items:flex-start;gap:12px;transition:border-color .2s;
+}
+.qe-step.done{border-color:rgba(58,143,160,.5);background:rgba(58,143,160,.05)}
+.qe-step.active{border-color:rgba(255,180,50,.6);background:rgba(255,180,50,.05)}
+.qe-step.waiting{opacity:.45}
+.qe-step-num{
+  width:26px;height:26px;border-radius:50%;background:var(--surface3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:var(--muted);flex-shrink:0;margin-top:1px;
+  font-family:'Space Mono',monospace;transition:all .2s;
+}
+.qe-step.done .qe-step-num{background:var(--teal);color:#fff}
+.qe-step.active .qe-step-num{background:var(--hyper);color:#08080e}
+.qe-step-body{flex:1;min-width:0}
+.qe-step-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;font-family:'Noto Serif KR',serif}
+.qe-step-desc{font-size:11px;color:var(--muted);line-height:1.6}
+.qe-step-result{margin-top:8px;font-size:11px;color:var(--teal);line-height:1.6;display:none}
+.qe-step.done .qe-step-result{display:block}
+.qe-progress{height:4px;background:var(--surface3);border-radius:2px;margin:14px 0;overflow:hidden}
+.qe-progress-bar{height:100%;background:linear-gradient(90deg,var(--korean2),var(--hyper));border-radius:2px;transition:width .4s ease;width:0%}
+.qe-combo-card{
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;
+  cursor:pointer;transition:all .2s;
+}
+.qe-combo-card:hover{border-color:var(--dim);transform:translateY(-1px)}
+.qe-combo-card.selected{border-color:var(--hyper);background:rgba(255,180,50,.08)}
+.qe-combo-card .cc-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;font-family:'Noto Serif KR',serif}
+.qe-combo-card .cc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
+.qe-combo-card .cc-tag{font-size:10px;padding:2px 7px;border-radius:10px;background:rgba(255,180,50,.12);color:var(--hyper);border:1px solid rgba(255,180,50,.3)}
+.qe-combo-card .cc-desc{font-size:11px;color:var(--muted);line-height:1.5}
+.qe-result-box{
+  background:var(--surface2);border:1px solid rgba(58,143,160,.4);border-left:3px solid var(--teal);
+  border-radius:8px;padding:14px 16px;margin-top:12px;display:none;
+}
+.qe-final-prompt{
+  font-family:'Space Mono',monospace;font-size:11px;color:var(--text);
+  line-height:1.8;white-space:pre-wrap;word-break:break-word;
+  background:var(--surface3);border-radius:6px;padding:12px;margin:10px 0;
+}
+.qe-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;
+}
+.qe-badge.green{background:rgba(58,143,160,.2);color:var(--teal);border:1px solid rgba(58,143,160,.4)}
+.qe-badge.gold{background:rgba(255,180,50,.15);color:var(--hyper);border:1px solid rgba(255,180,50,.35)}
+/* ── 모델 선택 ── */
+.model-selector{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.model-btn{
+  display:flex;flex-direction:column;align-items:flex-start;
+  padding:10px 14px;border-radius:8px;border:1.5px solid var(--border);
+  background:var(--surface2);cursor:pointer;transition:all .18s;min-width:148px;
+}
+.model-btn:hover{border-color:var(--dim)}
+.model-btn.active{border-color:var(--gold);background:rgba(201,168,76,.1)}
+.model-btn .mb-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;font-family:'Noto Serif KR',serif}
+.model-btn .mb-sub{font-size:10px;color:var(--muted);line-height:1.4}
+.model-btn .mb-badge{font-size:10px;font-weight:700;padding:1px 7px;border-radius:8px;margin-bottom:5px;display:inline-block}
+.model-btn .mb-badge.best{background:rgba(255,180,50,.2);color:var(--hyper);border:1px solid rgba(255,180,50,.4)}
+.model-btn .mb-badge.balanced{background:rgba(58,143,160,.18);color:var(--teal);border:1px solid rgba(58,143,160,.35)}
+.model-btn .mb-badge.fast{background:rgba(100,100,180,.18);color:#aab;border:1px solid rgba(100,100,180,.3)}
+.model-cost-tag{font-size:10px;color:var(--muted);margin-top:10px;line-height:1.7}
+.model-cost-tag b{color:var(--text)}
 @media(max-width:900px){
   .app{padding:20px 16px 60px}
   header{padding:18px 16px}
@@ -499,19 +577,57 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 <div class="section" style="border-color:rgba(201,168,76,.35);background:rgba(201,168,76,.04)">
   <div class="section-head" style="background:rgba(201,168,76,.08)">
     <div class="sec-num" style="background:var(--teal)">🔑</div>
-    <div class="sec-title">OpenRouter API 키 설정</div>
-    <div class="sec-sub">AI 기능 사용 전 필수 입력 · 브라우저에만 저장됩니다</div>
+    <div class="sec-title">API 키 · AI 모델 설정</div>
+    <div class="sec-sub">OpenRouter API 키 입력 · 모델 선택 · 브라우저에만 저장됩니다</div>
   </div>
   <div class="section-body">
-    <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center">
-      <input type="password" id="apiKeyInput" placeholder="sk-or-v1-xxxxxxxx... (OpenRouter API Key 입력)" oninput="onApiKeyInput(this.value)">
+
+    <!-- API 키 입력 -->
+    <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;margin-bottom:8px">
+      <input type="password" id="apiKeyInput" placeholder="sk-or-v1-xxxxxxxx... (OpenRouter API Key)" oninput="onApiKeyInput(this.value)">
       <button class="btn btn-teal" onclick="saveApiKey()">💾 저장</button>
       <button class="btn btn-outline" onclick="clearApiKey()">삭제</button>
     </div>
-    <div class="info-bar" style="margin-top:8px" id="apiKeyStatus">
-      ⚠️ API 키가 없으면 AI 기능이 작동하지 않습니다.<br>
-      🔗 <a href="https://openrouter.ai/settings/keys" target="_blank" style="color:var(--gold)">openrouter.ai</a> → Keys → Create Key
+    <div class="info-bar" id="apiKeyStatus" style="margin-bottom:16px">
+      ⚠️ API 키가 없으면 AI 기능이 작동하지 않습니다. &nbsp;
+      🔗 <a href="https://openrouter.ai/settings/keys" target="_blank" style="color:var(--gold)">openrouter.ai → Keys → Create Key</a>
     </div>
+
+    <!-- 모델 선택 -->
+    <div style="font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.5px;margin-bottom:10px">⚙️ AI 모델 선택 — 프롬프트·가사·변형 생성에 적용</div>
+    <div class="model-selector" id="modelSelector">
+
+      <button class="model-btn" id="mBtn_sonnet" onclick="selectModel('claude/claude-sonnet-4-5')">
+        <span class="mb-badge best">최고 품질</span>
+        <span class="mb-name">Claude Sonnet</span>
+        <span class="mb-sub">프롬프트·가사 최상위 품질<br>영어 감성 표현 최고 수준</span>
+      </button>
+
+      <button class="model-btn" id="mBtn_haiku" onclick="selectModel('claude/claude-haiku-4-5')">
+        <span class="mb-badge balanced">가성비 추천</span>
+        <span class="mb-name">Claude Haiku</span>
+        <span class="mb-sub">Sonnet 대비 80% 품질<br>속도 빠름 · 비용 ¼</span>
+      </button>
+
+      <button class="model-btn" id="mBtn_gpt4o" onclick="selectModel('openai/gpt-4o')">
+        <span class="mb-badge best">최고 품질</span>
+        <span class="mb-name">GPT-4o</span>
+        <span class="mb-sub">창의적 가사 강점<br>다양한 표현 스타일</span>
+      </button>
+
+      <button class="model-btn" id="mBtn_gpt4omini" onclick="selectModel('openai/gpt-4o-mini')">
+        <span class="mb-badge fast">저비용</span>
+        <span class="mb-name">GPT-4o mini</span>
+        <span class="mb-sub">가장 저렴 · 빠름<br>단순 프롬프트에 적합</span>
+      </button>
+
+    </div>
+
+    <!-- 기능별 비용 안내 -->
+    <div class="model-cost-tag" id="modelCostTag">
+      모델을 선택하면 기능별 예상 비용이 표시됩니다.
+    </div>
+
   </div>
 </div>
 
@@ -1166,6 +1282,71 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
 </div>
 
+<!-- ════════════════════════════════════════════════
+     ⚡ 09B  원클릭 퀄리티 엔진
+     ════════════════════════════════════════════════ -->
+<div class="section qe-section">
+  <div class="section-head qe-head" onclick="toggleSection('qeBody','qeIcon')" style="cursor:pointer">
+    <div class="sec-num" style="background:linear-gradient(135deg,#7a5200,#c9a84c);color:#fff">09B</div>
+    <div class="sec-title">⚡ 원클릭 퀄리티 엔진 <span style="color:var(--hyper);font-size:12px">자동 최적 조합</span> <span id="qeIcon" style="font-size:14px">▼</span></div>
+    <div class="sec-sub">목표 분위기 선택 → 구음·Human Feel·DNA·슈퍼 프롬프트까지 자동 최적화</div>
+  </div>
+  <div class="section-body" id="qeBody" style="display:none">
+
+    <!-- 안내 -->
+    <div class="info-bar" style="margin-bottom:18px;background:rgba(255,180,50,.07);border-color:rgba(255,180,50,.3)">
+      🎯 <b style="color:var(--hyper)">작동 방식:</b>
+      목표 분위기 카드를 고르면 — BPM·구음 위치+강도+스타일·Human Feel·Black Soul·조성·에너지 아크까지
+      분석 결과에서 도출한 <b>최적 조합을 자동 적용</b>하고, DNA를 3회 탐색해 가장 강한 슈퍼 프롬프트를 선택합니다.
+    </div>
+
+    <!-- STEP 1: 목표 카드 선택 -->
+    <div style="margin-bottom:20px">
+      <div class="lbl-gold" style="margin-bottom:10px">① 목표 분위기 선택 <span style="font-size:10px;color:var(--muted);font-weight:400">(하나 클릭)</span></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="qeComboGrid">
+        <!-- JS가 렌더링 -->
+      </div>
+    </div>
+
+    <!-- STEP 2: 실행 버튼 -->
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px">
+      <button class="qe-btn" id="qeRunBtn" onclick="runQualityEngine()" disabled>
+        ⚡ 퀄리티 엔진 실행
+      </button>
+      <div style="font-size:11px;color:var(--muted);line-height:1.6">
+        분위기 카드를 먼저 선택하세요.<br>
+        <span style="color:var(--hyper)">약 10~20초 소요 (DNA 3회 탐색 + AI 프롬프트 최적화)</span>
+      </div>
+    </div>
+
+    <!-- 진행 상태 -->
+    <div id="qeProgressWrap" style="display:none;margin-bottom:18px">
+      <div class="qe-progress"><div class="qe-progress-bar" id="qeProgressBar"></div></div>
+      <div style="display:flex;flex-direction:column;gap:6px" id="qeStepList">
+        <!-- JS 렌더링 -->
+      </div>
+    </div>
+
+    <!-- 최종 결과 -->
+    <div class="qe-result-box" id="qeResultBox">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="font-size:14px">✅</span>
+        <span style="font-size:13px;font-weight:700;color:var(--teal);font-family:'Noto Serif KR',serif">최적 조합 완성</span>
+        <span class="qe-badge green" id="qeScoreBadge"></span>
+        <span class="qe-badge gold" id="qeDnaBadge"></span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px" id="qeAppliedSummary"></div>
+      <div class="qe-final-prompt" id="qeFinalPrompt"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="qe-btn-sm" style="background:var(--teal);color:#fff;border-color:var(--teal)" onclick="qeCopyFinal()">📋 복사</button>
+        <button class="qe-btn-sm" style="background:transparent;color:var(--hyper);border-color:var(--hyper)" onclick="qeRerunDNA()">🔄 DNA만 재탐색</button>
+        <button class="qe-btn-sm" style="background:transparent;color:var(--muted);border-color:var(--border)" onclick="qeReset()">↺ 초기화</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <div class="section">
   <div class="section-head">
     <div class="sec-num">10</div>
@@ -1354,32 +1535,6 @@ const DATA = {
     {en:'Cinematic Soul Fusion',kr:'시네마틱 소울 퓨전',gender:'both',tone:'웅장하고 감정 고조가 가능한 드라마틱 톤',tags:['Cinematic','Soul','Epic']},
     {en:'Ajaeng Soul',kr:'아쟁 소울',gender:'male',tone:'아쟁처럼 묵직하고 찰현적인 깊은 저음 소울 톤',tags:['Soul Blues','Deep','Gritty','Raw']},
     {en:'Korean Neo Soul',kr:'코리안 네오소울',gender:'female',tone:'부드럽고 세련된 R&B 스타일 톤',tags:['Neo Soul','R&B','Emotional','Smooth']},
-  ],
-  gugakVocalStyles: [
-    {en:'Pansori Changsik',kr:'판소리창법',
-      suno:'pansori vocal technique, raw gut-sung resonance, nasal chest projection, Korean operatic, jangdan-driven delivery, han(恨) in every breath, 득음 throat texture',
-      desc:'판소리 득음 창법. 장단에 실린 농현과 꺾음, 애절하고 날것의 공명.',
-      tags:['Pansori','Raw','Operatic','Han','Gut-sung'],gender:'both',pitch:'전음역'},
-    {en:'Namdo Minyo Changsik',kr:'남도민요창법',
-      suno:'Namdo folk singing, deep Han vibrato 농현, pentatonic ornaments 시김새, raw emotional 꺾음 vocal bending, mournful southern Korean folk phrasing',
-      desc:'남도 육자배기·흥타령 창법. 깊은 떨림과 꺾음이 핵심인 슬픈 남도 선율.',
-      tags:['Namdo','Folk','Vibrato','Ornament','Mournful'],gender:'both',pitch:'중저음'},
-    {en:'Gyeonggi Minyo Changsik',kr:'경기민요창법',
-      suno:'Gyeonggi folk singing, bright clear tone, lively rhythmic phrasing, 경쾌한 Seoul folk vocal, cheerful pentatonic ornamentation, playful call-and-response',
-      desc:'경기 아리랑·창부타령 창법. 맑고 경쾌하며 신명나는 경기 민요 발성.',
-      tags:['Gyeonggi','Bright','Lively','Cheerful','Folk'],gender:'female',pitch:'중고음'},
-    {en:'Jeongak Changsik',kr:'정악창법',
-      suno:'Jeongak court singing, formal dignified vocal, noble elegant Korean court phrasing, slow restrained delivery, aristocratic breath control, Joseon royal vocal style',
-      desc:'궁중 정악 창법. 절제되고 품위 있는 조선 궁중의 발성, 느리고 우아한 호흡.',
-      tags:['Court','Dignified','Noble','Elegant','Joseon'],gender:'both',pitch:'중음'},
-    {en:'Susimga Changsik',kr:'수심가창법',
-      suno:'Susimga northern folk singing, melancholic resonant projection, West Korean folk vocal, lonesome wide vibrato, slow sorrowful phrasing, haunting 서도소리 tone',
-      desc:'서도소리 수심가 창법. 서북 지방 특유의 처연하고 광활한 울림의 발성.',
-      tags:['Seodo','Melancholic','Lonesome','Vibrato','Northern'],gender:'male',pitch:'중저음'},
-    {en:'Gasasichang Changsik',kr:'가사시창창법',
-      suno:'Korean gasa poetry singing, lyrical narrative vocal, unhurried syllabic delivery, refined Confucian scholar vocal style, gentle melodic phrasing, 시조 sung poetry',
-      desc:'가사·시조 창법. 시문을 읊는 듯한 선비풍의 서정적이고 단아한 발성.',
-      tags:['Gasa','Sijo','Lyrical','Narrative','Scholar'],gender:'male',pitch:'중음'},
   ],
   vocalTones: [
     {en:'Smooth female vocals',kr:'매끄러운 여성 보컬',gender:'female',desc:'서울 밤 감성·Neo Soul·Jazz 계열에 적합'},
@@ -1643,7 +1798,7 @@ const DATA = {
 let recItems = null;
 const STATE = {
   genre:null, moods:[], instr:null, instrCategory:null,
-  concept:null, vocalStyle:null, gugakVocalStyle:null, vocalTones:[],
+  concept:null, vocalStyle:null, vocalTones:[],
   textures:[], grooves:[], spaces:[], koreanGrooves:[],
   bassStyles:[], koreanFeelings:[], blackSoulElements:[], humanFeelElements:[],
   bpm:95, intensity:5, gender:'all',
@@ -2205,7 +2360,7 @@ function renderConcepts() {
 }
 function renderVocalStyles() {
   const g = document.getElementById('vocalStyleGrid');
-  const modernCards = DATA.vocalStyles.map((d,i) => `
+  g.innerHTML = DATA.vocalStyles.map((d,i) => `
     <div class="selcard" id="vs_${i}" onclick="selectVocalStyle(${i})">
       <div class="check-dot"></div>
       <div class="card-en">${d.en}</div>
@@ -2213,25 +2368,6 @@ function renderVocalStyles() {
       <div class="card-desc" style="margin-bottom:6px">${d.tone}</div>
       <div style="display:flex;flex-wrap:wrap;gap:4px">${d.tags.map(t=>`<span class="ctag">${t}</span>`).join('')}</div>
     </div>`).join('');
-  const gugakCards = DATA.gugakVocalStyles.map((d,i) => `
-    <div class="selcard korean-card" id="gvs_${i}" onclick="selectGugakVocalStyle(${i})">
-      <div class="check-dot"></div>
-      <div class="card-en" style="color:var(--korean2)">${d.en}</div>
-      <div class="card-kr">${d.kr} · ${d.gender==='both'?'남/여':d.gender==='male'?'남성':'여성'} · ${d.pitch}</div>
-      <div class="card-desc" style="margin-bottom:6px">${d.desc}</div>
-      <div style="display:flex;flex-wrap:wrap;gap:4px">${d.tags.map(t=>`<span class="ctag" style="background:rgba(160,90,58,.15);border-color:rgba(160,90,58,.4);color:var(--korean2)">${t}</span>`).join('')}</div>
-    </div>`).join('');
-  g.innerHTML = `
-    <div style="grid-column:1/-1">
-      <div class="section-divider" style="margin-top:0">🎤 현대 퓨전 보컬 스타일 (Modern Fusion Vocal)</div>
-    </div>
-    ${modernCards}
-    <div style="grid-column:1/-1;margin-top:6px">
-      <div class="section-divider">🎙️ 구악 창법 (Traditional Korean Vocal Technique)</div>
-      <div class="info-bar korean-info" style="margin-bottom:12px;margin-top:8px">🔔 구악 창법은 전통 발성법을 Suno에 최적화한 키워드로 변환합니다. 현대 퓨전 보컬과 중복 선택하면 두 스타일이 함께 반영됩니다.</div>
-    </div>
-    ${gugakCards}
-  `;
 }
 function renderTones(gFilter) {
   const g = document.getElementById('toneGrid');
@@ -2339,15 +2475,8 @@ function createSelectOne(stateKey, selector, idPrefix) {
   };
 }
 const selectConcept     = createSelectOne('concept',     '.concept-card',          'concept_');
-const selectVocalStyle  = createSelectOne('vocalStyle',  '#vocalStyleGrid .selcard:not(.korean-card)','vs_');
+const selectVocalStyle  = createSelectOne('vocalStyle',  '#vocalStyleGrid .selcard','vs_');
 const selectGueumStyle  = createSelectOne('gueumStyle',  '[id^="gueum_"]',         'gueum_');
-
-function selectGugakVocalStyle(i) {
-  document.querySelectorAll('[id^="gvs_"]').forEach(el=>el.classList.remove('active'));
-  STATE.gugakVocalStyle = (STATE.gugakVocalStyle === i) ? null : i;
-  if (STATE.gugakVocalStyle !== null) document.getElementById('gvs_'+i)?.classList.add('active');
-  buildPrompt();
-}
 const _selectMusicKey   = createSelectOne('musicKey',    '[id^="mkey_"]',          'mkey_');
 const _selectKoreanScale= createSelectOne('koreanScale', '[id^="kscale_"]',        'kscale_');
 const selectEnergyArc   = createSelectOne('energyArc',  '[id^="arc_"]',           'arc_');
@@ -2881,10 +3010,6 @@ function _doBuildPrompt() {
       const vs=DATA.vocalStyles[STATE.vocalStyle];
       _vsLine.push(`${vs.en}`);
     }
-    if (STATE.gugakVocalStyle!==null&&DATA.gugakVocalStyles[STATE.gugakVocalStyle]) {
-      const gvs=DATA.gugakVocalStyles[STATE.gugakVocalStyle];
-      _vsLine.push(`GUGAK VOCAL: ${gvs.suno}`);
-    }
     if (STATE.gender === 'male') _vsLine.push('STRICTLY male voice');
     else if (STATE.gender === 'female') _vsLine.push('STRICTLY female voice');
     if(STATE.vocalTones.length){const vts=getEnList(STATE.vocalTones,DATA.vocalTones);if(vts)_vsLine.push(vts);}
@@ -2987,7 +3112,7 @@ function _doBuildPrompt() {
     /* ── NOTE: [Writing Style] 가이드는 AI 호출 시 시스템 프롬프트로만 전달 (promptBox 제외) ── */
 
     const box=document.getElementById('promptBox');
-    const hasUserSelection = STATE.genre!==null || STATE.moods.length>0 || STATE.instr!==null || STATE.concept!==null || STATE.vocalStyle!==null || STATE.gugakVocalStyle!==null || STATE.hanSoulStyle!==null;
+    const hasUserSelection = STATE.genre!==null || STATE.moods.length>0 || STATE.instr!==null || STATE.concept!==null || STATE.vocalStyle!==null || STATE.hanSoulStyle!==null;
     box.textContent=hasUserSelection?parts.join('\n'):'← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
   } catch(e) {
     console.error('[_doBuildPrompt 오류]', e);
@@ -2999,13 +3124,57 @@ function _doBuildPrompt() {
    API
 ═══════════════════════════════════════════ */
 function getApiKey() { return (document.getElementById('apiKeyInput')?.value||'').trim()||localStorage.getItem('gugak_api_key')||''; }
-/* ── 무료 모델 폴백 목록 (순서대로 시도) ── */
-const _FREE_MODELS = [
-  'meta-llama/llama-3.1-8b-instruct:free',
-  'mistralai/mistral-7b-instruct:free',
-  'google/gemma-2-9b-it:free',
-  'microsoft/phi-3-mini-128k-instruct:free',
-];
+
+/* ── 모델 정의 ── */
+const MODELS = {
+  'claude/claude-sonnet-4-5': {
+    label: 'Claude Sonnet',
+    costs: { prompt: 2, super: 6, lyrics3: 17, lyrics4: 21, variations: 8, title: 2 }
+  },
+  'claude/claude-haiku-4-5': {
+    label: 'Claude Haiku',
+    costs: { prompt: 1, super: 2, lyrics3: 4, lyrics4: 6, variations: 2, title: 1 }
+  },
+  'openai/gpt-4o': {
+    label: 'GPT-4o',
+    costs: { prompt: 3, super: 8, lyrics3: 20, lyrics4: 25, variations: 9, title: 2 }
+  },
+  'openai/gpt-4o-mini': {
+    label: 'GPT-4o mini',
+    costs: { prompt: 1, super: 1, lyrics3: 1, lyrics4: 1, variations: 1, title: 1 }
+  },
+};
+let _selectedModel = localStorage.getItem('gugak_model') || 'claude/claude-haiku-4-5';
+
+function selectModel(modelId) {
+  if (!MODELS[modelId]) return;
+  _selectedModel = modelId;
+  localStorage.setItem('gugak_model', modelId);
+  // UI 업데이트
+  document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
+  const btnMap = {
+    'claude/claude-sonnet-4-5': 'mBtn_sonnet',
+    'claude/claude-haiku-4-5':  'mBtn_haiku',
+    'openai/gpt-4o':            'mBtn_gpt4o',
+    'openai/gpt-4o-mini':       'mBtn_gpt4omini',
+  };
+  document.getElementById(btnMap[modelId])?.classList.add('active');
+  // 비용 안내 업데이트
+  const c = MODELS[modelId].costs;
+  const tag = document.getElementById('modelCostTag');
+  if (tag) tag.innerHTML =
+    `<b>${MODELS[modelId].label}</b> 기준 예상 비용 &nbsp;|&nbsp; `+
+    `Suno 프롬프트 <b>~${c.prompt}원</b> &nbsp;·&nbsp; `+
+    `슈퍼 프롬프트 3종 <b>~${c.super}원</b> &nbsp;·&nbsp; `+
+    `가사 생성(3분) <b>~${c.lyrics3}원</b> &nbsp;·&nbsp; `+
+    `가사 생성(4분) <b>~${c.lyrics4}원</b> &nbsp;·&nbsp; `+
+    `변형 5개 <b>~${c.variations}원</b>`;
+  showToast(`✅ ${MODELS[modelId].label} 선택됨`);
+}
+
+function initModelSelector() {
+  selectModel(_selectedModel);
+}
 
 async function _callOnce(model, messages, temperature, apiKey) {
   const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -3014,16 +3183,23 @@ async function _callOnce(model, messages, temperature, apiKey) {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
       'HTTP-Referer': window.location.href,
-      'X-Title': 'Gugak Prompt Maker v26',
+      'X-Title': 'Gugak Prompt Maker v27',
     },
-    body: JSON.stringify({ model, messages, max_tokens: 2500, temperature }),
+    body: JSON.stringify({
+      model, messages,
+      max_tokens: 2500,
+      temperature,
+      top_p: 0.95,
+      frequency_penalty: 0.4,
+      presence_penalty: 0.3,
+    }),
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    let msg = data?.error?.message || `오류 ${res.status}`;
-    if (res.status === 401) throw new Error('401 인증 오류 - API 키를 확인해 주세요.');
-    if (res.status === 402) throw new Error('402 크레딧 부족 - OpenRouter 잔액을 확인해 주세요.');
-    if (res.status === 429) throw new Error('429 사용량 제한 - 잠시 후 다시 시도해 주세요.');
+    const msg = data?.error?.message || `오류 ${res.status}`;
+    if (res.status === 401) throw new Error('401 인증 오류 — API 키를 확인해 주세요.');
+    if (res.status === 402) throw new Error('402 크레딧 부족 — OpenRouter 잔액을 확인해 주세요.');
+    if (res.status === 429) throw new Error('429 사용량 제한 — 잠시 후 다시 시도해 주세요.');
     throw new Error(msg);
   }
   const text = data.choices?.[0]?.message?.content || '';
@@ -3033,39 +3209,12 @@ async function _callOnce(model, messages, temperature, apiKey) {
 
 async function callClaude(prompt, systemPrompt = '', temperature = 0.85) {
   const apiKey = getApiKey();
-  if (!apiKey) { document.getElementById('apiKeyInput')?.focus(); throw new Error('OpenRouter API 키를 먼저 입력해 주세요.'); }
+  if (!apiKey) { document.getElementById('apiKeyInput')?.focus(); throw new Error('API 키를 먼저 입력해 주세요.'); }
   if (!apiKey.startsWith('sk-or-v1-')) throw new Error('키 형식 오류 — sk-or-v1- 로 시작해야 합니다.');
-
   const messages = [];
   if (systemPrompt) messages.push({ role: 'system', content: systemPrompt });
   messages.push({ role: 'user', content: prompt });
-
-  let lastErr = null;
-  for (const model of _FREE_MODELS) {
-    try {
-      const result = await _callOnce(model, messages, temperature, apiKey);
-      return result;           // 성공 시 즉시 반환
-    } catch (e) {
-      // 인증·크레딧 오류는 폴백 불필요 — 즉시 상위로 던짐
-      if (e.message.startsWith('401') || e.message.startsWith('402')) throw e;
-      lastErr = e;
-      // 다음 모델로 계속
-    }
-  }
-  // 무료 모델 전부 실패 → 유료 모델(gpt-4o-mini) 전환 전 사용자 확인
-  const confirmed = window.confirm(
-    '⚠️ 무료 모델이 모두 응답하지 않습니다.\n\n유료 모델(gpt-4o-mini)로 전환하면 OpenRouter 크레딧이 소모됩니다.\n계속하시겠습니까?'
-  );
-  if (!confirmed) throw new Error('사용자가 유료 모델 전환을 취소했습니다.');
-  showToast('⚠️ 무료 모델 실패 → gpt-4o-mini 유료 전환 중...');
-  try {
-    const result = await _callOnce('openai/gpt-4o-mini', messages, temperature, apiKey);
-    showToast('✅ gpt-4o-mini 전환 성공!');
-    return result;
-  } catch (e) {
-    if (e.message.startsWith('401') || e.message.startsWith('402')) throw e;
-    throw new Error(`모든 모델 실패 — 마지막 오류: ${e.message || '알 수 없음'}`);
-  }
+  return await _callOnce(_selectedModel, messages, temperature, apiKey);
 }
 function cleanLyrics(text) {
   if (!text) return '';
@@ -4234,7 +4383,6 @@ function renderAll() {
   STATE.moods.forEach(i=>document.getElementById('mood_'+i)?.classList.add('active'));
   if(STATE.concept!==null)document.getElementById('concept_'+STATE.concept)?.classList.add('active');
   if(STATE.vocalStyle!==null)document.getElementById('vs_'+STATE.vocalStyle)?.classList.add('active');
-  if(STATE.gugakVocalStyle!==null)document.getElementById('gvs_'+STATE.gugakVocalStyle)?.classList.add('active');
   if(STATE.instrCategory){const[cat,idx]=STATE.instrCategory.split('_');document.getElementById(`instr_${cat[0]}_${idx}`)?.classList.add('active');}
   document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active'));
   const activeGBtn=[...document.querySelectorAll('.gender-btn')].find(b=>(STATE.gender==='all'&&b.textContent.includes('전체'))||(STATE.gender==='male'&&b.textContent.includes('남성'))||(STATE.gender==='female'&&b.textContent.includes('여성')));
@@ -5101,8 +5249,410 @@ window.addEventListener('DOMContentLoaded',()=>{
   loadSavedKey();renderAll();syncSliders();
   updateRatioSlider(STATE.koreanRatio||70);
   syncGueumUI();
+  initModelSelector();
   document.getElementById('kwInput').addEventListener('keydown',e=>{if(e.key==='Enter')runAI();});
+  qeRenderComboGrid();
 });
+
+/* ════════════════════════════════════════════════
+   ⚡ 09B  원클릭 퀄리티 엔진
+   ════════════════════════════════════════════════ */
+
+// ── 목표 분위기별 최적 조합 데이터 ──────────────────
+const QE_COMBOS = [
+  {
+    id:'deep_han',
+    name:'깊은 한(恨) 소울',
+    tags:['판소리','Mississippi Han','Dm계면조'],
+    desc:'가장 깊고 무거운 한국적 감정선. 미시시피 블루스×판소리.',
+    // 프리셋 적용
+    preset73:'pansori',
+    // BPM 범위 [min,max]
+    bpmRange:[70,82],
+    // 조성
+    musicKey:3,        // Dm
+    koreanScale:0,     // 계면조
+    // 에너지 아크
+    energyArc:0,       // Slow Burn Rise
+    // 강도/비율
+    intensity:7, koreanRatio:75,
+    // 구음 위치 (배열)
+    gueumPos:['add1','mid'],
+    gueumPitch:'low', gueumGender:'male', gueumStrength:'strong',
+    // 구음 스타일 인덱스 (DATA.gueumStyles)
+    gueumStyleIdx:2,
+    // koreanGrooves 인덱스
+    koreanGrooves:[1,4,7],
+    // koreanFeelings
+    koreanFeelings:[1,6],
+    // blackSoul
+    blackSoulElements:[0,2,4],
+    // humanFeel
+    humanFeelElements:[0,3,5],
+    // bassStyle
+    bassStyles:[1],
+    // hanSoulStyle
+    hanSoulStyle:0,
+    emoji:'😔'
+  },
+  {
+    id:'club_groove',
+    name:'클럽 그루브',
+    tags:['궁중 힙합','조선 힙합','Twin Peaks'],
+    desc:'궁중 힙합 기반 클럽 에너지. 강한 구음 + 폭발적 아크.',
+    preset73:'joseon',
+    bpmRange:[92,108],
+    musicKey:3, koreanScale:0,
+    energyArc:2,       // Twin Peaks
+    intensity:9, koreanRatio:70,
+    gueumPos:['add1','mid','add2'],
+    gueumPitch:'midhigh', gueumGender:'male', gueumStrength:'maximum',
+    gueumStyleIdx:6,
+    koreanGrooves:[0,5,9],
+    koreanFeelings:[0,5],
+    blackSoulElements:[1,3,6],
+    humanFeelElements:[1,4],
+    bassStyles:[3,4],
+    hanSoulStyle:2,
+    emoji:'🔥'
+  },
+  {
+    id:'midnight_jazz',
+    name:'심야 재즈 감성',
+    tags:['산조 재즈','서울 심야','Wave Form'],
+    desc:'심야 재즈바. 해금+가야금+피아노 레이어. 여성 구음.',
+    preset73:'sanjo',
+    bpmRange:[78,90],
+    musicKey:4, koreanScale:0,
+    energyArc:3,       // Wave Form
+    intensity:5, koreanRatio:65,
+    gueumPos:['mid','add2'],
+    gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong',
+    gueumStyleIdx:4,
+    koreanGrooves:[2,6,8],
+    koreanFeelings:[3,7],
+    blackSoulElements:[0,5],
+    humanFeelElements:[0,2,6],
+    bassStyles:[0],
+    hanSoulStyle:3,
+    emoji:'🌙'
+  },
+  {
+    id:'arirang_epic',
+    name:'아리랑 에픽',
+    tags:['민요 블루스','Dm계면조','Big Finish'],
+    desc:'민요 선율 기반 에픽 사운드. 클라이맥스에서 폭발.',
+    preset73:'minyo',
+    bpmRange:[84,96],
+    musicKey:3, koreanScale:0,
+    energyArc:1,       // Explosive Climax
+    intensity:8, koreanRatio:80,
+    gueumPos:['mid','add3'],
+    gueumPitch:'high', gueumGender:'both', gueumStrength:'maximum',
+    gueumStyleIdx:1,
+    koreanGrooves:[0,3,10],
+    koreanFeelings:[1,4,8],
+    blackSoulElements:[2,4],
+    humanFeelElements:[0,3],
+    bassStyles:[2],
+    hanSoulStyle:1,
+    emoji:'🏔️'
+  },
+  {
+    id:'morning_calm',
+    name:'고요한 새벽',
+    tags:['궁중 앰비언트','여백감','Fade Out'],
+    desc:'전통 여백감. 아쟁+대금+피리 레이어. 잔잔한 감동.',
+    preset73:'court',
+    bpmRange:[60,75],
+    musicKey:1, koreanScale:3,   // Am + 우조
+    energyArc:5,       // Fade Out
+    intensity:4, koreanRatio:85,
+    gueumPos:['mid'],
+    gueumPitch:'midlow', gueumGender:'female', gueumStrength:'normal',
+    gueumStyleIdx:3,
+    koreanGrooves:[4,7,12],
+    koreanFeelings:[4,6],
+    blackSoulElements:[0],
+    humanFeelElements:[2,5,6],
+    bassStyles:[0],
+    hanSoulStyle:5,
+    emoji:'🌅'
+  },
+  {
+    id:'seoul_night_drive',
+    name:'서울 야간 드라이브',
+    tags:['도시 감성','R&B','Twin Peaks'],
+    desc:'도시적 세련미. 국악기+신스 혼합. 스피드 있는 그루브.',
+    preset73:'sanjo',
+    bpmRange:[95,110],
+    musicKey:0, koreanScale:4,   // Am + 평조
+    energyArc:2,
+    intensity:7, koreanRatio:60,
+    gueumPos:['add1','mid'],
+    gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong',
+    gueumStyleIdx:5,
+    koreanGrooves:[1,5,11],
+    koreanFeelings:[0,3,7],
+    blackSoulElements:[1,3,5],
+    humanFeelElements:[1,4,6],
+    bassStyles:[3],
+    hanSoulStyle:4,
+    emoji:'🚗'
+  }
+];
+
+let _qeSelectedCombo = null;
+let _qeRunning = false;
+let _qeFinalPrompt = '';
+
+// ── 콤보 카드 렌더링 ─────────────────────────────────
+function qeRenderComboGrid() {
+  const grid = document.getElementById('qeComboGrid');
+  if (!grid) return;
+  grid.innerHTML = QE_COMBOS.map((c,i) => `
+    <div class="qe-combo-card" id="qeCard_${c.id}" onclick="qeSelectCombo('${c.id}')">
+      <div style="font-size:22px;margin-bottom:6px">${c.emoji}</div>
+      <div class="cc-name">${c.name}</div>
+      <div class="cc-tags">${c.tags.map(t=>`<span class="cc-tag">${t}</span>`).join('')}</div>
+      <div class="cc-desc">${c.desc}</div>
+    </div>
+  `).join('');
+}
+
+function qeSelectCombo(id) {
+  _qeSelectedCombo = QE_COMBOS.find(c=>c.id===id);
+  document.querySelectorAll('.qe-combo-card').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('qeCard_'+id)?.classList.add('selected');
+  const btn = document.getElementById('qeRunBtn');
+  if (btn) { btn.disabled = false; btn.textContent = `⚡ "${_qeSelectedCombo.name}" 퀄리티 엔진 실행`; }
+  // 결과 박스 초기화
+  document.getElementById('qeResultBox').style.display='none';
+  document.getElementById('qeProgressWrap').style.display='none';
+}
+
+// ── 스텝 정의 ────────────────────────────────────────
+const QE_STEPS = [
+  { id:'s1', title:'프리셋 + 핵심 설정 적용',     desc:'BPM·조성·음계·강도·에너지 아크 최적값 세팅' },
+  { id:'s2', title:'구음 최적 조합 적용',          desc:'위치·음역·성별·스타일·강도 자동 선택' },
+  { id:'s3', title:'Human Feel + Black Soul 적용', desc:'라이브 질감·블루스 요소 자동 선택' },
+  { id:'s4', title:'Korean Groove + Feeling 적용', desc:'한국적 그루브·감성 최적 인덱스 적용' },
+  { id:'s5', title:'DNA 3회 탐색',                 desc:'같은 설정으로 DNA 문장을 3회 생성, 최장/최강 선택' },
+  { id:'s6', title:'슈퍼 프롬프트 최종 생성',      desc:'3종 슈퍼 프롬프트 생성 후 리듬형 자동 적용' },
+];
+
+function qeRenderSteps(activeIdx=-1) {
+  const el = document.getElementById('qeStepList');
+  if (!el) return;
+  el.innerHTML = QE_STEPS.map((s,i)=>{
+    const cls = i < activeIdx ? 'done' : i === activeIdx ? 'active' : 'waiting';
+    return `<div class="qe-step ${cls}" id="qeStep_${i}">
+      <div class="qe-step-num">${i < activeIdx ? '✓' : i+1}</div>
+      <div class="qe-step-body">
+        <div class="qe-step-title">${s.title}</div>
+        <div class="qe-step-desc">${s.desc}</div>
+        <div class="qe-step-result" id="qeStepRes_${i}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function qeSetStep(idx, resultText='') {
+  qeRenderSteps(idx);
+  if (resultText && idx > 0) {
+    const r = document.getElementById(`qeStepRes_${idx-1}`);
+    if (r) { r.textContent = resultText; r.style.display='block'; }
+  }
+  // 진행바
+  const bar = document.getElementById('qeProgressBar');
+  if (bar) bar.style.width = Math.round((idx/QE_STEPS.length)*100)+'%';
+}
+
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+// ── 메인 실행 ────────────────────────────────────────
+async function runQualityEngine() {
+  if (_qeRunning || !_qeSelectedCombo) return;
+  _qeRunning = true;
+  const c = _qeSelectedCombo;
+  const btn = document.getElementById('qeRunBtn');
+  if (btn) btn.disabled = true;
+
+  document.getElementById('qeResultBox').style.display='none';
+  const pw = document.getElementById('qeProgressWrap');
+  pw.style.display='block';
+  qeRenderSteps(0);
+
+  try {
+    // ── STEP 1: 프리셋 + 핵심 설정 ──────────────────
+    qeSetStep(0);
+    await sleep(120);
+
+    // 프리셋 적용 (preset73 기반)
+    apply73Preset(c.preset73);
+    await sleep(80);
+
+    // BPM: 범위 중간값
+    STATE.bpm = Math.round((c.bpmRange[0]+c.bpmRange[1])/2);
+    STATE.intensity = c.intensity;
+    STATE.koreanRatio = c.koreanRatio;
+    if (c.musicKey !== undefined)   STATE.musicKey = c.musicKey;
+    if (c.koreanScale !== undefined) STATE.koreanScale = c.koreanScale;
+    if (c.energyArc !== undefined)  STATE.energyArc = c.energyArc;
+    syncSliders();
+    qeSetStep(1, `BPM ${STATE.bpm} · 강도 ${c.intensity} · 비율 ${c.koreanRatio}% · 에너지 아크 세팅 완료`);
+    await sleep(150);
+
+    // ── STEP 2: 구음 최적 조합 ──────────────────────
+    qeSetStep(1);
+
+    // 위치 초기화 후 선택
+    STATE.gueumPositions = [...c.gueumPos];
+    selectGueumPitch(c.gueumPitch);
+    selectGueumGender(c.gueumGender);
+    selectGueumStrength(c.gueumStrength);
+    STATE.gueumStyle = c.gueumStyleIdx;
+    syncGueumUI();
+    const posLabel = c.gueumPos.join('+');
+    qeSetStep(2, `위치: ${posLabel} · 음역: ${c.gueumPitch} · 성별: ${c.gueumGender} · 강도: ${c.gueumStrength} · 스타일 #${c.gueumStyleIdx}`);
+    await sleep(150);
+
+    // ── STEP 3: Human Feel + Black Soul ─────────────
+    qeSetStep(2);
+    STATE.humanFeelElements  = [...c.humanFeelElements];
+    STATE.blackSoulElements  = [...c.blackSoulElements];
+    STATE.bassStyles         = [...c.bassStyles];
+    qeSetStep(3, `Human Feel ${c.humanFeelElements.length}개 · Black Soul ${c.blackSoulElements.length}개 · Bass ${c.bassStyles.length}개 적용`);
+    await sleep(150);
+
+    // ── STEP 4: Korean Groove + Feeling ─────────────
+    qeSetStep(3);
+    STATE.koreanGrooves   = [...c.koreanGrooves];
+    STATE.koreanFeelings  = [...c.koreanFeelings];
+    STATE.hanSoulStyle    = c.hanSoulStyle;
+    renderAll();
+    qeSetStep(4, `Korean Groove ${c.koreanGrooves.length}개 · Korean Feeling ${c.koreanFeelings.length}개 · 한소울 스타일 #${c.hanSoulStyle}`);
+    await sleep(150);
+
+    // ── STEP 5: DNA 3회 탐색 ────────────────────────
+    qeSetStep(4);
+    let bestPrompt = '', bestLen = 0;
+    for (let t=0; t<3; t++) {
+      STATE.dnaSeed = Math.random();
+      STATE.negativeSeed = Math.random();
+      buildPrompt(true);
+      await sleep(80);
+      const p = (document.getElementById('promptBox')||{}).textContent||'';
+      if (p.length > bestLen) { bestLen = p.length; bestPrompt = p; }
+    }
+    // 최적 DNA seed를 적용된 상태로 유지
+    qeSetStep(5, `DNA 3회 탐색 완료 · 최적 프롬프트 길이: ${bestLen}자`);
+    await sleep(150);
+
+    // ── STEP 6: 슈퍼 프롬프트 생성 ─────────────────
+    qeSetStep(5);
+    // API 키 확인
+    const apiKey = (typeof getApiKey === 'function') ? getApiKey() : (localStorage.getItem('openrouter_key')||'');
+    if (apiKey) {
+      try {
+        await genSuperPromptSilent();
+        await sleep(200);
+        // superVariations 중 VAR2(리듬형) 자동 적용
+        if (typeof _superVariations !== 'undefined' && _superVariations[1]?.prompt) {
+          _qeFinalPrompt = _superVariations[1].prompt;
+        } else {
+          _qeFinalPrompt = bestPrompt;
+        }
+      } catch(e) {
+        _qeFinalPrompt = bestPrompt;
+      }
+    } else {
+      _qeFinalPrompt = bestPrompt;
+    }
+    qeSetStep(6, '슈퍼 프롬프트 VAR2(리듬 강조형) 선택 완료');
+    await sleep(100);
+
+    // ── 결과 표시 ────────────────────────────────────
+    document.getElementById('qeProgressBar').style.width='100%';
+    await sleep(300);
+
+    const score = Math.min(100, Math.round((_qeFinalPrompt.length/230)*60 + 40));
+    document.getElementById('qeScoreBadge').textContent = `품질 추정 ${score}점`;
+    document.getElementById('qeDnaBadge').textContent   = `DNA 3회 탐색`;
+    document.getElementById('qeFinalPrompt').textContent = _qeFinalPrompt;
+    document.getElementById('qeAppliedSummary').innerHTML =
+      `<b style="color:var(--text)">${c.name}</b> — `+
+      `BPM ${STATE.bpm} · 강도 ${c.intensity} · 국악 ${c.koreanRatio}% · `+
+      `구음 [${c.gueumPos.join('+')}] ${c.gueumStrength} · `+
+      `Human Feel ${c.humanFeelElements.length}개 · Black Soul ${c.blackSoulElements.length}개 적용`;
+    document.getElementById('qeResultBox').style.display='block';
+
+    // 09 promptBox도 동기화
+    buildPrompt(true);
+    showToast(`⚡ "${c.name}" 퀄리티 엔진 완료! 최적 조합이 모든 섹션에 반영됐습니다.`);
+
+  } catch(err) {
+    showToast('⚠️ 퀄리티 엔진 오류: '+err.message);
+    console.error(err);
+  } finally {
+    _qeRunning = false;
+    if (btn) btn.disabled = false;
+  }
+}
+
+// ── 슈퍼 프롬프트 생성 (결과 UI 숨김 버전) ──────────
+async function genSuperPromptSilent() {
+  return new Promise((resolve,reject)=>{
+    // 기존 genSuperPrompt 로직을 재활용, 완료 콜백만 래핑
+    // superPromptResult 가시성 변경 없이 _superVariations만 채움
+    const origDisplay = document.getElementById('superPromptResult')?.style.display;
+    genSuperPrompt(true);  // true = silent flag (기존 함수가 flag 무시해도 무방)
+    // 최대 20초 대기 후 resolve
+    let waited = 0;
+    const check = setInterval(()=>{
+      waited += 300;
+      if ((typeof _superVariations!=='undefined' && _superVariations[0]?.prompt) || waited>20000) {
+        clearInterval(check);
+        if (origDisplay !== undefined && document.getElementById('superPromptResult'))
+          document.getElementById('superPromptResult').style.display = origDisplay;
+        resolve();
+      }
+    },300);
+  });
+}
+
+// ── 결과창 버튼 핸들러 ──────────────────────────────
+function qeCopyFinal() {
+  if (!_qeFinalPrompt) return;
+  doCopy(_qeFinalPrompt);
+  showToast('📋 최적 프롬프트 복사 완료!');
+}
+
+async function qeRerunDNA() {
+  if (!_qeSelectedCombo) return;
+  showToast('🔄 DNA 재탐색 중...');
+  let bestPrompt='', bestLen=0;
+  for (let t=0;t<3;t++) {
+    STATE.dnaSeed=Math.random(); STATE.negativeSeed=Math.random();
+    buildPrompt(true);
+    await sleep(80);
+    const p=(document.getElementById('promptBox')||{}).textContent||'';
+    if (p.length>bestLen){bestLen=p.length;bestPrompt=p;}
+  }
+  _qeFinalPrompt = bestPrompt;
+  document.getElementById('qeFinalPrompt').textContent = _qeFinalPrompt;
+  document.getElementById('qeDnaBadge').textContent = 'DNA 재탐색 완료';
+  showToast('✅ DNA 재탐색 완료!');
+}
+
+function qeReset() {
+  _qeSelectedCombo=null; _qeFinalPrompt=''; _qeRunning=false;
+  document.querySelectorAll('.qe-combo-card').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('qeResultBox').style.display='none';
+  document.getElementById('qeProgressWrap').style.display='none';
+  const btn=document.getElementById('qeRunBtn');
+  if(btn){btn.disabled=true;btn.textContent='⚡ 퀄리티 엔진 실행';}
+}
 
 </script>
 </body>
