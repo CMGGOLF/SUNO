@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 v27 - Joseon Core</title>
+<title>BV 뮤직 프롬프트 메이커 v28 - Joseon Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -492,7 +492,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 A+B 전 섹션 적용 · 변형 생성 · 버그수정</div>
       </div>
     </div>
-    <div class="header-badge">JOSEON CORE v26 · CLIMAX ENGINE ⚡</div>
+    <div class="header-badge">JOSEON CORE v28 · 구악창법 AUTO COMBO ⚡</div>
   </div>
 </header>
 
@@ -708,6 +708,17 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
   <div class="section-body" id="vocalStyleBody" style="display:none">
     <div class="card-grid col2" id="vocalStyleGrid"></div>
+    <div id="gugakVocalSection" style="margin-top:20px">
+      <div class="section-divider" style="margin-top:0">
+        🎙️ 구악 창법 — 자동 최적 조합
+        <span style="font-size:10px;font-weight:400;letter-spacing:0;color:var(--muted);margin-left:8px">선택 시 장르·조성·구음·무드 자동 세팅</span>
+      </div>
+      <div class="info-bar korean-info" style="margin-bottom:12px">
+        ✦ 구악 창법 선택 → 재즈·블루스·소울에 최적화된 조합이 자동으로 적용됩니다. 기존 선택이 있으면 해당 부분만 덮어씁니다.
+      </div>
+      <div class="card-grid col2" id="gugakVocalGrid"></div>
+      <div id="gugakVocalComboStatus" style="display:none;margin-top:10px;padding:10px 14px;border-radius:8px;background:rgba(160,90,58,.12);border:1px solid rgba(160,90,58,.35);font-size:12px;color:var(--korean2);line-height:1.7"></div>
+    </div>
   </div>
 </div>
 
@@ -1536,6 +1547,80 @@ const DATA = {
     {en:'Ajaeng Soul',kr:'아쟁 소울',gender:'male',tone:'아쟁처럼 묵직하고 찰현적인 깊은 저음 소울 톤',tags:['Soul Blues','Deep','Gritty','Raw']},
     {en:'Korean Neo Soul',kr:'코리안 네오소울',gender:'female',tone:'부드럽고 세련된 R&B 스타일 톤',tags:['Neo Soul','R&B','Emotional','Smooth']},
   ],
+  gugakVocalStyles: [
+    {en:'Pansori Changsik',kr:'판소리창법',
+      suno:'pansori changsik vocal — raw gut-sung chest resonance, 득음 throat crack and gravel, nasal projection, Korean operatic blues belt, 아니리 spoken-sung breaks, blues-compatible melisma shout, soul-gospel rawness fused with Korean han',
+      desc:'득음의 날것 공명 × 딥블루스·소울 샤우트. 꺾음이 블루스 벤딩과 동일 구조.',
+      tags:['Pansori','Blues Shout','得音','Raw','Soul Compatible'],gender:'both',pitch:'전음역',
+      autoCombo:{
+        genre:2, hanSoulFallback:0,
+        keyScale:[1,0],
+        gueumStyle:0, gueumPositions:['start','mid','end'], gueumPitch:'low', gueumGender:'male', gueumStrength:'strong',
+        moods:[7,8], blackSoul:[0,1], vocalTones:[5,7], bpmRange:[70,88],
+        label:'판소리 × 딥블루스 자동 조합',
+      }
+    },
+    {en:'Namdo Minyo Changsik',kr:'남도민요창법',
+      suno:'Namdo folk changsik — deep Han 농현 wide vibrato, pentatonic 꺾음목 vocal bend mirroring delta blues string bend, mournful southern Korean melisma, raw emotional quiver on sustained tones, blues-scale compatible phrasing, gut-wrenching pitch drops',
+      desc:'꺾음목 = 블루스 벤딩. 남도 6자배기 창법이 델타블루스와 음계·기법 모두 일치.',
+      tags:['Namdo','꺾음목','Delta Blues Bend','Vibrato','Mournful'],gender:'both',pitch:'중저음',
+      autoCombo:{
+        genre:3, hanSoulFallback:0,
+        keyScale:[0,4],
+        gueumStyle:1, gueumPositions:['start','mid','end'], gueumPitch:'midlow', gueumGender:'both', gueumStrength:'strong',
+        moods:[7,8,10], blackSoul:[0,4], vocalTones:[5,6], bpmRange:[68,85],
+        label:'남도창법 × 델타블루스 자동 조합',
+      }
+    },
+    {en:'Gyeonggi Minyo Changsik',kr:'경기민요창법',
+      suno:'Gyeonggi folk changsik — bright clear pentatonic vocal, lively rhythmic ornamentation like bebop scatting, 경쾌한 Seoul folk phrasing, playful call-and-response, swing-compatible bright timbre, uptempo soul-friendly delivery',
+      desc:'경기 아리랑 창법의 경쾌함이 스윙재즈·업템포 소울과 자연스럽게 교차.',
+      tags:['Gyeonggi','Bright','Bebop Scat','Swing','Lively'],gender:'female',pitch:'중고음',
+      autoCombo:{
+        genre:1, hanSoulFallback:2,
+        keyScale:[2,3],
+        gueumStyle:4, gueumPositions:['mid','end'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'normal',
+        moods:[4,6], blackSoul:[2,3], vocalTones:[0,1], bpmRange:[88,105],
+        label:'경기민요 × 스윙재즈 자동 조합',
+      }
+    },
+    {en:'Jeongak Changsik',kr:'정악창법',
+      suno:'Jeongak court changsik — noble dignified vocal, slow restrained breath control echoing Miles Davis cool jazz spacing, aristocratic Korean court timbre, modal jazz compatible deliberate unhurried delivery, refined legato phrasing with deep silences',
+      desc:'궁중 정악의 절제·여백이 쿨재즈·모달재즈의 철학과 완벽히 일치.',
+      tags:['Court','Dignified','Cool Jazz','Modal','Restrained'],gender:'both',pitch:'중음',
+      autoCombo:{
+        genre:0, hanSoulFallback:2,
+        keyScale:[4,1],
+        gueumStyle:2, gueumPositions:['mid','end'], gueumPitch:'midhigh', gueumGender:'both', gueumStrength:'normal',
+        moods:[1,2], blackSoul:[3], vocalTones:[8,9], bpmRange:[72,88],
+        label:'정악창법 × 쿨재즈 자동 조합',
+      }
+    },
+    {en:'Susimga Changsik',kr:'수심가창법',
+      suno:'Susimga northern folk changsik — melancholic resonant chest projection, lonesome wide 서도 vibrato like Chet Baker ballad phrasing, West Korean haunting tone, slow sorrowful legato, deep cool-jazz ballad compatible timbre, vast lonesome resonance',
+      desc:'서도소리의 처연한 광활함이 쿨재즈 발라드·아쟁 딥블루스와 자연스럽게 교차.',
+      tags:['Seodo','Lonesome','Jazz Ballad','Wide Vibrato','Haunting'],gender:'male',pitch:'중저음',
+      autoCombo:{
+        genre:6, hanSoulFallback:4,
+        keyScale:[1,4],
+        gueumStyle:3, gueumPositions:['mid','end'], gueumPitch:'low', gueumGender:'male', gueumStrength:'strong',
+        moods:[10,8], blackSoul:[0,6], vocalTones:[5,6], bpmRange:[60,80],
+        label:'수심가 × 딥소울 발라드 자동 조합',
+      }
+    },
+    {en:'Gasa Sichang Changsik',kr:'가사시창창법',
+      suno:'Gasa poetry changsik — lyrical narrative vocal delivery, syllabic legato like cool jazz balladeer, refined scholar timbre with gentle melodic phrasing, 시조 sung-poetry compatible modal jazz spacing, understated emotional depth',
+      desc:'가사·시조 창법의 서정 낭송체가 쿨재즈·앰비언트재즈와 자연스럽게 교차.',
+      tags:['Gasa','Lyrical','Cool Jazz','Modal','Scholar Vocal'],gender:'male',pitch:'중음',
+      autoCombo:{
+        genre:5, hanSoulFallback:2,
+        keyScale:[2,1],
+        gueumStyle:2, gueumPositions:['mid'], gueumPitch:'midhigh', gueumGender:'both', gueumStrength:'normal',
+        moods:[2,4], blackSoul:[3,6], vocalTones:[8,9], bpmRange:[60,78],
+        label:'가사시창 × 앰비언트재즈 자동 조합',
+      }
+    },
+  ],
   vocalTones: [
     {en:'Smooth female vocals',kr:'매끄러운 여성 보컬',gender:'female',desc:'서울 밤 감성·Neo Soul·Jazz 계열에 적합'},
     {en:'Soulful female vocals',kr:'소울풀한 여성 보컬',gender:'female',desc:'감정선과 Groove를 동시에 살리는 스타일'},
@@ -1798,7 +1883,7 @@ const DATA = {
 let recItems = null;
 const STATE = {
   genre:null, moods:[], instr:null, instrCategory:null,
-  concept:null, vocalStyle:null, vocalTones:[],
+  concept:null, vocalStyle:null, gugakVocalStyle:null, vocalTones:[],
   textures:[], grooves:[], spaces:[], koreanGrooves:[],
   bassStyles:[], koreanFeelings:[], blackSoulElements:[], humanFeelElements:[],
   bpm:95, intensity:5, gender:'all',
@@ -2368,6 +2453,27 @@ function renderVocalStyles() {
       <div class="card-desc" style="margin-bottom:6px">${d.tone}</div>
       <div style="display:flex;flex-wrap:wrap;gap:4px">${d.tags.map(t=>`<span class="ctag">${t}</span>`).join('')}</div>
     </div>`).join('');
+  renderGugakVocalStyles();
+}
+function renderGugakVocalStyles() {
+  const g = document.getElementById('gugakVocalGrid');
+  if (!g) return;
+  /* 창법×장르 궁합 라벨 */
+  const genreCompat = [
+    '블루스 · 소울', '블루스 · 소울', '재즈 · 소울', '쿨재즈 · 앰비언트', '재즈 발라드 · 블루스', '쿨재즈 · 앰비언트'
+  ];
+  g.innerHTML = DATA.gugakVocalStyles.map((d,i) => {
+    const isActive = STATE.gugakVocalStyle === i;
+    return `<div class="selcard korean-card ${isActive?'active':''}" id="gvs_${i}" onclick="selectGugakVocalStyle(${i})" style="position:relative">
+      <div class="check-dot" style="background:var(--korean2)"></div>
+      <div style="position:absolute;top:8px;right:28px;font-size:10px;background:rgba(160,90,58,.2);color:var(--korean2);border:1px solid rgba(160,90,58,.4);border-radius:10px;padding:2px 8px">${genreCompat[i]}</div>
+      <div class="card-en" style="color:var(--korean2)">${d.en}</div>
+      <div class="card-kr" style="margin-bottom:4px">${d.kr} · ${d.gender==='both'?'남/여':d.gender==='male'?'남성':'여성'} · ${d.pitch}</div>
+      <div class="card-desc" style="margin-bottom:6px">${d.desc}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">${d.tags.map(t=>`<span class="ctag" style="background:rgba(160,90,58,.15);border-color:rgba(160,90,58,.35);color:var(--korean2)">${t}</span>`).join('')}</div>
+      <div style="font-size:10px;color:var(--gold);margin-top:2px">⚡ ${d.autoCombo.label}</div>
+    </div>`;
+  }).join('');
 }
 function renderTones(gFilter) {
   const g = document.getElementById('toneGrid');
@@ -2477,6 +2583,92 @@ function createSelectOne(stateKey, selector, idPrefix) {
 const selectConcept     = createSelectOne('concept',     '.concept-card',          'concept_');
 const selectVocalStyle  = createSelectOne('vocalStyle',  '#vocalStyleGrid .selcard','vs_');
 const selectGueumStyle  = createSelectOne('gueumStyle',  '[id^="gueum_"]',         'gueum_');
+
+/* ── 구악 창법 선택 + 자동 최적 조합 적용 ── */
+function selectGugakVocalStyle(i) {
+  const wasSelected = STATE.gugakVocalStyle === i;
+  /* 기존 active 해제 */
+  document.querySelectorAll('[id^="gvs_"]').forEach(el => el.classList.remove('active'));
+  const statusBox = document.getElementById('gugakVocalComboStatus');
+
+  if (wasSelected) {
+    STATE.gugakVocalStyle = null;
+    if (statusBox) statusBox.style.display = 'none';
+    buildPrompt();
+    return;
+  }
+
+  STATE.gugakVocalStyle = i;
+  document.getElementById('gvs_' + i)?.classList.add('active');
+  const d = DATA.gugakVocalStyles[i];
+  if (d?.autoCombo) _applyGugakVocalCombo(d.autoCombo, d.kr, statusBox);
+  buildPrompt();
+}
+
+function _applyGugakVocalCombo(c, changsikName, statusBox) {
+  const applied = [];
+
+  /* ① 장르 — 아직 장르 미선택일 때만 자동 세팅 */
+  if (STATE.genre === null && STATE.hanSoulStyle === null) {
+    STATE.genre = c.genre;
+    document.querySelectorAll('#genreGrid .selcard').forEach(el => el.classList.remove('active'));
+    document.getElementById('genre_' + c.genre)?.classList.add('active');
+    const gName = DATA.genres[c.genre]?.kr || '';
+    applied.push(`장르 → ${gName}`);
+  }
+
+  /* ② 조성 + 음계 항상 적용 */
+  _autoSetKeyScale(c.keyScale[0], c.keyScale[1]);
+  const keyName  = DATA.musicKeys[c.keyScale[0]]?.short || '';
+  const scaleName = DATA.koreanScales[c.keyScale[1]]?.kr || '';
+  applied.push(`조성 → ${keyName} · ${scaleName}`);
+
+  /* ③ 구음 스타일 + 위치 + 음역 + 성별 + 강도 — 항상 적용 */
+  STATE.gueumStyle     = c.gueumStyle;
+  STATE.gueumPositions = [...c.gueumPositions];
+  STATE.gueumPitch     = c.gueumPitch;
+  STATE.gueumGender    = c.gueumGender;
+  STATE.gueumStrength  = c.gueumStrength;
+  const gName = DATA.gueumStyles[c.gueumStyle]?.kr || '';
+  applied.push(`구음 → ${gName}`);
+  syncGueumUI();
+  renderGueumStyles();
+
+  /* ④ 무드 — 기존 무드가 없을 때만 추가 */
+  if (STATE.moods.length === 0) {
+    STATE.moods = [...c.moods];
+    STATE.moods.forEach(mi => document.getElementById('mood_' + mi)?.classList.add('active'));
+    const moodNames = c.moods.map(mi => DATA.moods[mi]?.kr || '').join(', ');
+    applied.push(`무드 → ${moodNames}`);
+  }
+
+  /* ⑤ vocalTones — 기존 없을 때만 */
+  if (STATE.vocalTones.length === 0) {
+    STATE.vocalTones = [...c.vocalTones];
+    applied.push(`보컬톤 자동 설정`);
+    renderTones(STATE.gender);
+  }
+
+  /* ⑥ blackSoul 요소 — 항상 병합 */
+  c.blackSoul.forEach(bi => { if (!STATE.blackSoulElements.includes(bi)) STATE.blackSoulElements.push(bi); });
+  applied.push(`소울 질감 자동 추가`);
+
+  /* ⑦ BPM — 아직 기본값(95)이면 범위 내 랜덤 */
+  if (STATE.bpm === 95) {
+    const [lo, hi] = c.bpmRange;
+    STATE.bpm = lo + Math.floor(Math.random() * (hi - lo + 1));
+    syncSliders();
+    applied.push(`BPM → ${STATE.bpm}`);
+  }
+
+  /* 상태 표시 */
+  if (statusBox) {
+    statusBox.style.display = 'block';
+    statusBox.innerHTML = `<strong style="color:var(--korean2)">⚡ ${changsikName} 자동 조합 적용됨</strong><br>${applied.map(a => `✓ ${a}`).join('<br>')}`;
+  }
+
+  showToast(`⚡ ${changsikName} 최적 조합 자동 적용!`);
+}
 const _selectMusicKey   = createSelectOne('musicKey',    '[id^="mkey_"]',          'mkey_');
 const _selectKoreanScale= createSelectOne('koreanScale', '[id^="kscale_"]',        'kscale_');
 const selectEnergyArc   = createSelectOne('energyArc',  '[id^="arc_"]',           'arc_');
@@ -3010,6 +3202,10 @@ function _doBuildPrompt() {
       const vs=DATA.vocalStyles[STATE.vocalStyle];
       _vsLine.push(`${vs.en}`);
     }
+    if (STATE.gugakVocalStyle!==null&&DATA.gugakVocalStyles[STATE.gugakVocalStyle]) {
+      const gvs=DATA.gugakVocalStyles[STATE.gugakVocalStyle];
+      _vsLine.push(`GUGAK CHANGSIK: ${gvs.suno}`);
+    }
     if (STATE.gender === 'male') _vsLine.push('STRICTLY male voice');
     else if (STATE.gender === 'female') _vsLine.push('STRICTLY female voice');
     if(STATE.vocalTones.length){const vts=getEnList(STATE.vocalTones,DATA.vocalTones);if(vts)_vsLine.push(vts);}
@@ -3112,7 +3308,7 @@ function _doBuildPrompt() {
     /* ── NOTE: [Writing Style] 가이드는 AI 호출 시 시스템 프롬프트로만 전달 (promptBox 제외) ── */
 
     const box=document.getElementById('promptBox');
-    const hasUserSelection = STATE.genre!==null || STATE.moods.length>0 || STATE.instr!==null || STATE.concept!==null || STATE.vocalStyle!==null || STATE.hanSoulStyle!==null;
+    const hasUserSelection = STATE.genre!==null || STATE.moods.length>0 || STATE.instr!==null || STATE.concept!==null || STATE.vocalStyle!==null || STATE.gugakVocalStyle!==null || STATE.hanSoulStyle!==null;
     box.textContent=hasUserSelection?parts.join('\n'):'← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
   } catch(e) {
     console.error('[_doBuildPrompt 오류]', e);
@@ -4341,7 +4537,7 @@ function showToast(msg="✅ 완료!"){const t=document.getElementById('toast');i
 
 function resetAll(doRender=true) {
   STATE.genre=null;STATE.moods=[];STATE.instr=null;STATE.instrCategory=null;
-  STATE.concept=null;STATE.vocalStyle=null;STATE.vocalTones=[];STATE.textures=[];
+  STATE.concept=null;STATE.vocalStyle=null;STATE.gugakVocalStyle=null;STATE.vocalTones=[];STATE.textures=[];
   STATE.grooves=[];STATE.spaces=[];STATE.koreanGrooves=[];STATE.bassStyles=[];
   STATE.koreanFeelings=[];STATE.blackSoulElements=[];STATE.humanFeelElements=[];
   STATE.bpm=95;STATE.intensity=5;STATE.gender='all';STATE.koreanDominance=80;STATE.koreanRatio=70;
@@ -4368,6 +4564,9 @@ function resetAll(doRender=true) {
     if(customInput) customInput.value='3:30';
     document.getElementById('durationDisplay').textContent='현재: 3:30';
     document.getElementById('promptBox').textContent='← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
+    // 구악창법 상태창 초기화
+    const _gvsClear = document.getElementById('gugakVocalComboStatus');
+    if (_gvsClear) _gvsClear.style.display = 'none';
     // 변형 결과 초기화
     document.getElementById('varResult_mood').innerHTML='';
     document.getElementById('varResult_genre').innerHTML='';
@@ -4383,6 +4582,7 @@ function renderAll() {
   STATE.moods.forEach(i=>document.getElementById('mood_'+i)?.classList.add('active'));
   if(STATE.concept!==null)document.getElementById('concept_'+STATE.concept)?.classList.add('active');
   if(STATE.vocalStyle!==null)document.getElementById('vs_'+STATE.vocalStyle)?.classList.add('active');
+  if(STATE.gugakVocalStyle!==null)document.getElementById('gvs_'+STATE.gugakVocalStyle)?.classList.add('active');
   if(STATE.instrCategory){const[cat,idx]=STATE.instrCategory.split('_');document.getElementById(`instr_${cat[0]}_${idx}`)?.classList.add('active');}
   document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active'));
   const activeGBtn=[...document.querySelectorAll('.gender-btn')].find(b=>(STATE.gender==='all'&&b.textContent.includes('전체'))||(STATE.gender==='male'&&b.textContent.includes('남성'))||(STATE.gender==='female'&&b.textContent.includes('여성')));
