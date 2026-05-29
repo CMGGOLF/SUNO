@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 v28 - Joseon Core</title>
+<title>BV 뮤직 프롬프트 메이커 v29 - Joseon Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -67,7 +67,6 @@ header{
   border-radius:6px;padding:6px 14px;
   font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;
 }
-/* v20 — Climax Engine: 에너지 아크 최상단 자동 주입 + Big Finish 클라이맥스 */
 .app{max-width:1400px;margin:0 auto;padding:32px 40px 80px;display:grid;grid-template-columns:1fr;gap:32px}
 .section{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
 .section-head{
@@ -462,10 +461,16 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   .card-grid.col3{grid-template-columns:repeat(2,1fr)}
   .concept-grid{grid-template-columns:1fr}
   .rec-grid{grid-template-columns:repeat(2,1fr)}
+  .shorts-preset-grid{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:600px){
   .card-grid.col2,.card-grid.col3{grid-template-columns:1fr}
   .rec-grid{grid-template-columns:1fr}
+  .shorts-preset-grid{grid-template-columns:1fr}
+  .model-selector{gap:6px}
+  .model-btn{min-width:calc(50% - 4px)}
+  .bpm-num{font-size:40px}
+  .header-badge{display:none}
 }
 .gstrength-btn{padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:12px;cursor:pointer;transition:all .2s;}
 .gstrength-btn.active{font-weight:700;}
@@ -488,11 +493,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v26</span></div>
-        <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 A+B 전 섹션 적용 · 변형 생성 · 버그수정</div>
+        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v29</span></div>
+        <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 AUTO COMBO · 퀄리티 엔진 · v29 최적화</div>
       </div>
     </div>
-    <div class="header-badge">JOSEON CORE v28 · 구악창법 AUTO COMBO ⚡</div>
+    <div class="header-badge">JOSEON CORE v29 · 구악창법 AUTO COMBO ⚡</div>
   </div>
 </header>
 
@@ -1151,6 +1156,9 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       <button class="btn btn-outline" onclick="applyUltimateGroovePreset()">🔥 Ultimate Groove</button>
       <button class="btn btn-outline" onclick="saveCurrentPreset()">💾 프리셋 저장</button>
       <button class="btn btn-outline" onclick="loadPresets()">📂 내 프리셋</button>
+      <button class="btn btn-outline" onclick="restoreLastPrompt()" title="마지막 프롬프트 복원">↩️ 히스토리</button>
+      <button class="btn btn-outline" onclick="exportState()" title="현재 설정 JSON 저장">⬇️ 내보내기</button>
+      <button class="btn btn-outline" onclick="importState()" title="저장된 설정 JSON 불러오기">⬆️ 불러오기</button>
       <button class="btn btn-outline" onclick="resetAll()">↺ 초기화</button>
     </div>
     <!-- ⚡ 슈퍼 프롬프트 섹션 -->
@@ -1224,6 +1232,10 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
               <button class="btn btn-outline" style="font-size:11px;padding:5px 14px" onclick="copySuperVariation(2)">📋 복사</button>
             </div>
           </div>
+        </div>
+        <!-- UPG-5: 3종 한번에 복사 (Suno A/B/C 테스트용) -->
+        <div style="margin-top:10px;display:flex;justify-content:flex-end">
+          <button class="btn btn-outline" style="font-size:11px;padding:6px 16px;border-color:rgba(255,180,50,.4);color:#ffb432" onclick="copyAllSuperVariations()">📋 3종 전체 복사 (A/B/C 테스트용)</button>
         </div>
       </div>
     </div>
@@ -2338,7 +2350,7 @@ function _applyPools(type) {
 /* ═══════════════════════════════════════════
    HELPERS
 ═══════════════════════════════════════════ */
-/* 성능: BPM 가이드 역순 배열 1회 계산 (매 호출마다 slice().reverse() 불필요) */
+/* 성능: BPM 가이드 역순 배열 1회 계산 (updateBpmGuide에서 사용 — 매 호출마다 slice().reverse() 불필요) */
 const _bpmGuidesReversed = DATA.bpmGuides.slice().reverse();
 function renderChipGroup(containerId, dataArray, stateArray, toggleFnName, idPrefix) {
   const container = document.getElementById(containerId);
@@ -2385,11 +2397,13 @@ function renderGenres() {
 }
 function renderMoods() {
   const g = document.getElementById('moodGrid');
-  g.innerHTML = DATA.moods.map((d,i) => `
-    <div class="chip" id="mood_${i}" onclick="toggleMood(${i})">
+  g.innerHTML = DATA.moods.map((d,i) => {
+    const isActive = STATE.moods.includes(i);
+    return `<div class="chip ${isActive?'active':''}" id="mood_${i}" onclick="toggleMood(${i})">
       <span class="chip-en">${d.en}</span>
       <span class="chip-kr">${d.kr}</span>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 function renderInstrGroup(gridId,data,catKey,shortKey){
   const g=document.getElementById(gridId);
@@ -2424,7 +2438,10 @@ function selectInstrByCategory(cat, i, skipBuild=false) {
     STATE.instrCategory = sameKey;
     const catData = getCatData(cat);
     STATE.instr = catData[i];
-    document.getElementById(`instr_${cat[0]}_${i}`)?.classList.add('active');
+    /* BUG-3 수정: cat[0] 취약 방식 → 명시적 prefix 맵으로 교체 */
+    const _catPrefixMap = {string:'s', percussion:'p', wind:'w'};
+    const _prefix = _catPrefixMap[cat] || cat[0];
+    document.getElementById(`instr_${_prefix}_${i}`)?.classList.add('active');
   }
   if (!skipBuild) buildPrompt();
 }
@@ -3310,6 +3327,8 @@ function _doBuildPrompt() {
     const box=document.getElementById('promptBox');
     const hasUserSelection = STATE.genre!==null || STATE.moods.length>0 || STATE.instr!==null || STATE.concept!==null || STATE.vocalStyle!==null || STATE.gugakVocalStyle!==null || STATE.hanSoulStyle!==null;
     box.textContent=hasUserSelection?parts.join('\n'):'← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
+    /* UPG-1: 빌드 완료 후 히스토리 저장 */
+    if (typeof _saveHistoryAfterBuild === 'function') _saveHistoryAfterBuild();
   } catch(e) {
     console.error('[_doBuildPrompt 오류]', e);
     document.getElementById('promptBox').textContent='← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
@@ -3379,7 +3398,7 @@ async function _callOnce(model, messages, temperature, apiKey) {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
       'HTTP-Referer': window.location.href,
-      'X-Title': 'Gugak Prompt Maker v27',
+      'X-Title': 'Gugak Prompt Maker v29',
     },
     body: JSON.stringify({
       model, messages,
@@ -3405,8 +3424,18 @@ async function _callOnce(model, messages, temperature, apiKey) {
 
 async function callClaude(prompt, systemPrompt = '', temperature = 0.85) {
   const apiKey = getApiKey();
-  if (!apiKey) { document.getElementById('apiKeyInput')?.focus(); throw new Error('API 키를 먼저 입력해 주세요.'); }
-  if (!apiKey.startsWith('sk-or-v1-')) throw new Error('키 형식 오류 — sk-or-v1- 로 시작해야 합니다.');
+  if (!apiKey) {
+    const inp = document.getElementById('apiKeyInput');
+    if (inp) { inp.focus(); inp.style.borderColor='var(--red)'; setTimeout(()=>inp.style.borderColor='',2500); }
+    showToast('⚠️ API 키를 먼저 입력해주세요! (섹션 상단 API 설정)');
+    throw new Error('API 키를 먼저 입력해 주세요.');
+  }
+  if (!apiKey.startsWith('sk-or-v1-')) {
+    const inp = document.getElementById('apiKeyInput');
+    if (inp) { inp.style.borderColor='var(--red)'; setTimeout(()=>inp.style.borderColor='',2500); }
+    showToast('⚠️ 키 형식 오류 — sk-or-v1- 로 시작해야 합니다.');
+    throw new Error('키 형식 오류 — sk-or-v1- 로 시작해야 합니다.');
+  }
   const messages = [];
   if (systemPrompt) messages.push({ role: 'system', content: systemPrompt });
   messages.push({ role: 'user', content: prompt });
@@ -4088,7 +4117,6 @@ function applyPresetRandomness(isStrong) {
     STATE.gueumStrength = _rp(['strong', 'maximum']);
   }
 }
-/* ===== 여기까지 ===== */
 function apply73Preset(type) {
   resetAll(false);
   if (type==='joseon') {
@@ -5145,6 +5173,10 @@ function applyShortsPreset(idx) {
 
   /* ── 7. 국악기 강도 (비율 슬라이더 이후 처리 — 중간 buildPrompt 방지) ── */
   STATE.koreanDominance = preset.koreanDominance;
+  /* DEAD-3 수정: koreanDominance → koreanRatio 동기화 (buildPrompt의 dom 값 반영) */
+  if (preset.koreanDominance !== undefined) {
+    STATE.koreanRatio = preset.koreanDominance;
+  }
   const kdSlider = document.getElementById('koreanDomSlider');
   if (kdSlider) {
     kdSlider.value = preset.koreanDominance;
@@ -5321,9 +5353,10 @@ async function translateLyricsToKr() {
 
 function copyKrTranslation() {
   const el = document.getElementById('krTranslationOut');
-  const text = el?.textContent || '';
-  if (!text) { showToast('⚠️ 복사할 번역이 없습니다.'); return; }
+  const text = (el?.textContent || '').trim();
+  if (!text || text.startsWith('번역 오류:')) { showToast('⚠️ 복사할 번역이 없습니다.'); return; }
   doCopy(text);
+  showToast('📋 한글 번역 복사 완료!');
 }
 
 /* ═══════════════════════════════════════════
@@ -5331,18 +5364,21 @@ function copyKrTranslation() {
 ═══════════════════════════════════════════ */
 let _superVariations = [];
 
-async function genSuperPrompt() {
+/* silent=true 시: UI loading/resultBox를 조작하지 않음 (QE 내부 호출용) */
+async function genSuperPrompt(silent = false) {
   _doBuildPrompt();
   const currentSettings = document.getElementById('promptBox').textContent || '';
   if (!currentSettings || currentSettings.includes('←')) {
-    showToast('⚠️ 먼저 장르나 분위기를 선택해주세요!');
+    if (!silent) showToast('⚠️ 먼저 장르나 분위기를 선택해주세요!');
     return;
   }
 
   const loading   = document.getElementById('superLoading');
   const resultBox = document.getElementById('superPromptResult');
-  loading.classList.add('show');
-  resultBox.style.display = 'none';
+  if (!silent) {
+    loading.classList.add('show');
+    resultBox.style.display = 'none';
+  }
   _superVariations = [];
 
   const _guideGenre  = (STATE.genre !== null)        ? GENRE_SUNO_GUIDE[STATE.genre]        : null;
@@ -5420,13 +5456,15 @@ Return ONLY the JSON object.`;
       document.getElementById(ids[i][2]).textContent = `${v.prompt.length} / 230자`;
     });
 
-    resultBox.style.display = 'block';
-    showToast('⚡ 슈퍼 프롬프트 3종 완성! 골라서 바로 쓰세요 🔥');
+    if (!silent) {
+      resultBox.style.display = 'block';
+      showToast('⚡ 슈퍼 프롬프트 3종 완성! 골라서 바로 쓰세요 🔥');
+    }
   } catch(e) {
-    showToast('⚠️ 슈퍼 프롬프트 실패: ' + (e.message || '알 수 없는 오류'));
+    if (!silent) showToast('⚠️ 슈퍼 프롬프트 실패: ' + (e.message || '알 수 없는 오류'));
     console.warn('[genSuperPrompt 오류]', e);
   }
-  loading.classList.remove('show');
+  if (!silent) loading.classList.remove('show');
 }
 
 function applySuperVariation(idx) {
@@ -5439,11 +5477,127 @@ function applySuperVariation(idx) {
 function copySuperVariation(idx) {
   if (!_superVariations[idx]) { showToast('⚠️ 먼저 슈퍼 프롬프트를 생성해주세요!'); return; }
   doCopy(_superVariations[idx].prompt);
+  showToast(`📋 VAR ${idx+1} 복사 완료!`);
 }
 
-/* 구버전 호환 (혹시 다른 곳에서 호출 시) */
+/* UPG-5: 3종 한번에 복사 */
+function copyAllSuperVariations() {
+  if (!_superVariations.length) { showToast('⚠️ 먼저 슈퍼 프롬프트를 생성해주세요!'); return; }
+  const text = _superVariations.map((v,i) =>
+    `【VAR ${i+1} · ${v.label}】\n${v.prompt}`
+  ).join('\n\n──────────────────────────\n\n');
+  doCopy(text);
+  showToast('📋 3종 전체 복사 완료! Suno에서 A/B/C 테스트 가능');
+}
+
+/* 구버전 호환 — BUG-1 수정: type 파라미터 무시 버그 명시, 기본값 0 유지 (외부 호출 없을 시 삭제 가능) */
 function applySuperPrompt()       { applySuperVariation(0); }
-function copySuperPrompt(type)    { copySuperVariation(0); }
+function copySuperPrompt(/*type ignored*/) { copySuperVariation(0); }
+
+/* ═══════════════════════════════════════════
+   UPG-1: 프롬프트 히스토리 (최근 10개 localStorage 저장)
+   UPG-2: STATE 전체 내보내기 / 불러오기
+═══════════════════════════════════════════ */
+const HISTORY_KEY = 'gugak_prompt_history';
+const MAX_HISTORY = 10;
+
+function savePromptToHistory(promptText) {
+  if (!promptText || promptText.includes('←')) return;
+  try {
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    if (history[0] === promptText) return; // 동일 프롬프트 중복 저장 방지
+    history.unshift(promptText);
+    if (history.length > MAX_HISTORY) history.length = MAX_HISTORY;
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  } catch(e) { console.warn('[히스토리 저장 오류]', e); }
+}
+
+function loadPromptHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch(e) { return []; }
+}
+
+function restoreLastPrompt() {
+  const history = loadPromptHistory();
+  if (!history.length) { showToast('⚠️ 저장된 히스토리가 없습니다.'); return; }
+  const box = document.getElementById('promptBox');
+  if (box) { box.textContent = history[0]; showToast('↩️ 마지막 프롬프트 복원 완료!'); }
+}
+
+function showPromptHistory() {
+  const history = loadPromptHistory();
+  if (!history.length) { showToast('⚠️ 저장된 히스토리가 없습니다.'); return; }
+  const msg = history.map((p,i) => `[${i+1}] ${p.slice(0,80)}...`).join('\n\n');
+  alert('📋 최근 프롬프트 히스토리 (최대 10개):\n\n' + msg);
+}
+
+/* _doBuildPrompt 완료 후 히스토리 자동 저장 훅 — buildPrompt 내부에서 직접 호출 */
+function _saveHistoryAfterBuild() {
+  const box = document.getElementById('promptBox');
+  if (box && box.textContent && !box.textContent.includes('←')) {
+    savePromptToHistory(box.textContent);
+  }
+}
+
+/* UPG-2: STATE 내보내기 */
+function exportState() {
+  const exportData = {
+    version: 'v29',
+    timestamp: new Date().toISOString(),
+    state: {
+      genre: STATE.genre, moods: STATE.moods, concept: STATE.concept,
+      vocalStyle: STATE.vocalStyle, gugakVocalStyle: STATE.gugakVocalStyle,
+      vocalTones: STATE.vocalTones, textures: STATE.textures, grooves: STATE.grooves,
+      spaces: STATE.spaces, koreanGrooves: STATE.koreanGrooves, bassStyles: STATE.bassStyles,
+      koreanFeelings: STATE.koreanFeelings, blackSoulElements: STATE.blackSoulElements,
+      humanFeelElements: STATE.humanFeelElements, bpm: STATE.bpm, intensity: STATE.intensity,
+      gender: STATE.gender, koreanDominance: STATE.koreanDominance, koreanRatio: STATE.koreanRatio,
+      gueumPositions: STATE.gueumPositions, gueumPitch: STATE.gueumPitch,
+      gueumGender: STATE.gueumGender, gueumStyle: STATE.gueumStyle,
+      hanSoulStyle: STATE.hanSoulStyle, gueumStrength: STATE.gueumStrength,
+      musicKey: STATE.musicKey, koreanScale: STATE.koreanScale, energyArc: STATE.energyArc,
+      songDuration: STATE.songDuration, instrCategory: STATE.instrCategory,
+    }
+  };
+  const json = JSON.stringify(exportData, null, 2);
+  const blob = new Blob([json], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `gugak_preset_${Date.now()}.json`; a.click();
+  URL.revokeObjectURL(url);
+  showToast('💾 현재 설정을 JSON으로 저장했습니다!');
+}
+
+function importState() {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        const s = data.state || data;
+        const keys = ['genre','moods','concept','vocalStyle','gugakVocalStyle','vocalTones',
+          'textures','grooves','spaces','koreanGrooves','bassStyles','koreanFeelings',
+          'blackSoulElements','humanFeelElements','bpm','intensity','gender',
+          'koreanDominance','koreanRatio','gueumPositions','gueumPitch','gueumGender',
+          'gueumStyle','hanSoulStyle','gueumStrength','musicKey','koreanScale',
+          'energyArc','songDuration','instrCategory'];
+        keys.forEach(k => { if (s[k] !== undefined) STATE[k] = s[k]; });
+        // instrCategory 복원 시 악기 재선택
+        if (s.instrCategory) {
+          const [cat, idx] = s.instrCategory.split('_');
+          if (cat && idx !== undefined) selectInstrByCategory(cat, parseInt(idx), true);
+        }
+        syncSliders(); renderAll(); syncGueumUI(); buildPrompt(true);
+        showToast('✅ 설정 불러오기 완료!');
+      } catch(err) { showToast('⚠️ 파일 형식 오류: ' + err.message); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
 
 window.addEventListener('DOMContentLoaded',()=>{
   loadSavedKey();renderAll();syncSliders();
@@ -5503,7 +5657,7 @@ const QE_COMBOS = [
     preset73:'joseon',
     bpmRange:[92,108],
     musicKey:3, koreanScale:0,
-    energyArc:2,       // Twin Peaks
+    energyArc:4,       // Twin Peaks (idx 4) — 두 번의 절정으로 클럽 에너지 극대화
     intensity:9, koreanRatio:70,
     gueumPos:['add1','mid','add2'],
     gueumPitch:'midhigh', gueumGender:'male', gueumStrength:'maximum',
@@ -5524,7 +5678,7 @@ const QE_COMBOS = [
     preset73:'sanjo',
     bpmRange:[78,90],
     musicKey:4, koreanScale:0,
-    energyArc:3,       // Wave Form
+    energyArc:1,       // Wave Form (idx 1) — 심야 재즈: 감정이 파도처럼 밀려왔다 빠짐
     intensity:5, koreanRatio:65,
     gueumPos:['mid','add2'],
     gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong',
@@ -5668,6 +5822,7 @@ function qeSetStep(idx, resultText='') {
   if (bar) bar.style.width = Math.round((idx/QE_STEPS.length)*100)+'%';
 }
 
+/* sleep 유틸 — function 선언이므로 호이스팅으로 파일 전체에서 안전하게 참조 가능 */
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
 // ── 메인 실행 ────────────────────────────────────────
@@ -5776,8 +5931,21 @@ async function runQualityEngine() {
     document.getElementById('qeProgressBar').style.width='100%';
     await sleep(300);
 
-    const score = Math.min(100, Math.round((_qeFinalPrompt.length/230)*60 + 40));
-    document.getElementById('qeScoreBadge').textContent = `품질 추정 ${score}점`;
+    /* BUG-4 수정: 체크리스트 기반 품질 점수 (항목 누락 확인용)
+       각 항목 달성 시 +배점, 최대 100점 */
+    const _qScore = [
+      STATE.genre !== null                ? 15 : 0,   // 장르 선택
+      STATE.moods.length > 0              ? 10 : 0,   // 분위기 선택
+      STATE.instr !== null                ? 10 : 0,   // 악기 선택
+      STATE.gueumPositions.length > 0     ? 15 : 0,   // 구음 위치 설정
+      STATE.gueumStyle !== null           ? 10 : 0,   // 구음 스타일 선택
+      STATE.energyArc !== null            ? 10 : 0,   // 에너지 아크 선택
+      STATE.koreanGrooves.length > 0      ?  5 : 0,   // 한국적 그루브
+      STATE.blackSoulElements.length > 0  ?  5 : 0,   // Black Soul 요소
+      STATE.humanFeelElements.length > 0  ?  5 : 0,   // Human Feel 요소
+      _qeFinalPrompt.length >= 150        ? 15 : (_qeFinalPrompt.length >= 80 ? 8 : 0), // 프롬프트 충실도
+    ].reduce((a,b)=>a+b, 0);
+    document.getElementById('qeScoreBadge').textContent = `완성도 ${_qScore}점 / 100`;
     document.getElementById('qeDnaBadge').textContent   = `DNA 3회 탐색`;
     document.getElementById('qeFinalPrompt').textContent = _qeFinalPrompt;
     document.getElementById('qeAppliedSummary').innerHTML =
@@ -5800,25 +5968,10 @@ async function runQualityEngine() {
   }
 }
 
-// ── 슈퍼 프롬프트 생성 (결과 UI 숨김 버전) ──────────
+// ── 슈퍼 프롬프트 생성 (결과 UI 숨김 버전 — QE 엔진 내부 전용) ──────────
+// BUG-2 수정: 폴링(setInterval) 제거, genSuperPrompt(silent=true) await 직결
 async function genSuperPromptSilent() {
-  return new Promise((resolve,reject)=>{
-    // 기존 genSuperPrompt 로직을 재활용, 완료 콜백만 래핑
-    // superPromptResult 가시성 변경 없이 _superVariations만 채움
-    const origDisplay = document.getElementById('superPromptResult')?.style.display;
-    genSuperPrompt(true);  // true = silent flag (기존 함수가 flag 무시해도 무방)
-    // 최대 20초 대기 후 resolve
-    let waited = 0;
-    const check = setInterval(()=>{
-      waited += 300;
-      if ((typeof _superVariations!=='undefined' && _superVariations[0]?.prompt) || waited>20000) {
-        clearInterval(check);
-        if (origDisplay !== undefined && document.getElementById('superPromptResult'))
-          document.getElementById('superPromptResult').style.display = origDisplay;
-        resolve();
-      }
-    },300);
-  });
+  await genSuperPrompt(true);
 }
 
 // ── 결과창 버튼 핸들러 ──────────────────────────────
