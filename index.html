@@ -5897,7 +5897,8 @@ async function runQualityEngine() {
       STATE.negativeSeed = Math.random();
       buildPrompt(true);
       await sleep(80);
-      const p = (document.getElementById('promptBox')||{}).textContent||'';
+      const rawP = (document.getElementById('promptBox')||{}).textContent||'';
+      const p = sanitizeSunoPrompt(rawP, 230);
       if (p.length > bestLen) { bestLen = p.length; bestPrompt = p; }
     }
     // 최적 DNA seed를 적용된 상태로 유지
@@ -5946,8 +5947,18 @@ async function runQualityEngine() {
       _qeFinalPrompt.length >= 150        ? 15 : (_qeFinalPrompt.length >= 80 ? 8 : 0), // 프롬프트 충실도
     ].reduce((a,b)=>a+b, 0);
     document.getElementById('qeScoreBadge').textContent = `완성도 ${_qScore}점 / 100`;
-    document.getElementById('qeDnaBadge').textContent   = `DNA 3회 탐색`;
-    document.getElementById('qeFinalPrompt').textContent = _qeFinalPrompt;
+    document.getElementById('qeDnaBadge').textContent   = 'DNA 재탐색 완료';
+    const _safeFinal = sanitizeSunoPrompt(_qeFinalPrompt, 230);
+    _qeFinalPrompt = _safeFinal;
+    document.getElementById('qeFinalPrompt').textContent = _safeFinal;
+    let _charBadge = document.getElementById('qeCharBadge');
+    if (!_charBadge) {
+      _charBadge = document.createElement('span');
+      _charBadge.id = 'qeCharBadge';
+      _charBadge.style.cssText = 'display:block;font-size:11px;color:var(--teal);margin-top:6px;font-family:Space Mono,monospace;';
+      document.getElementById('qeFinalPrompt').after(_charBadge);
+    }
+    _charBadge.textContent = '\u2705 ' + _safeFinal.length + '\uc790 \u2014 Suno \uc2a4\ud0c0\uc77c \ubc15\uc2a4 \ubc14\ub85c \ubd99\uc5ec\ub123\uae30 \uac00\ub2a5';
     document.getElementById('qeAppliedSummary').innerHTML =
       `<b style="color:var(--text)">${c.name}</b> — `+
       `BPM ${STATE.bpm} · 강도 ${c.intensity} · 국악 ${c.koreanRatio}% · `+
@@ -5977,8 +5988,9 @@ async function genSuperPromptSilent() {
 // ── 결과창 버튼 핸들러 ──────────────────────────────
 function qeCopyFinal() {
   if (!_qeFinalPrompt) return;
-  doCopy(_qeFinalPrompt);
-  showToast('📋 최적 프롬프트 복사 완료!');
+  const safe = sanitizeSunoPrompt(_qeFinalPrompt, 230);
+  doCopy(safe);
+  showToast(`📋 복사 완료! (${safe.length}자 — Suno 바로 붙여넣기 가능)`);
 }
 
 async function qeRerunDNA() {
@@ -5989,7 +6001,8 @@ async function qeRerunDNA() {
     STATE.dnaSeed=Math.random(); STATE.negativeSeed=Math.random();
     buildPrompt(true);
     await sleep(80);
-    const p=(document.getElementById('promptBox')||{}).textContent||'';
+    const rawP=(document.getElementById('promptBox')||{}).textContent||'';
+    const p=sanitizeSunoPrompt(rawP,230);
     if (p.length>bestLen){bestLen=p.length;bestPrompt=p;}
   }
   _qeFinalPrompt = bestPrompt;
