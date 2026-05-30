@@ -602,13 +602,13 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div style="font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.5px;margin-bottom:10px">⚙️ AI 모델 선택 — 프롬프트·가사·변형 생성에 적용</div>
     <div class="model-selector" id="modelSelector">
 
-      <button class="model-btn" id="mBtn_sonnet" onclick="selectModel('claude/claude-sonnet-4-5')">
+      <button class="model-btn" id="mBtn_sonnet" onclick="selectModel('anthropic/claude-sonnet-4-5')">
         <span class="mb-badge best">최고 품질</span>
         <span class="mb-name">Claude Sonnet</span>
         <span class="mb-sub">프롬프트·가사 최상위 품질<br>영어 감성 표현 최고 수준</span>
       </button>
 
-      <button class="model-btn" id="mBtn_haiku" onclick="selectModel('claude/claude-haiku-4-5')">
+      <button class="model-btn" id="mBtn_haiku" onclick="selectModel('anthropic/claude-haiku-4-5')">
         <span class="mb-badge balanced">가성비 추천</span>
         <span class="mb-name">Claude Haiku</span>
         <span class="mb-sub">Sonnet 대비 80% 품질<br>속도 빠름 · 비용 ¼</span>
@@ -3342,11 +3342,11 @@ function getApiKey() { return (document.getElementById('apiKeyInput')?.value||''
 
 /* ── 모델 정의 ── */
 const MODELS = {
-  'claude/claude-sonnet-4-5': {
+  'anthropic/claude-sonnet-4-5': {
     label: 'Claude Sonnet',
     costs: { prompt: 2, super: 6, lyrics3: 17, lyrics4: 21, variations: 8, title: 2 }
   },
-  'claude/claude-haiku-4-5': {
+  'anthropic/claude-haiku-4-5': {
     label: 'Claude Haiku',
     costs: { prompt: 1, super: 2, lyrics3: 4, lyrics4: 6, variations: 2, title: 1 }
   },
@@ -3359,7 +3359,7 @@ const MODELS = {
     costs: { prompt: 1, super: 1, lyrics3: 1, lyrics4: 1, variations: 1, title: 1 }
   },
 };
-let _selectedModel = localStorage.getItem('gugak_model') || 'claude/claude-haiku-4-5';
+let _selectedModel = localStorage.getItem('gugak_model') || 'anthropic/claude-haiku-4-5';
 
 function selectModel(modelId) {
   if (!MODELS[modelId]) return;
@@ -3368,8 +3368,8 @@ function selectModel(modelId) {
   // UI 업데이트
   document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
   const btnMap = {
-    'claude/claude-sonnet-4-5': 'mBtn_sonnet',
-    'claude/claude-haiku-4-5':  'mBtn_haiku',
+    'anthropic/claude-sonnet-4-5': 'mBtn_sonnet',
+    'anthropic/claude-haiku-4-5':  'mBtn_haiku',
     'openai/gpt-4o':            'mBtn_gpt4o',
     'openai/gpt-4o-mini':       'mBtn_gpt4omini',
   };
