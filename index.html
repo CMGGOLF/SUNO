@@ -493,8 +493,8 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v29</span></div>
-        <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 AUTO COMBO · 퀄리티 엔진 · v29 최적화</div>
+        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v30</span></div>
+        <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 AUTO COMBO · 퀄리티 엔진 · v30 최적화</div>
       </div>
     </div>
     <div class="header-badge">JOSEON CORE v30 · 가사 엔진 v2 · 장르별 송폼 ⚡</div>
@@ -2801,7 +2801,7 @@ function updateRatioSlider(v) {
   document.getElementById('ratioSlider').style.setProperty('--rpct',pct);
   document.getElementById('ratioKoreanLabel').textContent=`국악 ${kr}%`;
   document.getElementById('ratioModernLabel').textContent=`정통 ${mod}%`;
-  const desc = kr>=85?'정통 국악 압도 · 현대는 숨결만':kr>=70?'조선 미학 정통화 · 글로벌 승화':kr>=55?'국악과 정통의 균형 퓨전':kr>=40?'정통 기반 · 국악 포인트':'현대 정통 중심 · 국악 컬러';
+  const desc = _ratioDesc(kr);
   document.getElementById('ratioDescLabel').textContent=desc;
   const kdSlider=document.getElementById('koreanDomSlider');
   if (kdSlider) {
@@ -2823,23 +2823,13 @@ function toggleGueumPos(pos) {
 }
 function selectGueumPitch(pitch) {
   STATE.gueumPitch=pitch;
-  document.querySelectorAll(".gueum-ctrl-btn[id^=gpitch_]").forEach(b=>b.classList.remove('active'));
-  document.getElementById('gpitch_'+pitch)?.classList.add('active');
-  const sliderVal=pitch==='high'?4:pitch==='midhigh'?3:pitch==='midlow'?2:1;
-  const slider=document.getElementById('gueumPitchSlider');
-  if (slider) { slider.value=sliderVal; updateGueumPitchSlider(sliderVal); }
-  else { document.getElementById('gueumPitchLabel').textContent=pitch==='high'?'고음':pitch==='midhigh'?'중고음':pitch==='midlow'?'중저음':'저음'; }
+  _syncGueumPitchUI(pitch);
   buildPrompt();
 }
 function updateGueumPitchSlider(v) {
   const pitches={1:'low',2:'midlow',3:'midhigh',4:'high'};
-  const labels={1:'저음',2:'중저음',3:'중고음',4:'고음'};
   STATE.gueumPitch=pitches[v];
-  document.getElementById('gueumPitchLabel').textContent=labels[v];
-  const pct=((v-1)/3*100).toFixed(0)+'%';
-  document.getElementById('gueumPitchSlider').style.setProperty('--gpct',pct);
-  document.querySelectorAll(".gueum-ctrl-btn[id^=gpitch_]").forEach(b=>b.classList.remove('active'));
-  document.getElementById('gpitch_'+pitches[v])?.classList.add('active');
+  _syncGueumPitchUI(pitches[v]);
   buildPrompt();
 }
 function selectGueumGender(g) {
@@ -2879,6 +2869,24 @@ function selectGueumVariant(styleInfo) {
 /* ── 공통 라벨 헬퍼 (updateX + syncSliders 중복 제거) ── */
 function _intensityLabel(v){return v<=3?'Chill (잔잔한)':v<=6?'Emotional (감성적인)':'Explosive Soul (폭발적인)';}
 function _koreanDomLabel(v){return v>=90?'압도적 국악기':v>=80?'강한 국악기 주도':'명확한 국악기';}
+/* DUP-01 수정: 국악 비율 설명 헬퍼 — 4곳에서 중복 사용되던 삼항 체인 통합 */
+function _ratioDesc(kr){return kr>=85?'정통 국악 압도 · 현대는 숨결만':kr>=70?'조선 미학 정통화 · 글로벌 승화':kr>=55?'국악과 정통의 균형 퓨전':kr>=40?'정통 기반 · 국악 포인트':'현대 정통 중심 · 국악 컬러';}
+/* DUP-04 수정: 구음 음역 버튼 UI 동기화 헬퍼 — selectGueumPitch·updateGueumPitchSlider·applyShortsPreset 중복 제거 */
+function _syncGueumPitchUI(pitch) {
+  const _pitchVal={high:4,midhigh:3,midlow:2,low:1};
+  const _pitchLabel={high:'고음',midhigh:'중고음',midlow:'중저음',low:'저음'};
+  document.querySelectorAll(".gueum-ctrl-btn[id^=gpitch_]").forEach(b=>b.classList.remove('active'));
+  document.getElementById('gpitch_'+pitch)?.classList.add('active');
+  const lbl=document.getElementById('gueumPitchLabel');
+  if(lbl)lbl.textContent=_pitchLabel[pitch]||pitch;
+  const slider=document.getElementById('gueumPitchSlider');
+  if(slider){
+    const v=_pitchVal[pitch]||3;
+    slider.value=v;
+    const pct=((v-1)/3*100).toFixed(0)+'%';
+    slider.style.setProperty('--gpct',pct);
+  }
+}
 
 function updateBpm(v) {
   STATE.bpm=parseInt(v);
@@ -2914,15 +2922,18 @@ function updateKoreanDominance(v) {
     ratioSlider.style.setProperty('--rpct',kr+'%');
     document.getElementById('ratioKoreanLabel').textContent=`국악 ${kr}%`;
     document.getElementById('ratioModernLabel').textContent=`정통 ${100-kr}%`;
-    const desc=kr>=85?'정통 국악 압도 · 현대는 숨결만':kr>=70?'조선 미학 정통화 · 글로벌 승화':kr>=55?'국악과 정통의 균형 퓨전':kr>=40?'정통 기반 · 국악 포인트':'현대 정통 중심 · 국악 컬러';
+    const desc=_ratioDesc(kr);
     document.getElementById('ratioDescLabel').textContent=desc;
   }
   buildPrompt();
 }
 function switchTab(id,el) {
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  /* BUG-06 수정: 전체 .tab-panel 대신 클릭된 탭과 같은 .tab-row의 형제 패널만 초기화 */
+  const row = el.closest('.tab-row') || el.parentElement;
+  const section = row ? row.parentElement : document.body;
+  section.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  row.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
   el.classList.add('active');
 }
 
@@ -2930,9 +2941,13 @@ function switchTab(id,el) {
 function _switchLyricsTab(lang) {
   const panelId = lang === 'en' ? 'lyricsEn' : 'lyricsKr';
   const tabBtnId = lang === 'en' ? 'lyricsTabEn' : 'lyricsTabKr';
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  /* BUG-06 수정: 가사 섹션 내부 패널/탭만 범위 지정 */
+  const tabBtn = document.getElementById(tabBtnId);
+  if (tabBtn) { switchTab(panelId, tabBtn); return; }
+  /* fallback: id 직접 조작 */
+  ['lyricsEn','lyricsKr','lyricsFree'].forEach(id => document.getElementById(id)?.classList.remove('active'));
   document.getElementById(panelId)?.classList.add('active');
+  ['lyricsTabEn','lyricsTabKr'].forEach(id => document.getElementById(id)?.classList.remove('active'));
   document.getElementById(tabBtnId)?.classList.add('active');
 }
 
@@ -3398,7 +3413,7 @@ async function _callOnce(model, messages, temperature, apiKey) {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
       'HTTP-Referer': window.location.href,
-      'X-Title': 'Gugak Prompt Maker v29',
+      'X-Title': 'Gugak Prompt Maker v30',
     },
     body: JSON.stringify({
       model, messages,
@@ -3548,6 +3563,8 @@ async function runAI() {
   const loading=document.getElementById('kwLoading'); const result=document.getElementById('kwResult');
   loading.classList.add('show'); result.classList.remove('show');
   const isYT=kw.includes('youtube.com')||kw.includes('youtu.be');
+  // PARTIAL-02: YouTube URL은 실제 영상 내용을 가져올 수 없으므로 URL 분석 불가 안내
+  if(isYT){showToast('⚠️ YouTube 링크는 영상 내용 분석 불가 — 제목/키워드로 대신 입력해 주세요!');loading.classList.remove('show');result.innerHTML='<span style="color:var(--red)">⚠️ YouTube URL 직접 분석은 지원되지 않습니다.<br>음악의 <b>장르, 무드, 악기</b> 등 키워드를 직접 입력해 주세요.</span>';result.classList.add('show');return;}
   const sysPrompt=`당신은 7:3 Joseon Core 전문가입니다. 반드시 다음 JSON 형식만 응답: {"genre":"","moods":[],"instruments":"","concept":"","vocalStyle":"","bpm":85,"textures":[],"koreanGrooves":[],"koreanFeelings":[],"summary":""}`;
   const userPrompt=isYT?`다음 YouTube 링크의 음악을 7:3 국악 퓨전 스타일로 추천: ${kw}\nJSON만 작성.`:`"${kw}" 키워드를 7:3 Joseon Core 스타일로 추천. JSON만 작성.`;
   try {
@@ -3555,10 +3572,26 @@ async function runAI() {
     const jsonMatch=text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("JSON 형식 응답 없음");
     const analysis=JSON.parse(jsonMatch[0]);
-    result.innerHTML=`<div style="margin-bottom:12px;font-weight:600;color:var(--gold)">🎵 AI 분석 결과</div><pre style="white-space:pre-wrap;font-size:12px;line-height:1.7">${JSON.stringify(analysis,null,2)}</pre>`;
+    /* RISK-02 수정: innerHTML에 직접 삽입 → textContent로 안전하게 처리 */
+    result.innerHTML='';
+    const _title=document.createElement('div');
+    _title.style.cssText='margin-bottom:12px;font-weight:600;color:var(--gold)';
+    _title.textContent='🎵 AI 분석 결과';
+    const _pre=document.createElement('pre');
+    _pre.style.cssText='white-space:pre-wrap;font-size:12px;line-height:1.7';
+    _pre.textContent=JSON.stringify(analysis,null,2);
+    result.appendChild(_title); result.appendChild(_pre);
     result.classList.add('show');
     applyAnalysisToUI(analysis);
-  } catch(e) { result.innerHTML=`<span style="color:var(--red)">분석 실패: ${e.message}</span>`; result.classList.add('show'); }
+  } catch(e) {
+    /* RISK-02 수정: 에러 메시지도 textContent로 */
+    result.innerHTML='';
+    const _err=document.createElement('span');
+    _err.style.color='var(--red)';
+    _err.textContent='분석 실패: '+(e.message||'알 수 없는 오류');
+    result.appendChild(_err);
+    result.classList.add('show');
+  }
   loading.classList.remove('show');
 }
 function applyAnalysisToUI(analysis) {
@@ -3723,7 +3756,8 @@ const GENRE_SONGFORM = {
     rhyme: 'ABAB',
     trLabel: { verse:'+6', prechorus:'-4', chorus:'T+5↔R-5', bridge:'+9', finalchorus:'+10', outro:'-8' },
     secPerLine: 7,   // 느린 소울 — 한 줄 7초
-    verseLines: 4, preLines: 2, choLines: 4, bridgeLines: 3, outroLines: 2,
+    maxScale: 1.1,
+    verseLines: 3, preLines: 2, choLines: 4, bridgeLines: 3, outroLines: 2,
   },
   // 1: 산조 재즈 격상 — Miles/Coltrane 재즈: Hook 없이 흘러가는 구조, 반복 최소화
   1: {
@@ -3734,6 +3768,7 @@ const GENRE_SONGFORM = {
     rhyme: 'ABCB',  // 재즈: 2번째·4번째 줄만 라임
     trLabel: { verse:'+5', chorus:'T+4↔R-4', bridge:'+8', finalchorus:'+9', outro:'-7' },
     secPerLine: 6,
+    maxScale: 1.2,
     verseLines: 4, preLines: 0, choLines: 4, bridgeLines: 3, outroLines: 2,
   },
   // 2: 판소리 소울 — Gospel/R&B Shout: 짧고 강한 훅, 반복 많음
@@ -3745,6 +3780,7 @@ const GENRE_SONGFORM = {
     rhyme: 'AABB',
     trLabel: { verse:'+7', prechorus:'-3', chorus:'T+6↔R-6', bridge:'+10', finalchorus:'+10', outro:'-8' },
     secPerLine: 5,
+    maxScale: 1.2,
     verseLines: 4, preLines: 2, choLines: 4, bridgeLines: 3, outroLines: 2,
   },
   // 3: 민요 블루스 — 12-bar Delta Blues: AAB call-response 구조
@@ -3756,6 +3792,7 @@ const GENRE_SONGFORM = {
     rhyme: 'AAB',   // 블루스 전통: 1·2줄 같은 라임, 3줄 해소
     trLabel: { verse:'+6', chorus:'T+5↔R-5', bridge:'+9', finalchorus:'+10', outro:'-7' },
     secPerLine: 6,
+    maxScale: 1.2,
     verseLines: 4, preLines: 0, choLines: 4, bridgeLines: 3, outroLines: 2,
   },
   // 4: 국악 궁중 힙합 — Hip-hop: Hook-Verse-Hook, 짧은 줄, 빠른 리듬
@@ -3767,6 +3804,7 @@ const GENRE_SONGFORM = {
     rhyme: 'AABB',
     trLabel: { hook:'T+6↔R-5', verse:'+7', bridge:'+9', outro:'-6' },
     secPerLine: 3,   // 힙합: 빠른 전달, 한 줄 3초
+    maxScale: 1.6,
     verseLines: 6, preLines: 0, choLines: 4, bridgeLines: 4, outroLines: 2,
   },
   // 5: 대금 앰비언트 — Ambient: 섹션 경계 모호, 반복 최소, 여백 극대화
@@ -3778,6 +3816,7 @@ const GENRE_SONGFORM = {
     rhyme: 'ABCB',
     trLabel: { verse:'+4', chorus:'T+3↔R-5', bridge:'+7', finalchorus:'+8', outro:'-9' },
     secPerLine: 9,   // 앰비언트: 매우 느림, 한 줄 9초
+    maxScale: 1.1,
     verseLines: 3, preLines: 0, choLines: 3, bridgeLines: 2, outroLines: 2,
   },
   // 6: 아쟁 딥 소울 — Slow Soul Ballad: Verse 긴 서사, Chorus 짧은 해방
@@ -3789,7 +3828,8 @@ const GENRE_SONGFORM = {
     rhyme: 'ABAB',
     trLabel: { verse:'+6', prechorus:'-3', chorus:'T+5↔R-6', bridge:'+9', finalchorus:'+10', outro:'-9' },
     secPerLine: 8,   // 딥소울: 느리고 무거움
-    verseLines: 4, preLines: 2, choLines: 4, bridgeLines: 3, outroLines: 2,
+    maxScale: 1.1,
+    verseLines: 3, preLines: 2, choLines: 3, bridgeLines: 3, outroLines: 2,
   },
   // 7: 네오조선 퓨전 — Neo Soul: Verse-Chorus 반복, 세련된 구조
   7: {
@@ -3800,6 +3840,7 @@ const GENRE_SONGFORM = {
     rhyme: 'ABAB',
     trLabel: { verse:'+6', prechorus:'-4', chorus:'T+5↔R-5', bridge:'+8', finalchorus:'+10', outro:'-8' },
     secPerLine: 5,
+    maxScale: 1.2,
     verseLines: 4, preLines: 2, choLines: 4, bridgeLines: 3, outroLines: 2,
   },
 };
@@ -4304,7 +4345,10 @@ function enforceDuration(input) {
   const mins=parseInt(match[1]); const secs=parseInt(match[2]);
   if (secs>=60) { input.value=`${mins+1}:00`; input.style.borderColor='var(--red)'; setTimeout(()=>input.style.borderColor='',1500); showToast('⚠️ 초(秒)는 00~59 사이여야 합니다.'); return; }
   const totalSec=mins*60+secs;
-  if (totalSec<180) { input.value='3:00'; input.style.borderColor='var(--red)'; setTimeout(()=>input.style.borderColor='',1500); showToast('⚠️ 최소 길이는 3:00 입니다!'); }
+  /* PARTIAL-04 수정: 쇼츠 모드 여부에 따라 최솟값 통일 */
+  const minSec = STATE.shortsMode ? 30 : 180;
+  const minLabel = STATE.shortsMode ? '0:30' : '3:00';
+  if (totalSec < minSec) { input.value = minLabel; input.style.borderColor='var(--red)'; setTimeout(()=>input.style.borderColor='',1500); showToast(`⚠️ 최소 길이는 ${minLabel} 입니다!`); }
   else { input.style.borderColor='var(--teal)'; setTimeout(()=>input.style.borderColor='',1200); }
 }
 function softCheckDuration(input) {
@@ -4837,9 +4881,8 @@ function syncSliders() {
     ratioSlider.style.setProperty('--rpct',pct2);
     document.getElementById('ratioKoreanLabel').textContent=`국악 ${kr}%`;
     document.getElementById('ratioModernLabel').textContent=`정통 ${100-kr}%`;
-    const _rDesc = kr>=90?'정통 국악 압도 · 현대는 숨결만':kr>=75?'조선 미학 정통화 · 글로벌 승화':kr>=50?'국악과 정통의 균형 퓨전':kr>=25?'정통 기반 · 국악 포인트':'현대 정통 중심 · 국악 컬러';
     const _rdEl = document.getElementById('ratioDescLabel');
-    if (_rdEl) _rdEl.textContent = _rDesc;
+    if (_rdEl) _rdEl.textContent = _ratioDesc(kr);
   }
 }
 
@@ -4856,15 +4899,20 @@ function saveCurrentPreset() {
 }
 function loadPresets() {
   let presets=JSON.parse(localStorage.getItem('gugak_presets')||'[]');
-  if(!presets.length){alert("저장된 프리셋이 없습니다.");return;}
+  if(!presets.length){showToast('⚠️ 저장된 프리셋이 없습니다.');return;}
   const modal=document.createElement('div');
   modal.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999';
+  const closeModal=()=>modal.remove();
   modal.innerHTML=`<div style="background:var(--surface);padding:20px;border-radius:12px;width:400px;max-width:90%">
     <h3 style="margin-bottom:15px">내 프리셋</h3>
     <div style="max-height:300px;overflow-y:auto">${presets.map((p,i)=>`<div style="padding:8px;border-bottom:1px solid var(--border);cursor:pointer" onclick="loadPreset(${i})"><strong>${p.name}</strong><br><span style="font-size:11px;color:var(--muted)">${new Date(p.timestamp).toLocaleString()}</span></div>`).join('')}</div>
-    <button class="btn btn-outline" style="margin-top:15px;width:100%" onclick="document.querySelector('.modal').remove()">닫기</button>
+    <button class="btn btn-outline" style="margin-top:15px;width:100%" id="_presetModalClose">닫기</button>
   </div>`;
   modal.className='modal'; document.body.appendChild(modal);
+  document.getElementById('_presetModalClose').onclick=closeModal;
+  modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});
+  const _escHandler=e=>{if(e.key==='Escape'){closeModal();document.removeEventListener('keydown',_escHandler);}};
+  document.addEventListener('keydown',_escHandler);
 }
 function loadPreset(index) {
   let presets=JSON.parse(localStorage.getItem('gugak_presets')||'[]');
@@ -4876,12 +4924,12 @@ function loadPreset(index) {
 /* ═══════════════════════════════════════════
    UTILITIES
 ═══════════════════════════════════════════ */
-function fallbackCopy(text){const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');showToast();}catch(e){}document.body.removeChild(ta);}
-function doCopy(text){if(!text||!text.trim())return;if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(text).then(()=>showToast()).catch(()=>fallbackCopy(text));else fallbackCopy(text);}
+function fallbackCopy(text,msg){const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');showToast(msg||'✅ 복사 완료!');}catch(e){showToast('⚠️ 복사 실패');}document.body.removeChild(ta);}
+function doCopy(text,msg){if(!text||!text.trim())return;const _m=msg||'✅ 복사 완료!';if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(text).then(()=>showToast(_m)).catch(()=>fallbackCopy(text,_m));else fallbackCopy(text,_m);}
 function copyPrompt(){
   const text = (document.getElementById('promptBox').textContent || '').trim();
   if (!text || text.includes('←')) { showToast('⚠️ 복사할 프롬프트가 없습니다.'); return; }
-  doCopy(text);
+  doCopy(text, `📋 프롬프트 복사 완료! (${text.length}자)`);
 }
 function copyField(id){const el=document.getElementById(id);doCopy(el.value!==undefined?el.value:el.textContent);}
 function showToast(msg="✅ 완료!"){const t=document.getElementById('toast');if(t){t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}}
@@ -4934,7 +4982,7 @@ function renderAll() {
   if(STATE.concept!==null)document.getElementById('concept_'+STATE.concept)?.classList.add('active');
   if(STATE.vocalStyle!==null)document.getElementById('vs_'+STATE.vocalStyle)?.classList.add('active');
   if(STATE.gugakVocalStyle!==null)document.getElementById('gvs_'+STATE.gugakVocalStyle)?.classList.add('active');
-  if(STATE.instrCategory){const[cat,idx]=STATE.instrCategory.split('_');document.getElementById(`instr_${cat[0]}_${idx}`)?.classList.add('active');}
+  if(STATE.instrCategory){const[cat,idx]=STATE.instrCategory.split('_');const _pfx={string:'s',percussion:'p',wind:'w'};document.getElementById(`instr_${_pfx[cat]||cat[0]}_${idx}`)?.classList.add('active');}
   document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active'));
   const activeGBtn=[...document.querySelectorAll('.gender-btn')].find(b=>(STATE.gender==='all'&&b.textContent.includes('전체'))||(STATE.gender==='male'&&b.textContent.includes('남성'))||(STATE.gender==='female'&&b.textContent.includes('여성')));
   if(activeGBtn)activeGBtn.classList.add('active');
@@ -5466,12 +5514,8 @@ function applyShortsPreset(idx) {
   // 구음 강도 버튼 UI 반영
   document.querySelectorAll('.gstrength-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('gstrength_maximum')?.classList.add('active');
-  // 구음 음역 UI 반영
-  document.querySelectorAll("[id^='gpitch_']").forEach(b => b.classList.remove('active'));
-  document.getElementById('gpitch_' + preset.gueumPitch)?.classList.add('active');
-  const pitchVal = {high:4,midhigh:3,midlow:2,low:1}[preset.gueumPitch] || 3;
-  const gpSlider = document.getElementById('gueumPitchSlider');
-  if (gpSlider) { gpSlider.value = pitchVal; updateGueumPitchSlider(pitchVal); }
+  // DUP-04 수정: 구음 음역 UI — _syncGueumPitchUI 헬퍼로 통합
+  _syncGueumPitchUI(preset.gueumPitch);
   // 구음 성별 UI 반영
   document.querySelectorAll("[id^='ggender_']").forEach(b => b.classList.remove('active'));
   document.getElementById('ggender_' + preset.gueumGender)?.classList.add('active');
@@ -5486,20 +5530,14 @@ function applyShortsPreset(idx) {
       ratioSlider.style.setProperty('--rpct', pct2);
       document.getElementById('ratioKoreanLabel').textContent = `국악 ${preset.koreanRatio}%`;
       document.getElementById('ratioModernLabel').textContent = `정통 ${100 - preset.koreanRatio}%`;
-      const desc = preset.koreanRatio >= 85 ? '정통 국악 압도 · 현대는 숨결만'
-        : preset.koreanRatio >= 70 ? '조선 미학 정통화 · 글로벌 승화'
-        : preset.koreanRatio >= 55 ? '국악과 정통의 균형 퓨전'
-        : preset.koreanRatio >= 40 ? '정통 기반 · 국악 포인트' : '현대 정통 중심 · 국악 컬러';
-      document.getElementById('ratioDescLabel').textContent = desc;
+      document.getElementById('ratioDescLabel').textContent = _ratioDesc(preset.koreanRatio);
     }
   }
 
-  /* ── 7. 국악기 강도 (비율 슬라이더 이후 처리 — 중간 buildPrompt 방지) ── */
+  /* ── 7. 국악기 강도 (비율 슬라이더 이후 처리 — koreanRatio 덮어쓰기 방지) ── */
   STATE.koreanDominance = preset.koreanDominance;
-  /* DEAD-3 수정: koreanDominance → koreanRatio 동기화 (buildPrompt의 dom 값 반영) */
-  if (preset.koreanDominance !== undefined) {
-    STATE.koreanRatio = preset.koreanDominance;
-  }
+  /* BUG-01 수정: koreanDominance로 koreanRatio를 덮어쓰지 않음
+     koreanRatio는 Step 6에서 이미 preset.koreanRatio로 정확히 세팅됨 */
   const kdSlider = document.getElementById('koreanDomSlider');
   if (kdSlider) {
     kdSlider.value = preset.koreanDominance;
@@ -5678,8 +5716,7 @@ function copyKrTranslation() {
   const el = document.getElementById('krTranslationOut');
   const text = (el?.textContent || '').trim();
   if (!text || text.startsWith('번역 오류:')) { showToast('⚠️ 복사할 번역이 없습니다.'); return; }
-  doCopy(text);
-  showToast('📋 한글 번역 복사 완료!');
+  doCopy(text, '📋 한글 번역 복사 완료!');
 }
 
 /* ═══════════════════════════════════════════
@@ -5787,7 +5824,7 @@ Return ONLY the JSON object.`;
     if (!silent) showToast('⚠️ 슈퍼 프롬프트 실패: ' + (e.message || '알 수 없는 오류'));
     console.warn('[genSuperPrompt 오류]', e);
   }
-  if (!silent) loading.classList.remove('show');
+  if (!silent) loading?.classList.remove('show');
 }
 
 function applySuperVariation(idx) {
@@ -5799,8 +5836,7 @@ function applySuperVariation(idx) {
 
 function copySuperVariation(idx) {
   if (!_superVariations[idx]) { showToast('⚠️ 먼저 슈퍼 프롬프트를 생성해주세요!'); return; }
-  doCopy(_superVariations[idx].prompt);
-  showToast(`📋 VAR ${idx+1} 복사 완료!`);
+  doCopy(_superVariations[idx].prompt, `📋 VAR ${idx+1} 복사 완료!`);
 }
 
 /* UPG-5: 3종 한번에 복사 */
@@ -5809,13 +5845,13 @@ function copyAllSuperVariations() {
   const text = _superVariations.map((v,i) =>
     `【VAR ${i+1} · ${v.label}】\n${v.prompt}`
   ).join('\n\n──────────────────────────\n\n');
-  doCopy(text);
-  showToast('📋 3종 전체 복사 완료! Suno에서 A/B/C 테스트 가능');
+  doCopy(text, '📋 3종 전체 복사 완료! Suno에서 A/B/C 테스트 가능');
 }
 
-/* 구버전 호환 — BUG-1 수정: type 파라미터 무시 버그 명시, 기본값 0 유지 (외부 호출 없을 시 삭제 가능) */
+/* PARTIAL-01 수정: 구버전 호환 함수 — 외부에서 직접 호출 시 항상 VAR1만 적용됨.
+   대신 applySuperVariation(idx) / copySuperVariation(idx) 를 직접 사용하세요. */
 function applySuperPrompt()       { applySuperVariation(0); }
-function copySuperPrompt(/*type ignored*/) { copySuperVariation(0); }
+function copySuperPrompt(type)    { copySuperVariation(typeof type === 'number' ? type : 0); }
 
 /* ═══════════════════════════════════════════
    UPG-1: 프롬프트 히스토리 (최근 10개 localStorage 저장)
@@ -5849,8 +5885,30 @@ function restoreLastPrompt() {
 function showPromptHistory() {
   const history = loadPromptHistory();
   if (!history.length) { showToast('⚠️ 저장된 히스토리가 없습니다.'); return; }
-  const msg = history.map((p,i) => `[${i+1}] ${p.slice(0,80)}...`).join('\n\n');
-  alert('📋 최근 프롬프트 히스토리 (최대 10개):\n\n' + msg);
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999';
+  const closeModal = () => modal.remove();
+  const items = history.map((p, i) =>
+    `<div style="padding:10px;border-bottom:1px solid var(--border);cursor:pointer;font-size:12px;font-family:'Space Mono',monospace;line-height:1.5;color:var(--muted)"
+      onclick="(function(){document.getElementById('promptBox').textContent=${JSON.stringify(p)};closeHistoryModal();showToast('↩️ 히스토리 복원 완료!');})()">
+      <span style="color:var(--gold);font-weight:700">[${i+1}]</span> ${p.slice(0, 120)}${p.length > 120 ? '…' : ''}
+    </div>`
+  ).join('');
+  modal.innerHTML = `<div style="background:var(--surface);padding:20px;border-radius:12px;width:560px;max-width:92%">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <h3 style="font-size:14px;color:var(--text)">📋 최근 프롬프트 히스토리 (최대 ${MAX_HISTORY}개)</h3>
+      <button class="btn btn-outline" style="padding:3px 10px;font-size:11px" id="_historyModalClose">✕ 닫기</button>
+    </div>
+    <div style="max-height:360px;overflow-y:auto;border:1px solid var(--border);border-radius:8px">${items}</div>
+    <div style="margin-top:10px;font-size:11px;color:var(--dim)">항목 클릭 시 09 섹션 프롬프트 박스에 바로 복원됩니다.</div>
+  </div>`;
+  modal.id = '_historyModal';
+  document.body.appendChild(modal);
+  window.closeHistoryModal = closeModal;
+  document.getElementById('_historyModalClose').onclick = closeModal;
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  const _esc = e => { if (e.key === 'Escape') { closeModal(); document.removeEventListener('keydown', _esc); } };
+  document.addEventListener('keydown', _esc);
 }
 
 /* _doBuildPrompt 완료 후 히스토리 자동 저장 훅 — buildPrompt 내부에서 직접 호출 */
@@ -5864,7 +5922,7 @@ function _saveHistoryAfterBuild() {
 /* UPG-2: STATE 내보내기 */
 function exportState() {
   const exportData = {
-    version: 'v29',
+    version: 'v30',
     timestamp: new Date().toISOString(),
     state: {
       genre: STATE.genre, moods: STATE.moods, concept: STATE.concept,
@@ -5907,10 +5965,12 @@ function importState() {
           'gueumStyle','hanSoulStyle','gueumStrength','musicKey','koreanScale',
           'energyArc','songDuration','instrCategory'];
         keys.forEach(k => { if (s[k] !== undefined) STATE[k] = s[k]; });
-        // instrCategory 복원 시 악기 재선택
+        // instrCategory 복원 시 악기 재선택 — BUG-07 수정: prefix map 방식 사용
         if (s.instrCategory) {
-          const [cat, idx] = s.instrCategory.split('_');
-          if (cat && idx !== undefined) selectInstrByCategory(cat, parseInt(idx), true);
+          const parts = s.instrCategory.split('_');
+          const cat = parts[0];
+          const idx = parseInt(parts[1], 10);
+          if (cat && !isNaN(idx)) selectInstrByCategory(cat, idx, true);
         }
         syncSliders(); renderAll(); syncGueumUI(); buildPrompt(true);
         showToast('✅ 설정 불러오기 완료!');
@@ -6028,7 +6088,7 @@ const QE_COMBOS = [
     gueumPitch:'high', gueumGender:'both', gueumStrength:'maximum',
     gueumStyleIdx:1,
     koreanGrooves:[0,3,10],
-    koreanFeelings:[1,4,8],
+    koreanFeelings:[1,4,7],
     blackSoulElements:[2,4],
     humanFeelElements:[0,3],
     bassStyles:[2],
@@ -6048,7 +6108,7 @@ const QE_COMBOS = [
     gueumPos:['mid'],
     gueumPitch:'midlow', gueumGender:'female', gueumStrength:'normal',
     gueumStyleIdx:3,
-    koreanGrooves:[4,7,12],
+    koreanGrooves:[4,7,11],
     koreanFeelings:[4,6],
     blackSoulElements:[0],
     humanFeelElements:[2,5,6],
@@ -6205,11 +6265,12 @@ async function runQualityEngine() {
 
     // ── STEP 4: Korean Groove + Feeling ─────────────
     qeSetStep(3);
-    STATE.koreanGrooves   = [...c.koreanGrooves];
-    STATE.koreanFeelings  = [...c.koreanFeelings];
+    // BUG-05 수정: 배열 범위 초과 인덱스 런타임 가드
+    STATE.koreanGrooves   = c.koreanGrooves.filter(i => i < DATA.koreanGrooves.length);
+    STATE.koreanFeelings  = c.koreanFeelings.filter(i => i < DATA.koreanFeelings.length);
     STATE.hanSoulStyle    = c.hanSoulStyle;
     renderAll();
-    qeSetStep(4, `Korean Groove ${c.koreanGrooves.length}개 · Korean Feeling ${c.koreanFeelings.length}개 · 한소울 스타일 #${c.hanSoulStyle}`);
+    qeSetStep(4, `Korean Groove ${STATE.koreanGrooves.length}개 · Korean Feeling ${STATE.koreanFeelings.length}개 · 한소울 스타일 #${c.hanSoulStyle}`);
     await sleep(150);
 
     // ── STEP 5: DNA 3회 탐색 ────────────────────────
@@ -6296,9 +6357,14 @@ async function runQualityEngine() {
   } catch(err) {
     showToast('⚠️ 퀄리티 엔진 오류: '+err.message);
     console.error(err);
+    /* RISK-03 수정: 오류 발생 시 진행 UI 초기화 */
+    const pw2 = document.getElementById('qeProgressWrap');
+    if (pw2) pw2.style.display = 'none';
+    const bar2 = document.getElementById('qeProgressBar');
+    if (bar2) bar2.style.width = '0%';
   } finally {
     _qeRunning = false;
-    if (btn) btn.disabled = false;
+    if (btn) { btn.disabled = false; btn.textContent = _qeSelectedCombo ? `⚡ "${_qeSelectedCombo.name}" 퀄리티 엔진 실행` : '⚡ 퀄리티 엔진 실행'; }
   }
 }
 
@@ -6312,8 +6378,7 @@ async function genSuperPromptSilent() {
 function qeCopyFinal() {
   if (!_qeFinalPrompt) return;
   const safe = sanitizeSunoPrompt(_qeFinalPrompt, 230);
-  doCopy(safe);
-  showToast(`📋 복사 완료! (${safe.length}자 — Suno 바로 붙여넣기 가능)`);
+  doCopy(safe, `📋 복사 완료! (${safe.length}자 — Suno 바로 붙여넣기 가능)`);
 }
 
 async function qeRerunDNA() {
