@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 v29 - Joseon Core</title>
+<title>BV 뮤직 프롬프트 메이커 v30 - Joseon Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -497,7 +497,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 AUTO COMBO · 퀄리티 엔진 · v29 최적화</div>
       </div>
     </div>
-    <div class="header-badge">JOSEON CORE v29 · 구악창법 AUTO COMBO ⚡</div>
+    <div class="header-badge">JOSEON CORE v30 · 가사 엔진 v2 · 장르별 송폼 ⚡</div>
   </div>
 </header>
 
@@ -3703,50 +3703,331 @@ Output ONLY valid JSON, nothing else.`;
   } catch(e) { document.getElementById('titleEn').textContent=e.message||'생성 실패'; document.getElementById('titleKr').textContent='—'; }
   loading.classList.remove('show');
 }
+/* ═══════════════════════════════════════════════════════════════════
+   v30 가사 생성 — 5가지 개선 통합
+   ① 장르별 송폼 분기  ② T/R 수치 주입  ③ 장르별 secPerLine
+   ④ 라이밍 규칙      ⑤ 가사 금칙어 확장
+═══════════════════════════════════════════════════════════════════ */
+
+/* ── ① 장르별 송폼 정의 ──────────────────────────────────────────
+   각 장르의 실제 히트곡 구조를 기반으로 한 송폼 템플릿.
+   형식: { sections, rhyme, trLabel, noteEn, noteKr }
+────────────────────────────────────────────────────────────────── */
+const GENRE_SONGFORM = {
+  // 0: 조선 궁중 소울 — Sade / D'Angelo 스타일: 긴 Verse, 짧은 Chorus, Bridge 無 가능
+  0: {
+    id: 'court_soul',
+    nameEn: 'Court Soul Form (Sade-slow)',
+    nameKr: '궁중 소울 폼',
+    sections: ['intro','verse','prechorus','chorus','verse','prechorus','chorus','bridge','finalchorus','outro'],
+    rhyme: 'ABAB',
+    trLabel: { verse:'+6', prechorus:'-4', chorus:'T+5↔R-5', bridge:'+9', finalchorus:'+10', outro:'-8' },
+    secPerLine: 7,   // 느린 소울 — 한 줄 7초
+    verseLines: 4, preLines: 2, choLines: 4, bridgeLines: 3, outroLines: 2,
+  },
+  // 1: 산조 재즈 격상 — Miles/Coltrane 재즈: Hook 없이 흘러가는 구조, 반복 최소화
+  1: {
+    id: 'sanjo_jazz',
+    nameEn: 'Jazz Elevation Form (Miles-space)',
+    nameKr: '산조 재즈 폼',
+    sections: ['intro','verse','chorus','verse','chorus','bridge','finalchorus','outro'],
+    rhyme: 'ABCB',  // 재즈: 2번째·4번째 줄만 라임
+    trLabel: { verse:'+5', chorus:'T+4↔R-4', bridge:'+8', finalchorus:'+9', outro:'-7' },
+    secPerLine: 6,
+    verseLines: 4, preLines: 0, choLines: 4, bridgeLines: 3, outroLines: 2,
+  },
+  // 2: 판소리 소울 — Gospel/R&B Shout: 짧고 강한 훅, 반복 많음
+  2: {
+    id: 'pansori_soul',
+    nameEn: 'Pansori Soul Form (Gospel-shout)',
+    nameKr: '판소리 소울 폼',
+    sections: ['intro','verse','prechorus','chorus','verse','prechorus','chorus','bridge','finalchorus','outro'],
+    rhyme: 'AABB',
+    trLabel: { verse:'+7', prechorus:'-3', chorus:'T+6↔R-6', bridge:'+10', finalchorus:'+10', outro:'-8' },
+    secPerLine: 5,
+    verseLines: 4, preLines: 2, choLines: 4, bridgeLines: 3, outroLines: 2,
+  },
+  // 3: 민요 블루스 — 12-bar Delta Blues: AAB call-response 구조
+  3: {
+    id: 'minyo_blues',
+    nameEn: 'Minyo Blues Form (12-bar AAB)',
+    nameKr: '민요 블루스 폼',
+    sections: ['intro','verse','chorus','verse','chorus','bridge','finalchorus','outro'],
+    rhyme: 'AAB',   // 블루스 전통: 1·2줄 같은 라임, 3줄 해소
+    trLabel: { verse:'+6', chorus:'T+5↔R-5', bridge:'+9', finalchorus:'+10', outro:'-7' },
+    secPerLine: 6,
+    verseLines: 4, preLines: 0, choLines: 4, bridgeLines: 3, outroLines: 2,
+  },
+  // 4: 국악 궁중 힙합 — Hip-hop: Hook-Verse-Hook, 짧은 줄, 빠른 리듬
+  4: {
+    id: 'gugak_hiphop',
+    nameEn: 'Gugak HipHop Form (Hook-first)',
+    nameKr: '국악 힙합 폼',
+    sections: ['hook','verse','hook','verse','bridge','hook','outro'],
+    rhyme: 'AABB',
+    trLabel: { hook:'T+6↔R-5', verse:'+7', bridge:'+9', outro:'-6' },
+    secPerLine: 3,   // 힙합: 빠른 전달, 한 줄 3초
+    verseLines: 6, preLines: 0, choLines: 4, bridgeLines: 4, outroLines: 2,
+  },
+  // 5: 대금 앰비언트 — Ambient: 섹션 경계 모호, 반복 최소, 여백 극대화
+  5: {
+    id: 'daegeum_ambient',
+    nameEn: 'Daegeum Ambient Form (breath-space)',
+    nameKr: '대금 앰비언트 폼',
+    sections: ['intro','verse','chorus','bridge','finalchorus','outro'],
+    rhyme: 'ABCB',
+    trLabel: { verse:'+4', chorus:'T+3↔R-5', bridge:'+7', finalchorus:'+8', outro:'-9' },
+    secPerLine: 9,   // 앰비언트: 매우 느림, 한 줄 9초
+    verseLines: 3, preLines: 0, choLines: 3, bridgeLines: 2, outroLines: 2,
+  },
+  // 6: 아쟁 딥 소울 — Slow Soul Ballad: Verse 긴 서사, Chorus 짧은 해방
+  6: {
+    id: 'ajaeng_deepsoul',
+    nameEn: 'Ajaeng Deep Soul Form (slow-ballad)',
+    nameKr: '아쟁 딥 소울 폼',
+    sections: ['intro','verse','prechorus','chorus','verse','prechorus','chorus','bridge','finalchorus','outro'],
+    rhyme: 'ABAB',
+    trLabel: { verse:'+6', prechorus:'-3', chorus:'T+5↔R-6', bridge:'+9', finalchorus:'+10', outro:'-9' },
+    secPerLine: 8,   // 딥소울: 느리고 무거움
+    verseLines: 4, preLines: 2, choLines: 4, bridgeLines: 3, outroLines: 2,
+  },
+  // 7: 네오조선 퓨전 — Neo Soul: Verse-Chorus 반복, 세련된 구조
+  7: {
+    id: 'neojoseon_fusion',
+    nameEn: 'NeoJoseon Fusion Form (Neo Soul)',
+    nameKr: '네오조선 퓨전 폼',
+    sections: ['intro','verse','prechorus','chorus','verse','prechorus','chorus','bridge','finalchorus','outro'],
+    rhyme: 'ABAB',
+    trLabel: { verse:'+6', prechorus:'-4', chorus:'T+5↔R-5', bridge:'+8', finalchorus:'+10', outro:'-8' },
+    secPerLine: 5,
+    verseLines: 4, preLines: 2, choLines: 4, bridgeLines: 3, outroLines: 2,
+  },
+};
+/* 장르 미선택 시 기본값 */
+const SONGFORM_DEFAULT = GENRE_SONGFORM[7];
+
+/* ── ⑤ 가사 전용 금칙어 (AI 클리셰 표현) ──────────────────────── */
+const LYRIC_CLICHE_WORDS_EN = [
+  // 너무 흔한 이미지
+  'neon','dawn','echo','hollow','fade','shiver','midnight','moonlight',
+  // AI 특유 추상어
+  'symphony','melody','harmony','rhythm','chord','music','song',
+  // 과잉 감정어
+  'eternal','infinite','forever','destiny','soul-deep','transcend',
+  // 클리셰 표현
+  'burning inside','lost in the dark','feel alive','set me free',
+  'in the shadows','through the pain','rise above','break the chains',
+];
+const LYRIC_CLICHE_WORDS_KR = [
+  '네온','새벽','메아리','허공','선율','멜로디','코드','하모니',
+  '영원히','운명','영혼 깊이','초월','타오르는','어둠 속에','살아있어',
+  '그림자 속','고통 너머','일어서','사슬을 끊',
+];
+
 async function genLyrics(lang) {
-  const current=document.getElementById('promptBox').textContent;
-  const isEn=lang==='en';
-  const loading=document.getElementById(isEn?'lyricsEnLoading':'lyricsKrLoading');
-  const out=document.getElementById(isEn?'lyricsEnOut':'lyricsKrOut');
-  const durationInput=document.getElementById(isEn?'lyricsDurationEn':'lyricsDurationKr');
-  if(durationInput) enforceDuration(durationInput);
-  const duration=durationInput?.value||'3:00';
+  const current = document.getElementById('promptBox').textContent;
+  const isEn = lang === 'en';
+  const loading = document.getElementById(isEn ? 'lyricsEnLoading' : 'lyricsKrLoading');
+  const out     = document.getElementById(isEn ? 'lyricsEnOut'     : 'lyricsKrOut');
+  const durationInput = document.getElementById(isEn ? 'lyricsDurationEn' : 'lyricsDurationKr');
+  if (durationInput) enforceDuration(durationInput);
+  const duration = durationInput?.value || '3:00';
   const [minsStr, secsStr] = duration.split(':');
-  const totalSec = parseInt(minsStr)*60 + parseInt(secsStr||'0');
-  const secPerLine = 5;
-  const verseLines  = Math.max(4, Math.round((totalSec * 0.28) / secPerLine));
-  const chorusLines = Math.max(4, Math.round((totalSec * 0.20) / secPerLine));
-  const bridgeLines = Math.max(3, Math.round((totalSec * 0.14) / secPerLine));
-  const outroLines  = Math.max(2, Math.round((totalSec * 0.10) / secPerLine));
-  /* 섹션 반복 수: 길이에 따라 자동 조정 (핵심 길이 제어 수단) */
-  const repeatCount = totalSec >= 270 ? 3 : 2;
-  let structureEn = `[Intro]\n(${Math.round(totalSec*0.08)} seconds)\n\n`;
-  let structureKr = `[인트로]\n(${Math.round(totalSec*0.08)}초)\n\n`;
-  for(let i=1;i<=repeatCount;i++){
-    /* ── 코러스 강도 점층: 반복마다 에너지 레벨 상승 표시 ── */
-    const chorusIntEn = i === 1
-      ? `Intensity 6/10 — establish the hook clearly`
-      : `Intensity ${Math.min(8, 6+i)}/10 — BIGGER and more urgent than Chorus ${i-1}`;
-    const chorusIntKr = i === 1
-      ? `강도 6/10 — 훅을 명확히 확립`
-      : `강도 ${Math.min(8, 6+i)}/10 — 앞 후렴보다 더 크고 강하게`;
-    structureEn += `[Verse ${i}]\n(WRITE EXACTLY ${verseLines} lines — poetic vivid imagery, build emotional tension)\n\n[Chorus]\n(${chorusIntEn} — WRITE EXACTLY ${chorusLines} lines — HOOK RULES: anchor line first, repeat it at least once, max 6 words per line)\n\n`;
-    structureKr += `[Verse ${i}]\n(정확히 ${verseLines}줄 — 시적 이미지, 감정 긴장 쌓기)\n\n[Chorus]\n(${chorusIntKr} — 정확히 ${chorusLines}줄 — 훅 규칙: 앵커 라인 먼저, 최소 1회 반복, 줄당 최대 6단어)\n\n`;
+  const totalSec = parseInt(minsStr) * 60 + parseInt(secsStr || '0');
+
+  /* ── ① 장르에 맞는 송폼 선택 ── */
+  const form = (STATE.genre !== null && GENRE_SONGFORM[STATE.genre])
+    ? GENRE_SONGFORM[STATE.genre]
+    : SONGFORM_DEFAULT;
+
+  /* ── ③ 장르별 secPerLine → 줄 수 결정 ──
+     총 가사 가용 시간 = totalSec × 0.85 (Intro·기악 구간 제외)
+     secPerLine은 장르 템포 특성 반영
+  ── */
+  const spl = form.secPerLine;
+  const usableSec = totalSec * 0.85;
+  // 섹션 수 기반으로 줄 수 스케일 — 기본값은 폼에서 가져오되 곡 길이로 보정
+  const scaleFactor = Math.max(0.8, Math.min(1.4, usableSec / 170));
+  const verseLines  = Math.round(form.verseLines  * scaleFactor);
+  const preLines    = form.preLines;   // Pre-Chorus는 항상 짧게 고정
+  const choLines    = Math.round(form.choLines    * scaleFactor);
+  const bridgeLines = Math.round(form.bridgeLines * scaleFactor);
+  const outroLines  = form.outroLines;
+
+  /* ── T/R 수치 맵 ── */
+  const tr = form.trLabel;
+
+  /* ── 송폼 구조 문자열 빌드 ── */
+  const isHiphop = (form.id === 'gugak_hiphop');
+  const hasPreChorus = form.sections.includes('prechorus');
+
+  let structureEn = `[Intro]\n(instrumental — ${Math.round(totalSec*0.07)} sec)\n\n`;
+  let structureKr = `[인트로]\n(기악 — ${Math.round(totalSec*0.07)}초)\n\n`;
+
+  if (isHiphop) {
+    /* 힙합 폼: Hook → Verse → Hook → Verse → Bridge → Hook → Outro */
+    structureEn +=
+      `[Hook] Tension ${tr.hook}\n(WRITE EXACTLY ${choLines} lines — catchy, punchy, max 6 words per line, instant earworm)\n\n` +
+      `[Verse 1] Tension ${tr.verse}\n(WRITE EXACTLY ${verseLines} lines — storytelling, rhythmic delivery, build tension, rhyme scheme: ${form.rhyme})\n\n` +
+      `[Hook] Tension ${tr.hook}\n(REPEAT the same hook — same lines as the first Hook)\n\n` +
+      `[Verse 2] Tension ${tr.verse}\n(WRITE EXACTLY ${verseLines} lines — escalate the story, more intense than Verse 1, rhyme scheme: ${form.rhyme})\n\n` +
+      `[Bridge] Tension ${tr.bridge}\n(WRITE EXACTLY ${bridgeLines} lines — maximum tension, pull back before the final drop)\n\n` +
+      `[Hook - Final] Tension +10\n[Big Finish]\n(INTENSITY 10/10 — SAME hook lines — but feel LOUDER, more INEVITABLE)\n\n` +
+      `[Outro] Release ${tr.outro}\n(WRITE EXACTLY ${outroLines} lines — energy dissolves)\n[fade out]\n[end]`;
+    structureKr +=
+      `[훅] 긴장 ${tr.hook}\n(정확히 ${choLines}줄 — 중독성, 임팩트, 줄당 최대 6단어, 즉각 귀에 꽂히는)\n\n` +
+      `[절 1] 긴장 ${tr.verse}\n(정확히 ${verseLines}줄 — 이야기 전달, 리드미컬, 긴장 쌓기, 라임 체계: ${form.rhyme})\n\n` +
+      `[훅] 긴장 ${tr.hook}\n(첫 번째 훅과 동일한 줄 반복)\n\n` +
+      `[절 2] 긴장 ${tr.verse}\n(정확히 ${verseLines}줄 — 이야기 고조, 절 1보다 더 강렬하게, 라임 체계: ${form.rhyme})\n\n` +
+      `[브릿지] 긴장 ${tr.bridge}\n(정확히 ${bridgeLines}줄 — 최대 긴장, 마지막 드롭 전 수축)\n\n` +
+      `[훅 - 마지막] 긴장 +10\n[Big Finish]\n(강도 10/10 — 동일한 훅 — 더 크고, 더 필연적으로)\n\n` +
+      `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지 소멸)\n[fade out]\n[end]`;
+  } else {
+    /* 일반 폼: Verse → (Pre-Chorus) → Chorus 반복 */
+    const repeatCount = totalSec >= 270 ? 3 : 2;
+    for (let i = 1; i <= repeatCount; i++) {
+      const choIntEn = i === 1
+        ? `Tension T+5 ↔ Release R-5 — establish the hook clearly`
+        : `Tension T+${Math.min(8, 5+i)} ↔ Release R-${Math.min(8, 5+i)} — BIGGER than Chorus ${i-1}`;
+      const choIntKr = i === 1
+        ? `긴장 T+5 ↔ 이완 R-5 — 훅을 명확히 확립`
+        : `긴장 T+${Math.min(8, 5+i)} ↔ 이완 R-${Math.min(8, 5+i)} — 앞 후렴보다 더 크게`;
+
+      structureEn += `[Verse ${i}] Tension ${tr.verse}\n(WRITE EXACTLY ${verseLines} lines — build emotional tension, rhyme scheme: ${form.rhyme}, max 8 words per line)\n\n`;
+      structureKr += `[절 ${i}] 긴장 ${tr.verse}\n(정확히 ${verseLines}줄 — 감정 긴장 쌓기, 라임 체계: ${form.rhyme}, 줄당 최대 8단어)\n\n`;
+
+      if (hasPreChorus && preLines > 0) {
+        structureEn += `[Pre-Chorus] Release ${tr.prechorus}\n(WRITE EXACTLY ${preLines} lines — pull back energy slightly, build anticipation for the chorus)\n\n`;
+        structureKr += `[프리코러스] 이완 ${tr.prechorus}\n(정확히 ${preLines}줄 — 에너지 잠시 수축, 후렴 기대감 조성)\n\n`;
+      }
+
+      structureEn += `[Chorus] ${choIntEn}\n(WRITE EXACTLY ${choLines} lines — anchor line FIRST, repeat it once, max 6 words per line, singable hook)\n\n`;
+      structureKr += `[후렴] ${choIntKr}\n(정확히 ${choLines}줄 — 앵커 라인 먼저, 1회 반복, 줄당 최대 6단어, 따라부를 수 있는 훅)\n\n`;
+    }
+
+    structureEn +=
+      `[Bridge] Tension ${tr.bridge}\n(WRITE EXACTLY ${bridgeLines} lines — maximum contrast, pull back before the final explosion)\n\n` +
+      `[Chorus - Final] Tension ${tr.finalchorus}\n[Big Finish]\n(INTENSITY 10/10 — SAME anchor line as all previous choruses — LOUDER, more URGENT, more INEVITABLE — every word costs everything)\n\n` +
+      `[Outro] Release ${tr.outro}\n(WRITE EXACTLY ${outroLines} lines — energy slowly dissolves)\n[fade out]\n[end]`;
+    structureKr +=
+      `[브릿지] 긴장 ${tr.bridge}\n(정확히 ${bridgeLines}줄 — 최대 대비, 마지막 폭발 전 수축)\n\n` +
+      `[후렴 - 마지막] 긴장 ${tr.finalchorus}\n[Big Finish]\n(강도 10/10 — 이전 모든 후렴과 동일한 앵커 라인 — 더 크고, 더 절박하고, 더 필연적으로)\n\n` +
+      `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내림)\n[fade out]\n[end]`;
   }
-  structureEn += `[Bridge]\n(WRITE EXACTLY ${bridgeLines} lines — contrast and tension, pull back energy before the final explosion)\n\n[Chorus - Final]\n[Big Finish]\n(INTENSITY 10/10 — MAXIMUM EMOTIONAL EXPLOSION — WRITE EXACTLY ${chorusLines} lines — SAME anchor line as ALL previous choruses, sung louder and held longer — this is the CLIMAX, the moment the whole song has been building toward — every word MUST feel inevitable and devastating)\n\n[Outro]\n(WRITE EXACTLY ${outroLines} lines — let the energy slowly dissolve)\n[fade out]\n[end]`;
-  structureKr += `[Bridge]\n(정확히 ${bridgeLines}줄 — 대비와 긴장, 마지막 폭발 전 에너지 잠시 수축)\n\n[Chorus - Final]\n[Big Finish]\n(강도 10/10 — 최대 감정 폭발 — 정확히 ${chorusLines}줄 — 모든 이전 후렴과 동일한 앵커 라인, 더 크고 길게 — 이것이 클라이맥스, 곡 전체가 이 순간을 향해 달려온 것 — 모든 단어가 필연적이고 강렬하게 느껴져야 함)\n\n[Outro]\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내리게)\n[fade out]\n[end]`;
+
+  /* ── ④ 라이밍 지시 + ⑤ 금칙어 ── */
+  const rhymeRuleEn = `★★ RHYME RULES (mandatory) ★★
+- Rhyme scheme: ${form.rhyme}
+- In ${form.rhyme === 'AABB' ? 'AABB: lines 1+2 rhyme together, lines 3+4 rhyme together' : form.rhyme === 'ABAB' ? 'ABAB: lines 1+3 rhyme, lines 2+4 rhyme' : form.rhyme === 'AAB' ? 'AAB (blues): lines 1+2 identical/near-identical, line 3 resolves with different rhyme' : 'ABCB: only lines 2+4 rhyme, lines 1+3 are free'}
+- End-rhyme is MANDATORY in Verse and Chorus — every section
+- Internal rhyme and assonance are bonus points
+- NEVER sacrifice meaning for rhyme — find words that do both`;
+
+  const rhymeRuleKr = `★★ 라이밍 규칙 (필수) ★★
+- 라임 체계: ${form.rhyme}
+- ${form.rhyme === 'AABB' ? 'AABB: 1·2번째 줄끼리 라임, 3·4번째 줄끼리 라임' : form.rhyme === 'ABAB' ? 'ABAB: 1·3번째 줄 라임, 2·4번째 줄 라임' : form.rhyme === 'AAB' ? 'AAB(블루스): 1·2번째 줄 동일/유사 반복, 3번째 줄 다른 라임으로 해소' : 'ABCB: 2·4번째 줄만 라임, 1·3번째 줄은 자유'}
+- 절과 후렴 모두 행말 라임 필수
+- 의미를 희생하지 않는 자연스러운 라임 추구`;
+
+  const clicheRuleEn = `★ BANNED WORDS & PHRASES (zero tolerance) ★
+- Never use: ${LYRIC_CLICHE_WORDS_EN.join(', ')}
+- Never mention any instrument, music theory term, or genre name in the lyrics
+- No clichéd imagery: teardrops falling, hearts breaking, world spinning
+- Express emotion through CONCRETE specific images — not abstract labels`;
+
+  const clicheRuleKr = `★ 금칙어 (절대 사용 금지) ★
+- 사용 불가: ${LYRIC_CLICHE_WORDS_KR.join(', ')}
+- 가사에 악기명, 음악 이론 용어, 장르명 언급 절대 금지
+- 진부한 표현 금지: 눈물이 흘러, 심장이 부서져, 세상이 돌아가
+- 추상적 감정 레이블 대신 구체적이고 감각적인 이미지로 표현`;
+
   loading.classList.add('show');
   try {
     const lyricPrompt = isEn
-      ? `You are writing lyrics for a ${duration} song (${totalSec} seconds total).\n\nCRITICAL LANGUAGE RULE: ENGLISH ONLY — not a single Korean character (한글) anywhere. Express all Korean emotional depth through English words and imagery only.\n\nRULES — ALL SECTIONS:\n1. Follow the EXACT structure below\n2. Write the EXACT number of lines specified\n3. ENGLISH ONLY — no Korean characters, no romanized Korean\n4. NEVER mention any instrument names\n\n★★ CHORUS / HOOK RULES (most important) ★★\n- Decide ONE anchor phrase (max 6 words) before writing anything — this is the emotional core of the whole song\n- The anchor MUST be the first line of every chorus\n- Repeat the anchor at least once more within each chorus (exact or slight variation)\n- All other chorus lines: max 8 words, short, singable, emotionally direct\n- The chorus must feel like a RELEASE — not poetry, but a moment that makes people sing along\n- Good anchor examples: "I still burn in the dark", "You are my tide that turns", "Let the silence say your name"\n- Bad anchors: long sentences, abstract metaphors, multi-clause lines\n\n★★★ CLIMAX / [Big Finish] RULE (MOST CRITICAL) ★★★\n- The [Chorus - Final] / [Big Finish] is the CLIMAX of the entire song\n- It uses the SAME anchor line as all previous choruses\n- But it must feel LOUDER, more URGENT, more INEVITABLE — sing it like it costs everything\n- Other lines in the final chorus: shorter, more raw, more desperate than earlier choruses\n- The song MUST feel like it has been building to this exact moment\n\n★ VERSE RULES ★\n- Verses can be poetic and layered — longer lines OK (max 10 words)\n- Use nature, light, shadow, wind, water, night, longing, grief, longing, sorrow imagery\n- Build emotional tension so the chorus feels like relief\n- Each verse should be slightly MORE tense than the last\n\n★ ESCALATION RULE ★\n- Each chorus must feel more intense than the previous one\n- Each verse must build more tension than the previous one\n- The song energy must RISE — never plateau — until the [Big Finish]\n\nMusic style (emotional reference only):\n${current}\n\nSTRUCTURE:\n${structureEn}`
-      : `${duration} 길이(${totalSec}초)의 가사를 작성합니다.\n\n전체 규칙:\n1. 아래 구조를 정확히 따를 것\n2. 각 섹션에 지정된 줄 수를 정확히 작성\n3. 한국어만 사용\n4. 악기 이름 절대 금지\n\n★★ 후렴 / 훅 규칙 (가장 중요) ★★\n- 가사 쓰기 전에 앵커 구절(최대 6단어)을 먼저 정할 것 — 곡 전체의 감정 핵심\n- 앵커는 모든 후렴의 첫 줄이어야 함\n- 각 후렴 내에서 앵커를 최소 1회 이상 반복 (동일하거나 소폭 변형)\n- 나머지 후렴 줄: 최대 8단어, 짧고, 따라부를 수 있고, 감정이 직접적\n- 후렴은 해방감·폭발감이어야 함 — 시가 아닌, 따라 부르고 싶은 순간\n\n★★★ 클라이맥스 / [Big Finish] 규칙 (최최최우선) ★★★\n- [후렴 - 마지막] / [Big Finish] 섹션은 곡 전체의 클라이맥스\n- 이전 모든 후렴과 동일한 앵커 라인 사용\n- 하지만 더 크고, 더 절박하고, 더 필연적으로 느껴져야 함\n- 마지막 후렴의 나머지 줄들: 더 짧고 더 날것으로, 이전 후렴보다 더 원초적으로\n- 곡 전체가 이 순간을 향해 달려온 것처럼 느껴져야 함\n\n★ 절(Verse) 규칙 ★\n- 절은 시적이고 깊이 있게 — 긴 줄 허용 (최대 10단어)\n- 자연·빛·그림자·바람·물·밤·그리움·한(恨) 이미지 사용\n- 각 절은 이전 절보다 더 강한 감정 긴장감을 쌓아야 함\n\n★ 점층 규칙 ★\n- 각 후렴은 이전 후렴보다 더 강렬해야 함\n- 각 절은 이전 절보다 더 긴장감이 높아야 함\n- 곡 에너지는 [Big Finish]까지 계속 상승해야 함\n\n음악 스타일 (감정 참고용):\n${current}\n\n구조:\n${structureKr}`;
+      ? `You are writing lyrics for a ${duration} song (${totalSec} seconds total).
+Song form: ${form.nameEn}
+
+CRITICAL LANGUAGE RULE: ENGLISH ONLY — not a single Korean character anywhere.
+
+${rhymeRuleEn}
+
+${clicheRuleEn}
+
+★★ CHORUS / HOOK RULES ★★
+- ONE anchor phrase (max 6 words) — decide before writing anything
+- Anchor MUST be the first line of every chorus/hook
+- Repeat anchor at least once within each section
+- All chorus lines: max 6 words, short, singable, emotionally direct
+- Good anchors: "I still burn in the dark" / "You are my tide that turns"
+- Bad anchors: long sentences, abstract metaphors, music terminology
+
+★★★ [Big Finish] RULE — MOST CRITICAL ★★★
+- SAME anchor line as all previous choruses
+- LOUDER, more URGENT, more INEVITABLE — sing it like it costs everything
+- Other lines: shorter, rawer, more desperate than earlier choruses
+
+★ VERSE RULES ★
+- Build tension so the chorus feels like relief
+- Each verse MORE tense than the last (Tension numbers guide the energy)
+- Concrete imagery: water, stone, fire, season, body, breath — NOT abstract emotions
+- Max 8 words per line
+
+★ TENSION/RELEASE NUMBERS ★
+- The numbers in brackets (e.g. Tension +6, Release -4) show emotional intensity
+- Higher Tension = more compressed, urgent, desperate language
+- Higher Release = more open, expansive, relieved language
+- Match your word choice and line length to these numbers
+
+Music style (emotional reference only — do NOT mention in lyrics):
+${current}
+
+STRUCTURE:
+${structureEn}`
+      : `${duration} 길이(${totalSec}초)의 가사를 작성합니다.
+송폼: ${form.nameKr}
+
+${rhymeRuleKr}
+
+${clicheRuleKr}
+
+★★ 후렴 / 훅 규칙 ★★
+- 앵커 구절(최대 6단어) — 가사 쓰기 전에 먼저 결정
+- 앵커는 모든 후렴/훅의 첫 줄
+- 각 섹션 내에서 앵커 최소 1회 반복
+- 후렴 줄: 최대 6단어, 짧고, 따라부를 수 있고, 감정이 직접적
+- 음악·악기·장르 관련 단어 가사에 절대 금지
+
+★★★ [Big Finish] 규칙 — 최최최우선 ★★★
+- 이전 모든 후렴과 동일한 앵커 라인
+- 더 크고, 더 절박하고, 더 필연적으로 — 전부를 걸고 부르는 느낌
+- 나머지 줄: 더 짧고 날것으로, 이전 후렴보다 더 원초적으로
+
+★ 절(Verse) 규칙 ★
+- 각 절은 이전 절보다 더 강한 긴장감 (T/R 수치가 에너지 가이드)
+- 구체적 이미지: 물, 돌, 불, 계절, 몸, 숨 — 추상적 감정 레이블 금지
+- 줄당 최대 8단어
+
+★ 긴장/이완 수치 ★
+- 섹션 옆 숫자(예: 긴장 +6, 이완 -4)는 감정 강도 지표
+- 높은 긴장 = 더 압축되고 절박한 언어, 짧은 줄
+- 높은 이완 = 더 열리고 해방되는 언어, 넓은 호흡
+
+음악 스타일 (감정 참고용 — 가사에 언급 금지):
+${current}
+
+구조:
+${structureKr}`;
+
     const sysP = isEn
-      ? `You are a world-class hit songwriter. ABSOLUTE RULE: ENGLISH ONLY — not a single Korean character (한글) is permitted anywhere in your output. Express all emotion and cultural depth through English. Output ONLY [Section] headers and lyric lines — NO numbering, NO parenthetical instructions, NO explanations, NO instrument names. Your #1 job: the chorus ANCHOR LINE must be so memorable that listeners replay the song just to hear it. The [Big Finish] section is the CLIMAX — louder, more urgent, and more emotionally devastating than every chorus before it.`
-      : `당신은 시적 깊이와 중독적인 훅을 동시에 쓰는 세계적 작사가입니다. 출력 규칙: [섹션명] 태그와 가사 줄만 — 번호 금지, 괄호 지시문 금지, 설명 금지, 악기 이름 금지. 최우선 과제: 후렴 앵커 라인은 듣는 사람이 그 순간만을 위해 곡을 다시 틀 만큼 강렬해야 합니다. [Big Finish] 섹션은 클라이맥스 — 이전 모든 후렴보다 더 크고 강렬하게 느껴져야 합니다. 절은 시적으로, 후렴은 훅으로. 각 섹션의 줄 수를 정확히 지킬 것.`;
-    const text=await callClaude(lyricPrompt,sysP, 0.92);
-    out.value=cleanLyrics(text);
-    showToast(`✅ ${duration} 분량 가사 생성 완료!`);
-  } catch(e) { out.value='오류: '+(e.message||'알 수 없는 오류'); }
+      ? `You are a world-class hit songwriter. ABSOLUTE RULE: ENGLISH ONLY. Output ONLY [Section] headers and lyric lines — NO numbering, NO parenthetical instructions, NO explanations, NO instrument names. Your #1 job: rhyme scheme must be consistent, the chorus ANCHOR LINE must be unforgettable, and the [Big Finish] must feel like the entire song was building to that one moment. Tension/Release numbers in the structure guide your emotional intensity — honor them.`
+      : `당신은 세계적인 탑라인 작사가입니다. 출력 규칙: [섹션명] 태그와 가사 줄만 — 번호 금지, 괄호 지시문 금지, 설명 금지, 악기·음악 용어 금지. 최우선: ① 라임 체계 일관성 유지 ② 후렴 앵커 라인은 그 순간만을 위해 곡을 다시 틀 만큼 강렬하게 ③ [Big Finish]는 곡 전체가 그 순간을 향해 달려온 것처럼. 긴장/이완 수치는 감정 강도 지표 — 반드시 반영하세요.`;
+
+    const text = await callClaude(lyricPrompt, sysP, 0.92);
+    out.value = cleanLyrics(text);
+    showToast(`✅ [${form.nameKr}] ${duration} 가사 생성 완료!`);
+  } catch(e) {
+    out.value = '오류: ' + (e.message || '알 수 없는 오류');
+  }
   loading.classList.remove('show');
 }
 
@@ -3761,8 +4042,50 @@ async function genTrendLyrics(lang) {
   const duration = durationInput?.value || '3:00';
   loading.classList.add('show');
   try {
-    const trendPromptEn = `Write cutting-edge 2026 song lyrics for a ${duration} Joseon Core track.\n\nCRITICAL LANGUAGE RULE: ENGLISH ONLY — zero Korean characters (한글) anywhere in the output. Not one syllable. Express Korean emotional depth entirely through English words and imagery.\n\nTREND RULES:\n1. Use 2026 global pop/R&B/hip-hop writing style — punchy, conversational, hook-driven\n2. ENGLISH ONLY — no Korean words, no romanized Korean (no "han", "arirang", "sabyeok" etc.)\n3. Short punchy lines — max 8 words per line\n4. Hooks must be instantly singable and catchy (repeat key phrase 2-3x)\n5. NO old-fashioned poetic language — fresh, modern, street-level emotion\n6. NO instrument names ever\n7. ESCALATION RULE: each chorus bigger than the last — [Big Finish] is MAXIMUM EXPLOSION\n8. Structure: [Intro] [Verse 1] [Chorus] [Verse 2] [Chorus] [Bridge] [Chorus - Final]\n[Big Finish]\n[Outro] [fade out] [end]\n\nMusic vibe reference:\n${current}`;
-    const trendPromptKr = `2026년 최신 트렌드 스타일의 조선 코어 가사를 ${duration} 길이로 작성하세요.\n\n트렌드 규칙:\n1. 2026년 K팝/힙합/R&B 작법 — 짧고 강렬하고 훅 중심\n2. 현대적 구어체 사용 — 일상어와 감정어 혼합\n3. 한 줄 최대 8단어 — 짧고 임팩트 있게\n4. 후렴은 즉각 따라부를 수 있을 것 (핵심 구절 2~3회 반복)\n5. 구식 시어 금지 — 신선하고 현대적인 언어\n6. 악기 이름 절대 금지\n7. 점층 규칙: 각 후렴은 이전보다 강하게 — [Big Finish]는 최대 폭발\n8. 구조: [인트로] [절 1] [후렴] [절 2] [후렴] [브릿지] [후렴 - 마지막]\n[Big Finish]\n[아웃트로] [fade out] [end]\n\n음악 분위기 참고:\n${current}`;
+    /* 트렌드 가사도 장르 송폼·라임·금칙어 적용 */
+    const trendForm = (STATE.genre !== null && GENRE_SONGFORM[STATE.genre])
+      ? GENRE_SONGFORM[STATE.genre] : SONGFORM_DEFAULT;
+    const trendRhymeEn = `RHYME SCHEME: ${trendForm.rhyme} — ${trendForm.rhyme === 'AABB' ? 'lines 1+2 rhyme, lines 3+4 rhyme' : trendForm.rhyme === 'ABAB' ? 'lines 1+3 rhyme, lines 2+4 rhyme' : trendForm.rhyme === 'AAB' ? 'lines 1+2 near-identical, line 3 resolves differently' : 'only lines 2+4 rhyme'}. End-rhyme is MANDATORY.`;
+    const trendRhymeKr = `라임 체계: ${trendForm.rhyme} — ${trendForm.rhyme === 'AABB' ? '1·2번째 줄 라임, 3·4번째 줄 라임' : trendForm.rhyme === 'ABAB' ? '1·3번째 줄 라임, 2·4번째 줄 라임' : trendForm.rhyme === 'AAB' ? '1·2번째 줄 유사 반복, 3번째 줄 해소 라임' : '2·4번째 줄만 라임'}. 행말 라임 필수.`;
+    const trendBanEn  = `BANNED WORDS (zero tolerance): ${LYRIC_CLICHE_WORDS_EN.join(', ')}. No instrument names, no music theory terms.`;
+    const trendBanKr  = `금칙어 (절대 금지): ${LYRIC_CLICHE_WORDS_KR.join(', ')}. 악기명·음악 용어 가사에 금지.`;
+
+    const trendPromptEn = `Write cutting-edge 2026 song lyrics for a ${duration} Joseon Core track.
+
+CRITICAL LANGUAGE RULE: ENGLISH ONLY — zero Korean characters anywhere.
+
+TREND RULES:
+1. 2026 global pop/R&B/hip-hop style — punchy, conversational, hook-driven
+2. Max 8 words per line — short, impactful
+3. Hooks instantly singable (repeat key phrase 2-3x)
+4. Fresh modern street-level emotion — NO old-fashioned poetic language
+5. ESCALATION: each chorus bigger — [Big Finish] = MAXIMUM EXPLOSION
+6. ${trendRhymeEn}
+7. ${trendBanEn}
+
+Tension/Release arc: Verse +6 → Chorus T+5↔R-5 → Bridge +9 → Big Finish +10 → Outro -8
+
+Structure: [Intro] [Verse 1] Tension +6 [Chorus] T+5↔R-5 [Verse 2] Tension +7 [Chorus] T+6↔R-5 [Bridge] Tension +9 [Chorus - Final][Big Finish] Tension +10 [Outro] Release -8 [fade out] [end]
+
+Music vibe reference:
+${current}`;
+    const trendPromptKr = `2026년 최신 트렌드 스타일의 조선 코어 가사를 ${duration} 길이로 작성하세요.
+
+트렌드 규칙:
+1. 2026년 K팝/힙합/R&B 작법 — 짧고 강렬하고 훅 중심
+2. 한 줄 최대 8단어 — 짧고 임팩트 있게
+3. 후렴은 즉각 따라부를 수 있을 것 (핵심 구절 2~3회 반복)
+4. 구식 시어 금지 — 신선하고 현대적인 구어체
+5. 점층: 각 후렴 이전보다 강하게 — [Big Finish] = 최대 폭발
+6. ${trendRhymeKr}
+7. ${trendBanKr}
+
+긴장/이완 아크: 절 +6 → 후렴 T+5↔R-5 → 브릿지 +9 → Big Finish +10 → 아웃트로 -8
+
+구조: [인트로] [절 1] 긴장 +6 [후렴] T+5↔R-5 [절 2] 긴장 +7 [후렴] T+6↔R-5 [브릿지] 긴장 +9 [후렴 - 마지막][Big Finish] 긴장 +10 [아웃트로] 이완 -8 [fade out] [end]
+
+음악 분위기 참고:
+${current}`;
     const sysTrendEn = `You are a 2026 hit songwriter. ABSOLUTE RULE: output in ENGLISH ONLY — not a single Korean character (한글) is allowed anywhere. Express all emotion, depth, and cultural feeling through English words only. Output ONLY raw lyrics — NO numbering, NO explanations, NO parentheticals. Only [Section] tags and lyric lines.`;
     const sysTrendKr = `당신은 2026년 히트곡 작사가입니다. 순수 가사만 출력 — 번호 금지, 설명 금지, 괄호 지시문 금지. [섹션] 태그와 가사 줄만 출력하세요.`;
     const text = await callClaude(isEn?trendPromptEn:trendPromptKr, isEn?sysTrendEn:sysTrendKr, 0.95);
