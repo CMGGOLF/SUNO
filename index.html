@@ -204,10 +204,7 @@ input[type=text]:focus,textarea:focus{border-color:var(--gold)}
 input[type=text]::placeholder,textarea::placeholder{color:var(--dim)}
 textarea{resize:vertical;min-height:100px;line-height:1.7}
 .ai-block{display:flex;flex-direction:column;gap:10px}
-.title-out{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-.title-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
-.title-lang{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px}
-.title-val{font-size:16px;font-weight:700;color:var(--text);font-family:'Noto Serif KR',serif;min-height:26px}
+
 .tab-row{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:16px}
 .tab{
   padding:9px 20px;font-size:12px;cursor:pointer;color:var(--muted);
@@ -493,8 +490,8 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v29</span></div>
-        <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 AUTO COMBO · 퀄리티 엔진 · v29 최적화</div>
+        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v30</span></div>
+        <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 AUTO COMBO · 퀄리티 엔진 · v30 최적화</div>
       </div>
     </div>
     <div class="header-badge">JOSEON CORE v30 · 가사 엔진 v2 · 장르별 송폼 ⚡</div>
@@ -1181,7 +1178,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       </div>
       <div class="ai-loading" id="superLoading" style="margin-top:10px"><div class="dot-anim"><span></span><span></span><span></span></div>⚡ 슈퍼 프롬프트 3종 생성 중 (5~15초)...</div>
       <!-- 결과 출력 — 3가지 변형 카드 -->
-      <div id="superPromptResult" style="display:none;margin-top:14px;display:none">
+      <div id="superPromptResult" style="display:none;margin-top:14px">
         <div style="font-size:11px;color:#ffb432;font-weight:700;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:6px">
           <span style="display:inline-block;width:3px;height:12px;background:#ffb432;border-radius:2px"></span>
           3가지 변형 · 모두 230자 이하 · Suno 스타일 박스 바로 붙여넣기
@@ -1370,23 +1367,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
 </div>
 
-<div class="section">
-  <div class="section-head">
-    <div class="sec-num">10</div>
-    <div class="sec-title">자동 제목 생성</div>
-    <div class="sec-sub">영어 + 한글 제목 AI 자동 생성</div>
-  </div>
-  <div class="section-body">
-    <button class="btn btn-gold" onclick="genTitle()">✦ 제목 생성</button>
-    <div class="ai-loading" id="titleLoading" style="margin-top:8px">
-      <div class="dot-anim"><span></span><span></span><span></span></div>제목 생성 중...
-    </div>
-    <div class="title-out">
-      <div class="title-card"><div class="title-lang">🇺🇸 English Title</div><div class="title-val" id="titleEn">—</div></div>
-      <div class="title-card"><div class="title-lang">🇰🇷 한글 제목</div><div class="title-val" id="titleKr">—</div></div>
-    </div>
-  </div>
-</div>
+
 
 <div class="section">
   <div class="section-head">
@@ -3344,19 +3325,19 @@ function getApiKey() { return (document.getElementById('apiKeyInput')?.value||''
 const MODELS = {
   'anthropic/claude-sonnet-4-5': {
     label: 'Claude Sonnet',
-    costs: { prompt: 2, super: 6, lyrics3: 17, lyrics4: 21, variations: 8, title: 2 }
+    costs: { prompt: 2, super: 6, lyrics3: 17, lyrics4: 21, variations: 8 }
   },
   'anthropic/claude-haiku-4-5': {
     label: 'Claude Haiku',
-    costs: { prompt: 1, super: 2, lyrics3: 4, lyrics4: 6, variations: 2, title: 1 }
+    costs: { prompt: 1, super: 2, lyrics3: 4, lyrics4: 6, variations: 2 }
   },
   'openai/gpt-4o': {
     label: 'GPT-4o',
-    costs: { prompt: 3, super: 8, lyrics3: 20, lyrics4: 25, variations: 9, title: 2 }
+    costs: { prompt: 3, super: 8, lyrics3: 20, lyrics4: 25, variations: 9 }
   },
   'openai/gpt-4o-mini': {
     label: 'GPT-4o mini',
-    costs: { prompt: 1, super: 1, lyrics3: 1, lyrics4: 1, variations: 1, title: 1 }
+    costs: { prompt: 1, super: 1, lyrics3: 1, lyrics4: 1, variations: 1 }
   },
 };
 let _selectedModel = localStorage.getItem('gugak_model') || 'anthropic/claude-haiku-4-5';
@@ -3398,7 +3379,7 @@ async function _callOnce(model, messages, temperature, apiKey) {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
       'HTTP-Referer': window.location.href,
-      'X-Title': 'Gugak Prompt Maker v29',
+      'X-Title': 'Gugak Prompt Maker v30',
     },
     body: JSON.stringify({
       model, messages,
@@ -3669,38 +3650,6 @@ async function aiExpandPrompt() {
     showToast('⚠️ AI 연결 실패: ' + msg);
     console.warn('[aiExpandPrompt 오류]', e);
   }
-  loading.classList.remove('show');
-}
-async function genTitle() {
-  const current=document.getElementById('promptBox').textContent;
-  const loading=document.getElementById('titleLoading'); loading.classList.add('show');
-  try {
-    const lyricsSnippet = (() => {
-      const el = document.getElementById('lyricsEnOut') || document.getElementById('lyricsKrOut');
-      const val = el ? (el.value || '').trim() : '';
-      return val ? val.split('\n').filter(l => l.trim() && !l.startsWith('[')).slice(0, 6).join('\n') : '';
-    })();
-    const titleContext = lyricsSnippet
-      ? `Music prompt:\n${current}\n\nFirst lines of the lyrics (use for mood/imagery reference):\n${lyricsSnippet}`
-      : `Music prompt:\n${current}`;
-    const titleSys = `You are a poetic music title writer.
-Rules for the English title:
-- MAX 4 words. Short is better.
-- DO NOT use genre words: Blues, Soul, Jazz, Fusion, Core, Traditional
-- DO NOT use instrument names
-- DO NOT use patterns like "[Adjective] [Noun] of the [Genre]"
-- Use evocative imagery: nature, light, silence, longing, season, time
-- Examples of GOOD titles: "Moon Without Shore", "Still Water Grief", "The Reed Bends Low", "Before the Dawn Breaks", "Dust on Still Water"
-- Examples of BAD titles: "Weeping Strings of the Han Blues", "Gayageum Soul Fusion", "Korean Traditional Jazz Ballad"
-- The Korean title should feel like a natural song title, not a translation. Poetic, 2-5 syllables ideal.
-Output ONLY valid JSON, nothing else.`;
-    const text=await callClaude(`${titleContext}\n\nGenerate a song title.\nOutput ONLY this JSON: {"en":"English Title","kr":"한글 제목"}`, titleSys, 0.75);
-    const clean=text.replace(/```json|```/g,'').trim(); const match=clean.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error('JSON 응답 형식 오류');
-    const parsed=JSON.parse(match[0]);
-    document.getElementById('titleEn').textContent=parsed.en||'—';
-    document.getElementById('titleKr').textContent=parsed.kr||'—';
-  } catch(e) { document.getElementById('titleEn').textContent=e.message||'생성 실패'; document.getElementById('titleKr').textContent='—'; }
   loading.classList.remove('show');
 }
 /* ═══════════════════════════════════════════════════════════════════
@@ -4929,6 +4878,14 @@ function resetAll(doRender=true) {
     // 변형 결과 초기화
     document.getElementById('varResult_mood').innerHTML='';
     document.getElementById('varResult_genre').innerHTML='';
+    // QE 엔진 결과/진행 상태 초기화
+    const _qeRB = document.getElementById('qeResultBox');
+    if (_qeRB) _qeRB.style.display = 'none';
+    const _qePW = document.getElementById('qeProgressWrap');
+    if (_qePW) _qePW.style.display = 'none';
+    const _qeRunBtnR = document.getElementById('qeRunBtn');
+    if (_qeRunBtnR) { _qeRunBtnR.disabled = true; _qeRunBtnR.textContent = '⚡ 퀄리티 엔진 실행'; }
+    document.querySelectorAll('.qe-combo-card').forEach(el => el.classList.remove('selected'));
   }
 }
 
@@ -5503,11 +5460,9 @@ function applyShortsPreset(idx) {
   }
 
   /* ── 7. 국악기 강도 (비율 슬라이더 이후 처리 — 중간 buildPrompt 방지) ── */
-  STATE.koreanDominance = preset.koreanDominance;
-  /* DEAD-3 수정: koreanDominance → koreanRatio 동기화 (buildPrompt의 dom 값 반영) */
-  if (preset.koreanDominance !== undefined) {
-    STATE.koreanRatio = preset.koreanDominance;
-  }
+  /* koreanDominance는 08B 섹션 슬라이더 전용 값. koreanRatio는 위 6번 블록에서만 설정.
+     과거 DEAD-3 "동기화" 코드가 6번에서 설정한 koreanRatio를 덮어쓰던 버그 제거. */
+  if (preset.koreanDominance !== undefined) STATE.koreanDominance = preset.koreanDominance;
   const kdSlider = document.getElementById('koreanDomSlider');
   if (kdSlider) {
     kdSlider.value = preset.koreanDominance;
@@ -5821,9 +5776,7 @@ function copyAllSuperVariations() {
   showToast('📋 3종 전체 복사 완료! Suno에서 A/B/C 테스트 가능');
 }
 
-/* 구버전 호환 — BUG-1 수정: type 파라미터 무시 버그 명시, 기본값 0 유지 (외부 호출 없을 시 삭제 가능) */
-function applySuperPrompt()       { applySuperVariation(0); }
-function copySuperPrompt(/*type ignored*/) { copySuperVariation(0); }
+/* ── 구버전 호환 래퍼 제거됨 (v30): applySuperPrompt / copySuperPrompt 는 HTML에서 직접 호출되지 않으므로 삭제 ── */
 
 /* ═══════════════════════════════════════════
    UPG-1: 프롬프트 히스토리 (최근 10개 localStorage 저장)
@@ -5872,7 +5825,7 @@ function _saveHistoryAfterBuild() {
 /* UPG-2: STATE 내보내기 */
 function exportState() {
   const exportData = {
-    version: 'v29',
+    version: 'v30',
     timestamp: new Date().toISOString(),
     state: {
       genre: STATE.genre, moods: STATE.moods, concept: STATE.concept,
