@@ -3843,9 +3843,10 @@ async function genLyrics(lang) {
       `[훅 - 마지막] 긴장 +10\n[Big Finish]\n(강도 10/10 — 동일한 훅 — 더 크고, 더 필연적으로)\n\n` +
       `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지 소멸)\n[fade out]\n[end]`;
   } else {
-    /* 일반 폼: Verse → (Pre-Chorus) → Chorus 반복 */
-    const repeatCount = totalSec >= 270 ? 3 : 2;
-    for (let i = 1; i <= repeatCount; i++) {
+   // 3분(180초)보다 짧으면 2번, 3분~4분 30초면 3번, 그 이상이면 4번 반복해!
+let repeatCount = 2;
+if (totalSec >= 270) repeatCount = 4;
+else if (totalSec >= 180) repeatCount = 3;
       const choIntEn = i === 1
         ? `Tension T+5 ↔ Release R-5 — establish the hook clearly`
         : `Tension T+${Math.min(8, 5+i)} ↔ Release R-${Math.min(8, 5+i)} — BIGGER than Chorus ${i-1}`;
