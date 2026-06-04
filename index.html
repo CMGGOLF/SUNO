@@ -3430,9 +3430,19 @@ async function callClaude(prompt, systemPrompt = '', temperature = 0.85) {
 }
 function cleanLyrics(text) {
   if (!text) return '';
-  let cleaned = text
-    .replace(/^\s*(\d+[.):]\s*)/gm, '')
-    .replace(/^\s*\(.*?(lines?|줄|초|seconds?).*?\)\s*$/gmi, '')
+  // 마크다운 코드펜스 제거
+  let cleaned = text.replace(/```(?:[\w]*\n?)?/g, '');
+  cleaned = cleaned
+    // 번호 매기기 제거 (1. / 1) / 1:)
+    .replace(/^\s*\d+[.):\s]\s*/gm, '')
+    // ① 소괄호 지시어: "WRITE EXACTLY N lines" / "instrumental — N sec" 처럼
+    //    숫자+단위 OR WRITE/EXACTLY/instrumental/기악/INTENSITY/REPEAT 키워드가 있는 줄만 제거
+    //    → 일반 가사 줄은 이 패턴에 해당 안 됨
+    .replace(/^\s*\([^)]*?(WRITE\s+EXACTLY|instrumental|기악|\d+\s*(lines?|줄|초|seconds?)|INTENSITY\s*\d|REPEAT\s+the\s+same)[^)]*?\)\s*$/gmi, '')
+    // ② 대괄호 지시어: [Tension +6] / [Release -4] / [Big Finish] / [T+5 ↔ R-5] 처럼
+    //    섹션명([Verse]/[Chorus] 등)이 아닌 순수 상태 지표 줄만 제거
+    .replace(/^\s*\[\s*(Tension|Release|긴장|이완|Big Finish|T[+\-]\d|R[+\-]\d)[^\]]*\]\s*$/gmi, '')
+    // 빈 줄 3개 이상 → 2개로 압축
     .replace(/\n{3,}/g, '\n\n')
     .trim();
   /* [end] 태그가 없으면 자동 추가 — Suno 마무리 신호 */
@@ -3989,7 +3999,8 @@ ${structureKr}`;
      : `당신은 세계적인 탑라인 작사가입니다. 필수 규칙: 모든 가사에는 반드시 [섹션명] 태그(예: [Verse 1], [Chorus], [Bridge])를 포함해야 합니다. 태그를 생략하면 곡 구조가 망가집니다. 절대 생략하지 마세요. 출력은 태그와 가사 줄만 하세요.`;
 
     const text = await callClaude(lyricPrompt, sysP, 0.92);
-    out.value = `[Base Layer: Heavy Traditional Korean Instruments throughout]\n[Melody Layer: Soul, Jazz, Blues]\n\n` + (text);
+    const cleaned = cleanLyrics(cleanModelText(text));
+    out.value = `[Base Layer: Heavy Traditional Korean Instruments throughout]\n[Melody Layer: Soul, Jazz, Blues]\n\n` + cleaned;
     showToast(`✅ [${form.nameKr}] ${duration} 가사 생성 완료!`);
   } catch(e) {
     out.value = '오류: ' + (e.message || '알 수 없는 오류');
@@ -4055,7 +4066,7 @@ ${current}`;
     const sysTrendEn = `You are a 2026 hit songwriter. ABSOLUTE RULE: output in ENGLISH ONLY — not a single Korean character (한글) is allowed anywhere. Express all emotion, depth, and cultural feeling through English words only. Output ONLY raw lyrics — NO numbering, NO explanations, NO parentheticals. Only [Section] tags and lyric lines.`;
     const sysTrendKr = `당신은 2026년 히트곡 작사가입니다. 순수 가사만 출력 — 번호 금지, 설명 금지, 괄호 지시문 금지. [섹션] 태그와 가사 줄만 출력하세요.`;
     const text = await callClaude(isEn?trendPromptEn:trendPromptKr, isEn?sysTrendEn:sysTrendKr, 0.95);
-    out.value = cleanLyrics(text);
+    out.value = cleanLyrics(cleanModelText(text));
     showToast(`✅ 2026 트렌드 가사 생성 완료!`);
   } catch(e) { out.value='오류: '+(e.message||'알 수 없는 오류'); }
   loading.classList.remove('show');
