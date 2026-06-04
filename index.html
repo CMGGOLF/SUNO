@@ -3843,10 +3843,11 @@ async function genLyrics(lang) {
       `[훅 - 마지막] 긴장 +10\n[Big Finish]\n(강도 10/10 — 동일한 훅 — 더 크고, 더 필연적으로)\n\n` +
       `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지 소멸)\n[fade out]\n[end]`;
   } else {
-   // 3분(180초)보다 짧으면 2번, 3분~4분 30초면 3번, 그 이상이면 4번 반복해!
-let repeatCount = 2;
-if (totalSec >= 270) repeatCount = 4;
-else if (totalSec >= 180) repeatCount = 3;
+    // 3분(180초)보다 짧으면 2번, 3분~4분 30초면 3번, 그 이상이면 4번 반복해!
+    let repeatCount = 2;
+    if (totalSec >= 270) repeatCount = 4;
+    else if (totalSec >= 180) repeatCount = 3;
+
     for (let i = 1; i <= repeatCount; i++) {
       const choIntEn = i === 1
         ? `Tension T+5 ↔ Release R-5 — establish the hook clearly`
@@ -3855,26 +3856,26 @@ else if (totalSec >= 180) repeatCount = 3;
         ? `긴장 T+5 ↔ 이완 R-5 — 훅을 명확히 확립`
         : `긴장 T+${Math.min(8, 5+i)} ↔ 이완 R-${Math.min(8, 5+i)} — 앞 후렴보다 더 크게`;
 
-      structureEn += `[Verse ${i}] Tension ${tr.verse}\n(WRITE EXACTLY ${verseLines} lines — build emotional tension, rhyme scheme: ${form.rhyme}, max 8 words per line)\n\n`;
-      structureKr += `[절 ${i}] 긴장 ${tr.verse}\n(정확히 ${verseLines}줄 — 감정 긴장 쌓기, 라임 체계: ${form.rhyme}, 줄당 최대 8단어)\n\n`;
+      structureEn += `[Verse ${i}]\n[Tension ${tr.verse}]\n(WRITE EXACTLY ${verseLines} lines — build emotional tension)\n\n`;
+      structureKr += `[절 ${i}]\n[긴장 ${tr.verse}]\n(정확히 ${verseLines}줄 — 감정 긴장 쌓기)\n\n`;
 
       if (hasPreChorus && preLines > 0) {
-        structureEn += `[Pre-Chorus] Release ${tr.prechorus}\n(WRITE EXACTLY ${preLines} lines — pull back energy slightly, build anticipation for the chorus)\n\n`;
-        structureKr += `[프리코러스] 이완 ${tr.prechorus}\n(정확히 ${preLines}줄 — 에너지 잠시 수축, 후렴 기대감 조성)\n\n`;
+        structureEn += `[Pre-Chorus]\n[Release ${tr.prechorus}]\n(WRITE EXACTLY ${preLines} lines — pull back energy slightly, build anticipation for the chorus)\n\n`;
+        structureKr += `[프리코러스]\n[이완 ${tr.prechorus}]\n(정확히 ${preLines}줄 — 에너지 잠시 수축, 후렴 기대감 조성)\n\n`;
       }
 
-      structureEn += `[Chorus] ${choIntEn}\n(WRITE EXACTLY ${choLines} lines — anchor line FIRST, repeat it once, max 6 words per line, singable hook)\n\n`;
-      structureKr += `[후렴] ${choIntKr}\n(정확히 ${choLines}줄 — 앵커 라인 먼저, 1회 반복, 줄당 최대 6단어, 따라부를 수 있는 훅)\n\n`;
+      structureEn += `[Chorus]\n[${choIntEn}]\n(WRITE EXACTLY ${choLines} lines)\n\n`;
+      structureKr += `[후렴]\n[${choIntKr}]\n(정확히 ${choLines}줄)\n\n`;
     }
 
     structureEn +=
-      `[Bridge] Tension ${tr.bridge}\n(WRITE EXACTLY ${bridgeLines} lines — maximum contrast, pull back before the final explosion)\n\n` +
-      `[Chorus - Final] Tension ${tr.finalchorus}\n[Big Finish]\n(INTENSITY 10/10 — SAME anchor line as all previous choruses — LOUDER, more URGENT, more INEVITABLE — every word costs everything)\n\n` +
-      `[Outro] Release ${tr.outro}\n(WRITE EXACTLY ${outroLines} lines — energy slowly dissolves)\n[fade out]\n[end]`;
+      `[Bridge]\n[Tension ${tr.bridge}]\n(WRITE EXACTLY ${bridgeLines} lines — maximum contrast, pull back before the final explosion)\n\n` +
+      `[Chorus - Final]\n[Big Finish]\n(INTENSITY 10/10 — SAME anchor line as all previous choruses — LOUDER, more URGENT, more INEVITABLE)\n\n` +
+      `[Outro]\n[Release ${tr.outro}]\n(WRITE EXACTLY ${outroLines} lines — energy slowly dissolves)\n[fade out]\n[end]`;
     structureKr +=
-      `[브릿지] 긴장 ${tr.bridge}\n(정확히 ${bridgeLines}줄 — 최대 대비, 마지막 폭발 전 수축)\n\n` +
-      `[후렴 - 마지막] 긴장 ${tr.finalchorus}\n[Big Finish]\n(강도 10/10 — 이전 모든 후렴과 동일한 앵커 라인 — 더 크고, 더 절박하고, 더 필연적으로)\n\n` +
-      `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내림)\n[fade out]\n[end]`;
+      `[브릿지]\n[긴장 ${tr.bridge}]\n(정확히 ${bridgeLines}줄 — 최대 대비, 마지막 폭발 전 수축)\n\n` +
+      `[후렴 - 마지막]\n[Big Finish]\n(강도 10/10 — 이전 모든 후렴과 동일한 앵커 라인 — 더 크고, 더 절박하고, 더 필연적으로)\n\n` +
+      `[아웃트로]\n[이완 ${tr.outro}]\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내림)\n[fade out]\n[end]`;
   }
 
   /* ── ④ 라이밍 지시 + ⑤ 금칙어 ── */
