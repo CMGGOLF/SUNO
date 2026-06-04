@@ -3985,8 +3985,8 @@ ${current}
 ${structureKr}`;
 
     const sysP = isEn
-      ? `You are a world-class hit songwriter. ABSOLUTE RULE: ENGLISH ONLY. Output ONLY [Section] headers and lyric lines — NO numbering, NO parenthetical instructions, NO explanations, NO instrument names. Your #1 job: rhyme scheme must be consistent, the chorus ANCHOR LINE must be unforgettable, and the [Big Finish] must feel like the entire song was building to that one moment. Tension/Release numbers in the structure guide your emotional intensity — honor them.`
-      : `당신은 세계적인 탑라인 작사가입니다. 출력 규칙: [섹션명] 태그와 가사 줄만 — 번호 금지, 괄호 지시문 금지, 설명 금지, 악기·음악 용어 금지. 최우선: ① 라임 체계 일관성 유지 ② 후렴 앵커 라인은 그 순간만을 위해 곡을 다시 틀 만큼 강렬하게 ③ [Big Finish]는 곡 전체가 그 순간을 향해 달려온 것처럼. 긴장/이완 수치는 감정 강도 지표 — 반드시 반영하세요.`;
+     ? `You are a world-class hit songwriter. ABSOLUTE RULE: You MUST include [Section] headers (e.g., [Verse 1], [Chorus], [Bridge]) for every part. NEVER skip them. Output ONLY headers and lyrics — NO numbering, NO explanations.`
+     : `당신은 세계적인 탑라인 작사가입니다. 필수 규칙: 모든 가사에는 반드시 [섹션명] 태그(예: [Verse 1], [Chorus], [Bridge])를 포함해야 합니다. 태그를 생략하면 곡 구조가 망가집니다. 절대 생략하지 마세요. 출력은 태그와 가사 줄만 하세요.`;
 
     const text = await callClaude(lyricPrompt, sysP, 0.92);
     out.value = `[Base Layer: Heavy Traditional Korean Instruments throughout]\n[Melody Layer: Soul, Jazz, Blues]\n\n` + (text);
