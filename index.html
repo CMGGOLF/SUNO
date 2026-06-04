@@ -498,6 +498,83 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
 </header>
 
+<!-- ══ 처음 사용 가이드 ══ -->
+<div id="startGuide" style="background:linear-gradient(135deg,#0e1420 0%,#111820 100%);border-bottom:2px solid rgba(58,143,160,.5);padding:18px 40px">
+  <div style="max-width:1400px;margin:0 auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">🗺️</span>
+        <span style="font-size:13px;font-weight:700;color:var(--teal);letter-spacing:1px">처음 사용 가이드 — 국악 퓨전 재즈·블루스·소울</span>
+        <span style="font-size:10px;color:var(--muted)">이 순서대로만 하면 끝납니다</span>
+      </div>
+      <button onclick="document.getElementById('startGuide').style.display='none'" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:4px 10px;border-radius:4px;cursor:pointer">닫기</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px">
+
+      <!-- STEP 1 -->
+      <div style="background:rgba(58,143,160,.1);border:1px solid rgba(58,143,160,.35);border-radius:8px;padding:12px 14px">
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--teal);margin-bottom:6px;font-weight:700">STEP 1</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px">장르 고르기</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.6">
+          <b style="color:var(--teal)">빠른 시작 프리셋</b>에서 딱 하나만 누르세요.<br><br>
+          재즈 → <b style="color:var(--korean2)">Sanjo Jazz</b> 또는 <b style="color:var(--soul)">서울 심야 재즈</b><br>
+          블루스 → <b style="color:var(--soul)">판소리 한 블루스</b> 또는 <b style="color:var(--soul)">산조 블루 노트</b><br>
+          소울 → <b style="color:var(--soul)">Pansori Soul</b> 또는 <b style="color:var(--soul)">아쟁 소울 발라드</b>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div style="background:rgba(160,90,58,.1);border:1px solid rgba(160,90,58,.35);border-radius:8px;padding:12px 14px">
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--korean2);margin-bottom:6px;font-weight:700">STEP 2</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px">국악 비율 확인</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.6">
+          상단 슬라이더 <b style="color:var(--korean2)">국악:정통 비율</b>을 확인하세요.<br><br>
+          국악 느낌을 강하게 → <b style="color:var(--korean2)">70~80%</b><br>
+          재즈·소울 느낌을 강하게 → <b style="color:var(--teal)">50~60%</b><br>
+          <span style="color:var(--dim)">※ 프리셋 누르면 자동 세팅됨</span>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.3);border-radius:8px;padding:12px 14px">
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);margin-bottom:6px;font-weight:700">STEP 3</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px">프롬프트 확인</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.6">
+          <b style="color:var(--gold)">09 프롬프트 생성</b> 섹션에 자동으로 내용이 채워집니다.<br><br>
+          더 다양하게 바꾸고 싶으면 아래 버튼을 누르세요:<br>
+          <b style="color:var(--teal)">🔄 DNA 변형</b> — 같은 설정에서 다른 느낌<br>
+          <b style="color:var(--gold)">🤖 AI 슈퍼 프롬프트</b> — AI가 더 풍부하게
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div style="background:rgba(200,80,80,.08);border:1px solid rgba(200,80,80,.3);border-radius:8px;padding:12px 14px">
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--soul);margin-bottom:6px;font-weight:700">STEP 4</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px">Suno에 붙여넣기</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.6">
+          <b style="color:var(--soul)">📋 복사</b> 버튼을 누르고<br>Suno AI → Style of Music 칸에 붙여넣기 하면 됩니다.<br><br>
+          결과가 마음에 안 들면 → <b style="color:var(--teal)">STEP 3으로 돌아가서</b> DNA 변형만 다시 누르세요.
+        </div>
+      </div>
+
+      <!-- TIP -->
+      <div style="background:rgba(255,180,50,.06);border:1px solid rgba(255,180,50,.25);border-radius:8px;padding:12px 14px">
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--hyper);margin-bottom:6px;font-weight:700">💡 TIP</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px">다양하게 만들려면</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.6">
+          같은 장르에서 다른 느낌을 원할 때:<br><br>
+          ① 같은 프리셋 버튼을 다시 누른다<br>
+          ② <b style="color:var(--teal)">DNA 변형</b>을 누른다<br>
+          ③ 반복한다<br><br>
+          <span style="color:var(--dim)">설정을 직접 건드리지 않아도 매번 조금씩 다른 프롬프트가 나옵니다.</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- ══ /처음 사용 가이드 ══ -->
+
 <div style="background:rgba(160,90,58,0.15);border-bottom:1px solid rgba(160,90,58,0.5);padding:12px 40px">
   <div style="max-width:1400px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
