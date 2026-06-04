@@ -3122,8 +3122,8 @@ function _doBuildPrompt() {
        목표: promptBox = Suno가 음악적 의도를 최대한 오해 없이 받아들이는 밀도
     ══════════════════════════════════════════════════════════════ */
     const parts=[];
-    parts.push(`[Style Settings] Traditional Korean Instruments, Ajaeng, Gayageum, Gugak, Modern Jazz, Soul`);
-    const dom=STATE.koreanDominance||80;
+    parts.push(`[Style: Traditional Korean Instruments as primary rhythmic & melodic base, Ajaeng/Gayageum continuous backing, Soul Jazz fusion, organic Gugak texture]`);
+    const dom=STATE.korean parts.push(`[Style Settings] Traditional Korean Instruments, Ajaeng, Gayageum, Gugak, Modern Jazz, Soul`);Dominance||80;
     const domLabel = dom>=90?'ABSOLUTE DOMINANCE':dom>=80?'STRONG LEAD':dom>=70?'MAIN FOCUS':'MODERATE LEAD';
 
     /* ── ❶ 장르 DNA 주입 — DNA 3종 모두 녹여 맥락 극대화 ── */
@@ -3430,7 +3430,7 @@ function cleanLyrics(text) {
   if (!text) return '';
   let cleaned = text
     .replace(/^\s*(\d+[.):]\s*)/gm, '')
-    //.replace(/^\s*\(.*?(lines?|줄|초|seconds?).*?\)\s*$/gmi, '')
+    .replace(/^\s*\(.*?(lines?|줄|초|seconds?).*?\)\s*$/gmi, '')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
   /* [end] 태그가 없으면 자동 추가 — Suno 마무리 신호 */
