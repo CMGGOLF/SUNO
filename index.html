@@ -3115,43 +3115,44 @@ function buildPrompt(immediate) {
 function _doBuildPrompt() {
   try {
     /* ══════════════════════════════════════════════════════════════
-       v27 최적화: 핵심 압축 구조 (AI 압축 충실도 극대화)
-       - MANDATORY TIMBRE: 악기명 + 1~2 핵심 키워드만
-       - [Writing Style]: AI 호출 시 시스템 프롬프트 전용 (여기서 제거)
-       - intensity·arc 연동 필터 적용된 arc 사용
-       목표: promptBox = 600자 이내 고밀도 신호
+       v31 확장: 서사적 고밀도 구조
+       - SONIC IDENTITY: DNA 3종 전부 녹여 맥락 풍부하게
+       - TIMBRE: 악기명 + 연주 행동 묘사 (crystalline slides, bow dragging 등)
+       - 구음·한소울: 감각적 서술 확장
+       목표: promptBox = Suno가 음악적 의도를 최대한 오해 없이 받아들이는 밀도
     ══════════════════════════════════════════════════════════════ */
     const parts=[];
     const dom=STATE.koreanDominance||80;
     const domLabel = dom>=90?'ABSOLUTE DOMINANCE':dom>=80?'STRONG LEAD':dom>=70?'MAIN FOCUS':'MODERATE LEAD';
 
-    /* ── ❶ 장르 DNA 주입 — 프롬프트 최상단 (Suno 최우선 인식) ──────
-       각 장르당 3개 변형 중 dnaSeed 기반으로 하나 선택.
-    ──────────────────────────────────────────────────────────────── */
+    /* ── ❶ 장르 DNA 주입 — DNA 3종 모두 녹여 맥락 극대화 ── */
     const _dnaPool = (STATE.genre !== null) ? GENRE_DNA[STATE.genre] :
                      (STATE.hanSoulStyle !== null) ? HANSOUL_DNA[STATE.hanSoulStyle] : null;
     if (_dnaPool) {
       const _dnaIdx = Math.floor((STATE.dnaSeed || 0) * _dnaPool.length) % _dnaPool.length;
-      parts.push(`[SONIC IDENTITY] ${_dnaPool[_dnaIdx]}`);
+      // 선택된 DNA를 앞에, 나머지 2개에서 핵심 구절 추출해 뒤에 보강
+      const _primary = _dnaPool[_dnaIdx];
+      const _secondary = _dnaPool.filter((_,i) => i !== _dnaIdx).map(s => s.split(',')[0].trim()).join(' / ');
+      parts.push(`[SONIC IDENTITY] ${_primary} — also: ${_secondary}`);
     }
 
-    /* ── 국악기 음색 압축 매핑 (v27: 악기명 + 핵심 2단어만 — Suno 토큰 절약) ── */
+    /* ── 국악기 음색 매핑: 악기명 + 연주 행동 묘사 ── */
     const instrSonicMap = {
-      'Gayageum': 'plucked zither, crystalline slides, NOT harp',
-      'Haegeum':  'bowed fiddle, nasal crying bow, NOT violin',
-      'Ajaeng':   'bowed zither, gravelly cello-deep, raw friction',
-      'Geomungo': 'plucked zither, deep resonant thump, darker than gayageum',
-      'Yanggeum': 'hammered dulcimer, bright bell-tone, Korean',
-      'Daegeum':  'bamboo flute, breathy airy vibrato, NOT Western flute',
-      'Piri':     'double-reed, nasal buzz, piercing oboe, earthy',
-      'Danso':    'end-blown flute, pure clear tone, airy',
-      'Saenghwang':'mouth organ, harmonic clusters, buzzy drone',
-      'Janggu':   'hourglass drum, deep boom + dry crack, Korean pulse',
-      'Kkwaenggwari':'hand gong, metallic clang, sharp accent',
-      'Buk':      'barrel drum, deep warm thud, ceremonial',
+      'Gayageum': 'plucked zither — crystalline slides, silk-string shimmer, pitch bends mid-phrase, NOT harp',
+      'Haegeum':  'bowed fiddle — nasal crying bow, microtonal quiver, voice-like sob, NOT violin',
+      'Ajaeng':   'bowed zither — gravelly cello-deep, raw bow friction, low string anguish, slow draw',
+      'Geomungo': 'plucked zither — deep resonant thump, heavy silk string, darker brooding tone than gayageum',
+      'Yanggeum': 'hammered dulcimer — bright bell-tone attack, metallic decay, Korean modal color',
+      'Daegeum':  'large bamboo flute — breathy airy vibrato, breath noise as expression, NOT Western flute',
+      'Piri':     'double-reed pipe — penetrating nasal buzz, oboe-like but rawer, bends sharp then drops',
+      'Danso':    'end-blown flute — pure hollow tone, airy breathiness, sparse phrasing',
+      'Saenghwang':'mouth organ — harmonic tone clusters, buzzy sustained drone, polyphonic breath',
+      'Janggu':   'hourglass drum — deep resonant boom on left, dry crack on right, Korean pulse backbone',
+      'Kkwaenggwari':'hand gong — sharp metallic clang, cuts through the mix, rhythmic accent marker',
+      'Buk':      'barrel drum — deep warm ceremonial thud, slow measured strikes',
     };
 
-    /* ── 선택된 악기 리드명 + 압축 음색 추출 ── */
+    /* ── 선택된 악기 리드명 + 음색 추출 ── */
     let leadInstrName = '';
     let sonicParts = [];
     if (STATE.instr) {
@@ -3164,30 +3165,30 @@ function _doBuildPrompt() {
       }
     }
 
-    /* ── ① 리드 악기 + 장르 구조 — 최상단 (Suno 최우선) ── */
+    /* ── ① 리드 악기 + 장르 구조 ── */
     const _genreStructureLabel = (STATE.genre !== null && _GENRE_STRUCTURE_MAP[STATE.genre])
       ? _GENRE_STRUCTURE_MAP[STATE.genre]
       : (STATE.hanSoulStyle !== null && _HANSOUL_STRUCTURE_MAP[STATE.hanSoulStyle])
       ? _HANSOUL_STRUCTURE_MAP[STATE.hanSoulStyle]
       : 'traditional melody and modern elevation';
     const leadTag = leadInstrName ? ` ${leadInstrName} leads,` : '';
-    parts.push(`[Korean Core ${domLabel}]${leadTag} ${dom}%KR/${100-dom}%modern, ${_genreStructureLabel}, 시김새·농현·정간보`);
+    parts.push(`[Korean Core ${domLabel}]${leadTag} ${dom}%KR/${100-dom}%modern — ${_genreStructureLabel} — 시김새·농현·정간보 embedded throughout`);
 
     /* ── ② 장르 + 분위기 ── */
     const _genrePart = (STATE.genre!==null&&DATA.genres[STATE.genre]) ? DATA.genres[STATE.genre].en : '';
     const _moodPart  = STATE.moods.length ? getEnList(STATE.moods,DATA.moods) : '';
     if (_genrePart || _moodPart) parts.push(`[Genre/Mood] ${[_genrePart,_moodPart].filter(Boolean).join(' · ')}`);
 
-    /* ── ③ 악기 + 압축 TIMBRE (v27: 핵심 키워드만, NOT 장황한 설명) ── */
+    /* ── ③ 악기 + TIMBRE 서술 ── */
     if (STATE.instr) {
       if (sonicParts.length) {
-        parts.push(`TIMBRE: ${sonicParts.join(' | ')} — lead melody, NOT Western substitute`);
+        parts.push(`[TIMBRE] ${sonicParts.join(' | ')} — lead melody carried entirely by Korean instrument, silence between phrases as important as the notes`);
       } else {
         parts.push(`[Instruments] ${STATE.instr.en}`);
       }
     }
 
-    /* ── ④ 컨셉 (압축) ── */
+    /* ── ④ 컨셉 ── */
     if (STATE.concept!==null&&DATA.concepts[STATE.concept]) {
       const c=DATA.concepts[STATE.concept];
       const coreMoods = c.core.slice(0,3).join(', ');
@@ -3196,11 +3197,11 @@ function _doBuildPrompt() {
       if (!STATE.instr && c.inst.length) parts.push(`[Instruments] ${c.inst.slice(0,3).join(', ')}`);
     }
 
-    /* ── ⑤ 보컬 스타일 + 성별 (통합 압축) ── */
+    /* ── ⑤ 보컬 스타일 + 성별 ── */
     const _vsLine = [];
     if (STATE.vocalStyle!==null&&DATA.vocalStyles[STATE.vocalStyle]) {
       const vs=DATA.vocalStyles[STATE.vocalStyle];
-      _vsLine.push(`${vs.en}`);
+      _vsLine.push(`${vs.en} — ${vs.tone||''}`);
     }
     if (STATE.gugakVocalStyle!==null&&DATA.gugakVocalStyles[STATE.gugakVocalStyle]) {
       const gvs=DATA.gugakVocalStyles[STATE.gugakVocalStyle];
@@ -3209,48 +3210,48 @@ function _doBuildPrompt() {
     if (STATE.gender === 'male') _vsLine.push('STRICTLY male voice');
     else if (STATE.gender === 'female') _vsLine.push('STRICTLY female voice');
     if(STATE.vocalTones.length){const vts=getEnList(STATE.vocalTones,DATA.vocalTones);if(vts)_vsLine.push(vts);}
-    if (_vsLine.length) parts.push(`[Vocal] ${_vsLine.join(', ')}`);
+    if (_vsLine.length) parts.push(`[Vocal] ${_vsLine.join(' · ')}`);
 
-    /* ── ⑥ 고급 사운드 설정 (압축 통합) ── */
+    /* ── ⑥ 고급 사운드 설정 ── */
     const _advParts = [];
-    if(STATE.textures.length){const ts=getEnList(STATE.textures,DATA.textures);if(ts)_advParts.push(`texture:${ts}`);}
-    if(STATE.grooves.length){const gs=getEnList(STATE.grooves,DATA.grooves);if(gs)_advParts.push(`groove:${gs}`);}
-    if(STATE.spaces.length){const ss=getEnList(STATE.spaces,DATA.spaces);if(ss)_advParts.push(`space:${ss}`);}
-    if(STATE.koreanGrooves.length){const kgs=getEnList(STATE.koreanGrooves,DATA.koreanGrooves);if(kgs)_advParts.push(`K-groove:${kgs}`);}
-    if(STATE.bassStyles.length){const bs=getEnList(STATE.bassStyles,DATA.bassStyles);if(bs)_advParts.push(`bass:${bs}`);}
-    if(STATE.koreanFeelings.length){const kfs=getEnList(STATE.koreanFeelings,DATA.koreanFeelings);if(kfs)_advParts.push(`K-feel:${kfs}`);}
-    if(STATE.blackSoulElements.length){const bse=getEnList(STATE.blackSoulElements,DATA.blackSoulElements);if(bse)_advParts.push(`soul:${bse}`);}
-    if(STATE.humanFeelElements.length){const hfe=getEnList(STATE.humanFeelElements,DATA.humanFeelElements);if(hfe)_advParts.push(`human:${hfe}`);}
-    if (_advParts.length) parts.push(`[Sound] ${_advParts.join(' | ')}`);
+    if(STATE.textures.length){const ts=getEnList(STATE.textures,DATA.textures);if(ts)_advParts.push(`texture: ${ts}`);}
+    if(STATE.grooves.length){const gs=getEnList(STATE.grooves,DATA.grooves);if(gs)_advParts.push(`groove: ${gs}`);}
+    if(STATE.spaces.length){const ss=getEnList(STATE.spaces,DATA.spaces);if(ss)_advParts.push(`space: ${ss}`);}
+    if(STATE.koreanGrooves.length){const kgs=getEnList(STATE.koreanGrooves,DATA.koreanGrooves);if(kgs)_advParts.push(`Korean groove: ${kgs}`);}
+    if(STATE.bassStyles.length){const bs=getEnList(STATE.bassStyles,DATA.bassStyles);if(bs)_advParts.push(`bass: ${bs}`);}
+    if(STATE.koreanFeelings.length){const kfs=getEnList(STATE.koreanFeelings,DATA.koreanFeelings);if(kfs)_advParts.push(`Korean feeling: ${kfs}`);}
+    if(STATE.blackSoulElements.length){const bse=getEnList(STATE.blackSoulElements,DATA.blackSoulElements);if(bse)_advParts.push(`Black Soul: ${bse}`);}
+    if(STATE.humanFeelElements.length){const hfe=getEnList(STATE.humanFeelElements,DATA.humanFeelElements);if(hfe)_advParts.push(`human feel: ${hfe}`);}
+    if (_advParts.length) parts.push(`[Sound Design]\n${_advParts.join('\n')}`);
 
-    /* ── ⑦ 구음 (압축) ── */
+    /* ── ⑦ 구음 — 감각적 서술 확장 ── */
     if (STATE.gueumPositions.length||STATE.gueumStyle!==null) {
-      const pitchMap={high:'high',midhigh:'mid-high',midlow:'mid-low',low:'deep-low'};
-      const genderMap={both:'mixed',male:'male-only',female:'female-only'};
+      const pitchMap={high:'high register',midhigh:'mid-high register',midlow:'mid-low register',low:'deep low register'};
+      const genderMap={both:'male and female voices alternating',male:'deep male voice only',female:'female voice only'};
       const styleInfo=STATE.gueumStyle!==null&&DATA.gueumStyles[STATE.gueumStyle]?DATA.gueumStyles[STATE.gueumStyle]:null;
       const strength=STATE.gueumStrength||'strong';
-      const strengthTag=strength==='maximum'?'CRITICAL: ':strength==='strong'?'IMPORTANT: ':'';
-      const posMap={start:'Intro-end',add1:'V1-end',mid:'Chorus-end',add2:'V2-end',add3:'pre-Outro',end:'Outro-end'};
-      const posStr=STATE.gueumPositions.length?` at ${STATE.gueumPositions.map(p=>posMap[p]).join('/')}` : '';
-      const pitchGender=`${pitchMap[STATE.gueumPitch]||'mid-high'} ${genderMap[STATE.gueumGender]||'mixed'}`;
+      const strengthTag=strength==='maximum'?'CRITICAL MUST-HAVE: ':strength==='strong'?'IMPORTANT — must appear: ':'include: ';
+      const posMap={start:'after Intro',add1:'after Verse 1',mid:'after Chorus',add2:'after Verse 2',add3:'before Outro',end:'at Outro close'};
+      const posStr=STATE.gueumPositions.length?` Placement: ${STATE.gueumPositions.map(p=>posMap[p]).join(', ')}` : '';
+      const pitchGenderDesc=`${pitchMap[STATE.gueumPitch]||'mid-high'}, ${genderMap[STATE.gueumGender]||'mixed voices'}`;
       let soundRef='어~이~야~ / 에헤~야~';
       if (styleInfo) {
         const lines = selectGueumVariant(styleInfo).split('\n').filter(Boolean).slice(0,3);
         soundRef = lines.join(' / ');
       } else {
-        const _fb={high:'이야~호~/에헤~야~',midhigh:'어~이~야~/에헤~야~',midlow:'어~이~야~/아~이~야~',low:'어이~야~/으~이~야~'};
-        soundRef = _fb[STATE.gueumPitch]||'어~이~야~/에헤~야~';
+        const _fb={high:'이야~호~ / 에헤~야~',midhigh:'어~이~야~ / 에헤~야~',midlow:'어~이~야~ / 아~이~야~',low:'어이~야~ / 으~이~야~'};
+        soundRef = _fb[STATE.gueumPitch]||'어~이~야~ / 에헤~야~';
       }
-      const styleRef = styleInfo ? ` style:${styleInfo.kr}` : '';
-      parts.push(`[GUEUM] ${strengthTag}Korean gueum vocalization${posStr}, ${pitchGender},${styleRef} sounds:"${soundRef}", 꺾음+떨림+시김새, NOT Western humming`);
-      if (STATE.gueumGender==='male') parts.push(`[Gueum Voice] MALE ONLY — no female in gueum`);
-      else if (STATE.gueumGender==='female') parts.push(`[Gueum Voice] FEMALE ONLY — no male in gueum`);
+      const styleDesc = styleInfo ? `, style: ${styleInfo.kr} (${styleInfo.desc||''})` : '';
+      parts.push(`[GUEUM — Korean Vocalization]\n${strengthTag}${pitchGenderDesc}${styleDesc}\nSounds: "${soundRef}"\n꺾음(pitch-break) + 떨림(vibrato tremor) + 시김새(ornamental slides) — raw, NOT Western humming or choir\n${posStr}`);
+      if (STATE.gueumGender==='male') parts.push(`[Gueum Voice] MALE ONLY — deep pansori rawness, no female in gueum sections`);
+      else if (STATE.gueumGender==='female') parts.push(`[Gueum Voice] FEMALE ONLY — clear and mournful, no male in gueum sections`);
     }
 
-    /* ── ⑧ 한소울 스타일 (압축) ── */
+    /* ── ⑧ 한소울 스타일 — desc 포함 확장 ── */
     if (STATE.hanSoulStyle!==null&&DATA.hanSoulStyles[STATE.hanSoulStyle]) {
       const hs=DATA.hanSoulStyles[STATE.hanSoulStyle];
-      parts.push(`[Han Soul] ${hs.en} — ${hs.style}`);
+      parts.push(`[Han Soul] ${hs.en} — ${hs.style}\n${hs.desc||''}`);
     }
 
     /* ── ⑨ BPM + 블렌드 비율 + 감정 강도 (1줄 통합) ── */
