@@ -3430,18 +3430,11 @@ async function callClaude(prompt, systemPrompt = '', temperature = 0.85) {
 }
 function cleanLyrics(text) {
   if (!text) return '';
-  // 마크다운 코드펜스 제거
+  // 마크다운 코드펜스만 제거 — 섹션 태그·지시어는 Suno에 필요하므로 유지
   let cleaned = text.replace(/```(?:[\w]*\n?)?/g, '');
   cleaned = cleaned
-    // 번호 매기기 제거 (1. / 1) / 1:)
+    // 번호 매기기만 제거 (1. / 1) / 1:)
     .replace(/^\s*\d+[.):\s]\s*/gm, '')
-    // ① 소괄호 지시어: "WRITE EXACTLY N lines" / "instrumental — N sec" 처럼
-    //    숫자+단위 OR WRITE/EXACTLY/instrumental/기악/INTENSITY/REPEAT 키워드가 있는 줄만 제거
-    //    → 일반 가사 줄은 이 패턴에 해당 안 됨
-    .replace(/^\s*\([^)]*?(WRITE\s+EXACTLY|instrumental|기악|\d+\s*(lines?|줄|초|seconds?)|INTENSITY\s*\d|REPEAT\s+the\s+same)[^)]*?\)\s*$/gmi, '')
-    // ② 대괄호 지시어: [Tension +6] / [Release -4] / [Big Finish] / [T+5 ↔ R-5] 처럼
-    //    섹션명([Verse]/[Chorus] 등)이 아닌 순수 상태 지표 줄만 제거
-    .replace(/^\s*\[\s*(Tension|Release|긴장|이완|Big Finish|T[+\-]\d|R[+\-]\d)[^\]]*\]\s*$/gmi, '')
     // 빈 줄 3개 이상 → 2개로 압축
     .replace(/\n{3,}/g, '\n\n')
     .trim();
