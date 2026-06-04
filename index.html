@@ -3429,7 +3429,7 @@ function cleanLyrics(text) {
   if (!text) return '';
   let cleaned = text
     .replace(/^\s*(\d+[.):]\s*)/gm, '')
-    .replace(/^\s*\(.*?(lines?|줄|초|seconds?).*?\)\s*$/gmi, '')
+    //.replace(/^\s*\(.*?(lines?|줄|초|seconds?).*?\)\s*$/gmi, '')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
   /* [end] 태그가 없으면 자동 추가 — Suno 마무리 신호 */
