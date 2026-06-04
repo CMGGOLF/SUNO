@@ -3122,6 +3122,7 @@ function _doBuildPrompt() {
        목표: promptBox = Suno가 음악적 의도를 최대한 오해 없이 받아들이는 밀도
     ══════════════════════════════════════════════════════════════ */
     const parts=[];
+    parts.push(`[Style Settings] Traditional Korean Instruments, Ajaeng, Gayageum, Gugak, Modern Jazz, Soul`);
     const dom=STATE.koreanDominance||80;
     const domLabel = dom>=90?'ABSOLUTE DOMINANCE':dom>=80?'STRONG LEAD':dom>=70?'MAIN FOCUS':'MODERATE LEAD';
 
