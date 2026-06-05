@@ -3144,7 +3144,7 @@ function _doBuildPrompt() {
     /* ── 전 장르 공통 정서 테두리 — 어떤 장르든 국악 베이스 + 한(恨)의 애절함 ──
        재즈·블루스·소울·힙합 무엇을 골라도 이 정서가 깔리게 함 (기본 ON) ── */
     if (STATE.gugakTrotBase && STATE.genre !== 8) {
-      parts.push(`[Emotional Foundation] ALL genre choices filtered through Korean gugak-trot sensibility — deep, sorrowful, aching (한恨). Korean traditional instrument (haegeum/ajaeng/gayageum) carries the emotional core underneath the chosen genre. Pentatonic minor (계면조) coloring, vocal sob and bends (꺾기), the restrained grief of trot ballads. The genre is the surface; gugak melancholy is the soul.`);
+      parts.push(`[Emotional Foundation] ALL genre choices filtered through Korean gugak-trot sensibility — deep, sorrowful, aching (한恨). Korean traditional instrument (haegeum/ajaeng/gayageum) carries the emotional core underneath the chosen genre. Pentatonic minor (계면조) coloring, vocal sob and bends (꺾기), the restrained grief of trot ballads. Include Korean vocal chuimsae (추임새: 아아~, 우우~, 아이야~) in choruses and gugak guum (구음) vocal interludes. The genre is the surface; gugak melancholy is the soul.`);
     }
 
     /* ── 국악기 음색 매핑: 악기명 + 연주 행동 묘사 ── */
@@ -4009,13 +4009,24 @@ async function genLyrics(lang) {
 
   /* ── 송폼 구조 문자열 빌드 ── */
   const isHiphop = (form.id === 'gugak_hiphop');
-  const isTrot   = (form.id === 'gugak_trot');
+  // 국악 정서 베이스가 켜지면 트롯트 장르가 아니어도 트롯트 구조(추임새·구음·애드립) 사용
+  const isTrot   = (form.id === 'gugak_trot') || (STATE.gugakTrotBase && !isHiphop);
+
+  // 정서 베이스로 트롯트 구조를 쓸 때, 폼 데이터를 트롯트 폼 기준으로 보정
+  const _trotForm = GENRE_SONGFORM[8];
+  const _vLines = isTrot ? Math.round(_trotForm.verseLines * scaleFactor) : verseLines;
+  const _pLines = isTrot ? _trotForm.preLines : preLines;
+  const _cLines = isTrot ? Math.round(_trotForm.choLines * scaleFactor) : choLines;
+  const _bLines = isTrot ? Math.round(_trotForm.bridgeLines * scaleFactor) : bridgeLines;
+  const _oLines = isTrot ? _trotForm.outroLines : outroLines;
+  const _trTrot = isTrot ? _trotForm.trLabel : tr;
   const hasPreChorus = form.sections.includes('prechorus');
 
-  // 장르별 인트로 스타일 — introStyle 필드 있으면 사용, 없으면 기본값
+  // 장르별 인트로 스타일 — 트롯트 구조면 선택 장르의 introStyle 우선, 없으면 트롯트 기본
   const _introSec = Math.round(totalSec * 0.07);
-  const _introStyle = form.introStyle
-    ? form.introStyle.replace('{sec}', _introSec).replace('{초}', _introSec)
+  const _introSrc = form.introStyle || (isTrot ? _trotForm.introStyle : null);
+  const _introStyle = _introSrc
+    ? _introSrc.replace('{sec}', _introSec).replace('{초}', _introSec)
     : `(기악 — ${_introSec}초)`;
   let structureKr = `[인트로]\n${_introStyle}\n\n`;
 
@@ -4040,22 +4051,22 @@ async function genLyrics(lang) {
         _vIdx++;
         structureKr +=
           `[전절 ${_vIdx}] 긴장 +${6 + _vIdx}\n` +
-          `(정확히 ${verseLines}줄 — 체념·상황·구체 사물로 한(恨) 압축, 감정 직접 서술 금지)\n` +
+          `(정확히 ${_vLines}줄 — 체념·상황·구체 사물로 한(恨) 압축, 감정 직접 서술 금지)\n` +
           `(이번 절 권장 소재: ${_trotDiv.motif} — 이 장면을 시간 순서로 풀어낼 것)\n` +
           `(음수율: 3·4조 / 4·4조 / 7·5조 중 하나로 전체 일관 유지)\n` +
           `(문어체 어휘 적극 활용: ${_trotDiv.literary})\n` +
           `(마지막 행 종결어미 계열: ${_trotDiv.ending})\n\n`;
       } else if (blk === 'prechorus') {
         structureKr +=
-          `[프리코러스] 이완 ${tr.prechorus}\n` +
-          `(정확히 ${preLines}줄 — 후렴 직전 긴장 응축, "떠나라 떠나라 못 떠나오" 같은 반어적 호소)\n` +
+          `[프리코러스] 이완 ${_trTrot.prechorus}\n` +
+          `(정확히 ${_pLines}줄 — 후렴 직전 긴장 응축, "떠나라 떠나라 못 떠나오" 같은 반어적 호소)\n` +
           `(끝에 추임새 (아아~))\n\n`;
       } else if (blk === 'chorus') {
         const lbl = _choTLabels[Math.min(_cIdx, _choTLabels.length - 1)];
         _cIdx++;
         structureKr +=
           `[후렴 ${_cIdx}] ${lbl}\n` +
-          `(정확히 ${choLines}줄 — 첫 줄 앵커: "${_trotDiv.anchor}" + 추임새 (우우~) 또는 (아아~))\n` +
+          `(정확히 ${_cLines}줄 — 첫 줄 앵커: "${_trotDiv.anchor}" + 추임새 (우우~) 또는 (아아~))\n` +
           `(둘째 줄부터 앵커와 짝을 이루는 핵심구 반복, 행말 모음 통일, 각 줄 끝 추임새)\n\n`;
       } else if (blk === 'guum') {
         _gIdx++;
@@ -4064,17 +4075,17 @@ async function genLyrics(lang) {
           `(구음 — 가사 아님: "아~으~아~아~ (고음)" / "으흐~우~우~ (저음)" 형태로 2줄, 판소리 시김새)\n\n`;
       } else if (blk === 'bridge') {
         structureKr +=
-          `[브릿지] 긴장 ${tr.bridge}\n` +
-          `(정확히 ${bridgeLines}줄 — 최고조의 한(恨) 토로, "내 마음 울부짖어 노래하네" 같은 절규)\n` +
+          `[브릿지] 긴장 ${_trTrot.bridge}\n` +
+          `(정확히 ${_bLines}줄 — 최고조의 한(恨) 토로, "내 마음 울부짖어 노래하네" 같은 절규)\n` +
           `(소재: ${_trotDiv.motif} 재등장, 종결어미 ${_trotDiv.ending})\n\n`;
       }
     }
     // 고정: 빅피니시 → 애드립 → 아웃트로
     structureKr +=
-      `[후렴 - 마지막] 긴장 ${tr.finalchorus}\n[Big Finish]\n` +
+      `[후렴 - 마지막] 긴장 ${_trTrot.finalchorus}\n[Big Finish]\n` +
       `(강도 10/10 — 앵커 "${_trotDiv.anchor}" 반복, 모든 줄 끝 추임새 (아아~), 가장 절박하게)\n\n` +
       `[Ad-lib]\n(고음 확장 — "한~~ (고음 확장)" / "그리~움~~ (고음 확장)" 형태로 1~2줄)\n\n` +
-      `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 감정이 서서히 가라앉음, 종결어미 ${_trotDiv.ending})\n${form.outroStyle||'[fade out]\n[end]'}`;
+      `[아웃트로] 이완 ${_trTrot.outro}\n(정확히 ${_oLines}줄 — 감정이 서서히 가라앉음, 종결어미 ${_trotDiv.ending})\n${(form.outroStyle||_trotForm.outroStyle)||'[fade out]\n[end]'}`;
   } else {
     /* 일반 폼: Verse → (Pre-Chorus) → Chorus 반복 */
     const repeatCount = totalSec >= 270 ? 3 : 2;
@@ -4086,15 +4097,21 @@ async function genLyrics(lang) {
       structureKr += `[절 ${i}] 긴장 ${tr.verse}\n(정확히 ${verseLines}줄 — 감정 긴장 쌓기, 라임 체계: ${form.rhyme}, 줄당 최대 8단어)\n\n`;
 
       if (hasPreChorus && preLines > 0) {
-        structureKr += `[프리코러스] 이완 ${tr.prechorus}\n(정확히 ${preLines}줄 — 에너지 잠시 수축, 후렴 기대감 조성)\n\n`;
+        structureKr += `[프리코러스] 이완 ${tr.prechorus}\n(정확히 ${preLines}줄 — 에너지 잠시 수축, 후렴 기대감 조성)${_useGugakBase ? ', 끝에 추임새 (아아~)' : ''}\n\n`;
       }
 
-      structureKr += `[후렴] ${choIntKr}\n(정확히 ${choLines}줄 — 앵커 라인 먼저, 1회 반복, 줄당 최대 6단어, 따라부를 수 있는 훅)\n\n`;
+      structureKr += `[후렴] ${choIntKr}\n(정확히 ${choLines}줄 — 앵커 라인 먼저, 1회 반복, 줄당 최대 6단어, 따라부를 수 있는 훅${_useGugakBase ? ', 각 줄 끝 추임새 (아아~) 또는 (우우~)' : ''})\n\n`;
+
+      // 국악 정서 베이스: 후렴 뒤 구음 삽입 (마지막 후렴 제외)
+      if (_useGugakBase && i < repeatCount) {
+        structureKr += `[Gugak Guum]\n(구음 — 가사 아님: "아~으~아~아~ (고음)" / "으흐~우~우~ (저음)" 2줄, 판소리 시김새)\n\n`;
+      }
     }
 
     structureKr +=
       `[브릿지] 긴장 ${tr.bridge}\n(정확히 ${bridgeLines}줄 — 최대 대비, 마지막 폭발 전 수축)\n\n` +
-      `[후렴 - 마지막] 긴장 ${tr.finalchorus}\n[Big Finish]\n(강도 10/10 — 이전 모든 후렴과 동일한 앵커 라인 — 더 크고, 더 절박하고, 더 필연적으로)\n\n` +
+      `[후렴 - 마지막] 긴장 ${tr.finalchorus}\n[Big Finish]\n(강도 10/10 — 이전 모든 후렴과 동일한 앵커 라인 — 더 크고, 더 절박하고, 더 필연적으로${_useGugakBase ? ', 각 줄 끝 추임새 (아아~)' : ''})\n\n` +
+      (_useGugakBase ? `[Ad-lib]\n(고음 확장 — "한~~ (고음 확장)" / "그리~움~~ (고음 확장)" 1~2줄)\n\n` : '') +
       `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내림)\n${form.outroStyle||'[fade out]\n[end]'}`;
   }
 
@@ -4162,9 +4179,12 @@ ${(_useGugakBase && _trotDiv) ? `
 - 어떤 장르든 깊고 서글프고 애절한 한(恨)의 정서를 바탕에 깔 것
 - 문어체 시적 문장 지향 (예: "저무는 강가에 달빛 서리고")
 - 권장 문학 어휘: ${_trotDiv.literary}
-- 종결어미 계열: ${_trotDiv.ending}
+- 종결어미 계열: ${_trotDiv.ending} (모든 줄 "~다" 금지)
 - 중심 정서 소재: ${_trotDiv.motif}
 - 직설적 감정어 금지, 은유·상징·구체 장면으로 표현
+- 후렴 각 줄 끝에 추임새 (아아~) 또는 (우우~) 반드시 삽입
+- [Gugak Guum] 섹션: 가사 아닌 구음 ("아~으~아~아~ (고음)" / "으흐~우~우~ (저음)")
+- [Ad-lib] 섹션: 고음 확장 ("한~~ (고음 확장)" 형태) — 구조에 있으면 반드시 채울 것
 ` : ''}
 ${rhymeRuleKr}
 
