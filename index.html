@@ -1673,7 +1673,7 @@ const DATA = {
     {en:'Hammond organ textures',kr:'해먼드 오르간 질감',desc:'따뜻하고 영혼적인 클래식 오르간 사운드'},
     {en:'Delta blues slide guitar',kr:'델타 블루스 슬라이드 기타',desc:'원초적이고 날것의 블루스 슬라이드 기타'},
     {en:'Chicago blues shuffle',kr:'시카고 블루스 셔플',desc:'전형적인 시카고 블루스의 그루비한 리듬'},
-    {en:'Human breath imperfections',kr:'인간적인 호흡 불완전성',desc:'자연스러운 호흡 소리와 감정의 흔들림'},
+    {en:'Subtle emotional vocal waver (no breath sounds)',kr:'미세한 감정의 흔들림',desc:'호흡 소리 없이 감정의 미세한 떨림만'},
   ],
   humanFeelElements: [
     {en:'Imperfect timing',kr:'불완전한 타이밍',desc:'박자가 살짝 어긋나는 인간적인 리듬감'},
@@ -3403,13 +3403,15 @@ function _doBuildPrompt() {
       }
     }
 
-    /* ── ⑭ Negative Prompt — 매번 다른 6개 과용어 rotate ── */
+    /* ── ⑭ Negative Prompt — 매번 다른 6개 과용어 rotate + 숨소리 억제 고정 ── */
     const _negStart = Math.floor((STATE.negativeSeed || 0) * OVERUSED_SUNO_WORDS.length);
     const _negWords = [];
     for (let i = 0; i < 6; i++) {
       _negWords.push(OVERUSED_SUNO_WORDS[(_negStart + i) % OVERUSED_SUNO_WORDS.length]);
     }
-    parts.push(`[AVOID] ${_negWords.join(', ')}`);
+    // 숨소리(학학/헉헉) 억제 — 항상 포함
+    const _breathAvoid = 'audible breathing, breath sounds, gasping, panting, heavy breathing, inhale/exhale noise, 학학, 헉헉';
+    parts.push(`[AVOID] ${_negWords.join(', ')}, ${_breathAvoid}`);
 
     /* ── ⑮ 장르별 시작·끝 구조 힌트 — 모든 곡이 fade out으로 끝나는 레퍼토리화 방지 ── */
     const _sform = (STATE.genre !== null && GENRE_SONGFORM[STATE.genre]) ? GENRE_SONGFORM[STATE.genre] : null;
@@ -3556,6 +3558,8 @@ function cleanLyrics(text) {
     .replace(/\s+(긴장|이완)\s*[T R]?[+\-–]?\s*\d+\s*$/gim, '')
     // 구음/애드립 줄에 남은 한글 지시어 괄호 제거: "(고음)", "(저음)", "(고음 확장)", "(High)"
     .replace(/\s*\((고음|저음|중고음|중저음|고음\s*확장|저음\s*확장|high|low|mid-?high|mid-?low)\)\s*/gi, ' ')
+    // 숨소리 의성어 제거 (학학/헉헉/하악 등) — 가사로 새어나오면 삭제
+    .replace(/\s*\(?\s*(학학|헉헉|하악|하아악|허억|헉|하악하악|가쁜?\s*숨|숨소리|gasp|pant|panting)[~\.\s]*\)?/gi, ' ')
     // 마크다운 헤더(##) 제거 — [섹션]만 남김
     .replace(/^#{1,6}\s*/gm, '')
     // (N lines), (N줄), (N초), (N seconds) 지시 괄호 제거
