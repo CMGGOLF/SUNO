@@ -1388,49 +1388,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       </span>
     </div>
     <div class="tab-row">
-      <div class="tab active" id="lyricsTabEn" onclick="switchTab('lyricsEn',this)">🇺🇸 영어 가사 (AI 생성)</div>
-      <div class="tab" id="lyricsTabKr" onclick="switchTab('lyricsKr',this)">🇰🇷 한국어 가사 (AI 생성)</div>
+      <div class="tab active" id="lyricsTabKr" onclick="switchTab('lyricsKr',this)">🇰🇷 한국어 가사 (AI 생성)</div>
       <div class="tab" onclick="switchTab('lyricsFree',this)">✏️ 직접 입력</div>
     </div>
 
-    <div class="tab-panel active" id="lyricsEn">
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
-        <button class="btn btn-gold" onclick="genLyrics('en')">✦ 영어 가사 생성</button>
-        <button class="btn btn-red" onclick="genTrendLyrics('en')">🔥 요즘 트렌드 가사 (2026)</button>
-        <div style="display:flex;align-items:center;gap:4px">
-          <span style="font-size:12px;color:var(--muted)">곡 길이:</span>
-          <input type="text" id="lyricsDurationEn" value="3:00" style="width:70px;padding:4px 8px;font-size:12px" onblur="enforceDuration(this)" oninput="softCheckDuration(this)" placeholder="3:00">
-          <button class="btn btn-outline" style="padding:4px 10px;font-size:11px" onclick="autoRecommendDuration('en')">자동 추천</button>
-          <span style="font-size:10px;color:var(--muted)">최소 3:00</span>
-        </div>
-      </div>
-      <div class="ai-loading" id="lyricsEnLoading"><div class="dot-anim"><span></span><span></span><span></span></div>영어 가사 생성 중...</div>
-      <textarea id="lyricsEnOut" style="margin-top:12px;min-height:160px" placeholder="영어 가사가 여기 생성됩니다..."></textarea>
-      <div class="prompt-actions" style="margin-top:8px">
-        <button class="btn btn-outline" onclick="copyField('lyricsEnOut')">📋 복사</button>
-        <button class="btn btn-teal" onclick="translateLyricsToKr()" style="gap:6px">🇰🇷 한글 번역 보기 <span style="font-size:10px;opacity:.75">(내용 파악용)</span></button>
-      </div>
-      <!-- 한글 번역 패널 (참고용) -->
-      <div id="krTranslationPanel" style="display:none;margin-top:14px">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(58,143,160,.1);border:1px solid rgba(58,143,160,.35);border-radius:8px 8px 0 0;">
-          <div style="font-size:12px;color:var(--teal);font-weight:700">🇰🇷 한글 번역 <span style="font-size:10px;font-weight:400;color:var(--muted)">— 내용 파악용 참고 번역 (Suno 제출용 아님)</span></div>
-          <button class="btn btn-outline" style="padding:3px 10px;font-size:11px" onclick="document.getElementById('krTranslationPanel').style.display='none'">✕ 닫기</button>
-        </div>
-        <div class="ai-loading" id="krTranslationLoading" style="padding:12px 14px;background:rgba(58,143,160,.05);border:1px solid rgba(58,143,160,.2);border-top:none">
-          <div class="dot-anim"><span></span><span></span><span></span></div>번역 중...
-        </div>
-        <div id="krTranslationOut" style="
-          white-space:pre-wrap;font-size:12px;line-height:1.85;color:var(--text);
-          padding:14px 16px;background:rgba(58,143,160,.05);
-          border:1px solid rgba(58,143,160,.2);border-top:none;border-radius:0 0 8px 8px;
-          min-height:60px;font-family:'Noto Sans KR',sans-serif;display:none;
-        "></div>
-        <div id="krTranslationActions" style="display:none;margin-top:6px">
-          <button class="btn btn-outline" style="font-size:11px" onclick="copyKrTranslation()">📋 번역 복사</button>
-        </div>
-      </div>
-    </div>
-    <div class="tab-panel" id="lyricsKr">
+    <div class="tab-panel active" id="lyricsKr">
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
         <button class="btn btn-gold" onclick="genLyrics('kr')">✦ 한국어 가사 생성</button>
         <button class="btn btn-red" onclick="genTrendLyrics('kr')">🔥 요즘 트렌드 가사 (한국어)</button>
@@ -2911,8 +2873,8 @@ function switchTab(id,el) {
 
 /* 가사창 탭 전환 헬퍼 — lang:'en'|'kr' 기준으로 패널과 탭 버튼을 id로 찾아 활성화 */
 function _switchLyricsTab(lang) {
-  const panelId = lang === 'en' ? 'lyricsEn' : 'lyricsKr';
-  const tabBtnId = lang === 'en' ? 'lyricsTabEn' : 'lyricsTabKr';
+  const panelId  = 'lyricsKr';
+  const tabBtnId = 'lyricsTabKr';
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById(panelId)?.classList.add('active');
@@ -3122,10 +3084,7 @@ function _doBuildPrompt() {
        목표: promptBox = Suno가 음악적 의도를 최대한 오해 없이 받아들이는 밀도
     ══════════════════════════════════════════════════════════════ */
     const parts=[];
-  parts.push(`[Style: Traditional Korean Instruments as primary rhythmic & melodic base, Ajaeng/Gayageum continuous backing, Soul Jazz fusion, organic Gugak texture]`);
-    parts.push(`[Style Settings] Traditional Korean Instruments, Ajaeng, Gayageum, Gugak, Modern Jazz, Soul`);
-    
-    const dom = STATE.koreanDominance || 80;
+    const dom=STATE.koreanDominance||80;
     const domLabel = dom>=90?'ABSOLUTE DOMINANCE':dom>=80?'STRONG LEAD':dom>=70?'MAIN FOCUS':'MODERATE LEAD';
 
     /* ── ❶ 장르 DNA 주입 — DNA 3종 모두 녹여 맥락 극대화 ── */
@@ -3430,12 +3389,9 @@ async function callClaude(prompt, systemPrompt = '', temperature = 0.85) {
 }
 function cleanLyrics(text) {
   if (!text) return '';
-  // 마크다운 코드펜스만 제거 — 섹션 태그·지시어는 Suno에 필요하므로 유지
-  let cleaned = text.replace(/```(?:[\w]*\n?)?/g, '');
-  cleaned = cleaned
-    // 번호 매기기만 제거 (1. / 1) / 1:)
-    .replace(/^\s*\d+[.):\s]\s*/gm, '')
-    // 빈 줄 3개 이상 → 2개로 압축
+  let cleaned = text
+    .replace(/^\s*(\d+[.):]\s*)/gm, '')
+    .replace(/^\s*\(.*?(lines?|줄|초|seconds?).*?\)\s*$/gmi, '')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
   /* [end] 태그가 없으면 자동 추가 — Suno 마무리 신호 */
@@ -3773,17 +3729,6 @@ const GENRE_SONGFORM = {
 const SONGFORM_DEFAULT = GENRE_SONGFORM[7];
 
 /* ── ⑤ 가사 전용 금칙어 (AI 클리셰 표현) ──────────────────────── */
-const LYRIC_CLICHE_WORDS_EN = [
-  // 너무 흔한 이미지
-  'neon','dawn','echo','hollow','fade','shiver','midnight','moonlight',
-  // AI 특유 추상어
-  'symphony','melody','harmony','rhythm','chord','music','song',
-  // 과잉 감정어
-  'eternal','infinite','forever','destiny','soul-deep','transcend',
-  // 클리셰 표현
-  'burning inside','lost in the dark','feel alive','set me free',
-  'in the shadows','through the pain','rise above','break the chains',
-];
 const LYRIC_CLICHE_WORDS_KR = [
   '네온','새벽','메아리','허공','선율','멜로디','코드','하모니',
   '영원히','운명','영혼 깊이','초월','타오르는','어둠 속에','살아있어',
@@ -3792,10 +3737,9 @@ const LYRIC_CLICHE_WORDS_KR = [
 
 async function genLyrics(lang) {
   const current = document.getElementById('promptBox').textContent;
-  const isEn = lang === 'en';
-  const loading = document.getElementById(isEn ? 'lyricsEnLoading' : 'lyricsKrLoading');
-  const out     = document.getElementById(isEn ? 'lyricsEnOut'     : 'lyricsKrOut');
-  const durationInput = document.getElementById(isEn ? 'lyricsDurationEn' : 'lyricsDurationKr');
+  const loading = document.getElementById('lyricsKrLoading');
+  const out     = document.getElementById('lyricsKrOut');
+  const durationInput = document.getElementById('lyricsDurationKr');
   if (durationInput) enforceDuration(durationInput);
   const duration = durationInput?.value || '3:00';
   const [minsStr, secsStr] = duration.split(':');
@@ -3827,19 +3771,9 @@ async function genLyrics(lang) {
   const isHiphop = (form.id === 'gugak_hiphop');
   const hasPreChorus = form.sections.includes('prechorus');
 
-  let structureEn = `[Intro]\n(instrumental — ${Math.round(totalSec*0.07)} sec)\n\n`;
   let structureKr = `[인트로]\n(기악 — ${Math.round(totalSec*0.07)}초)\n\n`;
 
   if (isHiphop) {
-    /* 힙합 폼: Hook → Verse → Hook → Verse → Bridge → Hook → Outro */
-    structureEn +=
-      `[Hook] Tension ${tr.hook}\n(WRITE EXACTLY ${choLines} lines — catchy, punchy, max 6 words per line, instant earworm)\n\n` +
-      `[Verse 1] Tension ${tr.verse}\n(WRITE EXACTLY ${verseLines} lines — storytelling, rhythmic delivery, build tension, rhyme scheme: ${form.rhyme})\n\n` +
-      `[Hook] Tension ${tr.hook}\n(REPEAT the same hook — same lines as the first Hook)\n\n` +
-      `[Verse 2] Tension ${tr.verse}\n(WRITE EXACTLY ${verseLines} lines — escalate the story, more intense than Verse 1, rhyme scheme: ${form.rhyme})\n\n` +
-      `[Bridge] Tension ${tr.bridge}\n(WRITE EXACTLY ${bridgeLines} lines — maximum tension, pull back before the final drop)\n\n` +
-      `[Hook - Final] Tension +10\n[Big Finish]\n(INTENSITY 10/10 — SAME hook lines — but feel LOUDER, more INEVITABLE)\n\n` +
-      `[Outro] Release ${tr.outro}\n(WRITE EXACTLY ${outroLines} lines — energy dissolves)\n[fade out]\n[end]`;
     structureKr +=
       `[훅] 긴장 ${tr.hook}\n(정확히 ${choLines}줄 — 중독성, 임팩트, 줄당 최대 6단어, 즉각 귀에 꽂히는)\n\n` +
       `[절 1] 긴장 ${tr.verse}\n(정확히 ${verseLines}줄 — 이야기 전달, 리드미컬, 긴장 쌓기, 라임 체계: ${form.rhyme})\n\n` +
@@ -3849,60 +3783,34 @@ async function genLyrics(lang) {
       `[훅 - 마지막] 긴장 +10\n[Big Finish]\n(강도 10/10 — 동일한 훅 — 더 크고, 더 필연적으로)\n\n` +
       `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지 소멸)\n[fade out]\n[end]`;
   } else {
-    // 3분(180초)보다 짧으면 2번, 3분~4분 30초면 3번, 그 이상이면 4번 반복해!
-    let repeatCount = 2;
-    if (totalSec >= 270) repeatCount = 4;
-    else if (totalSec >= 180) repeatCount = 3;
-
+    /* 일반 폼: Verse → (Pre-Chorus) → Chorus 반복 */
+    const repeatCount = totalSec >= 270 ? 3 : 2;
     for (let i = 1; i <= repeatCount; i++) {
-      const choIntEn = i === 1
-        ? `Tension T+5 ↔ Release R-5 — establish the hook clearly`
-        : `Tension T+${Math.min(8, 5+i)} ↔ Release R-${Math.min(8, 5+i)} — BIGGER than Chorus ${i-1}`;
       const choIntKr = i === 1
         ? `긴장 T+5 ↔ 이완 R-5 — 훅을 명확히 확립`
         : `긴장 T+${Math.min(8, 5+i)} ↔ 이완 R-${Math.min(8, 5+i)} — 앞 후렴보다 더 크게`;
 
-      structureEn += `[Verse ${i}]\n[Tension ${tr.verse}]\n(WRITE EXACTLY ${verseLines} lines — build emotional tension)\n\n`;
-      structureKr += `[절 ${i}]\n[긴장 ${tr.verse}]\n(정확히 ${verseLines}줄 — 감정 긴장 쌓기)\n\n`;
+      structureKr += `[절 ${i}] 긴장 ${tr.verse}\n(정확히 ${verseLines}줄 — 감정 긴장 쌓기, 라임 체계: ${form.rhyme}, 줄당 최대 8단어)\n\n`;
 
       if (hasPreChorus && preLines > 0) {
-        structureEn += `[Pre-Chorus]\n[Release ${tr.prechorus}]\n(WRITE EXACTLY ${preLines} lines — pull back energy slightly, build anticipation for the chorus)\n\n`;
-        structureKr += `[프리코러스]\n[이완 ${tr.prechorus}]\n(정확히 ${preLines}줄 — 에너지 잠시 수축, 후렴 기대감 조성)\n\n`;
+        structureKr += `[프리코러스] 이완 ${tr.prechorus}\n(정확히 ${preLines}줄 — 에너지 잠시 수축, 후렴 기대감 조성)\n\n`;
       }
 
-      structureEn += `[Chorus]\n[${choIntEn}]\n(WRITE EXACTLY ${choLines} lines)\n\n`;
-      structureKr += `[후렴]\n[${choIntKr}]\n(정확히 ${choLines}줄)\n\n`;
+      structureKr += `[후렴] ${choIntKr}\n(정확히 ${choLines}줄 — 앵커 라인 먼저, 1회 반복, 줄당 최대 6단어, 따라부를 수 있는 훅)\n\n`;
     }
 
-    structureEn +=
-      `[Bridge]\n[Tension ${tr.bridge}]\n(WRITE EXACTLY ${bridgeLines} lines — maximum contrast, pull back before the final explosion)\n\n` +
-      `[Chorus - Final]\n[Big Finish]\n(INTENSITY 10/10 — SAME anchor line as all previous choruses — LOUDER, more URGENT, more INEVITABLE)\n\n` +
-      `[Outro]\n[Release ${tr.outro}]\n(WRITE EXACTLY ${outroLines} lines — energy slowly dissolves)\n[fade out]\n[end]`;
     structureKr +=
-      `[브릿지]\n[긴장 ${tr.bridge}]\n(정확히 ${bridgeLines}줄 — 최대 대비, 마지막 폭발 전 수축)\n\n` +
-      `[후렴 - 마지막]\n[Big Finish]\n(강도 10/10 — 이전 모든 후렴과 동일한 앵커 라인 — 더 크고, 더 절박하고, 더 필연적으로)\n\n` +
-      `[아웃트로]\n[이완 ${tr.outro}]\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내림)\n[fade out]\n[end]`;
+      `[브릿지] 긴장 ${tr.bridge}\n(정확히 ${bridgeLines}줄 — 최대 대비, 마지막 폭발 전 수축)\n\n` +
+      `[후렴 - 마지막] 긴장 ${tr.finalchorus}\n[Big Finish]\n(강도 10/10 — 이전 모든 후렴과 동일한 앵커 라인 — 더 크고, 더 절박하고, 더 필연적으로)\n\n` +
+      `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내림)\n[fade out]\n[end]`;
   }
 
   /* ── ④ 라이밍 지시 + ⑤ 금칙어 ── */
-  const rhymeRuleEn = `★★ RHYME RULES (mandatory) ★★
-- Rhyme scheme: ${form.rhyme}
-- In ${form.rhyme === 'AABB' ? 'AABB: lines 1+2 rhyme together, lines 3+4 rhyme together' : form.rhyme === 'ABAB' ? 'ABAB: lines 1+3 rhyme, lines 2+4 rhyme' : form.rhyme === 'AAB' ? 'AAB (blues): lines 1+2 identical/near-identical, line 3 resolves with different rhyme' : 'ABCB: only lines 2+4 rhyme, lines 1+3 are free'}
-- End-rhyme is MANDATORY in Verse and Chorus — every section
-- Internal rhyme and assonance are bonus points
-- NEVER sacrifice meaning for rhyme — find words that do both`;
-
   const rhymeRuleKr = `★★ 라이밍 규칙 (필수) ★★
 - 라임 체계: ${form.rhyme}
 - ${form.rhyme === 'AABB' ? 'AABB: 1·2번째 줄끼리 라임, 3·4번째 줄끼리 라임' : form.rhyme === 'ABAB' ? 'ABAB: 1·3번째 줄 라임, 2·4번째 줄 라임' : form.rhyme === 'AAB' ? 'AAB(블루스): 1·2번째 줄 동일/유사 반복, 3번째 줄 다른 라임으로 해소' : 'ABCB: 2·4번째 줄만 라임, 1·3번째 줄은 자유'}
 - 절과 후렴 모두 행말 라임 필수
 - 의미를 희생하지 않는 자연스러운 라임 추구`;
-
-  const clicheRuleEn = `★ BANNED WORDS & PHRASES (zero tolerance) ★
-- Never use: ${LYRIC_CLICHE_WORDS_EN.join(', ')}
-- Never mention any instrument, music theory term, or genre name in the lyrics
-- No clichéd imagery: teardrops falling, hearts breaking, world spinning
-- Express emotion through CONCRETE specific images — not abstract labels`;
 
   const clicheRuleKr = `★ 금칙어 (절대 사용 금지) ★
 - 사용 불가: ${LYRIC_CLICHE_WORDS_KR.join(', ')}
@@ -3912,47 +3820,7 @@ async function genLyrics(lang) {
 
   loading.classList.add('show');
   try {
-    const lyricPrompt = isEn
-      ? `You are writing lyrics for a ${duration} song (${totalSec} seconds total).
-Song form: ${form.nameEn}
-
-CRITICAL LANGUAGE RULE: ENGLISH ONLY — not a single Korean character anywhere.
-
-${rhymeRuleEn}
-
-${clicheRuleEn}
-
-★★ CHORUS / HOOK RULES ★★
-- ONE anchor phrase (max 6 words) — decide before writing anything
-- Anchor MUST be the first line of every chorus/hook
-- Repeat anchor at least once within each section
-- All chorus lines: max 6 words, short, singable, emotionally direct
-- Good anchors: "I still burn in the dark" / "You are my tide that turns"
-- Bad anchors: long sentences, abstract metaphors, music terminology
-
-★★★ [Big Finish] RULE — MOST CRITICAL ★★★
-- SAME anchor line as all previous choruses
-- LOUDER, more URGENT, more INEVITABLE — sing it like it costs everything
-- Other lines: shorter, rawer, more desperate than earlier choruses
-
-★ VERSE RULES ★
-- Build tension so the chorus feels like relief
-- Each verse MORE tense than the last (Tension numbers guide the energy)
-- Concrete imagery: water, stone, fire, season, body, breath — NOT abstract emotions
-- Max 8 words per line
-
-★ TENSION/RELEASE NUMBERS ★
-- The numbers in brackets (e.g. Tension +6, Release -4) show emotional intensity
-- Higher Tension = more compressed, urgent, desperate language
-- Higher Release = more open, expansive, relieved language
-- Match your word choice and line length to these numbers
-
-Music style (emotional reference only — do NOT mention in lyrics):
-${current}
-
-STRUCTURE:
-${structureEn}`
-      : `${duration} 길이(${totalSec}초)의 가사를 작성합니다.
+    const lyricPrompt = `${duration} 길이(${totalSec}초)의 가사를 작성합니다.
 송폼: ${form.nameKr}
 
 ${rhymeRuleKr}
@@ -3987,13 +3855,10 @@ ${current}
 구조:
 ${structureKr}`;
 
-    const sysP = isEn
-     ? `You are a world-class hit songwriter. ABSOLUTE RULE: You MUST include [Section] headers (e.g., [Verse 1], [Chorus], [Bridge]) for every part. NEVER skip them. Output ONLY headers and lyrics — NO numbering, NO explanations.`
-     : `당신은 세계적인 탑라인 작사가입니다. 필수 규칙: 모든 가사에는 반드시 [섹션명] 태그(예: [Verse 1], [Chorus], [Bridge])를 포함해야 합니다. 태그를 생략하면 곡 구조가 망가집니다. 절대 생략하지 마세요. 출력은 태그와 가사 줄만 하세요.`;
+    const sysP = `당신은 세계적인 탑라인 작사가입니다. 출력 규칙: [섹션명] 태그, 괄호 지시문, 가사 줄을 구조 그대로 출력하세요 — 번호 금지, 설명 금지, 악기·음악 용어 금지. 최우선: ① 라임 체계 일관성 유지 ② 후렴 앵커 라인은 그 순간만을 위해 곡을 다시 틀 만큼 강렬하게 ③ [Big Finish]는 곡 전체가 그 순간을 향해 달려온 것처럼. 긴장/이완 수치는 감정 강도 지표 — 반드시 반영하세요.`;
 
     const text = await callClaude(lyricPrompt, sysP, 0.92);
-    const cleaned = cleanLyrics(cleanModelText(text));
-    out.value = `[Base Layer: Heavy Traditional Korean Instruments throughout]\n[Melody Layer: Soul, Jazz, Blues]\n\n` + cleaned;
+    out.value = cleanLyrics(text);
     showToast(`✅ [${form.nameKr}] ${duration} 가사 생성 완료!`);
   } catch(e) {
     out.value = '오류: ' + (e.message || '알 수 없는 오류');
@@ -4003,11 +3868,10 @@ ${structureKr}`;
 
 /* ── 트렌드 가사 생성 (2026 스타일 특화) ── */
 async function genTrendLyrics(lang) {
-  const isEn = lang === 'en';
   const current = document.getElementById('promptBox').textContent;
-  const loading = document.getElementById(isEn?'lyricsEnLoading':'lyricsKrLoading');
-  const out = document.getElementById(isEn?'lyricsEnOut':'lyricsKrOut');
-  const durationInput = document.getElementById(isEn?'lyricsDurationEn':'lyricsDurationKr');
+  const loading = document.getElementById('lyricsKrLoading');
+  const out = document.getElementById('lyricsKrOut');
+  const durationInput = document.getElementById('lyricsDurationKr');
   if(durationInput) enforceDuration(durationInput);
   const duration = durationInput?.value || '3:00';
   loading.classList.add('show');
@@ -4015,30 +3879,9 @@ async function genTrendLyrics(lang) {
     /* 트렌드 가사도 장르 송폼·라임·금칙어 적용 */
     const trendForm = (STATE.genre !== null && GENRE_SONGFORM[STATE.genre])
       ? GENRE_SONGFORM[STATE.genre] : SONGFORM_DEFAULT;
-    const trendRhymeEn = `RHYME SCHEME: ${trendForm.rhyme} — ${trendForm.rhyme === 'AABB' ? 'lines 1+2 rhyme, lines 3+4 rhyme' : trendForm.rhyme === 'ABAB' ? 'lines 1+3 rhyme, lines 2+4 rhyme' : trendForm.rhyme === 'AAB' ? 'lines 1+2 near-identical, line 3 resolves differently' : 'only lines 2+4 rhyme'}. End-rhyme is MANDATORY.`;
     const trendRhymeKr = `라임 체계: ${trendForm.rhyme} — ${trendForm.rhyme === 'AABB' ? '1·2번째 줄 라임, 3·4번째 줄 라임' : trendForm.rhyme === 'ABAB' ? '1·3번째 줄 라임, 2·4번째 줄 라임' : trendForm.rhyme === 'AAB' ? '1·2번째 줄 유사 반복, 3번째 줄 해소 라임' : '2·4번째 줄만 라임'}. 행말 라임 필수.`;
-    const trendBanEn  = `BANNED WORDS (zero tolerance): ${LYRIC_CLICHE_WORDS_EN.join(', ')}. No instrument names, no music theory terms.`;
     const trendBanKr  = `금칙어 (절대 금지): ${LYRIC_CLICHE_WORDS_KR.join(', ')}. 악기명·음악 용어 가사에 금지.`;
 
-    const trendPromptEn = `Write cutting-edge 2026 song lyrics for a ${duration} Joseon Core track.
-
-CRITICAL LANGUAGE RULE: ENGLISH ONLY — zero Korean characters anywhere.
-
-TREND RULES:
-1. 2026 global pop/R&B/hip-hop style — punchy, conversational, hook-driven
-2. Max 8 words per line — short, impactful
-3. Hooks instantly singable (repeat key phrase 2-3x)
-4. Fresh modern street-level emotion — NO old-fashioned poetic language
-5. ESCALATION: each chorus bigger — [Big Finish] = MAXIMUM EXPLOSION
-6. ${trendRhymeEn}
-7. ${trendBanEn}
-
-Tension/Release arc: Verse +6 → Chorus T+5↔R-5 → Bridge +9 → Big Finish +10 → Outro -8
-
-Structure: [Intro] [Verse 1] Tension +6 [Chorus] T+5↔R-5 [Verse 2] Tension +7 [Chorus] T+6↔R-5 [Bridge] Tension +9 [Chorus - Final][Big Finish] Tension +10 [Outro] Release -8 [fade out] [end]
-
-Music vibe reference:
-${current}`;
     const trendPromptKr = `2026년 최신 트렌드 스타일의 조선 코어 가사를 ${duration} 길이로 작성하세요.
 
 트렌드 규칙:
@@ -4056,10 +3899,9 @@ ${current}`;
 
 음악 분위기 참고:
 ${current}`;
-    const sysTrendEn = `You are a 2026 hit songwriter. ABSOLUTE RULE: output in ENGLISH ONLY — not a single Korean character (한글) is allowed anywhere. Express all emotion, depth, and cultural feeling through English words only. Output ONLY raw lyrics — NO numbering, NO explanations, NO parentheticals. Only [Section] tags and lyric lines.`;
-    const sysTrendKr = `당신은 2026년 히트곡 작사가입니다. 순수 가사만 출력 — 번호 금지, 설명 금지, 괄호 지시문 금지. [섹션] 태그와 가사 줄만 출력하세요.`;
-    const text = await callClaude(isEn?trendPromptEn:trendPromptKr, isEn?sysTrendEn:sysTrendKr, 0.95);
-    out.value = cleanLyrics(cleanModelText(text));
+    const sysTrendKr = `당신은 2026년 히트곡 작사가입니다. [섹션] 태그, 괄호 지시문, 가사 줄을 구조 그대로 출력하세요 — 번호 금지, 설명 금지.`;
+    const text = await callClaude(trendPromptKr, sysTrendKr, 0.95);
+    out.value = cleanLyrics(text);
     showToast(`✅ 2026 트렌드 가사 생성 완료!`);
   } catch(e) { out.value='오류: '+(e.message||'알 수 없는 오류'); }
   loading.classList.remove('show');
@@ -4291,8 +4133,7 @@ function autoRecommendDuration(lang) {
   baseMinutes=Math.max(3.0,Math.min(4.5,baseMinutes));
   const minutes=Math.floor(baseMinutes); const seconds=Math.round((baseMinutes-minutes)*60);
   const timeString=`${minutes}:${seconds.toString().padStart(2,'0')}`;
-  const inputId = lang==='en' ? 'lyricsDurationEn' : 'lyricsDurationKr';
-  const input=document.getElementById(inputId);
+  const input=document.getElementById('lyricsDurationKr');
   if(input){input.value=timeString;showToast(`✅ 추천 길이: ${timeString}`);}
 }
 function toggleSection(bodyId,iconId) {
@@ -4982,10 +4823,7 @@ function insertGueumToLyrics(lang) {
   if (!STATE.gueumPositions.length) { showToast('⚠️ 06B 섹션에서 구음 위치를 먼저 선택해주세요!'); return; }
   /* lang 파라미터로 명시적 탭 우선 처리, 없으면 현재 활성 탭 */
   let textarea = null;
-  if (lang === 'en') {
-    textarea = document.getElementById('lyricsEnOut');
-    _switchLyricsTab('en');
-  } else if (lang === 'kr') {
+  if (lang === 'kr') {
     textarea = document.getElementById('lyricsKrOut');
     _switchLyricsTab('kr');
   } else {
@@ -5517,24 +5355,9 @@ function applyShortsPreset(idx) {
 }
 
 function genShortsLyrics(lang) {
-  if (lang === 'en') {
-    const ta = document.getElementById('lyricsEnOut');
-    if (ta) {
-      ta.value =
-`[Hook - 0:00~0:05]
-[instrumental break]
-
-[Drop - Climax 0:05~0:35]
-[instrumental break]
-
-[Outro - Fade 0:35~0:45]
-[End]`;
-      _switchLyricsTab('en');
-    }
-  } else {
-    const ta = document.getElementById('lyricsKrOut');
-    if (ta) {
-      ta.value =
+  const ta = document.getElementById('lyricsKrOut');
+  if (ta) {
+    ta.value =
 `[훅 - 0:00~0:05]
 [instrumental break]
 
@@ -5543,8 +5366,7 @@ function genShortsLyrics(lang) {
 
 [아웃트로 - 페이드 0:35~0:45]
 [End]`;
-      _switchLyricsTab('kr');
-    }
+    _switchLyricsTab('kr');
   }
   showToast('🎬 쇼츠 전용 가사 구조 삽입 완료!');
 }
@@ -5567,13 +5389,10 @@ function _buildShortsGueumBlock() {
 }
 
 function insertShortsGueum(lang) {
-  const taId = lang === 'en' ? 'lyricsEnOut' : 'lyricsKrOut';
-  const ta   = document.getElementById(taId);
+  const ta   = document.getElementById('lyricsKrOut');
   if (!ta) return;
 
-  const dropTags = lang === 'en'
-    ? [/(\[Drop[^\]]*\]\n\[instrumental break\])/i, /(\[Drop[^\]]*\])/i]
-    : [/(\[드롭[^\]]*\]\n\[instrumental break\])/i, /(\[드롭[^\]]*\])/i];
+  const dropTags = [/(\[드롭[^\]]*\]\n\[instrumental break\])/i, /(\[드롭[^\]]*\])/i];
 
   const gueumBlock = _buildShortsGueumBlock();
   let lyrics = ta.value;
@@ -5606,59 +5425,6 @@ function genShortsLyricsWithGueum(lang) {
   }, 80);
 }
 
-
-/* ═══════════════════════════════════════════
-   🇰🇷 영어 가사 → 한글 번역 (참고용)
-═══════════════════════════════════════════ */
-async function translateLyricsToKr() {
-  const lyricsEl = document.getElementById('lyricsEnOut');
-  const panel    = document.getElementById('krTranslationPanel');
-  const loading  = document.getElementById('krTranslationLoading');
-  const outEl    = document.getElementById('krTranslationOut');
-  const actions  = document.getElementById('krTranslationActions');
-
-  const lyrics = (lyricsEl?.value || '').trim();
-  if (!lyrics) { showToast('⚠️ 먼저 영어 가사를 생성해주세요!'); return; }
-
-  panel.style.display = 'block';
-  loading.classList.add('show');
-  outEl.style.display = 'none';
-  actions.style.display = 'none';
-  outEl.textContent = '';
-
-  try {
-    const sysP = `당신은 시적 감성을 살리는 번역가입니다.
-규칙:
-1. 영어 가사를 자연스러운 한국어로 번역하세요.
-2. [섹션 태그] (예: [Verse 1], [Chorus] 등)는 의미를 설명하는 한글로 바꾸세요.
-   예) [Verse 1] → [절 1], [Chorus] → [후렴], [Bridge] → [브릿지], [Outro] → [아웃트로], [Intro] → [인트로], [Final Chorus] → [후렴 - 마지막]
-3. [instrumental break], [fade out], [end] 같은 지시 태그는 그대로 유지하세요.
-4. 구음(어~이~야~ 등)은 번역하지 말고 그대로 두세요.
-5. 시의 감성을 살려 자연스러운 한국어로 번역하세요. 직역보다 의역 우선.
-6. 번역문만 출력하세요. 설명이나 주석 없이.`;
-
-    const userP = `다음 영어 가사를 한국어로 번역해주세요 (참고용):\n\n${lyrics}`;
-    const result = await callClaude(userP, sysP, 0.6);
-
-    outEl.textContent = result.trim();
-    outEl.style.display = 'block';
-    actions.style.display = 'flex';
-    showToast('✅ 한글 번역 완료! (참고용)');
-  } catch(e) {
-    outEl.textContent = '번역 오류: ' + (e.message || '알 수 없는 오류');
-    outEl.style.display = 'block';
-    showToast('⚠️ 번역 실패: ' + (e.message || ''));
-  }
-  loading.classList.remove('show');
-}
-
-function copyKrTranslation() {
-  const el = document.getElementById('krTranslationOut');
-  const text = (el?.textContent || '').trim();
-  if (!text || text.startsWith('번역 오류:')) { showToast('⚠️ 복사할 번역이 없습니다.'); return; }
-  doCopy(text);
-  showToast('📋 한글 번역 복사 완료!');
-}
 
 /* ═══════════════════════════════════════════
    ⚡ 슈퍼 프롬프트 생성기 (3가지 변형)
