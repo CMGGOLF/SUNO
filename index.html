@@ -894,11 +894,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   <div class="section-body">
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
       <div style="display:flex;gap:8px;flex-wrap:wrap" id="durationBtnWrap">
-        <button class="dur-btn" onclick="setSongDuration('3:00')">3:00</button>
         <button class="dur-btn active" onclick="setSongDuration('3:30')">3:30 ⭐</button>
         <button class="dur-btn" onclick="setSongDuration('4:00')">4:00</button>
         <button class="dur-btn" onclick="setSongDuration('4:30')">4:30</button>
         <button class="dur-btn" onclick="setSongDuration('5:00')">5:00</button>
+        <button class="dur-btn" onclick="setSongDuration('5:30')">5:30</button>
       </div>
       <div style="display:flex;align-items:center;gap:6px">
         <span style="font-size:11px;color:var(--muted)">직접입력:</span>
@@ -1379,7 +1379,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
   <div class="section-body">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:rgba(160,90,58,.08);border:1px solid rgba(160,90,58,.35);border-radius:8px;">
-      <button class="btn btn-korean" onclick="insertGueumToLyrics()" style="white-space:nowrap">
+      <button class="btn btn-korean" onclick="insertGueumToLyrics('kr')" style="white-space:nowrap">
         🎵 구음 가사 삽입
       </button>
       <span style="font-size:11px;color:var(--muted);line-height:1.5">
@@ -1398,9 +1398,9 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <button class="btn btn-red" onclick="genTrendLyrics('kr')">🔥 요즘 트렌드 가사 (한국어)</button>
         <div style="display:flex;align-items:center;gap:4px">
           <span style="font-size:12px;color:var(--muted)">곡 길이:</span>
-          <input type="text" id="lyricsDurationKr" value="3:00" style="width:70px;padding:4px 8px;font-size:12px" onblur="enforceDuration(this)" oninput="softCheckDuration(this)" placeholder="3:00">
+          <input type="text" id="lyricsDurationKr" value="3:30" style="width:70px;padding:4px 8px;font-size:12px" onblur="enforceDuration(this)" oninput="softCheckDuration(this)" placeholder="3:30">
           <button class="btn btn-outline" style="padding:4px 10px;font-size:11px" onclick="autoRecommendDuration('kr')">자동 추천</button>
-          <span style="font-size:10px;color:var(--muted)">최소 3:00</span>
+          <span style="font-size:10px;color:var(--muted)">최소 3:30</span>
         </div>
       </div>
       <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--korean2);margin-bottom:8px;cursor:pointer">
@@ -4116,7 +4116,7 @@ async function genLyrics(lang) {
   const out     = document.getElementById('lyricsKrOut');
   const durationInput = document.getElementById('lyricsDurationKr');
   if (durationInput) enforceDuration(durationInput);
-  const duration = durationInput?.value || '3:00';
+  const duration = durationInput?.value || '3:30';
   const [minsStr, secsStr] = duration.split(':');
   const totalSec = parseInt(minsStr) * 60 + parseInt(secsStr || '0');
 
@@ -4396,7 +4396,7 @@ async function genTrendLyrics(lang) {
   const out = document.getElementById('lyricsKrOut');
   const durationInput = document.getElementById('lyricsDurationKr');
   if(durationInput) enforceDuration(durationInput);
-  const duration = durationInput?.value || '3:00';
+  const duration = durationInput?.value || '3:30';
   loading.classList.add('show');
   try {
     /* 트렌드 가사도 장르 송폼·라임·금칙어 적용 */
@@ -4644,25 +4644,25 @@ function copyVariationPrompt(idx, type) {
 function enforceDuration(input) {
   const val = (input.value||'').trim();
   const match = val.match(/^(\d+):(\d{1,2})$/);
-  if (!match) { input.value='3:00'; input.style.borderColor='var(--red)'; setTimeout(()=>input.style.borderColor='',1500); showToast('⚠️ 최소 3:00으로 설정되었습니다.'); return; }
+  if (!match) { input.value='3:30'; input.style.borderColor='var(--red)'; setTimeout(()=>input.style.borderColor='',1500); showToast('⚠️ 최소 3:30으로 설정되었습니다.'); return; }
   const mins=parseInt(match[1]); const secs=parseInt(match[2]);
   if (secs>=60) { input.value=`${mins+1}:00`; input.style.borderColor='var(--red)'; setTimeout(()=>input.style.borderColor='',1500); showToast('⚠️ 초(秒)는 00~59 사이여야 합니다.'); return; }
   const totalSec=mins*60+secs;
-  if (totalSec<180) { input.value='3:00'; input.style.borderColor='var(--red)'; setTimeout(()=>input.style.borderColor='',1500); showToast('⚠️ 최소 길이는 3:00 입니다!'); }
+  if (totalSec<210) { input.value='3:30'; input.style.borderColor='var(--red)'; setTimeout(()=>input.style.borderColor='',1500); showToast('⚠️ 최소 길이는 3:30 입니다!'); }
   else { input.style.borderColor='var(--teal)'; setTimeout(()=>input.style.borderColor='',1200); }
 }
 function softCheckDuration(input) {
   const val=(input.value||'').trim(); const match=val.match(/^(\d+):(\d{1,2})$/);
   if(!match)return;
   const totalSec=parseInt(match[1])*60+parseInt(match[2]);
-  input.style.borderColor=totalSec<180?'var(--red)':'var(--teal)';
+  input.style.borderColor=totalSec<210?'var(--red)':'var(--teal)';
 }
 function autoRecommendDuration(lang) {
   const bpm=STATE.bpm||95; const intensity=STATE.intensity||5;
-  let baseMinutes=3.0;
-  if(bpm>125)baseMinutes+=0.5; else if(bpm<85)baseMinutes-=0.3;
-  if(intensity>=8)baseMinutes+=0.4; else if(intensity<=3)baseMinutes-=0.3;
-  baseMinutes=Math.max(3.0,Math.min(4.5,baseMinutes));
+  let baseMinutes=3.5;
+  if(bpm>125)baseMinutes+=0.5; else if(bpm<85)baseMinutes-=0.2;
+  if(intensity>=8)baseMinutes+=0.4; else if(intensity<=3)baseMinutes-=0.2;
+  baseMinutes=Math.max(3.5,Math.min(4.8,baseMinutes));
   const minutes=Math.floor(baseMinutes); const seconds=Math.round((baseMinutes-minutes)*60);
   const timeString=`${minutes}:${seconds.toString().padStart(2,'0')}`;
   const input=document.getElementById('lyricsDurationKr');
@@ -5359,10 +5359,15 @@ function insertGueumToLyrics(lang) {
     textarea = document.getElementById('lyricsKrOut');
     _switchLyricsTab('kr');
   } else {
-    /* fallback: 현재 활성 패널의 textarea */
-    const activePanel = document.querySelector('.tab-panel.active');
-    if (!activePanel) { showToast('⚠️ 가사창이 열려있지 않습니다.'); return; }
-    textarea = activePanel.querySelector('textarea');
+    /* fallback: 가사 출력창 우선 — 스토리 입력창엔 절대 넣지 않음 */
+    textarea = document.getElementById('lyricsKrOut');
+    if (!textarea) {
+      const activePanel = document.querySelector('.tab-panel.active');
+      if (!activePanel) { showToast('⚠️ 가사창이 열려있지 않습니다.'); return; }
+      // 스토리 입력창(lyricsStoryKr)은 제외하고 출력용 textarea만 선택
+      const areas = [...activePanel.querySelectorAll('textarea')].filter(t => t.id !== 'lyricsStoryKr');
+      textarea = areas[0] || null;
+    }
   }
   if (!textarea) { showToast('⚠️ 가사 입력란을 찾을 수 없습니다.'); return; }
 
