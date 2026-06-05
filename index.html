@@ -3724,16 +3724,42 @@ const GENRE_SONGFORM = {
     maxScale: 1.2,
     verseLines: 4, preLines: 2, choLines: 4, bridgeLines: 3, outroLines: 2,
   },
+  // 8: 국악 트롯트 — 전·후절 맺고 풀기 구조: 체념(절)→카타르시스(후렴) 반복
+  8: {
+    id: 'gugak_trot',
+    nameEn: 'Gugak Trot Form (Dan-jeol / Maetgo-Pulgi)',
+    nameKr: '국악 트롯트 폼 (전·후절 맺풀기)',
+    sections: ['intro','verse1','refrain','verse2','refrain','verse3','bigrefrain','outro'],
+    rhyme: 'open-vowel', // 한국어 열린음절 모음통일 (~아라/~이라/~여라 계열)
+    trLabel: { verse1:'+7', refrain:'T+4↔R-8', verse2:'+8', verse3:'+9', bigrefrain:'+10', outro:'-9' },
+    secPerLine: 5,
+    maxScale: 1.2,
+    verseLines: 4, preLines: 0, choLines: 2, bridgeLines: 0, outroLines: 2,
+  },
 };
 /* 장르 미선택 시 기본값 */
 const SONGFORM_DEFAULT = GENRE_SONGFORM[7];
 
-/* ── ⑤ 가사 전용 금칙어 (AI 클리셰 표현) ──────────────────────── */
+/* ── ⑤ 가사 전용 금칙어 ──────────────────────────────────────────
+   모드별 분리: 팝/재즈 계열 vs 국악 트롯트 계열
+────────────────────────────────────────────────────────────────── */
+// 팝·재즈·소울·힙합 계열 (기존 장르 0~7)
 const LYRIC_CLICHE_WORDS_KR = [
   '네온','새벽','메아리','허공','선율','멜로디','코드','하모니',
   '영원히','운명','영혼 깊이','초월','타오르는','어둠 속에','살아있어',
   '그림자 속','고통 너머','일어서','사슬을 끊',
 ];
+// 국악 트롯트 계열 (장르 8) — 현대 감성어·영어 혼용 차단, 트롯트 필수어는 허용
+const LYRIC_CLICHE_WORDS_TROT = [
+  'baby','oh my','yeah','come on','let me','so good',
+  '설레다','소울','감성','공간','순간','트렌디','바이브',
+  '초월','타오르는','사슬을 끊','어둠 속에',
+  '네온','선율','멜로디','코드','하모니','영혼 깊이','살아있어',
+];
+// 장르 상태에 따라 적용할 금칙어 선택 헬퍼
+function getLyricClicheWords() {
+  return (STATE.genre === 8) ? LYRIC_CLICHE_WORDS_TROT : LYRIC_CLICHE_WORDS_KR;
+}
 
 async function genLyrics(lang) {
   const current = document.getElementById('promptBox').textContent;
@@ -3769,6 +3795,7 @@ async function genLyrics(lang) {
 
   /* ── 송폼 구조 문자열 빌드 ── */
   const isHiphop = (form.id === 'gugak_hiphop');
+  const isTrot   = (form.id === 'gugak_trot');
   const hasPreChorus = form.sections.includes('prechorus');
 
   let structureKr = `[인트로]\n(기악 — ${Math.round(totalSec*0.07)}초)\n\n`;
@@ -3782,6 +3809,27 @@ async function genLyrics(lang) {
       `[브릿지] 긴장 ${tr.bridge}\n(정확히 ${bridgeLines}줄 — 최대 긴장, 마지막 드롭 전 수축)\n\n` +
       `[훅 - 마지막] 긴장 +10\n[Big Finish]\n(강도 10/10 — 동일한 훅 — 더 크고, 더 필연적으로)\n\n` +
       `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지 소멸)\n[fade out]\n[end]`;
+  } else if (isTrot) {
+    /* 국악 트롯트 폼: 전절(맺기)→후렴(풀기) 반복, 3절 구조 */
+    const repeatCount = totalSec >= 270 ? 3 : 2;
+    for (let i = 1; i <= repeatCount; i++) {
+      const tVerse = i === 1 ? tr.verse1 : i === 2 ? tr.verse2 : tr.verse3;
+      const tRefrain = i < repeatCount
+        ? `긴장 T+${4+i} ↔ 이완 R-${8} — 체념이 카타르시스로 해소`
+        : `긴장 ${tr.bigrefrain}\n[Big Finish]`;
+      structureKr +=
+        `[전절 ${i}] 긴장 ${tVerse}\n` +
+        `(정확히 ${verseLines}줄 — 체념·상황·구체 사물로 한(恨) 압축, 감정 직접 서술 금지)\n` +
+        `(음수율: 3·4조 / 4·4조 / 7·5조 중 하나로 전체 일관 유지)\n` +
+        `(예: "바람 불어 / 찬 고갯길 / 님 간 지 / 석 달이라" → 3·4조)\n` +
+        `(예: "가신 임 오신다더니 / 빈 바람만 불어오네" → 7·5조)\n` +
+        `(마지막 행 종결어미: ~더라 / ~구나 / ~련만 / ~일세 중 하나 필수)\n\n` +
+        `[후렴 ${i}] ${tRefrain}\n` +
+        `(정확히 2줄 — 첫 줄: 추임새 '아이야~' '에헤~' '얼씨구~' 중 하나로 시작)\n` +
+        `(둘째 줄: 앵커 구절 — 짧고 따라부를 수 있는 핵심 한 마디, 행말 모음 통일)\n\n`;
+    }
+    structureKr +=
+      `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 감정이 서서히 가라앉음, ~더라 / ~이라 종결)\n[fade out]\n[end]`;
   } else {
     /* 일반 폼: Verse → (Pre-Chorus) → Chorus 반복 */
     const repeatCount = totalSec >= 270 ? 3 : 2;
@@ -3805,22 +3853,65 @@ async function genLyrics(lang) {
       `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내림)\n[fade out]\n[end]`;
   }
 
-  /* ── ④ 라이밍 지시 + ⑤ 금칙어 ── */
-  const rhymeRuleKr = `★★ 라이밍 규칙 (필수) ★★
+  /* ── ④ 라이밍 지시 + ⑤ 금칙어 (트롯트 모드 분기) ── */
+  const activeClicheWords = getLyricClicheWords();
+
+  let rhymeRuleKr;
+  if (isTrot) {
+    rhymeRuleKr = `★★ 국악 트롯트 라임 규칙 (필수) ★★
+- 행말 음절 모음 계열 통일: ~아라/~이라/~여라/~더라/~구나 등 같은 모음 계열
+- 또는 받침 없는 열린음절 반복: ~가요/~라요/~나요
+- 전절(절) 내 3줄 이상 행말 라임 일치 필수
+- 후렴 2줄은 같은 모음 계열 종결`;
+  } else {
+    rhymeRuleKr = `★★ 라이밍 규칙 (필수) ★★
 - 라임 체계: ${form.rhyme}
 - ${form.rhyme === 'AABB' ? 'AABB: 1·2번째 줄끼리 라임, 3·4번째 줄끼리 라임' : form.rhyme === 'ABAB' ? 'ABAB: 1·3번째 줄 라임, 2·4번째 줄 라임' : form.rhyme === 'AAB' ? 'AAB(블루스): 1·2번째 줄 동일/유사 반복, 3번째 줄 다른 라임으로 해소' : 'ABCB: 2·4번째 줄만 라임, 1·3번째 줄은 자유'}
 - 절과 후렴 모두 행말 라임 필수
 - 의미를 희생하지 않는 자연스러운 라임 추구`;
+  }
 
   const clicheRuleKr = `★ 금칙어 (절대 사용 금지) ★
-- 사용 불가: ${LYRIC_CLICHE_WORDS_KR.join(', ')}
+- 사용 불가: ${activeClicheWords.join(', ')}
 - 가사에 악기명, 음악 이론 용어, 장르명 언급 절대 금지
 - 진부한 표현 금지: 눈물이 흘러, 심장이 부서져, 세상이 돌아가
 - 추상적 감정 레이블 대신 구체적이고 감각적인 이미지로 표현`;
 
   loading.classList.add('show');
   try {
-    const lyricPrompt = `${duration} 길이(${totalSec}초)의 가사를 작성합니다.
+    let lyricPrompt;
+    if (isTrot) {
+      lyricPrompt = `${duration} 길이(${totalSec}초)의 국악 트롯트 가사를 작성합니다.
+송폼: ${form.nameKr}
+
+${rhymeRuleKr}
+
+${clicheRuleKr}
+
+★★ 국악 트롯트 7대 필수 규칙 ★★
+① 음수율: 한 줄은 3·4조 / 4·4조 / 7·5조 중 하나로 선택해 전체 일관 유지
+② 한(恨)의 정서: 감정 직접 서술 금지 — 체념·상황·구체 사물로 표현
+③ 종결어미: ~더라 / ~구나 / ~련만 / ~일세 / ~하여라 를 적극 사용
+④ 향토 소재 (아래 목록에서 장면에 맞게 선택):
+   · 공간/자연: 고갯길·강변·산 그림자·빈 벌판·돌담길·언덕배기·찬 이슬·깊은 밤길
+   · 계절/날씨: 봄바람·낙엽·겨울 찬바람·가을 빗소리·꽃 지는 날
+   · 인물/관계: 어머니 손길·떠난 임의 옷자락·빈 자리·눈물 자국
+   → 오감으로 느껴지는 구체적 장면 묘사, 감정 직접 서술 금지
+⑤ 추임새: 후렴 첫 줄 반드시 '아이야~' '에헤~' '얼씨구~' 중 하나로 시작
+⑥ 맺고 풀기: 전절에서 체념·한(恨) 압축(긴장), 후렴에서 감정 폭발·카타르시스(이완)
+⑦ 금지: 현대 감성어·영어 단어·팝 발라드식 서정 (금칙어 목록 참조)
+
+★ 긴장/이완 수치 ★
+- 전절 T 수치 높음(+7~+9) = 체념·압축·절박한 언어, 짧은 호흡
+- 후렴 R 수치 낮음(-8~-9) = 카타르시스·해방·폭발적 이완
+
+음악 스타일 (감정 참고용 — 가사에 언급 금지):
+${current}
+
+구조:
+${structureKr}`;
+    } else {
+      lyricPrompt = `${duration} 길이(${totalSec}초)의 가사를 작성합니다.
 송폼: ${form.nameKr}
 
 ${rhymeRuleKr}
@@ -3854,8 +3945,11 @@ ${current}
 
 구조:
 ${structureKr}`;
+    }
 
-    const sysP = `당신은 세계적인 탑라인 작사가입니다. 출력 규칙: [섹션명] 태그, 괄호 지시문, 가사 줄을 구조 그대로 출력하세요 — 번호 금지, 설명 금지, 악기·음악 용어 금지. 최우선: ① 라임 체계 일관성 유지 ② 후렴 앵커 라인은 그 순간만을 위해 곡을 다시 틀 만큼 강렬하게 ③ [Big Finish]는 곡 전체가 그 순간을 향해 달려온 것처럼. 긴장/이완 수치는 감정 강도 지표 — 반드시 반영하세요.`;
+    const sysP = isTrot
+      ? `당신은 한국 국악 트롯트 전문 작사가입니다. 출력 규칙: [섹션명] 태그, 괄호 지시문, 가사 줄을 구조 그대로 출력하세요 — 번호 금지, 설명 금지, 악기·음악 용어 금지. 최우선: ① 음수율(3·4조/7·5조) 일관 유지 ② 전절 체념→후렴 카타르시스 맺풀기 구조 ③ 추임새로 후렴 시작 ④ 종결어미(~더라/~구나/~련만) 사용 ⑤ 긴장/이완 수치 반드시 반영.`
+      : `당신은 세계적인 탑라인 작사가입니다. 출력 규칙: [섹션명] 태그, 괄호 지시문, 가사 줄을 구조 그대로 출력하세요 — 번호 금지, 설명 금지, 악기·음악 용어 금지. 최우선: ① 라임 체계 일관성 유지 ② 후렴 앵커 라인은 그 순간만을 위해 곡을 다시 틀 만큼 강렬하게 ③ [Big Finish]는 곡 전체가 그 순간을 향해 달려온 것처럼. 긴장/이완 수치는 감정 강도 지표 — 반드시 반영하세요.`;
 
     const text = await callClaude(lyricPrompt, sysP, 0.92);
     out.value = cleanLyrics(text);
