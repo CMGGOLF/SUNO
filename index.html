@@ -3564,6 +3564,26 @@ function cleanLyrics(text) {
     .replace(/[ \t]+$/gm, '')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
+  /* 동일한 가사 줄이 4번 이상 연속 반복되면 최대 3회로 축약 (복붙 방지)
+     — 섹션 태그([...])·구음·빈 줄은 제외 */
+  {
+    const lines = cleaned.split('\n');
+    const out = [];
+    let prev = null, run = 0;
+    for (const ln of lines) {
+      const t = ln.trim();
+      const isTag = /^\[.*\]$/.test(t) || t === '' || /[~]/.test(t); // 태그·빈줄·구음(물결) 제외
+      if (!isTag && t === prev) {
+        run++;
+        if (run >= 3) continue; // 3회 초과분은 버림
+      } else {
+        run = isTag ? 0 : 1;
+        prev = isTag ? null : t;
+      }
+      out.push(ln);
+    }
+    cleaned = out.join('\n');
+  }
   /* [end] 태그가 없으면 자동 추가 — Suno 마무리 신호 */
   if (!/\[end\]/i.test(cleaned)) {
     if (!/\[fade\s*out\]/i.test(cleaned)) cleaned += '\n[fade out]';
@@ -4223,7 +4243,11 @@ async function genLyrics(lang) {
     // 고정: 빅피니시 → 애드립 → 아웃트로
     structureKr +=
       `[후렴 - 마지막] 긴장 ${_trTrot.finalchorus}\n[Big Finish]\n` +
-      `(강도 10/10 — 앵커 "${_trotDiv.anchor}" 반복, 마지막 줄에만 추임새 ${_trotDiv.chuimsaeA}, 가장 절박하게)\n\n` +
+      `(정확히 4줄 — 절정의 클라이맥스. 같은 줄 4번 복붙 절대 금지)\n` +
+      `(1줄: 앵커 "${_trotDiv.anchor}" 그대로\n` +
+      ` 2줄: 앞 절·후렴에서 쌓인 핵심 감정을 응축한 새 구절 (소재: ${_trotDiv.motif})\n` +
+      ` 3줄: 앵커를 짧게 끊어 절규하듯 변형 (예: 앞부분만 떼어 "${(_trotDiv.anchor.split(' ')[0]||_trotDiv.anchor)}…")\n` +
+      ` 4줄: 마지막 한 마디 — 가장 짧고 사무치게, 끝에 추임새 ${_trotDiv.chuimsaeA})\n\n` +
       `[Ad-lib]\n(non-lexical vocal ad-lib — NOT lyrics: extended melisma on a single syllable like "하~~~" or "흐어~~~", wordless. Do not sing direction words)\n\n` +
       `[아웃트로] 이완 ${_trTrot.outro}\n(정확히 ${_oLines}줄 — 감정이 서서히 가라앉음, 종결어미 ${_trotDiv.ending})\n${(form.outroStyle||_trotForm.outroStyle)||'[fade out]\n[end]'}`;
   } else {
@@ -4250,7 +4274,7 @@ async function genLyrics(lang) {
 
     structureKr +=
       `[브릿지] 긴장 ${tr.bridge}\n(정확히 ${bridgeLines}줄 — 최대 대비, 마지막 폭발 전 수축)\n\n` +
-      `[후렴 - 마지막] 긴장 ${tr.finalchorus}\n[Big Finish]\n(강도 10/10 — 이전 모든 후렴과 동일한 앵커 라인 — 더 크고, 더 절박하고, 더 필연적으로${(_useGugakBase&&_trotDiv) ? `, 마지막 줄에만 추임새 ${_trotDiv.chuimsaeA}` : ''})\n\n` +
+      `[후렴 - 마지막] 긴장 ${tr.finalchorus}\n[Big Finish]\n(정확히 ${choLines}줄 — 앵커 라인으로 시작하되 같은 줄 복붙 금지: 1줄 앵커 그대로, 중간 줄은 감정 응축한 변형, 마지막 줄은 가장 짧고 강하게 끊어 절정${(_useGugakBase&&_trotDiv) ? `, 마지막 줄 끝에만 추임새 ${_trotDiv.chuimsaeA}` : ''})\n\n` +
       ((_useGugakBase&&_trotDiv) ? `[Ad-lib]\n(non-lexical vocal ad-lib — NOT lyrics: wordless extended melisma like "하~~~" or "흐어~~~". Do not sing direction words)\n\n` : '') +
       `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내림)\n${form.outroStyle||'[fade out]\n[end]'}`;
   }
@@ -4350,9 +4374,10 @@ ${clicheRuleKr}
 - 음악·악기·장르 관련 단어 가사에 절대 금지
 
 ★★★ [Big Finish] 규칙 — 최최최우선 ★★★
-- 이전 모든 후렴과 동일한 앵커 라인
+- 첫 줄만 앵커 라인 — 같은 줄을 그대로 4번 복사하지 말 것 (단조로움 금지)
+- 중간 줄: 곡 전체에서 쌓인 감정을 응축한 새 변형 구절
+- 마지막 줄: 앵커를 짧게 끊거나 한 마디로 — 가장 원초적이고 사무치게
 - 더 크고, 더 절박하고, 더 필연적으로 — 전부를 걸고 부르는 느낌
-- 나머지 줄: 더 짧고 날것으로, 이전 후렴보다 더 원초적으로
 
 ★ 절(Verse) 규칙 ★
 - 각 절은 이전 절보다 더 강한 긴장감 (T/R 수치가 에너지 가이드)
