@@ -647,7 +647,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <input type="text" id="kwInput" placeholder='예) "슬픈 해금 블루스", "아쟁 소울", YouTube URL 붙여넣기...'>
         <button class="btn btn-gold" onclick="runAI()">✦ 자동 확장</button>
       </div>
-      <div class="info-bar">💡 짧은 감성 키워드 또는 YouTube 링크를 넣으면 AI가 장르·분위기·악기·BPM·보컬까지 분석합니다.</div>
+      <div class="info-bar">💡 감성 키워드를 넣으면 장르·분위기·악기·BPM·보컬을 분석합니다. YouTube 링크는 <b>영상 제목·채널명을 실제로 가져와</b> 그 정보를 바탕으로 국악 퓨전 스타일을 추천합니다 (음원·가사 직접 분석은 아님).</div>
       <div class="ai-loading" id="kwLoading"><div class="dot-anim"><span></span><span></span><span></span></div>AI 분석 중...</div>
       <div id="kwResult" class="yt-result"></div>
     </div>
@@ -1408,6 +1408,10 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <b>🎵 국악 트롯트 정서 베이스</b>
         <span style="font-size:10px;color:var(--muted)">— 어떤 장르를 골라도 깊고 서글픈 국악 트롯트 느낌으로 (가사+음악)</span>
       </label>
+      <div style="margin-bottom:8px">
+        <div style="font-size:12px;color:var(--korean2);margin-bottom:4px"><b>📖 가사 스토리/상황 (선택)</b> <span style="font-size:10px;color:var(--muted)">— 키워드·인물·장면·대사를 넣으면 그 이야기로 가사를 만듭니다</span></div>
+        <textarea id="lyricsStoryKr" style="width:100%;min-height:60px;font-size:12px;padding:8px;box-sizing:border-box" placeholder="예) 어머니 산소 가는 길, 칠석날, 베옷 한 벌&#10;예) 첫사랑이 살던 그 골목, 눈 내리는 밤, '잘 지내냐' 한마디&#10;예) 떠난 임 / 막걸리 한잔 / 빈 의자 / 옛 노래"></textarea>
+      </div>
       <div class="ai-loading" id="lyricsKrLoading"><div class="dot-anim"><span></span><span></span><span></span></div>한국어 가사 생성 중...</div>
       <textarea id="lyricsKrOut" style="margin-top:12px;min-height:160px" placeholder="한국어 가사가 여기 생성됩니다..."></textarea>
       <div class="prompt-actions" style="margin-top:8px"><button class="btn btn-outline" onclick="copyField('lyricsKrOut')">📋 복사</button></div>
@@ -3568,14 +3572,40 @@ async function runAI() {
   const loading=document.getElementById('kwLoading'); const result=document.getElementById('kwResult');
   loading.classList.add('show'); result.classList.remove('show');
   const isYT=kw.includes('youtube.com')||kw.includes('youtu.be');
+
+  // ── YouTube 링크면 oEmbed로 실제 영상 제목·채널명 가져오기 (API 키 불필요) ──
+  let ytMeta = null;
+  if (isYT) {
+    try {
+      const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(kw)}&format=json`;
+      const res = await fetch(oembedUrl);
+      if (res.ok) {
+        const data = await res.json();
+        ytMeta = { title: data.title || '', author: data.author_name || '' };
+      }
+    } catch(e) { /* oEmbed 실패 시 무시하고 URL만으로 진행 */ }
+  }
+
   const sysPrompt=`당신은 7:3 Joseon Core 전문가입니다. 반드시 다음 JSON 형식만 응답: {"genre":"","moods":[],"instruments":"","concept":"","vocalStyle":"","bpm":85,"textures":[],"koreanGrooves":[],"koreanFeelings":[],"summary":""}`;
-  const userPrompt=isYT?`다음 YouTube 링크의 음악을 7:3 국악 퓨전 스타일로 추천: ${kw}\nJSON만 작성.`:`"${kw}" 키워드를 7:3 Joseon Core 스타일로 추천. JSON만 작성.`;
+  let userPrompt;
+  if (isYT && ytMeta && ytMeta.title) {
+    // 실제 영상 제목·채널을 기반으로 분석
+    userPrompt=`다음은 YouTube 영상의 실제 제목과 채널명입니다.\n제목: "${ytMeta.title}"\n채널: "${ytMeta.author}"\n이 곡의 분위기·장르를 제목에서 추론하여, 7:3 국악 퓨전 스타일로 재해석한 추천을 작성하세요. summary에는 무엇을 근거로 분석했는지(제목 기반 추론임)를 한 줄로 밝혀주세요. JSON만 작성.`;
+  } else if (isYT) {
+    // oEmbed 실패 — 솔직하게 URL만으로는 추론 한계 명시
+    userPrompt=`YouTube 링크(${kw})가 주어졌으나 영상 정보를 가져오지 못했습니다. 일반적인 7:3 국악 퓨전 추천을 작성하되, summary에 "영상 정보를 불러오지 못해 일반 추천입니다"라고 밝혀주세요. JSON만 작성.`;
+  } else {
+    userPrompt=`"${kw}" 키워드를 7:3 Joseon Core 스타일로 추천. JSON만 작성.`;
+  }
   try {
     const text=await callClaude(userPrompt,sysPrompt, 0.35);
     const jsonMatch=text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("JSON 형식 응답 없음");
     const analysis=JSON.parse(jsonMatch[0]);
-    result.innerHTML=`<div style="margin-bottom:12px;font-weight:600;color:var(--gold)">🎵 AI 분석 결과</div><pre style="white-space:pre-wrap;font-size:12px;line-height:1.7">${JSON.stringify(analysis,null,2)}</pre>`;
+    const _ytLine = (isYT && ytMeta && ytMeta.title)
+      ? `<div style="margin-bottom:8px;font-size:11px;color:var(--muted)">📺 분석 대상: <b>${ytMeta.title}</b>${ytMeta.author?` <span style="opacity:.7">(${ytMeta.author})</span>`:''}<br><span style="opacity:.7">※ 제목·채널 기반 추론입니다 (실제 음원·가사 분석 아님)</span></div>`
+      : (isYT ? `<div style="margin-bottom:8px;font-size:11px;color:var(--red)">⚠️ 영상 정보를 불러오지 못해 일반 추천입니다</div>` : '');
+    result.innerHTML=`<div style="margin-bottom:12px;font-weight:600;color:var(--gold)">🎵 AI 분석 결과</div>${_ytLine}<pre style="white-space:pre-wrap;font-size:12px;line-height:1.7">${JSON.stringify(analysis,null,2)}</pre>`;
     result.classList.add('show');
     applyAnalysisToUI(analysis);
   } catch(e) { result.innerHTML=`<span style="color:var(--red)">분석 실패: ${e.message}</span>`; result.classList.add('show'); }
@@ -3972,6 +4002,7 @@ function extractLyricMoodSeed(promptText) {
 async function genLyrics(lang) {
   const current = document.getElementById('promptBox').textContent;
   const lyricMoodSeed = extractLyricMoodSeed(current); // 무드·감정 줄만 추출 — BPM·악기·구음 제외
+  const lyricStory = (document.getElementById('lyricsStoryKr')?.value || '').trim(); // 사용자 스토리/키워드
   const loading = document.getElementById('lyricsKrLoading');
   const out     = document.getElementById('lyricsKrOut');
   const durationInput = document.getElementById('lyricsDurationKr');
@@ -4118,6 +4149,18 @@ async function genLyrics(lang) {
   /* ── ④ 라이밍 지시 + ⑤ 금칙어 (트롯트 모드 분기) ── */
   const activeClicheWords = getLyricClicheWords();
 
+  /* ── 사용자 스토리/키워드 블록 — 입력 있으면 가사 주제로 강제 ── */
+  const storyBlockKr = lyricStory
+    ? `\n★★★ 가사 주제 — 반드시 이 이야기로 (최우선) ★★★
+아래 내용을 가사의 중심 서사·소재로 삼아 전개하세요. 등장하는 단어·인물·장면·대사를 가사에 녹여낼 것:
+"""
+${lyricStory}
+"""
+- 이 이야기를 구체적 장면으로 풀어내되, 직설 나열이 아니라 은유·상황 묘사로
+- 후렴 핵심구도 이 이야기에서 끌어낼 것
+`
+    : '';
+
   let rhymeRuleKr;
   if (isTrot) {
     rhymeRuleKr = `★★ 국악 트롯트 라임 규칙 (필수) ★★
@@ -4145,7 +4188,7 @@ async function genLyrics(lang) {
     if (isTrot) {
       lyricPrompt = `${duration} 길이(${totalSec}초)의 국악 트롯트 가사를 작성합니다.
 송폼: ${form.nameKr}
-
+${storyBlockKr}
 ${rhymeRuleKr}
 
 ${clicheRuleKr}
@@ -4154,11 +4197,11 @@ ${clicheRuleKr}
 ① 음수율: 한 줄은 3·4조 / 4·4조 / 7·5조 중 하나로 선택해 전체 일관 유지
 ② 한(恨)의 정서: 감정 직접 서술 금지 — 체념·상황·구체 사물로 표현
 ③ 종결어미 (이번 곡 권장 계열): ${_trotDiv.ending}
-④ 향토 소재 — 이번 곡 중심 장면: ${_trotDiv.motif}
-   → 이 장면을 중심으로 오감 구체 묘사, 절마다 다른 각도로 전개
+④ 향토 소재 ${lyricStory ? '— 위 스토리를 우선하되, 배경으로 활용 가능한 소재' : '— 이번 곡 중심 장면'}: ${_trotDiv.motif}
+   → ${lyricStory ? '스토리의 장면을' : '이 장면을'} 중심으로 오감 구체 묘사, 절마다 다른 각도로 전개
 ⑤ 추임새: 후렴 끝 또는 절 끝에 (아아~) (아이야~) (에헤~) 중 하나 배치
 ⑥ 맺고 풀기: 전절에서 체념·한(恨) 압축(긴장), 후렴에서 감정 폭발·카타르시스(이완)
-⑦ 후렴 핵심 앵커구: "${_trotDiv.anchor}" — 후렴마다 이 구절을 첫 줄에 반복
+⑦ 후렴 핵심 앵커구: "${_trotDiv.anchor}" ${lyricStory ? '(스토리에 더 맞는 구절이 있으면 그것으로 대체 가능)' : '— 후렴마다 이 구절을 첫 줄에 반복'}
 ⑧ 문학적 표현: 직설 금지, 은유·상징으로. 권장 어휘: ${_trotDiv.literary}
    → "풍진 세상에 외로운 나의 / 한숨은 구슬픈 노래로다" 같은 문어체 시적 문장 지향
 
@@ -4174,7 +4217,7 @@ ${structureKr}`;
     } else {
       lyricPrompt = `${duration} 길이(${totalSec}초)의 가사를 작성합니다.
 송폼: ${form.nameKr}
-${(_useGugakBase && _trotDiv) ? `
+${storyBlockKr}${(_useGugakBase && _trotDiv) ? `
 ★★ 정서 테두리 (필수) — 장르 불문 국악 트롯트의 깊은 애절함 ★★
 - 어떤 장르든 깊고 서글프고 애절한 한(恨)의 정서를 바탕에 깔 것
 - 문어체 시적 문장 지향 (예: "저무는 강가에 달빛 서리고")
@@ -4239,6 +4282,7 @@ ${structureKr}`;
 async function genTrendLyrics(lang) {
   const current = document.getElementById('promptBox').textContent;
   const lyricMoodSeed = extractLyricMoodSeed(current); // 무드·감정 줄만 추출
+  const lyricStory = (document.getElementById('lyricsStoryKr')?.value || '').trim();
   const loading = document.getElementById('lyricsKrLoading');
   const out = document.getElementById('lyricsKrOut');
   const durationInput = document.getElementById('lyricsDurationKr');
@@ -4256,7 +4300,13 @@ async function genTrendLyrics(lang) {
     const trendArc = `절 ${_tl.verse||_tl.verse1||'+6'} → 후렴 ${_tl.chorus||_tl.refrain||'T+5↔R-5'} → 브릿지 ${_tl.bridge||'+9'} → Big Finish +10 → 아웃트로 ${_tl.outro||'-8'}`;
 
     const trendPromptKr = `2026년 최신 트렌드 스타일의 조선 코어 가사를 ${duration} 길이로 작성하세요.
-
+${lyricStory ? `
+★★★ 가사 주제 — 반드시 이 이야기로 (최우선) ★★★
+"""
+${lyricStory}
+"""
+이 이야기의 단어·인물·장면·대사를 가사 중심 서사로 녹여낼 것.
+` : ''}
 트렌드 규칙:
 1. 2026년 K팝/힙합/R&B 작법 — 짧고 강렬하고 훅 중심
 2. 한 줄 최대 8단어 — 짧고 임팩트 있게
