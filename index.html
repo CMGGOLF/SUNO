@@ -1017,6 +1017,15 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       </button>
     </div>
 
+    <!-- 쇼츠 가사 생성 -->
+    <div style="margin-top:16px;padding:14px;background:rgba(255,69,0,.06);border:1px solid rgba(255,80,0,.3);border-radius:8px">
+      <div style="font-size:12px;color:rgba(255,140,0,.95);font-weight:600;margin-bottom:10px">🎬 쇼츠 임팩트 가사 생성 <span style="font-size:10px;color:var(--muted);font-weight:400">— 훅·드롭·페이드만 압축 (위 ⑤ 가사 스토리 입력 반영)</span></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-shorts" onclick="genShortsLyrics('kr')">⚡ 쇼츠 가사 생성</button>
+        <button class="btn btn-shorts" onclick="genShortsLyricsWithGueum('kr')">🎙️ 가사 + 드롭 구음 한번에</button>
+      </div>
+    </div>
+
     <!-- 해제 버튼 -->
     <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,80,0,.15)">
       <button class="btn btn-shorts-off" onclick="toggleShortsMode()">✖ 쇼츠 모드 해제 (3:30 복원)</button>
@@ -3604,6 +3613,7 @@ function cleanLyrics(text) {
   return cleaned;
 }
 function cleanModelText(text) { return (text||'').replace(/```(?:json)?/g,'').replace(/```/g,'').trim(); }
+function escapeHtml(s) { return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function sanitizeSunoPrompt(text,maxLen=230) {
   let t=cleanModelText(text).replace(/^[-•\s]*(Suno prompt|Prompt|프롬프트)\s*[:：-]\s*/i,'').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim();
   if (t.length>maxLen) t=t.slice(0,maxLen).replace(/[,;:\-\s]+$/,'').trim();
@@ -5241,7 +5251,7 @@ function loadPresets() {
   modal.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999';
   modal.innerHTML=`<div style="background:var(--surface);padding:20px;border-radius:12px;width:400px;max-width:90%">
     <h3 style="margin-bottom:15px">내 프리셋</h3>
-    <div style="max-height:300px;overflow-y:auto">${presets.map((p,i)=>`<div style="padding:8px;border-bottom:1px solid var(--border);cursor:pointer" onclick="loadPreset(${i})"><strong>${p.name}</strong><br><span style="font-size:11px;color:var(--muted)">${new Date(p.timestamp).toLocaleString()}</span></div>`).join('')}</div>
+    <div style="max-height:300px;overflow-y:auto">${presets.map((p,i)=>`<div style="padding:8px;border-bottom:1px solid var(--border);cursor:pointer" onclick="loadPreset(${i})"><strong>${escapeHtml(p.name)}</strong><br><span style="font-size:11px;color:var(--muted)">${new Date(p.timestamp).toLocaleString()}</span></div>`).join('')}</div>
     <button class="btn btn-outline" style="margin-top:15px;width:100%" onclick="document.querySelector('.modal').remove()">닫기</button>
   </div>`;
   modal.className='modal'; document.body.appendChild(modal);
@@ -5928,21 +5938,59 @@ function applyShortsPreset(idx) {
   showToast(`⚡ [${preset.emoji} ${preset.name}] 전체 자동 조합 완료! BPM ${preset.bpm} · 장르·컨셉·보컬·구음 전체 세팅 🔥`);
 }
 
-function genShortsLyrics(lang) {
+async function genShortsLyrics(lang) {
   const ta = document.getElementById('lyricsKrOut');
-  if (ta) {
-    ta.value =
-`[훅 - 0:00~0:05]
-[instrumental break]
+  const loading = document.getElementById('lyricsKrLoading');
+  if (!ta) return;
+  _switchLyricsTab('kr');
 
-[드롭 - 절정 0:05~0:35]
-[instrumental break]
+  const current = document.getElementById('promptBox').textContent;
+  const lyricMoodSeed = (typeof extractLyricMoodSeed === 'function') ? extractLyricMoodSeed(current) : '';
+  const lyricStory = (document.getElementById('lyricsStoryKr')?.value || '').trim();
+  const subMode = STATE.shortsSubMode || 'direct';
+  const totalSec = subMode === 'edit' ? 150 : 60;
 
-[아웃트로 - 페이드 0:35~0:45]
-[End]`;
-    _switchLyricsTab('kr');
+  // 국악 정서 베이스 / 트롯트 다양성 시드
+  const _div = (typeof pickTrotDiversity === 'function' && (STATE.genre === 8 || STATE.gugakTrotBase))
+    ? pickTrotDiversity(Math.random()) : null;
+
+  const storyBlock = lyricStory
+    ? `\n★ 가사 주제 (반드시 이 이야기로) ★\n"""\n${lyricStory}\n"""\n`
+    : '';
+  const gugakBlock = _div
+    ? `\n★ 국악 트롯트 정서 ★\n- 깊고 서글픈 한(恨), 문어체 시적 문장\n- 종결어미: ${_div.ending} (모든 줄 "~다" 금지)\n- 권장 어휘: ${_div.literary}\n- 후렴 앵커구: "${_div.anchor}"\n- 추임새 ${_div.chuimsaeA}/${_div.chuimsaeB}는 드롭 끝줄에만\n`
+    : '';
+
+  const lyricPrompt = `${totalSec}초짜리 ${subMode==='edit'?'편집용 풀버전':'유튜브 쇼츠 직접 완성용'} 임팩트 가사를 작성합니다.
+쇼츠는 전체 곡 구조 없이 "즉각 훅 → 감정 폭발 드롭 → 극적 마무리"만 압축합니다.
+${storyBlock}${gugakBlock}
+구조:
+[훅] (0:00~0:05)
+(정확히 2줄 — 첫 마디부터 귀에 꽂히는 강렬한 한 마디, 따라부를 수 있게)
+
+[드롭 - 절정] (0:05~0:35)
+(정확히 4줄 — 곡의 감정이 폭발하는 절정부. 가장 강렬하고 사무치게. 같은 줄 복붙 금지)
+
+[아웃트로 - 페이드] (0:35~0:45)
+(정확히 2줄 — 짧게 여운을 남기며 사라짐)
+
+음악 분위기 참고 (가사에 언급 금지):
+${lyricMoodSeed}`;
+
+  const sysP = _div
+    ? `당신은 한국 국악 트롯트 전문 쇼츠 작사가입니다. 반드시 [훅] 같은 [섹션] 태그로 시작 — 제목·번호·설명·수치(긴장+7 등) 금지. 문어체 시적 문장, 종결어미를 "~다"로만 끝내지 말 것. 짧지만 강렬하게.`
+    : `당신은 유튜브 쇼츠 전문 작사가입니다. 반드시 [훅] 같은 [섹션] 태그로 시작 — 제목·번호·설명·수치 금지. 첫 마디부터 강렬하게, 따라부를 수 있게.`;
+
+  loading?.classList.add('show');
+  try {
+    const text = await callClaude(lyricPrompt, sysP, 0.9);
+    ta.value = cleanLyrics(text);
+    showToast('🎬 쇼츠 임팩트 가사 생성 완료!');
+  } catch(e) {
+    ta.value = '오류: ' + (e.message || '알 수 없는 오류');
+    showToast('⚠️ 생성 실패 — API 키를 확인해주세요');
   }
-  showToast('🎬 쇼츠 전용 가사 구조 삽입 완료!');
+  loading?.classList.remove('show');
 }
 
 /* 쇼츠 전용 구음 — Drop 구간에 집중 삽입 */
@@ -5990,13 +6038,10 @@ function insertShortsGueum(lang) {
   showToast('🎙️ Drop 구간에 구음 삽입 완료! 임팩트 극대화 🔥');
 }
 
-function genShortsLyricsWithGueum(lang) {
-  genShortsLyrics(lang);
-  // 짧은 딜레이 후 구음 삽입 (DOM 업데이트 후)
-  setTimeout(() => {
-    insertShortsGueum(lang);
-    showToast('✦ 쇼츠 가사 구조 + 드롭 구음 한번에 완료!');
-  }, 80);
+async function genShortsLyricsWithGueum(lang) {
+  await genShortsLyrics(lang);   // AI 가사 생성 완료까지 대기
+  insertShortsGueum(lang);       // 그 후 드롭 구간에 구음 삽입
+  showToast('✦ 쇼츠 임팩트 가사 + 드롭 구음 완성!');
 }
 
 
@@ -6160,13 +6205,6 @@ function restoreLastPrompt() {
   if (!history.length) { showToast('⚠️ 저장된 히스토리가 없습니다.'); return; }
   const box = document.getElementById('promptBox');
   if (box) { box.textContent = history[0]; showToast('↩️ 마지막 프롬프트 복원 완료!'); }
-}
-
-function showPromptHistory() {
-  const history = loadPromptHistory();
-  if (!history.length) { showToast('⚠️ 저장된 히스토리가 없습니다.'); return; }
-  const msg = history.map((p,i) => `[${i+1}] ${p.slice(0,80)}...`).join('\n\n');
-  alert('📋 최근 프롬프트 히스토리 (최대 10개):\n\n' + msg);
 }
 
 /* _doBuildPrompt 완료 후 히스토리 자동 저장 훅 — buildPrompt 내부에서 직접 호출 */
