@@ -3074,7 +3074,7 @@ const GENRE_DNA = {
   ],
   8: [ // 국악 트롯트
     "남도민요 계면조 단선율, 떨림 있는 중저음 보컬, 해금 한음 지속 후 꺾임, 판소리 호흡처럼 긴 프레이즈, 체념 뒤 폭발",
-    "경기민요 5음계 단조 멜로디, 장구 장단 중속, 추임새 직후 에너지 상승, 아이야 에헤 얼씨구, 해금 오블리가토",
+    "경기민요 5음계 단조 멜로디, 장구 장단 중속, 추임새 직후 에너지 상승, 아이야 에헤 추임새, 해금 오블리가토",
     "전라도 육자배기 굵은 떨림, 단소 여백, 자진모리 점층, 후렴 직전 한박 침묵, 절정 유니즌 폭발",
     "서울제 민요 맑은 가성, 가야금 단순 반주 위 보컬 전진, 한 많은 서사 축적 후 후렴 카타르시스, 아이야 추임새 신호",
     "통영 오광대 흥겨운 장단, 꽹과리 악센트 포인트, 구성진 중음역 보컬, 흥 위주 — 슬픔도 결국 춤이 되는 구조",
@@ -3554,6 +3554,8 @@ function cleanLyrics(text) {
     .replace(/[Tt]\s*[+\-–]?\s*\d+\s*[↔<>=~–-]+\s*[Rr]\s*[+\-–]?\s*\d+/g, '')
     // 줄 끝에 매달린 긴장/이완 수치 제거: "...본다 긴장 +7" → "...본다"
     .replace(/\s+(긴장|이완)\s*[T R]?[+\-–]?\s*\d+\s*$/gim, '')
+    // 구음/애드립 줄에 남은 한글 지시어 괄호 제거: "(고음)", "(저음)", "(고음 확장)", "(High)"
+    .replace(/\s*\((고음|저음|중고음|중저음|고음\s*확장|저음\s*확장|high|low|mid-?high|mid-?low)\)\s*/gi, ' ')
     // 마크다운 헤더(##) 제거 — [섹션]만 남김
     .replace(/^#{1,6}\s*/gm, '')
     // (N lines), (N줄), (N초), (N seconds) 지시 괄호 제거
@@ -4007,6 +4009,18 @@ const TROT_DIVERSITY = {
     '한평생','설움','회한','연모','애간장','적막강산','부질없는',
     '서린','맺힌','사무친','여울목','첩첩','구비구비',
   ],
+  // 후렴 추임새 — 곡마다 다른 세트로 (단조로움 방지)
+  chuimsaeSets: [
+    ['(아아~)', '(우우~)'],
+    ['(아이야~)', '(어허~)'],
+    ['(에헤~)', '(으흠~)'],
+    ['(아~)', '(허이~)'],
+    ['(오오~)', '(아흐~)'],
+    ['(아으~)', '(어이야~)'],
+  ],
+  // 구음 시김새 음절 — 곡마다 다른 멜리스마로
+  guumHighs: ['아~으~아~아~', '에~헤~이~이~', '아~아~으~흥~', '이~여~아~아~'],
+  guumLows: ['으흐~우~우~', '어~허~우~흠~', '우~흐~으~음~', '아~흐~우~우~'],
 };
 // 시드(0~1)로 풀에서 항목 회전 선택
 function pickTrotDiversity(seed) {
@@ -4015,11 +4029,16 @@ function pickTrotDiversity(seed) {
   // literaryWords는 4개 골라 제시
   const lw = [];
   for (let i = 0; i < 4; i++) lw.push(pickTrotDiversity._rot(TROT_DIVERSITY.literaryWords, s, i));
+  const chuimsae = pick(TROT_DIVERSITY.chuimsaeSets, 4);
   return {
     motif:   pick(TROT_DIVERSITY.motifs, 1),
     anchor:  pick(TROT_DIVERSITY.refrainAnchors, 2),
     ending:  pick(TROT_DIVERSITY.endingSets, 3),
     literary: [...new Set(lw)].join(', '),
+    chuimsaeA: chuimsae[0],   // 후렴 추임새 1
+    chuimsaeB: chuimsae[1],   // 후렴 추임새 2
+    guumHigh: pick(TROT_DIVERSITY.guumHighs, 5),
+    guumLow:  pick(TROT_DIVERSITY.guumLows, 6),
   };
 }
 pickTrotDiversity._rot = function(arr, s, i) {
@@ -4181,31 +4200,31 @@ async function genLyrics(lang) {
         structureKr +=
           `[프리코러스] 이완 ${_trTrot.prechorus}\n` +
           `(정확히 ${_pLines}줄 — 후렴 직전 긴장 응축, "떠나라 떠나라 못 떠나오" 같은 반어적 호소)\n` +
-          `(끝에 추임새 (아아~))\n\n`;
+          `(끝줄에만 추임새 ${_trotDiv.chuimsaeA})\n\n`;
       } else if (blk === 'chorus') {
         const lbl = _choTLabels[Math.min(_cIdx, _choTLabels.length - 1)];
         _cIdx++;
         structureKr +=
           `[후렴 ${_cIdx}] ${lbl}\n` +
-          `(정확히 ${_cLines}줄 — 첫 줄 앵커: "${_trotDiv.anchor}" + 추임새 (우우~) 또는 (아아~))\n` +
-          `(둘째 줄부터 앵커와 짝을 이루는 핵심구 반복, 행말 모음 통일, 각 줄 끝 추임새)\n\n`;
+          `(정확히 ${_cLines}줄 — 첫 줄 앵커: "${_trotDiv.anchor}")\n` +
+          `(추임새는 ${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만 사용 — 모든 줄이 아니라 1·3번째 줄 끝에만, 줄마다 같은 추임새 반복 금지)\n\n`;
       } else if (blk === 'guum') {
         _gIdx++;
         structureKr +=
           `[Gugak Guum]\n` +
-          `(구음 — 가사 아님: "아~으~아~아~ (고음)" / "으흐~우~우~ (저음)" 형태로 2줄, 판소리 시김새)\n\n`;
+          `(non-lexical vocal interlude — NOT lyrics, do not sing words. Korean pansori vocal ornament syllables only, like: "${_trotDiv.guumHigh}" then "${_trotDiv.guumLow}". Render as wordless melisma)\n\n`;
       } else if (blk === 'bridge') {
         structureKr +=
           `[브릿지] 긴장 ${_trTrot.bridge}\n` +
-          `(정확히 ${_bLines}줄 — 최고조의 한(恨) 토로, "내 마음 울부짖어 노래하네" 같은 절규)\n` +
+          `(정확히 ${_bLines}줄 — 최고조의 한(恨) 토로, "내 마음 울부짖어 노래하네" 같은 절규, 추임새 없이 가사만)\n` +
           `(소재: ${_trotDiv.motif} 재등장, 종결어미 ${_trotDiv.ending})\n\n`;
       }
     }
     // 고정: 빅피니시 → 애드립 → 아웃트로
     structureKr +=
       `[후렴 - 마지막] 긴장 ${_trTrot.finalchorus}\n[Big Finish]\n` +
-      `(강도 10/10 — 앵커 "${_trotDiv.anchor}" 반복, 모든 줄 끝 추임새 (아아~), 가장 절박하게)\n\n` +
-      `[Ad-lib]\n(고음 확장 — "한~~ (고음 확장)" / "그리~움~~ (고음 확장)" 형태로 1~2줄)\n\n` +
+      `(강도 10/10 — 앵커 "${_trotDiv.anchor}" 반복, 마지막 줄에만 추임새 ${_trotDiv.chuimsaeA}, 가장 절박하게)\n\n` +
+      `[Ad-lib]\n(non-lexical vocal ad-lib — NOT lyrics: extended melisma on a single syllable like "하~~~" or "흐어~~~", wordless. Do not sing direction words)\n\n` +
       `[아웃트로] 이완 ${_trTrot.outro}\n(정확히 ${_oLines}줄 — 감정이 서서히 가라앉음, 종결어미 ${_trotDiv.ending})\n${(form.outroStyle||_trotForm.outroStyle)||'[fade out]\n[end]'}`;
   } else {
     /* 일반 폼: Verse → (Pre-Chorus) → Chorus 반복 */
@@ -4218,21 +4237,21 @@ async function genLyrics(lang) {
       structureKr += `[절 ${i}] 긴장 ${tr.verse}\n(정확히 ${verseLines}줄 — 감정 긴장 쌓기, 라임 체계: ${form.rhyme}, 줄당 최대 8단어)\n\n`;
 
       if (hasPreChorus && preLines > 0) {
-        structureKr += `[프리코러스] 이완 ${tr.prechorus}\n(정확히 ${preLines}줄 — 에너지 잠시 수축, 후렴 기대감 조성)${_useGugakBase ? ', 끝에 추임새 (아아~)' : ''}\n\n`;
+        structureKr += `[프리코러스] 이완 ${tr.prechorus}\n(정확히 ${preLines}줄 — 에너지 잠시 수축, 후렴 기대감 조성)${(_useGugakBase&&_trotDiv) ? `, 끝줄에만 추임새 ${_trotDiv.chuimsaeA}` : ''}\n\n`;
       }
 
-      structureKr += `[후렴] ${choIntKr}\n(정확히 ${choLines}줄 — 앵커 라인 먼저, 1회 반복, 줄당 최대 6단어, 따라부를 수 있는 훅${_useGugakBase ? ', 각 줄 끝 추임새 (아아~) 또는 (우우~)' : ''})\n\n`;
+      structureKr += `[후렴] ${choIntKr}\n(정확히 ${choLines}줄 — 앵커 라인 먼저, 1회 반복, 줄당 최대 6단어, 따라부를 수 있는 훅${(_useGugakBase&&_trotDiv) ? `. 추임새는 ${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만, 1·3번째 줄 끝에만 — 줄마다 반복 금지` : ''})\n\n`;
 
       // 국악 정서 베이스: 후렴 뒤 구음 삽입 (마지막 후렴 제외)
-      if (_useGugakBase && i < repeatCount) {
-        structureKr += `[Gugak Guum]\n(구음 — 가사 아님: "아~으~아~아~ (고음)" / "으흐~우~우~ (저음)" 2줄, 판소리 시김새)\n\n`;
+      if (_useGugakBase && _trotDiv && i < repeatCount) {
+        structureKr += `[Gugak Guum]\n(non-lexical vocal interlude — NOT lyrics, do not sing words: "${_trotDiv.guumHigh}" then "${_trotDiv.guumLow}", wordless pansori melisma)\n\n`;
       }
     }
 
     structureKr +=
       `[브릿지] 긴장 ${tr.bridge}\n(정확히 ${bridgeLines}줄 — 최대 대비, 마지막 폭발 전 수축)\n\n` +
-      `[후렴 - 마지막] 긴장 ${tr.finalchorus}\n[Big Finish]\n(강도 10/10 — 이전 모든 후렴과 동일한 앵커 라인 — 더 크고, 더 절박하고, 더 필연적으로${_useGugakBase ? ', 각 줄 끝 추임새 (아아~)' : ''})\n\n` +
-      (_useGugakBase ? `[Ad-lib]\n(고음 확장 — "한~~ (고음 확장)" / "그리~움~~ (고음 확장)" 1~2줄)\n\n` : '') +
+      `[후렴 - 마지막] 긴장 ${tr.finalchorus}\n[Big Finish]\n(강도 10/10 — 이전 모든 후렴과 동일한 앵커 라인 — 더 크고, 더 절박하고, 더 필연적으로${(_useGugakBase&&_trotDiv) ? `, 마지막 줄에만 추임새 ${_trotDiv.chuimsaeA}` : ''})\n\n` +
+      ((_useGugakBase&&_trotDiv) ? `[Ad-lib]\n(non-lexical vocal ad-lib — NOT lyrics: wordless extended melisma like "하~~~" or "흐어~~~". Do not sing direction words)\n\n` : '') +
       `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내림)\n${form.outroStyle||'[fade out]\n[end]'}`;
   }
 
@@ -4315,9 +4334,9 @@ ${storyBlockKr}${(_useGugakBase && _trotDiv) ? `
 - 종결어미 계열: ${_trotDiv.ending} (모든 줄 "~다" 금지)
 - 중심 정서 소재: ${_trotDiv.motif}
 - 직설적 감정어 금지, 은유·상징·구체 장면으로 표현
-- 후렴 각 줄 끝에 추임새 (아아~) 또는 (우우~) 반드시 삽입
-- [Gugak Guum] 섹션: 가사 아닌 구음 ("아~으~아~아~ (고음)" / "으흐~우~우~ (저음)")
-- [Ad-lib] 섹션: 고음 확장 ("한~~ (고음 확장)" 형태) — 구조에 있으면 반드시 채울 것
+- 추임새는 ${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만 사용 — 후렴에서 모든 줄이 아니라 1·3번째 줄 끝에만, 같은 추임새를 줄마다 반복하지 말 것
+- [Gugak Guum] 섹션은 가사가 아닌 무의미 구음(wordless melisma): "${_trotDiv.guumHigh}" / "${_trotDiv.guumLow}" — "고음"·"저음" 같은 지시어를 절대 가사로 쓰지 말 것
+- [Ad-lib] 섹션도 무의미 구음: "하~~~" / "흐어~~~" 같은 멜리스마 — 지시어 단어 부르지 말 것
 ` : ''}
 ${rhymeRuleKr}
 
