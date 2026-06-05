@@ -2914,6 +2914,95 @@ function getEnList(arr,data){return arr.filter(i=>data[i]).map(i=>data[i].en).jo
    "음악적 레퍼런스 언어"로 각자의 정체성을 명시해야 함.
    같은 [Korean Core] 헤더로 시작하면 Suno 입장에서 동일 명령.
 ────────────────────────────────────────────────────────────────── */
+/* ── 아티스트명 → 사운드 특성 치환 ───────────────────────────────
+   Suno는 실명 아티스트를 차단·대체하므로(국악 정체성 손실),
+   프롬프트 출력 직전에 아티스트명을 그 사운드 특성 묘사로 바꿈
+────────────────────────────────────────────────────────────────── */
+const ARTIST_SCRUB_MAP = {
+  // Soul / Gospel
+  "Mahalia Jackson": "powerful gospel-shout female vocal",
+  "Sam Cooke": "smooth aching soul tenor on edge of breaking",
+  "Otis Redding": "raw pleading soul voice about to break",
+  "Al Green": "tender falsetto late-night soul",
+  "Marvin Gaye": "silky layered soul croon",
+  "Curtis Mayfield": "fragile high falsetto soul",
+  "Solomon Burke": "deep slow-drag soul groove",
+  "Ann Peebles": "intimate slow soul devastation",
+  "Bobby Blue Bland": "gospel-soul slow drag",
+  "Bobby \"Blue\" Bland": "gospel-soul slow drag",
+  "Mavis Staples": "testifying gospel-soul voice",
+  "Etta James": "smoky blues-soul torch vocal",
+  "Donny Hathaway": "warm live soul intimacy",
+  "Anita Baker": "velvet smooth jazz-soul phrasing",
+  "Maxwell": "modern neo-soul intimacy",
+  "Erykah Badu": "neo-soul groove pocket",
+  "D'Angelo": "slow-burn neo-soul groove behind the beat",
+  "Meshell Ndegeocello": "bass-led neo-soul groove",
+  "Hiatus Kaiyote": "polyrhythmic neo-soul",
+  "Robert Glasper": "loose live jazz-soul keys",
+  "The Roots": "live band warmth slightly behind beat",
+  "Snarky Puppy": "ensemble jazz-funk energy",
+  // Jazz
+  "Miles Davis": "spare muted-trumpet space, suspended unresolved mood",
+  "Coltrane": "modal phrase repeated with slight variation",
+  "John Coltrane": "modal phrase repeated with slight variation",
+  "Bill Evans": "impressionist left-hand jazz voicing",
+  "Keith Jarrett": "solo-piano restraint with long pauses",
+  "Paul Desmond": "cool weightless alto tone",
+  "Lee Morgan": "bluesy hard-bop lyricism",
+  "Chet Baker": "fragile whispered cool-jazz melody",
+  "Ahmad Jamal": "spacious minimalist jazz piano",
+  "Thelonious Monk": "angular off-kilter jazz phrasing",
+  "Wayne Shorter": "harmonically ambiguous jazz lines",
+  "ECM Records": "spacious Nordic reverb jazz",
+  "ECM": "spacious Nordic reverb jazz",
+  // Blues
+  "Robert Johnson": "haunted Delta crossroads blues",
+  "Muddy Waters": "electric slide Delta blues",
+  "Junior Kimbrough": "hypnotic one-chord hill-country blues",
+  "Fred McDowell": "open-tuned slide blues drone",
+  "Lightnin Hopkins": "back-porch one-take country blues",
+  "Lightnin' Hopkins": "back-porch one-take country blues",
+  "Jessie Mae Hemphill": "drum-and-voice fife blues",
+  "Howlin Wolf": "raw chest-voice blues devastation",
+  "Howlin' Wolf": "raw chest-voice blues devastation",
+  "Skip James": "high lonesome falsetto blues",
+  "Son House": "stark field-recording slide blues",
+  "Blind Willie Johnson": "growling gospel-blues moan",
+  // Hip-hop / producers
+  "J Dilla": "swung off-grid drum quantization",
+  "MF DOOM": "dusty crate-dig sample layering",
+  "Madlib": "lo-fi sample excavation",
+  "Pete Rock": "soulful horn-chop boom bap",
+  "Large Professor": "raw boom bap with deep sub",
+  "DJ Premier": "knife-cut scratch boom bap",
+  // Ambient / modern classical
+  "Brian Eno": "oblique ambient space",
+  "Stars of the Lid": "slow-motion drone ambient",
+  "William Basinski": "decaying tape-loop ambient",
+  "Arvo Part": "tintinnabuli sacred stillness",
+  "Arvo Pärt": "tintinnabuli sacred stillness",
+  "Harold Budd": "soft-pedal ambient piano",
+  "Eliane Radigue": "long-form sustained drone",
+  // Folk / singer-songwriter
+  "Nick Drake": "fingerpicked melancholic folk emptiness",
+  "Sade": "cool slow-burn sophisti-soul",
+  "Isaac Hayes": "lush orchestral slow-soul",
+  "Lauryn Hill": "soulful hip-hop-inflected vocal",
+  "Voodoo": "raw organic neo-soul texture",
+  "Miseducation": "warm 90s neo-soul production",
+};
+function scrubArtistNames(text) {
+  if (!text) return text;
+  let out = text;
+  for (const [name, desc] of Object.entries(ARTIST_SCRUB_MAP)) {
+    // 대소문자 무시, 이름 단위로 치환
+    const esc = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    out = out.replace(new RegExp(esc, 'gi'), desc);
+  }
+  return out;
+}
+
 /* ── 각 장르당 3개 변형 DNA — 매 생성마다 다른 것 무작위 선택 ── */
 const GENRE_DNA = {
   0: [ // 조선 궁중 소울
@@ -3141,7 +3230,8 @@ function _doBuildPrompt() {
     if (_dnaPool) {
       const _dnaIdx = Math.floor((STATE.dnaSeed || 0) * _dnaPool.length) % _dnaPool.length;
       // 선택된 DNA 1개만 사용 — secondary 혼합 제거로 장르 정체성 분리
-      const _primary = _dnaPool[_dnaIdx];
+      // 아티스트 실명은 사운드 특성으로 치환 (Suno가 실명을 차단/대체하는 문제 방지)
+      const _primary = scrubArtistNames(_dnaPool[_dnaIdx]);
       parts.push(`[SONIC IDENTITY] ${_primary}`);
     }
 
@@ -3336,7 +3426,7 @@ function _doBuildPrompt() {
 
     const box=document.getElementById('promptBox');
     const hasUserSelection = STATE.genre!==null || STATE.moods.length>0 || STATE.instr!==null || STATE.concept!==null || STATE.vocalStyle!==null || STATE.gugakVocalStyle!==null || STATE.hanSoulStyle!==null;
-    box.textContent=hasUserSelection?parts.join('\n'):'← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
+    box.textContent=hasUserSelection?scrubArtistNames(parts.join('\n')):'← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
     /* UPG-1: 빌드 완료 후 히스토리 저장 */
     if (typeof _saveHistoryAfterBuild === 'function') _saveHistoryAfterBuild();
   } catch(e) {
@@ -3703,7 +3793,7 @@ async function aiExpandPrompt() {
   const _dnaPool2    = (STATE.genre !== null)        ? GENRE_DNA[STATE.genre]        :
                        (STATE.hanSoulStyle !== null)  ? HANSOUL_DNA[STATE.hanSoulStyle] : null;
   const _dnaIdx2     = _dnaPool2 ? Math.floor((STATE.dnaSeed||0) * _dnaPool2.length) % _dnaPool2.length : 0;
-  const _dnaHint     = _dnaPool2 ? _dnaPool2[_dnaIdx2] : '';
+  const _dnaHint     = _dnaPool2 ? scrubArtistNames(_dnaPool2[_dnaIdx2]) : '';
 
   try {
     const _writingGuide = _activeGuide ? `\nWRITING STYLE GUIDE: ${_activeGuide}` : '';
@@ -5880,9 +5970,9 @@ async function genSuperPrompt(silent = false) {
   const _dnaLen = _dnaPool ? _dnaPool.length : 1;
   const _dnaBase = Math.floor((STATE.dnaSeed||0) * _dnaLen) % _dnaLen;
   const _dnaHints = _dnaPool ? [
-    _dnaPool[_dnaBase % _dnaLen],
-    _dnaPool[(_dnaBase + 1) % _dnaLen],
-    _dnaPool[(_dnaBase + 2) % _dnaLen],
+    scrubArtistNames(_dnaPool[_dnaBase % _dnaLen]),
+    scrubArtistNames(_dnaPool[(_dnaBase + 1) % _dnaLen]),
+    scrubArtistNames(_dnaPool[(_dnaBase + 2) % _dnaLen]),
   ] : ['', '', ''];
 
   const systemPrompt = `You are the world's top Suno AI music prompt engineer specializing in Korean traditional music fusion.
