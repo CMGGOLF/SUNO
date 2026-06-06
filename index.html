@@ -101,7 +101,8 @@ header{
 .selcard.active{border-color:var(--selected-border);background:var(--selected-bg)}
 .selcard.active::before{opacity:.04}
 .selcard.korean-card{border-left:3px solid var(--korean2)}
-.selcard.korean-card.active{border-color:var(--korean2);background:rgba(160,90,58,0.12)}
+.selcard.korean-card.active{border:2px solid var(--korean2);border-left-width:4px;background:rgba(160,90,58,0.22);box-shadow:0 0 0 1px var(--korean2),0 0 18px rgba(212,132,90,.45)}
+.selcard.korean-card.active .check-dot{width:13px;height:13px;background:var(--korean2);box-shadow:0 0 10px var(--korean2);opacity:1}
 .card-en{font-family:'Space Mono',monospace;font-size:11px;color:var(--gold);margin-bottom:3px;font-weight:700}
 .card-kr{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;font-family:'Noto Serif KR',serif}
 .card-desc{font-size:11px;color:var(--muted);line-height:1.5}
