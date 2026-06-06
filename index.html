@@ -713,17 +713,25 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
   <div class="section-body" id="vocalStyleBody" style="display:none">
     <div class="card-grid col2" id="vocalStyleGrid"></div>
-    <div id="gugakVocalSection" style="margin-top:20px">
-      <div class="section-divider" style="margin-top:0">
-        🎙️ 국악 창법 — 자동 최적 조합
-        <span style="font-size:10px;font-weight:400;letter-spacing:0;color:var(--muted);margin-left:8px">선택 시 장르·조성·구음·무드 자동 세팅</span>
-      </div>
-      <div class="info-bar korean-info" style="margin-bottom:12px">
-        ✦ 국악 창법 선택 → 재즈·블루스·소울에 최적화된 조합이 자동으로 적용됩니다. 기존 선택이 있으면 해당 부분만 덮어씁니다.
-      </div>
-      <div class="card-grid col2" id="gugakVocalGrid"></div>
-      <div id="gugakVocalComboStatus" style="display:none;margin-top:10px;padding:10px 14px;border-radius:8px;background:rgba(160,90,58,.12);border:1px solid rgba(160,90,58,.35);font-size:12px;color:var(--korean2);line-height:1.7"></div>
+  </div>
+</div>
+
+<div class="section" style="border-color:rgba(160,90,58,.5);background:rgba(160,90,58,.04)">
+  <div class="section-head" onclick="toggleSection('gugakVocalBody','gugakVocalIcon')" style="cursor:pointer;background:rgba(160,90,58,.12)">
+    <div class="sec-num korean">05B</div>
+    <div class="sec-title">🎙️ 국악 창법 — 스마트 자동 조합 <span id="gugakVocalIcon" style="font-size:14px">▲</span></div>
+    <div class="sec-sub">스마트 버튼으로 알아서 · 또는 창법 직접 선택 (클릭하여 펼치기/접기)</div>
+  </div>
+  <div class="section-body" id="gugakVocalBody">
+    <div style="margin-bottom:14px;padding:12px;border:1px solid var(--korean2);border-radius:10px;background:rgba(160,90,58,.1)">
+      <button class="btn btn-korean" style="width:100%;font-size:14px;padding:12px" onclick="applyGugakAutoSmart()">🎯 스마트 자동 조합 <span style="font-size:11px;opacity:.8">(알아서 골라서 조합)</span></button>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px;text-align:center;line-height:1.4">장르·무드를 골라뒀으면 거기에 맞는 창법을, 아무것도 안 골랐으면 랜덤으로 선택해 전체를 조합합니다</div>
     </div>
+    <div class="info-bar korean-info" style="margin-bottom:12px">
+      ✦ 또는 아래에서 창법을 직접 클릭하세요. 재즈·블루스·소울에 최적화된 조합이 자동 적용됩니다. 기존 선택이 있으면 해당 부분만 덮어씁니다.
+    </div>
+    <div class="card-grid col2" id="gugakVocalGrid"></div>
+    <div id="gugakVocalComboStatus" style="display:none;margin-top:10px;padding:10px 14px;border-radius:8px;background:rgba(160,90,58,.12);border:1px solid rgba(160,90,58,.35);font-size:12px;color:var(--korean2);line-height:1.7"></div>
   </div>
 </div>
 
@@ -2598,6 +2606,41 @@ const selectConcept     = createSelectOne('concept',     '.concept-card',       
 const selectVocalStyle  = createSelectOne('vocalStyle',  '#vocalStyleGrid .selcard','vs_');
 const selectGueumStyle  = createSelectOne('gueumStyle',  '[id^="gueum_"]',         'gueum_');
 
+/* ── 🎯 스마트 자동 조합 — 현재 설정에 맞는 창법을 골라(없으면 랜덤) 전체 조합 적용 ── */
+function applyGugakAutoSmart() {
+  const styles = DATA.gugakVocalStyles;
+  let best = -1, bestScore = -1;
+  /* 사용자가 골라둔 맥락(장르·무드·한소울)이 있으면 점수로 최적 매칭 */
+  const hasContext = (STATE.genre !== null) || (STATE.moods && STATE.moods.length > 0) || (STATE.hanSoulStyle !== null);
+  if (hasContext) {
+    styles.forEach((s, i) => {
+      const ac = s.autoCombo; if (!ac) return;
+      let score = 0;
+      if (STATE.genre !== null && ac.genre === STATE.genre) score += 10;          // 장르 정확 일치 = 최강
+      if (STATE.hanSoulStyle !== null && ac.hanSoulFallback === STATE.hanSoulStyle) score += 6;
+      if (STATE.moods && ac.moods) STATE.moods.forEach(m => { if (ac.moods.includes(m)) score += 3; });
+      if (STATE.vocalTones && ac.vocalTones) STATE.vocalTones.forEach(t => { if (ac.vocalTones.includes(t)) score += 1; });
+      if (score > bestScore) { bestScore = score; best = i; }
+    });
+  }
+  let mode;
+  if (hasContext && bestScore > 0) {
+    mode = 'match';
+  } else {
+    best = Math.floor(Math.random() * styles.length); // 맥락 없음/매칭 0점 → 랜덤
+    mode = 'random';
+  }
+  /* 항상 새로 적용되도록 토글 오프 방지 (이미 선택된 창법이 뽑혀도 재적용) */
+  STATE.gugakVocalStyle = null;
+  document.querySelectorAll('[id^="gvs_"]').forEach(el => el.classList.remove('active'));
+  selectGugakVocalStyle(best); // ← 여기서 카드 강조 + 칩 패널 + 섹션 펼치기 + 스크롤까지 모두 수행
+  const nm = styles[best]?.kr || '';
+  setTimeout(() => {
+    if (mode === 'match') showToast(`🎯 현재 설정에 맞춰 "${nm}" 자동 선택 + 조합 완료!`);
+    else showToast(`🎲 랜덤으로 "${nm}" 선택 + 조합 완료!`);
+  }, 30);
+}
+
 /* ── 국악 창법 선택 + 자동 최적 조합 적용 ── */
 function selectGugakVocalStyle(i) {
   const wasSelected = STATE.gugakVocalStyle === i;
@@ -2675,10 +2718,30 @@ function _applyGugakVocalCombo(c, changsikName, statusBox) {
     applied.push(`BPM → ${STATE.bpm}`);
   }
 
-  /* 상태 표시 */
+  /* 상태 표시 — 조합 결과 전체를 시각 칩으로 한눈에 (텍스트 체크리스트 → 색칩 패널) */
   if (statusBox) {
+    const _newKeys = applied.join(' '); // 이번에 새로 바뀐 항목 텍스트 (강조 판별용)
+    const _chip = (label, val, isNew) => `<span style="display:inline-flex;align-items:baseline;gap:5px;margin:3px 5px 3px 0;padding:5px 11px;border-radius:13px;font-size:11px;line-height:1.2;background:${isNew?'rgba(212,132,90,.28)':'rgba(160,90,58,.1)'};border:1px solid ${isNew?'var(--korean2)':'rgba(160,90,58,.3)'};color:var(--korean2)">${isNew?'<b style="font-size:9px">NEW</b> ':''}<b style="opacity:.65;font-weight:400">${label}</b> <span style="font-weight:700">${val}</span></span>`;
+    const _g  = (STATE.genre!==null && DATA.genres[STATE.genre]) ? DATA.genres[STATE.genre].kr : '—';
+    const _k  = (STATE.musicKey!==null && DATA.musicKeys[STATE.musicKey]) ? DATA.musicKeys[STATE.musicKey].short : '—';
+    const _sc = (STATE.koreanScale!==null && DATA.koreanScales[STATE.koreanScale]) ? DATA.koreanScales[STATE.koreanScale].kr : '—';
+    const _gu = (STATE.gueumStyle!==null && DATA.gueumStyles[STATE.gueumStyle]) ? DATA.gueumStyles[STATE.gueumStyle].kr : '—';
+    const _mo = STATE.moods.length ? STATE.moods.map(i=>DATA.moods[i]?.kr).filter(Boolean).join(', ') : '—';
+    const _to = STATE.vocalTones.length ? (STATE.vocalTones.length + '종') : '—';
+    const _bs = STATE.blackSoulElements.length ? (STATE.blackSoulElements.length + '종') : '—';
     statusBox.style.display = 'block';
-    statusBox.innerHTML = `<strong style="color:var(--korean2)">⚡ ${changsikName} 자동 조합 적용됨</strong><br>${applied.map(a => `✓ ${a}`).join('<br>')}`;
+    statusBox.innerHTML =
+      `<div style="font-weight:700;color:var(--korean2);margin-bottom:8px">⚡ ${changsikName} 자동 조합 완료 <span style="font-size:10px;font-weight:400;opacity:.7">— 적용된 전체 설정 (NEW = 이번에 자동 세팅됨)</span></div>` +
+      `<div style="display:flex;flex-wrap:wrap">` +
+      _chip('장르', _g, /장르/.test(_newKeys)) +
+      _chip('조성', _k, /조성/.test(_newKeys)) +
+      _chip('음계', _sc, /조성/.test(_newKeys)) +
+      _chip('구음', _gu, /구음/.test(_newKeys)) +
+      _chip('무드', _mo, /무드/.test(_newKeys)) +
+      _chip('보컬톤', _to, /보컬톤/.test(_newKeys)) +
+      _chip('소울질감', _bs, /소울/.test(_newKeys)) +
+      _chip('BPM', STATE.bpm, /BPM/.test(_newKeys)) +
+      `</div>`;
   }
 
   /* 🔎 바뀐 항목을 눈으로 볼 수 있게 — 조성·음계 / 구음 섹션 자동 펼치기
