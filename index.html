@@ -1346,6 +1346,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       </button>
       <div style="font-size:11px;color:var(--muted);line-height:1.6">
         분위기 카드를 먼저 선택하세요.<br>
+        <span id="qeRunHint" style="color:#f5a623">👆 장르를 먼저 선택해주세요</span><br>
         <span style="color:var(--hyper)">약 10~20초 소요 (DNA 3회 탐색 + AI 프롬프트 최적화)</span>
       </div>
     </div>
@@ -2692,6 +2693,7 @@ const _GENRE_KEY_MAP = [
   [5, 3], // 5 대금앰비언트  → F  + 경토리 (서정적·신명)
   [1, 4], // 6 아쟁딥소울    → Dm + 메나리토리 (깊은 슬픔·처연)
   [4, 1], // 7 네오조선퓨전  → Cm + 평조 (장엄·웅장·기품)
+  [0, 4], // 8 국악트롯트    → Am + 메나리토리 (흥겨움·구슬픔)
 ];
 
 /* 한소울스타일별 조성·음계 자동 매핑 */
@@ -3790,6 +3792,11 @@ function applyAnalysisToUI(analysis) {
         }
       });
     });
+    // 매핑 실패 시 기본 악기(string[0]) 자동 선택 + 알림
+    if (!found) {
+      selectInstrByCategory('string', 0, true);
+      showToast('⚠️ 악기 자동 매핑 실패 — 기본 악기로 설정되었습니다.');
+    }
   }
   // ── [수정1] 컨셉 매핑 (concept → STATE.concept) ──
   if (analysis.concept) {
@@ -5377,14 +5384,25 @@ function loadPresets() {
   modal.innerHTML=`<div style="background:var(--surface);padding:20px;border-radius:12px;width:400px;max-width:90%">
     <h3 style="margin-bottom:15px">내 프리셋</h3>
     <div style="max-height:300px;overflow-y:auto">${presets.map((p,i)=>`<div style="padding:8px;border-bottom:1px solid var(--border);cursor:pointer" onclick="loadPreset(${i})"><strong>${escapeHtml(p.name)}</strong><br><span style="font-size:11px;color:var(--muted)">${new Date(p.timestamp).toLocaleString()}</span></div>`).join('')}</div>
-    <button class="btn btn-outline" style="margin-top:15px;width:100%" onclick="document.querySelector('.modal').remove()">닫기</button>
+    <button class="btn btn-outline" style="margin-top:15px;width:100%" onclick="this.closest('.modal').remove()">닫기</button>
   </div>`;
   modal.className='modal'; document.body.appendChild(modal);
 }
 function loadPreset(index) {
   let presets=JSON.parse(localStorage.getItem('gugak_presets')||'[]');
   const preset=presets[index]; if(!preset)return;
-  Object.assign(STATE,preset.state); syncSliders();renderAll();syncGueumUI();buildPrompt(true);
+  Object.assign(STATE,preset.state);
+  // instrCategory 유효성 검사 후 악기 재선택
+  if (STATE.instrCategory) {
+    const [cat, idx] = STATE.instrCategory.split('_');
+    if (['string','percussion','wind'].includes(cat) && idx !== undefined) {
+      selectInstrByCategory(cat, parseInt(idx), true);
+    } else {
+      STATE.instr = null; STATE.instrCategory = null;
+      showToast('⚠️ 저장된 악기 정보가 올바르지 않아 초기화되었습니다.');
+    }
+  }
+  syncSliders();renderAll();syncGueumUI();buildPrompt(true);
   showToast("✅ 프리셋이 불러와졌습니다!"); document.querySelector('.modal')?.remove();
 }
 
@@ -5409,7 +5427,7 @@ function resetAll(doRender=true) {
   STATE.bpm=95;STATE.intensity=5;STATE.gender='all';STATE.koreanDominance=80;STATE.koreanRatio=70;
   STATE.gueumPositions=[];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
   STATE.gueumStyle=null;STATE.hanSoulStyle=null;STATE.gueumStrength='strong';
-  STATE.musicKey=null;STATE.koreanScale=null;STATE.energyArc=0;
+  STATE.musicKey=null;STATE.koreanScale=null;STATE.energyArc=null;
   STATE.songDuration='3:30';
   STATE.shortsMode=false;
   STATE.shortsPreset=null;
@@ -5499,6 +5517,19 @@ function openSunoWithEverything() {
    곡 길이 설정
 ═══════════════════════════════════════════ */
 function setSongDuration(val) {
+  // 일반 길이 버튼 클릭 시 쇼츠 모드 자동 해제
+  if (STATE.shortsMode) {
+    STATE.shortsMode = false;
+    STATE.shortsPreset = null;
+    STATE.shortsSubMode = null;
+    const section = document.getElementById('shortsModeSection');
+    const body = document.getElementById('shortsModeBody');
+    const indicator = document.getElementById('shortsModeIndicator');
+    if (section) section.style.borderColor = '';
+    if (body) body.style.display = 'none';
+    if (indicator) indicator.style.display = 'none';
+    showToast('🎬 쇼츠 모드가 해제되었습니다.');
+  }
   STATE.songDuration = val;
   document.querySelectorAll('.dur-btn').forEach(b => { b.classList.toggle('active', b.textContent.startsWith(val)); });
   const custom = document.getElementById('songDurationCustom');
@@ -6358,6 +6389,7 @@ function exportState() {
       hanSoulStyle: STATE.hanSoulStyle, gueumStrength: STATE.gueumStrength,
       musicKey: STATE.musicKey, koreanScale: STATE.koreanScale, energyArc: STATE.energyArc,
       songDuration: STATE.songDuration, instrCategory: STATE.instrCategory,
+      shortsMode: STATE.shortsMode, shortsSubMode: STATE.shortsSubMode, shortsPreset: STATE.shortsPreset,
     }
   };
   const json = JSON.stringify(exportData, null, 2);
@@ -6384,7 +6416,8 @@ function importState() {
           'blackSoulElements','humanFeelElements','bpm','intensity','gender',
           'koreanDominance','koreanRatio','gueumPositions','gueumPitch','gueumGender',
           'gueumStyle','hanSoulStyle','gueumStrength','musicKey','koreanScale',
-          'energyArc','songDuration','instrCategory'];
+          'energyArc','songDuration','instrCategory',
+          'shortsMode','shortsSubMode','shortsPreset'];
         keys.forEach(k => { if (s[k] !== undefined) STATE[k] = s[k]; });
         // instrCategory 복원 시 악기 재선택
         if (s.instrCategory) {
@@ -6582,6 +6615,7 @@ function qeSelectCombo(id) {
   document.getElementById('qeCard_'+id)?.classList.add('selected');
   const btn = document.getElementById('qeRunBtn');
   if (btn) { btn.disabled = false; btn.textContent = `⚡ "${_qeSelectedCombo.name}" 퀄리티 엔진 실행`; }
+  const hint = document.getElementById('qeRunHint'); if (hint) hint.style.display = 'none';
   // 결과 박스 초기화
   document.getElementById('qeResultBox').style.display='none';
   document.getElementById('qeProgressWrap').style.display='none';
