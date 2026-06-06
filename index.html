@@ -2680,7 +2680,21 @@ function _applyGugakVocalCombo(c, changsikName, statusBox) {
     statusBox.innerHTML = `<strong style="color:var(--korean2)">⚡ ${changsikName} 자동 조합 적용됨</strong><br>${applied.map(a => `✓ ${a}`).join('<br>')}`;
   }
 
-  showToast(`⚡ ${changsikName} 최적 조합 자동 적용!`);
+  /* 🔎 바뀐 항목을 눈으로 볼 수 있게 — 조성·음계 / 구음 섹션 자동 펼치기
+     (자동조합이 항상 바꾸는 값들이 접힌 섹션에 있어 "안 먹는 것처럼" 보이던 문제 해결) */
+  const _openSec = (bodyId, iconId) => {
+    const b = document.getElementById(bodyId), ic = document.getElementById(iconId);
+    if (b && b.style.display === 'none') { b.style.display = 'block'; if (ic) ic.textContent = '▲'; }
+  };
+  _openSec('scaleBody', 'scaleIcon');   // 조성 & 국악 음계 (Dm·계면조 등)
+  _openSec('gueumBody', 'gueumIcon');   // 구음 설정 (자동 세팅된 구음 스타일·위치)
+
+  /* 적용 결과(상태박스)를 화면 중앙으로 부드럽게 스크롤해 변화를 바로 확인 */
+  if (statusBox && typeof statusBox.scrollIntoView === 'function') {
+    setTimeout(() => statusBox.scrollIntoView({ behavior: 'smooth', block: 'center' }), 120);
+  }
+
+  showToast(`⚡ ${changsikName} 자동 조합 적용! (조성·구음·키 변경됨 — 펼쳐진 섹션 확인)`);
 }
 const _selectMusicKey   = createSelectOne('musicKey',    '[id^="mkey_"]',          'mkey_');
 const _selectKoreanScale= createSelectOne('koreanScale', '[id^="kscale_"]',        'kscale_');
