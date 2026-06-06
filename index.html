@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 v30 - Joseon Core</title>
+<title>BV 뮤직 프롬프트 메이커 v48 - Joseon Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -490,11 +490,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v30</span></div>
-        <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 AUTO COMBO · 퀄리티 엔진 · v30 최적화</div>
+        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v48</span></div>
+        <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 AUTO COMBO · 퀄리티 엔진 · v48 악기 확장</div>
       </div>
     </div>
-    <div class="header-badge">JOSEON CORE v30 · 가사 엔진 v2 · 장르별 송폼 ⚡</div>
+    <div class="header-badge">JOSEON CORE v48 · 악기 12→19종 확장 · 가사 엔진 v2 ⚡</div>
   </div>
 </header>
 
@@ -1489,17 +1489,24 @@ const DATA = {
     {en:'Ajaeng Deep Lead + Subtle Hammond + Soul Bass',kr:'아쟁 딥 리드 + 은은한 해먼드 + 소울 베이스',desc:'아쟁 찰현 저음·지속음·울림(70%) + 소울 그루브 승화(30%) — 가장 깊은 한국색',ratio:'7:3'},
     {en:'Geomungo Rhythmic Core + Brush Drums + Warm Rhodes',kr:'거문고 리듬 코어 + 브러쉬 드럼 + 웜 로즈',desc:'거문고 타격감 리듬·저역(70%) + 재즈 드럼·로즈(30%)',ratio:'7:3'},
     {en:'Yanggeum Harmonic Core + Upright Bass + Light Drums',kr:'양금 화성 코어 + 업라이트 베이스 + 라이트 드럼',desc:'양금 청아한 화성·멜로디(70%) + 재즈 베이스·드럼 승화(30%)',ratio:'7:3'},
+    {en:'Geomungo Deep Lead + Ajaeng Drone + Minimal Pad',kr:'거문고 딥 리드 + 아쟁 드론 + 미니멀 패드',desc:'거문고 타격감 저음 리드·아쟁 찰현 지속음 이중 현악 앙상블(70%) + 미니멀 패드 승화(30%) — 가장 깊고 묵직한 한국 현악 텍스처',ratio:'7:3'},
+    {en:'Gayageum 25-string Harmonic Lead + Warm Rhodes + Light Percussion',kr:'가야금 25현 화성 리드 + 웜 로즈 + 라이트 퍼커션',desc:'가야금 25현 확장 화성·반음계 선율(70%) + 현대 재즈 로즈·퍼커션 승화(30%) — 글로벌 Neo Soul 장르 최적',ratio:'7:3'},
   ],
   instrumentsPercussion: [
     {en:'Janggu Core + Subtle Brush Drums + Warm Bass',kr:'장구 코어 + 은은한 브러쉬 드럼 + 웜 베이스',desc:'장구 전통 장단·리듬(70%) + 현대 드럼·베이스 승화(30%)',ratio:'7:3'},
     {en:'Kkwaenggwari Accent + Janggu Groove + Deep Sub',kr:'꽹과리 악센트 + 장구 그루브 + 딥 서브',desc:'꽹과리 날카로운 타격·악센트(70%) + 현대 그루브(30%)',ratio:'7:3'},
     {en:'Buk Power + Janggu Rhythm + Cinematic Pad',kr:'북 파워 + 장구 리듬 + 시네마틱 패드',desc:'북·장구 타악 파워(70%) + 현대 패드·브라스 컬러(30%)',ratio:'7:3'},
+    {en:'Jing Deep Sustain + 808 Sub Bass + Dark Trap Groove',kr:'징 딥 서스테인 + 808 서브베이스 + 다크 트랩 그루브',desc:'징 묵직하고 긴 여운·저음 금속 울림(70%) + 808 서브베이스·트랩 그루브 승화(30%) — Cinematic·Trap 장르 최강 조합',ratio:'7:3'},
+    {en:'Jwago Grand Strike + Kkwaenggwari Accent + Cinematic Brass',kr:'좌고 웅장한 타격 + 꽹과리 악센트 + 시네마틱 브라스',desc:'좌고 대형 북 웅장한 장엄 타격(70%) + 시네마틱 브라스·꽹과리 악센트 승화(30%) — 서사적·의식적 에너지 표현',ratio:'7:3'},
+    {en:'Pyeonjong Melodic Strike + Janggu Groove + Ambient Layer',kr:'편종 선율 타격 + 장구 그루브 + 앰비언트 레이어',desc:'편종 금속 선율 타격·독특한 배음(70%) + 장구 장단·앰비언트 레이어 승화(30%) — 선율형 타악의 한국 색깔',ratio:'7:3'},
   ],
   instrumentsWind: [
     {en:'Daegeum Lead + Gentle Ambient Pad + Light Reverb',kr:'대금 리드 + 부드러운 앰비언트 패드 + 라이트 리버브',desc:'대금 호흡·여백·시김새·농현(70%) + Ambient 승화(30%)',ratio:'7:3'},
     {en:'Piri Traditional Lead + Subtle Funk Bass + Light Drums',kr:'피리 전통 리드 + 은은한 펑크 베이스 + 라이트 드럼',desc:'피리 토속 비음·프레이즈(70%) + 현대 그루브 승화(30%) — 가장 한국적',ratio:'7:3'},
     {en:'Danso Solo + Dreamy Pad + Soft Texture',kr:'단소 솔로 + 드리미 패드 + 소프트 텍스처',desc:'단소 맑고 여린 솔로·호흡(70%) + 몽환적 Ambient(30%)',ratio:'7:3'},
     {en:'Saenghwang Harmonic Core + Ethereal Pad',kr:'생황 화성 코어 + 에테리얼 패드',desc:'생황 독특한 화성·동양 음색(70%) + 현대 패드 승화(30%)',ratio:'7:3'},
+    {en:'Taepyeongso Fierce Lead + Afro Funk Bass + Live Percussion',kr:'태평소 강렬한 리드 + 아프로 펑크 베이스 + 라이브 퍼커션',desc:'태평소 원색적 비음·고음 강렬한 어택(70%) + 아프로펑크 그루브·퍼커션 승화(30%) — 가장 신명 나는 한국 에너지',ratio:'7:3'},
+    {en:'Sogeum Bright Lead + Dreamy Synth + Soft Texture',kr:'소금 청명한 리드 + 드리미 신스 + 소프트 텍스처',desc:'소금 고음역 청명하고 투명한 선율(70%) + 드리미 신스 레이어 승화(30%) — Lo-fi·Dreamy 장르 차별화',ratio:'7:3'},
   ],
   concepts: [
     {num:'01',name:'조선 궁중 소울 (Joseon Court Soul)',core:['Elegant','Emotional','Noble'],sub:['Han','Graceful'],desc:'가야금·대금·해금 궁중 정악(70%) + 은은한 Neo Soul·재즈 화성(30%)',genres:['Joseon Court Soul','Elevated Gugak'],inst:['가야금','대금','해금','Warm Rhodes','Upright Bass','Brush Drums']},
@@ -1655,6 +1662,13 @@ const DATA = {
     {en:'Yanggeum melodic riffs',kr:'양금의 멜로딕 리프',desc:'양금의 청아한 음색으로 재즈·소울 화성에 한국적 멜로디 추가',korean:true},
     {en:'Danso breathy solo lines',kr:'단소의 숨결 솔로 라인',desc:'단소의 맑고 여린 솔로로 Lo-fi·Chill 분위기에 한국 색깔 추가',korean:true},
     {en:'Saenghwang harmonic texture',kr:'생황의 화성 질감',desc:'생황의 동양적 화음 레이어로 Dreamy·Ambient 분위기에 독특한 한국색',korean:true},
+    {en:'Jing deep metallic sustain',kr:'징의 묵직한 금속 울림',desc:'징의 길고 웅장한 여운으로 Cinematic·Trap 저음 공간을 한국 색깔로 채움',korean:true},
+    {en:'Jwago grand ceremonial strike',kr:'좌고 웅장한 의식적 타격',desc:'좌고의 대형 북 장엄한 타격감으로 서사적·의식적 에너지 폭발',korean:true},
+    {en:'Taepyeongso fierce attack phrasing',kr:'태평소 강렬한 어택 프레이즈',desc:'태평소의 원색적 비음과 강한 어택으로 신명 에너지 최대 폭발 — Afrobeat·Funk 퓨전 최적',korean:true},
+    {en:'Sogeum transparent high melody',kr:'소금의 투명한 고음 선율',desc:'소금의 청명하고 투명한 고음역 선율로 Lo-fi·Dreamy 분위기에 한국 색깔 추가',korean:true},
+    {en:'Pyeonjong melodic bell strikes',kr:'편종의 선율 종 타격',desc:'편종의 금속 배음 선율 타격으로 동양적 신비감과 멜로딕 그루브 동시 구현',korean:true},
+    {en:'Geomungo and ajaeng dual string tension',kr:'거문고·아쟁 이중 현악 긴장감',desc:'거문고 저역 타격과 아쟁 찰현 드론이 교차하는 깊고 묵직한 이중 현악 텍스처',korean:true},
+    {en:'Gayageum 25-string extended harmony',kr:'가야금 25현 확장 화성',desc:'가야금 25현의 반음계 화성과 글로벌 코드 진행으로 Neo Soul·재즈와 자연스럽게 융합',korean:true},
   ],
   bassStyles: [
     {en:'Funky bassline',kr:'펑키 베이스라인',desc:'몸을 움직이게 만드는 핵심 저역 그루브'},
@@ -3264,6 +3278,12 @@ function _doBuildPrompt() {
       'Janggu':   'hourglass drum — deep resonant boom on left, dry crack on right, Korean pulse backbone',
       'Kkwaenggwari':'hand gong — sharp metallic clang, cuts through the mix, rhythmic accent marker',
       'Buk':      'barrel drum — deep warm ceremonial thud, slow measured strikes',
+      'Jing':     'large gong — massive low-frequency wash, long sustaining metallic hum, cuts space with weight not sharpness',
+      'Jwago':    'large barrel drum — thunderous ceremonial boom, massive strike energy, epic and majestic, NOT pop drum',
+      'Taepyeongso':'conical oboe — fiercely bright nasal shriek, raw and powerful, celebratory energy like a Korean shehnai',
+      'Sogeum':   'small bamboo flute — one octave above daegeum, pure transparent high tone, delicate airy shimmer',
+      'Pyeonjong':'bronze bell chime — bright metallic bell melody, tuned resonance, harmonic overtone ring',
+      'Gayageum 25':'extended plucked zither — chromatic range beyond pentatonic, richer harmonic colors, contemporary modal bend',
     };
 
     /* ── 선택된 악기 리드명 + 음색 추출 ── */
@@ -3509,7 +3529,7 @@ async function _callOnce(model, messages, temperature, apiKey) {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
       'HTTP-Referer': window.location.href,
-      'X-Title': 'Gugak Prompt Maker v30',
+      'X-Title': 'Gugak Prompt Maker v48',
     },
     body: JSON.stringify({
       model, messages,
@@ -6323,7 +6343,7 @@ function _saveHistoryAfterBuild() {
 /* UPG-2: STATE 내보내기 */
 function exportState() {
   const exportData = {
-    version: 'v30',
+    version: 'v48',
     timestamp: new Date().toISOString(),
     state: {
       genre: STATE.genre, moods: STATE.moods, concept: STATE.concept,
