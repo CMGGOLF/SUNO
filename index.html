@@ -739,6 +739,20 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       <button class="gender-btn" onclick="setGender('male', this)">남성</button>
       <button class="gender-btn" onclick="setGender('female', this)">여성</button>
     </div>
+    <div class="husky-preset-wrap" style="margin:4px 0 14px;padding:12px;border:1px solid var(--soul);border-radius:10px;background:rgba(224,112,112,.07)">
+      <div style="font-size:12px;font-weight:700;color:var(--soul);margin-bottom:8px">🔥 굵고 거칠게 긁는 허스키 보컬 <span style="font-size:10px;opacity:.7;font-weight:400">(원클릭 자동 조합 · 장르·악기는 유지)</span></div>
+      <div class="gender-row" style="margin-bottom:8px">
+        <span class="gender-lbl">목소리 성별:</span>
+        <button class="gender-btn active" id="huskyG_male" onclick="setHuskyGender('male', this)">남성</button>
+        <button class="gender-btn" id="huskyG_female" onclick="setHuskyGender('female', this)">여성</button>
+        <button class="gender-btn" id="huskyG_both" onclick="setHuskyGender('both', this)">혼성</button>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-soul" style="flex:1;font-size:13px;padding:11px" onclick="applyHuskyGritVocal('ballad')">🌙 발라드형 <span style="font-size:10px;opacity:.8">(느리고 절절한 긁기)</span></button>
+        <button class="btn btn-soul" style="flex:1;font-size:13px;padding:11px" onclick="applyHuskyGritVocal('groove')">🎸 그루브형 <span style="font-size:10px;opacity:.8">(밀어붙이는 거친 그루브)</span></button>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px;text-align:center;line-height:1.4">선택한 성별로 거친 raspy 톤·득음 그릿·소울 벨트 애드립을 자동 조합합니다</div>
+    </div>
     <div class="chip-wrap" id="toneGrid"></div>
   </div>
 </div>
@@ -1618,6 +1632,7 @@ const DATA = {
     {en:'Slow groove phrasing',kr:'느긋한 그루브 창법',gender:'both',desc:'박자를 뒤로 끌며 Groove를 살리는 스타일'},
     {en:'Emotional vocal delivery',kr:'감성적 표현',gender:'both',desc:'한국적 감정선과 Soul 표현을 자연스럽게 연결'},
     {en:'Call and response vocals',kr:'콜 앤 리스폰스 보컬',gender:'both',desc:'Soul/Funk 특유의 주고받는 보컬 에너지'},
+    {en:'Raspy soulful female belt',kr:'거친 소울풀 여성 벨트',gender:'female',desc:'에타 제임스풍 거칠고 허스키한 폭발적 여성 소울 벨트, 그릿과 갈라짐'},
   ],
   textures: [
     {en:'Warm analog texture',kr:'따뜻한 아날로그 질감',desc:'빈티지 Soul·Lo-fi 감성을 강화하는 따뜻한 사운드'},
@@ -2755,6 +2770,68 @@ function toggleTone(i) {
   if (idx>=0) STATE.vocalTones.splice(idx,1); else STATE.vocalTones.push(i);
   document.getElementById('tone_'+i)?.classList.toggle('active');
   buildPrompt();
+}
+/* 🔥 굵고 거칠게 긁는 허스키 보컬 — 보컬 관련 설정 원클릭 자동 조합
+   곡의 뼈대(장르·분위기·악기)는 건드리지 않고, 보컬 음색을 두껍고 거칠게 강제 세팅한다.
+   style: 'ballad'(느리고 절절) | 'groove'(밀어붙이는 거친 그루브)
+   성별은 _huskyGender(남성/여성/혼성)에 따라 톤·창법·구음을 달리 잡는다. */
+let _huskyGender = 'male'; // 'male' | 'female' | 'both'
+function setHuskyGender(g, btn) {
+  _huskyGender = g;
+  ['huskyG_male','huskyG_female','huskyG_both'].forEach(id => document.getElementById(id)?.classList.remove('active'));
+  if (btn) btn.classList.add('active'); else document.getElementById('huskyG_'+g)?.classList.add('active');
+}
+function applyHuskyGritVocal(style) {
+  const g = _huskyGender || 'male';
+  style = (style === 'groove') ? 'groove' : 'ballad';
+
+  /* ── 공통 그릿 토대 (성별 무관) ── */
+  STATE.gender = (g === 'both') ? 'all' : g;
+  STATE.gugakVocalStyle = 0; // 판소리창법 — 득음 throat crack & gravel (gender 'both'라 남녀 모두 적용)
+  [0, 1].forEach(bi => { if (!STATE.blackSoulElements.includes(bi)) STATE.blackSoulElements.push(bi); }); // Blues vocal grit · Soul belt adlibs
+  STATE.gueumStrength = 'strong';
+  if (!STATE.gueumPositions || STATE.gueumPositions.length === 0) STATE.gueumPositions = ['start', 'mid', 'end'];
+  STATE.intensity = Math.max(STATE.intensity || 5, style === 'groove' ? 7 : 8);
+  if (STATE.hanSoulStyle === null) STATE.hanSoulStyle = 5; // Gritty Korean R&B
+  if (STATE.musicKey === null) STATE.musicKey = 1;          // Dm
+  if (STATE.koreanScale === null) STATE.koreanScale = 0;    // 계면조
+
+  /* ── 성별별 보컬 스타일 · 톤 · 구음 ── */
+  if (g === 'male') {
+    STATE.vocalStyle = 1; // Oriental Blues (거칠고 허스키한 저음)
+    STATE.vocalTones = (style === 'groove') ? [7, 6, 8, 10] : [7, 6, 5, 9]; // 거친·스모키바리톤 (+그루브창법·콜앤리스폰스 / +깊은소울·감성)
+    STATE.gueumStyle = 0; STATE.gueumPitch = 'low'; STATE.gueumGender = 'male';
+  } else if (g === 'female') {
+    STATE.vocalStyle = 0; // Korean Soul Fusion (both) — 그릿은 거친벨트톤+득음+블랙소울이 담당
+    STATE.vocalTones = (style === 'groove') ? [11, 1, 10, 8] : [11, 1, 9]; // 11=거친 소울풀 여성 벨트(신규)
+    STATE.gueumStyle = 1; STATE.gueumPitch = 'midlow'; STATE.gueumGender = 'female'; // 한 블루스 꺾는목
+  } else { // both / 혼성
+    STATE.vocalStyle = 7; // Cinematic Soul Fusion (both) — 남녀 교차 드라마틱
+    STATE.vocalTones = (style === 'groove') ? [5, 11, 8, 10] : [5, 11, 9]; // 깊은소울 남성 + 거친 여성 벨트 교차
+    STATE.gueumStyle = 0; STATE.gueumPitch = 'midlow'; STATE.gueumGender = 'both';
+  }
+
+  /* ── 스타일별(발라드 vs 그루브) ── */
+  if (style === 'groove') {
+    if (STATE.bpm === 95) STATE.bpm = 96; // 중간 템포 그루브 (기본값일 때만)
+    if (STATE.energyArc === null) STATE.energyArc = 5; // Sustained Groove
+    [6, 7, 0].forEach(gi => { if (!STATE.grooves.includes(gi)) STATE.grooves.push(gi); });        // head-nodding·syncopated·swing
+    [0, 2, 5].forEach(ki => { if (!STATE.koreanGrooves.includes(ki)) STATE.koreanGrooves.push(ki); }); // 가야금 리프·장구·콜앤리스폰스
+    [0, 5].forEach(bsi => { if (!STATE.bassStyles.includes(bsi)) STATE.bassStyles.push(bsi); });   // funky·syncopated bass
+    if (!STATE.blackSoulElements.includes(2)) STATE.blackSoulElements.push(2);                     // Call-and-response band hits
+  } else {
+    if (STATE.bpm === 95) STATE.bpm = 72; // 느린 발라드 (기본값일 때만)
+    if (STATE.energyArc === null) STATE.energyArc = 0; // Slow Burn Rise
+  }
+
+  /* ── UI 동기화 + 프롬프트 재생성 ── */
+  syncGueumUI();
+  syncSliders();
+  renderAll();
+  buildPrompt(true);
+  const gLabel = g === 'male' ? '남성' : g === 'female' ? '여성' : '혼성';
+  const sLabel = style === 'groove' ? '그루브형' : '발라드형';
+  showToast(`🔥 ${gLabel} ${sLabel} 허스키 그릿 보컬 자동 적용!`);
 }
 function setGender(g, btn) {
   STATE.gender=g;
