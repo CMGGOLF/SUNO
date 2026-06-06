@@ -3263,7 +3263,7 @@ function _doBuildPrompt() {
     /* ── 전 장르 공통 정서 테두리 — 어떤 장르든 국악 베이스 + 한(恨)의 애절함 ──
        재즈·블루스·소울·힙합 무엇을 골라도 이 정서가 깔리게 함 (기본 ON) ── */
     if (STATE.gugakTrotBase && STATE.genre !== 8) {
-      parts.push(`[Emotional Foundation] ALL genre choices filtered through Korean gugak-trot sensibility — deep, sorrowful, aching (한恨). Korean traditional instrument (haegeum/ajaeng/gayageum) carries the emotional core underneath the chosen genre. Pentatonic minor (계면조) coloring, vocal sob and bends (꺾기), the restrained grief of trot ballads. Include Korean vocal chuimsae (추임새: 아아~, 우우~, 아이야~) in choruses and gugak guum (구음) vocal interludes. The genre is the surface; gugak melancholy is the soul.`);
+      parts.push(`[Emotional Foundation] ALL genre choices filtered through Korean gugak-trot sensibility — deep, sorrowful, aching (Han/Heung). Korean traditional instrument (haegeum/ajaeng/gayageum) carries the emotional core underneath the chosen genre. Pentatonic minor (Gyemyeonjo) coloring, vocal sob and bends (kkeokki), the restrained grief of trot ballads. Include Korean vocal chuimsae (ah-ah~, woo-woo~, a-i-ya~) in choruses and gugak guum (gueum) vocal interludes. The genre is the surface; gugak melancholy is the soul.`);
     }
 
     /* ── 국악기 음색 매핑: 악기명 + 연주 행동 묘사 ── */
@@ -3308,7 +3308,7 @@ function _doBuildPrompt() {
       ? _HANSOUL_STRUCTURE_MAP[STATE.hanSoulStyle]
       : 'traditional melody and modern elevation';
     const leadTag = leadInstrName ? ` ${leadInstrName} leads,` : '';
-    parts.push(`[Korean Core ${domLabel}]${leadTag} ${dom}%KR/${100-dom}%modern — ${_genreStructureLabel} — 시김새·농현·정간보 embedded throughout`);
+    parts.push(`[Korean Core ${domLabel}]${leadTag} ${dom}%KR/${100-dom}%modern — ${_genreStructureLabel} — sigimsae(ornamental slides)·nonghyeon(string vibrato)·jeongganbul(traditional rhythmic notation) embedded throughout`);
 
     /* ── ② 장르 + 분위기 ── */
     const _genrePart = (STATE.genre!==null&&DATA.genres[STATE.genre]) ? DATA.genres[STATE.genre].en : '';
@@ -3378,8 +3378,8 @@ function _doBuildPrompt() {
         const _fb={high:'이야~호~ / 에헤~야~',midhigh:'어~이~야~ / 에헤~야~',midlow:'어~이~야~ / 아~이~야~',low:'어이~야~ / 으~이~야~'};
         soundRef = _fb[STATE.gueumPitch]||'어~이~야~ / 에헤~야~';
       }
-      const styleDesc = styleInfo ? `, style: ${styleInfo.kr} (${styleInfo.desc||''})` : '';
-      parts.push(`[GUEUM — Korean Vocalization]\n${strengthTag}${pitchGenderDesc}${styleDesc}\nSounds: "${soundRef}"\n꺾음(pitch-break) + 떨림(vibrato tremor) + 시김새(ornamental slides) — raw, NOT Western humming or choir\n${posStr}`);
+      const styleDesc = styleInfo ? `, style: ${styleInfo.en} (${styleInfo.desc||''})` : '';
+      parts.push(`[GUEUM — Korean Vocalization]\n${strengthTag}${pitchGenderDesc}${styleDesc}\nSounds: "${soundRef}"\nkkeokeum(pitch-break) + tteollim(vibrato tremor) + sigimsae(ornamental slides) — raw, NOT Western humming or choir\n${posStr}`);
       if (STATE.gueumGender==='male') parts.push(`[Gueum Voice] MALE ONLY — deep pansori rawness, no female in gueum sections`);
       else if (STATE.gueumGender==='female') parts.push(`[Gueum Voice] FEMALE ONLY — clear and mournful, no male in gueum sections`);
     }
@@ -3408,7 +3408,10 @@ function _doBuildPrompt() {
     /* ── ⑪ 조성 + 음계 (통합 압축) ── */
     const _keyParts=[];
     if (STATE.musicKey!==null&&DATA.musicKeys[STATE.musicKey]) _keyParts.push(DATA.musicKeys[STATE.musicKey].short);
-    if (STATE.koreanScale!==null&&DATA.koreanScales[STATE.koreanScale]) _keyParts.push(DATA.koreanScales[STATE.koreanScale].kr);
+    if (STATE.koreanScale!==null&&DATA.koreanScales[STATE.koreanScale]) {
+      const _sc = DATA.koreanScales[STATE.koreanScale];
+      _keyParts.push(_sc.en + (_sc.suno ? ` (${_sc.suno})` : ''));
+    }
     if (_keyParts.length) parts.push(`[Key] ${_keyParts.join(' · ')}`);
 
     /* ── ⑫ Duration ── */
@@ -3440,8 +3443,8 @@ function _doBuildPrompt() {
     for (let i = 0; i < 6; i++) {
       _negWords.push(OVERUSED_SUNO_WORDS[(_negStart + i) % OVERUSED_SUNO_WORDS.length]);
     }
-    // 숨소리(학학/헉헉) 억제 — 항상 포함
-    const _breathAvoid = 'audible breathing, breath sounds, gasping, panting, heavy breathing, inhale/exhale noise, 학학, 헉헉';
+    // 숨소리 억제 — 항상 포함
+    const _breathAvoid = 'audible breathing, breath sounds, gasping, panting, heavy breathing, inhale/exhale noise, hakhak, heokheok';
     parts.push(`[AVOID] ${_negWords.join(', ')}, ${_breathAvoid}`);
 
     /* ── ⑮ 장르별 시작·끝 구조 힌트 — 모든 곡이 fade out으로 끝나는 레퍼토리화 방지 ── */
