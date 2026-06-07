@@ -486,6 +486,10 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 </head>
 <body>
 
+<button onclick="openManual()" title="사용설명서를 새 창으로 엽니다"
+  style="position:fixed;right:18px;bottom:18px;z-index:99999;background:linear-gradient(135deg,#e6cd7a,#a05a3a);color:#1a1208;border:none;border-radius:30px;padding:13px 22px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.5),0 0 18px rgba(201,168,76,.45);font-family:'Noto Sans KR',sans-serif;transition:transform .15s"
+  onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">📖 사용설명서</button>
+
 <header>
   <div class="header-inner">
     <div class="logo-block">
@@ -1642,6 +1646,7 @@ const DATA = {
     {en:'Emotional vocal delivery',kr:'감성적 표현',gender:'both',desc:'한국적 감정선과 Soul 표현을 자연스럽게 연결'},
     {en:'Call and response vocals',kr:'콜 앤 리스폰스 보컬',gender:'both',desc:'Soul/Funk 특유의 주고받는 보컬 에너지'},
     {en:'Raspy soulful female belt',kr:'거친 소울풀 여성 벨트',gender:'female',desc:'에타 제임스풍 거칠고 허스키한 폭발적 여성 소울 벨트, 그릿과 갈라짐'},
+    {en:'Growling raw female belt',kr:'그르렁대는 날것 여성 벨트',gender:'female',desc:'목을 긁어내는 growl과 distorted rasp, 통제된 거친 폭발 — 재니스 조플린·티나 터너풍 raw screaming belt, 갈라지고 쇳소리 나는 그릿'},
   ],
   textures: [
     {en:'Warm analog texture',kr:'따뜻한 아날로그 질감',desc:'빈티지 Soul·Lo-fi 감성을 강화하는 따뜻한 사운드'},
@@ -2869,7 +2874,8 @@ function applyHuskyGritVocal(style) {
   [0, 1].forEach(bi => { if (!STATE.blackSoulElements.includes(bi)) STATE.blackSoulElements.push(bi); }); // Blues vocal grit · Soul belt adlibs
   STATE.gueumStrength = 'strong';
   if (!STATE.gueumPositions || STATE.gueumPositions.length === 0) STATE.gueumPositions = ['start', 'mid', 'end'];
-  STATE.intensity = Math.max(STATE.intensity || 5, style === 'groove' ? 7 : 8);
+  const _intFloor = (style === 'groove' ? 7 : 8) + (g === 'male' ? 0 : 1); // 여성·혼성은 그릿이 약해지기 쉬워 강도 +1
+  STATE.intensity = Math.max(STATE.intensity || 5, _intFloor);
   if (STATE.hanSoulStyle === null) STATE.hanSoulStyle = 5; // Gritty Korean R&B
   if (STATE.musicKey === null) STATE.musicKey = 1;          // Dm
   if (STATE.koreanScale === null) STATE.koreanScale = 0;    // 계면조
@@ -2881,12 +2887,14 @@ function applyHuskyGritVocal(style) {
     STATE.gueumStyle = 0; STATE.gueumPitch = 'low'; STATE.gueumGender = 'male';
   } else if (g === 'female') {
     STATE.vocalStyle = 0; // Korean Soul Fusion (both) — 그릿은 거친벨트톤+득음+블랙소울이 담당
-    STATE.vocalTones = (style === 'groove') ? [11, 1, 10, 8] : [11, 1, 9]; // 11=거친 소울풀 여성 벨트(신규)
+    STATE.vocalTones = (style === 'groove') ? [12, 11, 10, 8] : [12, 11, 1, 9]; // 12=그르렁 날것 벨트 + 11=거친 소울 벨트 (그릿 2겹)
     STATE.gueumStyle = 1; STATE.gueumPitch = 'midlow'; STATE.gueumGender = 'female'; // 한 블루스 꺾는목
+    STATE.gueumStrength = 'maximum'; // 여성 그릿 보강 — 구음 강도 최대
   } else { // both / 혼성
     STATE.vocalStyle = 7; // Cinematic Soul Fusion (both) — 남녀 교차 드라마틱
-    STATE.vocalTones = (style === 'groove') ? [5, 11, 8, 10] : [5, 11, 9]; // 깊은소울 남성 + 거친 여성 벨트 교차
+    STATE.vocalTones = (style === 'groove') ? [5, 12, 11, 8] : [5, 12, 11, 9]; // 깊은소울 남성 + 그르렁/거친 여성 벨트 교차 (그릿 2겹)
     STATE.gueumStyle = 0; STATE.gueumPitch = 'midlow'; STATE.gueumGender = 'both';
+    STATE.gueumStrength = 'maximum'; // 혼성 그릿 보강 — 구음 강도 최대
   }
 
   /* ── 스타일별(발라드 vs 그루브) ── */
@@ -7030,6 +7038,467 @@ function qeReset() {
   const btn=document.getElementById('qeRunBtn');
   if(btn){btn.disabled=true;btn.textContent='⚡ 퀄리티 엔진 실행';}
 }
+
+/* ── 📖 사용설명서 새 창으로 열기 — 프로그램에 내장된 설명서 HTML을 Blob으로 띄움 ── */
+function openManual() {
+  const el = document.getElementById('manualHTML');
+  if (!el) { alert('설명서를 찾을 수 없습니다.'); return; }
+  const blob = new Blob([el.textContent], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, '_blank');
+  if (!win) { alert('팝업이 차단되었습니다. 새 창 열기를 허용해 주세요.'); }
+  /* 메모리 정리는 새 창이 로드된 뒤 (즉시 revoke하면 빈 창이 뜰 수 있어 지연) */
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+</script>
+
+<script type="text/html" id="manualHTML">
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BV 뮤직 프롬프트 메이커 — 활용 상세 가이드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700;900&family=Song+Myung&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0b11; --surface:#14141c; --surface2:#1a1a24; --surface3:#21212e;
+  --gold:#c9a84c; --gold2:#e6cd7a; --korean:#a05a3a; --korean2:#d4845a;
+  --soul:#e07070; --teal:#4a9d9d; --text:#ece9f3; --muted:#938da8; --dim:#6b6680; --border:#2c2c3c;
+  --serif:'Gowun Batang',serif; --brush:'Song Myung',serif; --sans:'Noto Sans KR',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg); color:var(--text); font-family:var(--sans); font-weight:300; line-height:1.85; font-size:16px;
+  background-image:radial-gradient(900px 500px at 85% -5%, rgba(201,168,76,.07), transparent 60%),radial-gradient(800px 600px at -5% 30%, rgba(160,90,58,.08), transparent 55%); background-attachment:fixed;}
+.wrap{max-width:900px; margin:0 auto; padding:0 24px}
+.hero{padding:74px 0 36px; text-align:center}
+.hero .kicker{font-weight:500; letter-spacing:.4em; font-size:12px; color:var(--korean2); text-transform:uppercase; margin-bottom:20px}
+.hero h1{font-family:var(--brush); font-size:clamp(30px,6vw,54px); font-weight:400; line-height:1.25; color:var(--gold2)}
+.hero h1 .sub{display:block; font-size:.42em; color:var(--text); letter-spacing:.05em; margin-top:13px; font-family:var(--serif)}
+.hero p.lede{margin:22px auto 0; max-width:620px; color:var(--muted); font-size:15.5px}
+.hero .rule{width:64px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:30px auto 0}
+.toc{background:linear-gradient(180deg,var(--surface),var(--surface2)); border:1px solid var(--border); border-radius:16px; padding:26px 34px; margin:24px 0 52px; box-shadow:0 30px 60px -30px rgba(0,0,0,.7)}
+.toc h2{font-family:var(--serif); font-size:15px; color:var(--korean2); letter-spacing:.2em; margin-bottom:16px; font-weight:700}
+.toc ol{list-style:none; counter-reset:toc; columns:2; column-gap:40px}
+.toc li{counter-increment:toc; margin-bottom:10px; break-inside:avoid}
+.toc a{color:var(--text); text-decoration:none; font-size:15px; display:flex; gap:11px; align-items:baseline; transition:color .2s}
+.toc a:hover{color:var(--gold2)}
+.toc a::before{content:counter(toc,decimal-leading-zero); font-family:var(--brush); color:var(--gold); font-size:13px; min-width:22px}
+@media(max-width:640px){.toc ol{columns:1}}
+section{margin:0 0 58px; scroll-margin-top:20px}
+.sec-label{font-family:var(--brush); font-size:13px; letter-spacing:.3em; color:var(--korean2); margin-bottom:6px}
+h2.title{font-family:var(--serif); font-weight:700; font-size:clamp(23px,4vw,32px); color:var(--gold2); line-height:1.3; margin-bottom:8px}
+h2.title .em{color:var(--korean2)}
+.sec-divider{display:flex; align-items:center; gap:16px; margin:14px 0 24px}
+.sec-divider::before{content:''; width:30px; height:2px; background:var(--gold); border-radius:2px}
+.sec-divider::after{content:''; flex:1; height:1px; background:linear-gradient(90deg,var(--border),transparent)}
+.sec-divider span{font-size:13px; color:var(--dim); white-space:nowrap}
+p{margin-bottom:15px; color:#d8d4e4}
+strong{color:var(--gold2); font-weight:700}
+em{color:var(--korean2); font-style:normal; font-weight:500}
+h3{font-family:var(--serif); font-weight:700; font-size:20px; color:var(--text); margin:30px 0 12px}
+h4{font-size:16px; font-weight:700; color:var(--korean2); margin:20px 0 8px}
+.steps{counter-reset:step; margin:22px 0}
+.step{counter-increment:step; position:relative; padding:16px 22px 16px 66px; background:var(--surface); border:1px solid var(--border); border-radius:13px; margin-bottom:13px; font-size:15px}
+.step::before{content:counter(step); position:absolute; left:18px; top:15px; width:32px; height:32px; border-radius:50%; background:radial-gradient(circle at 30% 30%,var(--gold2),var(--korean)); color:#1a1208; font-family:var(--brush); font-size:17px; display:flex; align-items:center; justify-content:center; box-shadow:0 0 16px rgba(201,168,76,.35)}
+.step b{color:var(--gold2)}
+.card{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px 24px; margin-bottom:15px}
+.card.korean{border-left:3px solid var(--korean2); background:rgba(160,90,58,.06)}
+.card.gold{border-left:3px solid var(--gold); background:rgba(201,168,76,.05)}
+.card .num{font-family:var(--brush); font-size:13px; color:var(--gold); background:rgba(201,168,76,.12); border:1px solid rgba(201,168,76,.3); padding:2px 11px; border-radius:20px; display:inline-block; margin-bottom:10px; letter-spacing:.05em}
+.card h3{margin:0 0 6px; font-size:19px; color:var(--gold2)}
+.card .oneline{color:var(--korean2); font-weight:500; font-size:15px; margin-bottom:10px}
+.card p{margin-bottom:10px; font-size:14.5px}
+.card p:last-child{margin-bottom:0}
+.ex,.fx{border-radius:9px; padding:11px 14px 11px 40px; margin-top:11px; font-size:14px; line-height:1.65; position:relative}
+.ex{background:rgba(74,157,157,.09); border:1px solid rgba(74,157,157,.3)} .ex::before{content:'🎧'; position:absolute; left:13px; top:10px}
+.fx{background:rgba(201,168,76,.08); border:1px solid rgba(201,168,76,.28)} .fx::before{content:'💡'; position:absolute; left:13px; top:10px}
+.ex b{color:#7fd0d0} .fx b{color:var(--gold2)}
+.card ul{list-style:none; margin:6px 0}
+.card ul li{padding:4px 0 4px 18px; position:relative; font-size:14px; color:#d4d0e0}
+.card ul li::before{content:'·'; position:absolute; left:4px; color:var(--korean2); font-weight:700}
+.note{border-radius:12px; padding:15px 20px 15px 50px; margin:18px 0; position:relative; font-size:14.5px; line-height:1.7}
+.note::before{position:absolute; left:18px; top:14px; font-size:19px}
+.note.tip{background:rgba(201,168,76,.08); border:1px solid rgba(201,168,76,.3)} .note.tip::before{content:'💡'}
+.note.beginner{background:rgba(112,180,120,.08); border:1px solid rgba(112,180,120,.35)} .note.beginner::before{content:'🔰'}
+.note.ex{background:rgba(74,157,157,.08); border:1px solid rgba(74,157,157,.32)} .note.ex::before{content:'🎧'}
+.note b{color:var(--gold2)} .note.beginner b{color:#9ad6a3}
+.recipe{background:linear-gradient(160deg,var(--surface2),var(--surface)); border:1px solid var(--border); border-radius:14px; padding:22px 24px; margin-bottom:16px}
+.recipe .rtitle{font-family:var(--serif); font-size:19px; color:var(--gold2); font-weight:700; margin-bottom:4px}
+.recipe .rgoal{color:var(--muted); font-size:14px; margin-bottom:14px}
+.recipe ol{list-style:none; counter-reset:r}
+.recipe li{counter-increment:r; padding:6px 0 6px 32px; position:relative; border-bottom:1px dashed var(--border); font-size:14.5px}
+.recipe li:last-child{border-bottom:none}
+.recipe li::before{content:counter(r); position:absolute; left:0; top:6px; color:var(--korean2); font-family:var(--brush); font-weight:700}
+.recipe li b{color:var(--gold2)}
+.recipe .result{margin-top:12px; font-size:13.5px; color:#7fd0d0; background:rgba(74,157,157,.08); border:1px solid rgba(74,157,157,.28); border-radius:8px; padding:9px 13px 9px 38px; position:relative}
+.recipe .result::before{content:'🎧'; position:absolute; left:12px; top:8px}
+.tag{display:inline-block; font-size:12px; background:rgba(160,90,58,.18); border:1px solid rgba(160,90,58,.4); color:var(--korean2); padding:1px 9px; border-radius:11px; margin:0 1px}
+.gloss{border-top:1px solid var(--border)}
+.gloss .term{padding:15px 0; border-bottom:1px solid var(--border); display:grid; grid-template-columns:160px 1fr; gap:20px; align-items:baseline}
+.gloss .term dt{font-family:var(--serif); font-weight:700; color:var(--gold2); font-size:16px}
+.gloss .term dd{color:#d4d0e0; font-size:14.5px}
+@media(max-width:560px){.gloss .term{grid-template-columns:1fr; gap:4px}}
+footer{text-align:center; padding:48px 0 70px; color:var(--dim); font-size:13px; border-top:1px solid var(--border); margin-top:36px}
+footer .brush{font-family:var(--brush); color:var(--korean2); font-size:18px; margin-bottom:8px}
+a.back{color:var(--korean2); text-decoration:none; font-size:13px}
+.scale{display:flex; gap:6px; margin:14px 0; flex-wrap:wrap}
+.scale .sb{flex:1; min-width:90px; text-align:center; padding:10px 8px; border-radius:9px; border:1px solid var(--border); background:var(--surface); font-size:12.5px}
+.scale .sb b{display:block; color:var(--gold2); font-size:14px; margin-bottom:3px; font-family:var(--brush)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker">활용 상세 가이드 · 예시 & 효과 극대화</div>
+  <h1>BV 뮤직 프롬프트 메이커<span class="sub">— 섹션별 디테일 활용법 —</span></h1>
+  <p class="lede">각 칸을 어떻게 쓰면 어떤 소리가 나는지, 그리고 효과를 최대로 끌어내는 조합을 예시와 함께 정리했습니다. 🎧는 결과 예시, 💡는 효과 극대화 팁입니다.</p>
+  <div class="rule"></div>
+</header>
+
+<nav class="toc">
+  <h2>목 차</h2>
+  <ol>
+    <li><a href="#sections">번호 섹션 완전 해부 (01~14)</a></li>
+    <li><a href="#vocal">목소리 굵고 거칠게</a></li>
+    <li><a href="#gugak">국악 창법 스마트 조합</a></li>
+    <li><a href="#output">완성 · 복사 · 붙여넣기</a></li>
+    <li><a href="#recipes">상황별 레시피 7종</a></li>
+    <li><a href="#combo">효과 극대화 조합 원리</a></li>
+    <li><a href="#gloss">음악 용어 일상어 사전</a></li>
+  </ol>
+</nav>
+
+<section id="sections">
+  <div class="sec-label">상세 설명</div>
+  <h2 class="title">번호 섹션 <span class="em">완전 해부</span> (01~14)</h2>
+  <div class="sec-divider"><span>각 칸: 정의 · 예시 · 효과 팁</span></div>
+
+  <div class="card korean">
+    <div class="num">01 · 장르 선택</div>
+    <h3>음악의 큰 종류 — 곡의 80%를 결정</h3>
+    <p class="oneline">이 곡이 어떤 "갈래"인지 하나 고릅니다.</p>
+    <p><em>음악 모르면:</em> "잔잔한 발라드? 끈적한 소울? 신나는 힙합? 국악 섞은 거?" 정도의 큰 분류. 가장 먼저 정하세요.</p>
+    <div class="ex"><b>예시:</b> "판소리 소울"을 고르면 → 가야금·득음 보컬에 소울 그루브가 깔린 묵직한 곡. "국악 힙합"을 고르면 → 장구·꽹과리 리듬 위에 랩·비트가 얹힌 곡.</div>
+    <div class="fx"><b>효과 팁:</b> 장르가 곡의 8할을 정합니다. 먼저 장르를 박고 나머지(악기·보컬·조성)를 거기에 맞추면 충돌이 없습니다. 반대로 장르를 비워두면 13 조성·07 한소울 같은 다른 선택이 곡 색을 대신 결정해요. 신나는 장르 + 슬픈 분위기처럼 어긋나게 섞으면 어색하니, 일부러 노린 게 아니면 피하세요.</div>
+  </div>
+
+  <div class="card korean">
+    <div class="num">02 · 분위기 선택 (복수)</div>
+    <h3>곡의 감정 색깔</h3>
+    <p class="oneline">슬픔·그리움·희망 같은 "느낌"을 2~3개 고릅니다.</p>
+    <p><em>음악 모르면:</em> 이 곡을 들었을 때 어떤 기분이면 좋겠는지 고르는 칸.</p>
+    <div class="ex"><b>예시:</b> "그리움 + 체념 + 늦은 밤" 3개 → 새벽에 혼자 듣는 이별 발라드. "벅참 + 희망" → 엔딩 크레딧처럼 차오르는 곡.</div>
+    <div class="fx"><b>효과 팁:</b> 같은 계열로 묶으면 정서가 진해지고(슬픔+그리움+쓸쓸함), 반대 감정을 일부러 섞으면(슬픔+희망) "슬프지만 따뜻한" 복합 정서가 됩니다. 단, 5개 이상 마구 켜면 곡이 갈피를 잃으니 3개 안쪽으로.</div>
+  </div>
+
+  <div class="card korean">
+    <div class="num">03 · 악기 조합</div>
+    <h3>곡의 중심 소리 (현악·타악·관악)</h3>
+    <p class="oneline">잘 어울리게 묶인 악기 세트 하나를 고릅니다.</p>
+    <p><em>음악 모르면:</em> 하나 고르면 그 세트가 곡의 주된 소리가 됩니다.</p>
+    <div class="ex"><b>계열별 결과:</b><ul>
+      <li>현악(가야금·해금·아쟁) → 흐느끼듯 애절한 선율. 발라드·소울에 최적</li>
+      <li>타악(장구·북·꽹과리) → 몸이 들썩이는 리듬·에너지. 그루브·힙합에 최적</li>
+      <li>관악(대금·피리·단소) → 바람 소리처럼 아련·구슬픔. 사극풍·여백 있는 곡에</li>
+    </ul></div>
+    <div class="fx"><b>효과 팁:</b> 12 국악기 강조 강도를 함께 올리면 그 악기가 더 또렷이 살아납니다. 보컬 중심 곡이면 악기 세트는 1개로 충분 — 너무 많이 넣으면 보컬이 묻힙니다.</div>
+  </div>
+
+  <div class="card korean">
+    <div class="num">04 · 곡 컨셉별 무드 조합 추천</div>
+    <h3>주제를 잡아주는 추천 묶음</h3>
+    <p class="oneline">"이별", "첫사랑" 같은 주제를 고르면 어울리는 분위기가 따라옵니다.</p>
+    <p><em>음악 모르면:</em> 02 분위기를 직접 고르기 막막할 때 쓰는 지름길.</p>
+    <div class="ex"><b>예시:</b> "이별"을 고르면 → 슬픔·그리움·체념이 한 번에 세팅되어 02 분위기를 일일이 안 골라도 됩니다.</div>
+    <div class="fx"><b>효과 팁:</b> 컨셉으로 기본 정서를 깔고, 02에서 한 가지 감정만 더 보태 미세 조정하면 빠르면서도 디테일이 삽니다.</div>
+  </div>
+
+  <div class="card korean">
+    <div class="num">05 · 보컬 스타일</div>
+    <h3>노래하는 "방식"</h3>
+    <p class="oneline">소울풀·재즈·블루스처럼 부르는 스타일을 하나 고릅니다.</p>
+    <p><em>음악 모르면:</em> 같은 가사라도 "끈적한 소울로 부를지", "잔잔히 부를지"를 정하는 칸. 전통 창법을 원하면 05B로.</p>
+    <div class="ex"><b>예시:</b> Oriental Blues → 거칠고 허스키한 저음의 블루스 창법. Korean Soul Fusion → 따뜻하고 감성적인 소울 톤.</div>
+    <div class="fx"><b>효과 팁:</b> 05 보컬 스타일(부르는 방식) + 06 보컬 톤(목소리 질감)은 별개 칸이라 같이 걸 수 있습니다. 둘을 겹치면 "어떻게 + 어떤 목소리로"가 동시에 지정돼 보컬이 또렷해져요.</div>
+  </div>
+
+  <div class="card korean">
+    <div class="num">05B · 🎙️ 국악 창법 — 스마트 자동 조합 (간판)</div>
+    <h3>한국 전통 소리 입히기</h3>
+    <p class="oneline">전통 창법을 고르면 거기 맞는 설정이 줄줄이 자동으로 채워집니다.</p>
+    <p><em>음악 모르면:</em> 맨 위 <span class="tag">🎯 스마트 자동 조합</span>만 눌러도 됩니다. (자세히: <a href="#gugak" style="color:var(--korean2)">국악 창법 스마트 조합</a>)</p>
+    <div class="fx"><b>효과 팁:</b> 가장 강력한 "한 방" 버튼입니다. 곡 색을 한국적으로 확 끌어올리고 싶으면 다른 어떤 칸보다 여기를 먼저 누르세요.</div>
+  </div>
+
+  <div class="card korean">
+    <div class="num">06 · 보컬 톤 스타일 (복수)</div>
+    <h3>목소리의 질감</h3>
+    <p class="oneline">거친·매끄러운·깊은 목소리 등을 고릅니다.</p>
+    <p><em>음악 모르면:</em> 가수의 "목소리 결". 위쪽에 <span class="tag">🔥 허스키 보컬</span> 원클릭 단추가 있습니다. (자세히: <a href="#vocal" style="color:var(--korean2)">목소리 굵고 거칠게</a>)</p>
+    <div class="ex"><b>예시:</b> "따뜻하고 거친 남성 + 스모키 블루스 바리톤 + 깊은 소울" 3개를 겹치면 → 굵고 진한 임재범풍 허스키 저음.</div>
+    <div class="fx"><b>효과 팁(중요):</b> 같은 방향끼리만 겹치세요. "거친"과 "매끄러운/숨 섞인"을 함께 켜면 서로 부딪혀 목소리가 흐려집니다. 거친 톤이면 거친·소울 계열로 통일하고 핵심 3~4개만 쓰는 게 가장 진합니다.</div>
+  </div>
+
+  <div class="card korean">
+    <div class="num">06B · 구음 설정 🎵</div>
+    <h3>"으~흐~이~야~" 한국식 추임새</h3>
+    <p class="oneline">곡 사이사이 들어가는 전통 소리 추임새를 설정합니다.</p>
+    <p><em>음악 모르면:</em> 판소리에서 "얼쑤~" 하듯 넣는 한국적 소리. 국악 색을 진하게 할 때.</p>
+    <div class="ex"><b>예시:</b> 강도 '최대' + 위치 '도입·중간·끝' + 저음 남성 → 곡 전체에 묵직한 득음 추임새가 깔려 판소리 소울 느낌이 확 산다.</div>
+    <div class="fx"><b>효과 팁:</b> 후렴 직후·아웃트로에 넣으면 여운이 길어집니다. 발라드엔 은은하게, 그루브엔 강하게. 국악 창법을 고르면 보통 자동으로 켜집니다.</div>
+  </div>
+
+  <div class="card korean">
+    <div class="num">07 · 한(恨) 소울 스타일</div>
+    <h3>한국적 슬픔 × 흑인음악</h3>
+    <p class="oneline">한국의 "한(恨)" 정서와 소울/R&B를 섞은 색을 고릅니다.</p>
+    <p><em>음악 모르면:</em> "구슬프지만 멋있는" 그 묵직한 감성을 더하고 싶을 때.</p>
+    <div class="ex"><b>예시:</b> "날 것의 한국 R&B"를 고르면 → 거친 피리·아쟁에 R&B 그루브가 얹혀, 한 맺힌 듯하면서 세련된 곡.</div>
+    <div class="fx"><b>효과 팁:</b> 01 장르를 비워두면 이 한소울 선택이 곡의 메인 색을 결정합니다. 장르를 정했다면 한소울은 "양념"으로 한 겹 더 깔리는 식이에요.</div>
+  </div>
+
+  <div class="card korean">
+    <div class="num">08 · 고급 사운드 설정</div>
+    <h3>소리 질감·리듬 디테일 (양념)</h3>
+    <p class="oneline">텍스처·그루브·공간감·베이스 등을 칩으로 고릅니다.</p>
+    <p><em>음악 모르면:</em> 결과가 밋밋할 때 한두 개씩 켜보며 변화를 듣는 칸.</p>
+    <div class="ex"><b>예시:</b> 그루브 칩 "당김음" + 베이스 "펑키" → 곡에 들썩이는 흥이 붙음. 공간감 칩 → 넓은 홀에서 울리는 듯한 깊이.</div>
+    <div class="fx"><b>효과 팁:</b> 한 번에 다 켜지 말고 하나씩 켜서 "프롬프트 생성" 칸 변화를 보며 효과를 익히세요. 발라드엔 공간감·텍스처, 그루브곡엔 그루브·베이스 칩이 잘 듣습니다.</div>
+  </div>
+
+  <div class="card korean">
+    <div class="num">09 · 목표 곡 길이</div>
+    <h3>노래 길이</h3>
+    <p class="oneline">짧게/보통/길게 등을 고릅니다.</p>
+    <div class="ex"><b>예시:</b> 쇼츠·릴스용 → 가장 짧게. 정식 발매곡 → 보통~길게.</div>
+    <div class="fx"><b>효과 팁:</b> 짧게 설정하면 음악 AI가 인트로를 줄이고 후크를 빨리 꺼내는 경향이 있어 쇼츠에 유리합니다.</div>
+  </div>
+
+  <div class="card korean">
+    <div class="num">10 · BPM 설정</div>
+    <h3>빠르기 (숫자 클수록 빠름)</h3>
+    <div class="scale">
+      <div class="sb"><b>60–75</b>느린 발라드<br>절절·잔잔</div>
+      <div class="sb"><b>76–95</b>미디엄<br>차분한 그루브</div>
+      <div class="sb"><b>96–115</b>경쾌<br>흥나는 곡</div>
+      <div class="sb"><b>116+</b>빠름<br>댄스·신남</div>
+    </div>
+    <div class="ex"><b>예시:</b> 같은 슬픈 곡이라도 BPM 68이면 눈물 나는 발라드, 92면 담담히 걷는 듯한 미디엄 소울이 됩니다.</div>
+    <div class="fx"><b>효과 팁:</b> 분위기와 BPM을 맞추세요. 슬픔엔 느리게, 희망·흥엔 빠르게. 거친 허스키 보컬은 BPM을 살짝 낮춰야(70~85) 긁는 질감이 더 또렷이 들립니다.</div>
+  </div>
+
+  <div class="card korean">
+    <div class="num">11 · 감정 강도 (1~10)</div>
+    <h3>얼마나 격하게</h3>
+    <p class="oneline">1은 담담하게, 10은 폭발적으로.</p>
+    <div class="ex"><b>예시:</b> 강도 4 → 속삭이듯 읊조림. 강도 9 → 후반에 목을 쥐어짜듯 터뜨림.</div>
+    <div class="fx"><b>효과 팁:</b> 거친 보컬·클라이맥스를 원하면 8 이상으로. 14 에너지 아크(흐름)와 함께 올리면 "잔잔→폭발"의 드라마가 극대화됩니다. 잔잔한 곡을 원하면 5 이하로 낮춰 과하지 않게.</div>
+  </div>
+
+  <div class="card korean">
+    <div class="num">12 · 국악기 강조 강도</div>
+    <h3>전통 악기를 얼마나 앞세울지</h3>
+    <p class="oneline">국악기 소리를 곡에서 얼마나 도드라지게 할지.</p>
+    <div class="ex"><b>예시:</b> 높이면 가야금·해금이 주인공처럼 또렷하게 앞으로, 낮추면 서양 악기 뒤에서 은은한 배경으로 깔립니다.</div>
+    <div class="fx"><b>효과 팁:</b> 맨 위 비율 슬라이더(국악:정통)와 한 쌍입니다. 둘 다 국악 쪽으로 올리면 전통색이 확 살고, 12만 올리면 "현대 사운드인데 국악기가 또렷한" 퓨전이 됩니다.</div>
+  </div>
+
+  <div class="card korean">
+    <div class="num">13 · 조성 &amp; 국악 음계</div>
+    <h3>곡의 기준 음 & 밝기</h3>
+    <p class="oneline">밝은 느낌인지 어두운 느낌인지, 어떤 음계를 쓸지.</p>
+    <div class="card" style="background:var(--surface2);border:none;margin:8px 0">
+      <ul>
+        <li><b style="color:var(--gold2)">장조(Major)</b> = 밝고 희망적</li>
+        <li><b style="color:var(--gold2)">단조(Dm 등)</b> = 어둡고 슬픔</li>
+        <li><b style="color:var(--gold2)">계면조</b> = 한국식 구슬픔(한의 정서)</li>
+        <li><b style="color:var(--gold2)">평조</b> = 평온·담백한 한국 음계</li>
+      </ul>
+    </div>
+    <div class="ex"><b>예시:</b> "Dm + 계면조" → 가장 한국적이고 구슬픈 조합. 슬픈 국악 발라드의 정석.</div>
+    <div class="fx"><b>효과 팁:</b> 슬픈 곡이면 단조·계면조, 밝은 곡이면 장조·평조. 국악 창법(05B)을 고르면 여기 값은 보통 자동으로 최적화돼 채워지니, 직접 만질 일은 미세 조정뿐입니다.</div>
+  </div>
+
+  <div class="card korean">
+    <div class="num">14 · ⚡ 에너지 아크 — 클라이맥스 설계</div>
+    <h3>곡의 흐름(기승전결)</h3>
+    <p class="oneline">곡이 어떻게 고조될지 "드라마 곡선"을 고릅니다.</p>
+    <div class="card" style="background:var(--surface2);border:none;margin:8px 0">
+      <ul>
+        <li><b style="color:var(--gold2)">슬로우 번</b> → 조용히 시작해 후반에 서서히 폭발 (발라드 명곡 공식)</li>
+        <li><b style="color:var(--gold2)">웨이브</b> → 잔잔↔고조를 파도처럼 반복</li>
+        <li><b style="color:var(--gold2)">마운틴 피크</b> → 중반 한 번 크게 치솟음 (쇼츠 후크에 좋음)</li>
+        <li><b style="color:var(--gold2)">지속 그루브</b> → 처음부터 끝까지 일정한 흥 (댄스·그루브곡)</li>
+      </ul>
+    </div>
+    <div class="ex"><b>예시:</b> "슬로우 번 + 감정 강도 8" → 1절은 속삭이다 후렴에서 터지는 전형적인 감동 발라드 구조.</div>
+    <div class="fx"><b>효과 팁:</b> 11 감정 강도와 짝으로 쓰면 효과가 배가됩니다. 강도만 높이면 "처음부터 끝까지 시끄러운" 곡이 되기 쉬운데, 에너지 아크로 흐름을 주면 강약이 생겨 훨씬 곡답게 들립니다.</div>
+  </div>
+</section>
+
+<section id="vocal">
+  <div class="sec-label">핵심 기능 ①</div>
+  <h2 class="title">목소리를 <span class="em">굵고 거칠게</span></h2>
+  <div class="sec-divider"><span>06 보컬 톤 섹션 안</span></div>
+  <p>"긁는 듯 거칠고 굵은 허스키 보컬"을 한 번에 세팅하는 단추가 <strong>06 보컬 톤 스타일</strong> 맨 위에 있습니다.</p>
+  <div class="steps">
+    <div class="step"><b>목소리 성별을 고릅니다.</b> 남성 / 여성 / 혼성.</div>
+    <div class="step"><b>스타일 단추를 누릅니다.</b> <span class="tag">🌙 발라드형</span>=느리고 절절하게 긁기, <span class="tag">🎸 그루브형</span>=중간 빠르기로 밀어붙이는 거친 그루브.</div>
+    <div class="step"><b>끝.</b> 거친 톤·전통 득음(목 긁는 창법)·소울 추임새가 한꺼번에 세팅되고, 매끄러운 톤은 일부러 빠져 거친 질감이 유지됩니다.</div>
+  </div>
+  <div class="note ex"><b>성별별 결과:</b> 남성 → 굵고 묵직한 블루스 벨팅(임재범·조째즈풍 허스키 저음). 여성·혼성 → 거기에 "그르렁대는 날것(growl)" 질감이 더해지고 강도·추임새가 한 단계 더 올라가 폭발적으로 나옵니다.</div>
+  <div class="note tip"><b>효과 극대화:</b> ⑴ 10 BPM을 70~85로 살짝 낮추면 긁는 질감이 더 또렷이 들립니다. ⑵ 13 조성을 "Dm·계면조"로 두면 거친 톤과 어두운 음계가 맞물려 한층 진해집니다. ⑶ 그래도 약하면 11 감정 강도를 9~10으로 직접 올리세요. ⑷ 반대로 너무 거칠면 강도를 6~7로 내리면 됩니다.</div>
+</section>
+
+<section id="gugak">
+  <div class="sec-label">핵심 기능 ②</div>
+  <h2 class="title">국악 창법 <span class="em">스마트 조합</span></h2>
+  <div class="sec-divider"><span>05B 섹션</span></div>
+  <p>"자동"은 <strong>"창법을 고르면 나머지가 자동으로 따라온다"</strong>는 뜻입니다. 두 가지 길이 있어요.</p>
+  <h4>길 ① — 알아서 다 해주길 원하면</h4>
+  <p>맨 위 <span class="tag">🎯 스마트 자동 조합</span>을 누릅니다. 장르·분위기를 골라뒀으면 <em>거기에 가장 잘 맞는 창법</em>을, 안 골랐으면 <em>무작위</em>로 골라서, 조성·음계·구음·분위기까지 전부 맞춰줍니다.</p>
+  <h4>길 ② — 특정 창법을 직접 쓰고 싶으면</h4>
+  <p>아래 6개 카드 중 하나를 직접 클릭하세요. 각 창법의 성격은 이렇습니다.</p>
+  <div class="card" style="background:var(--surface2);border:none">
+    <ul>
+      <li><b style="color:var(--gold2)">판소리창법</b> → 득음의 거친 갈라짐. 가장 묵직하고 한 맺힌 블루스 소울</li>
+      <li><b style="color:var(--gold2)">남도민요창법</b> → 꺾는목·넓은 비브라토. 델타 블루스와 천생연분</li>
+      <li><b style="color:var(--gold2)">경기민요창법</b> → 밝고 경쾌. 스윙 재즈·업템포 소울에 어울림</li>
+      <li><b style="color:var(--gold2)">정악창법</b> → 절제되고 기품 있음. 쿨재즈·모달재즈 느낌</li>
+      <li><b style="color:var(--gold2)">수심가창법</b> → 서도소리의 처연함. 재즈 발라드·아쟁 딥블루스</li>
+      <li><b style="color:var(--gold2)">가사시창창법</b> → 서정적 낭송체. 앰비언트 재즈에</li>
+    </ul>
+  </div>
+  <div class="note ex"><b>예시:</b> 슬픈 발라드면 판소리창법 또는 수심가창법, 흥나는 곡이면 경기민요창법, 차분한 새벽 감성이면 정악·가사시창창법.</div>
+  <div class="note tip"><b>효과 극대화:</b> 국악 창법(05B)으로 한국적 뼈대를 잡은 뒤, 06 허스키 단추를 한 번 더 누르면 "전통 득음 + 서양식 거친 소울 톤"이 겹쳐져 그릿이 두 배로 진해집니다. 가장 강력한 조합 중 하나예요.</div>
+  <div class="note beginner"><b>비파괴 규칙:</b> 자동 조합은 <b>이미 골라둔 것은 덮어쓰지 않고</b> 빈 칸만 채웁니다. 창법을 고르면 그 카드가 강조되고, 아래 색칩으로 적용 내역이 뜨며(새로 바뀐 건 <b>NEW</b>), 조성·구음 섹션이 자동으로 펼쳐집니다.</div>
+</section>
+
+<section id="output">
+  <div class="sec-label">마무리</div>
+  <h2 class="title">완성 · 복사 · <span class="em">붙여넣기</span></h2>
+  <div class="sec-divider"><span>최종 결과물 다루기</span></div>
+  <div class="card gold">
+    <div class="num">프롬프트 생성</div>
+    <h3>완성된 주문서가 뜨는 곳 (최종 결과물)</h3>
+    <p>지금까지 고른 모든 게 영어 주문서로 실시간 정리됩니다. <strong>"복사"로 복사해 음악 AI에 붙여넣으세요.</strong></p>
+    <div class="ex"><b>붙여넣는 법:</b> 보통 음악 AI의 "스타일/Style" 칸에 이 주문서를 넣고, 가사는 별도 "가사/Lyrics" 칸에 넣습니다. 주문서 안의 [Vocal], [Key], [GUEUM] 같은 표시는 AI에게 주는 지시라 그대로 두면 됩니다.</div>
+    <div class="fx"><b>효과 팁:</b> 결과가 마음에 안 들 때 처음부터 다시 하지 말고, 한두 칸(분위기·BPM·창법)만 바꿔 다시 복사하세요. 같은 씨앗에서 변주가 나옵니다.</div>
+  </div>
+  <div class="card gold">
+    <div class="num">⚡ 원클릭 퀄리티 엔진</div>
+    <h3>검증된 고급 조합을 한 방에</h3>
+    <p>"잘 나오는" 조합을 통째로 적용해 주는 고급 자동 버튼입니다. 직접 하나씩 고르기 번거로울 때, 완성도 높은 세팅을 즉시 깔아줍니다.</p>
+    <div class="fx"><b>효과 팁:</b> 퀄리티 엔진으로 뼈대를 깐 뒤 06 허스키나 02 분위기만 취향대로 바꾸면, 빠르면서도 개성 있는 곡이 됩니다.</div>
+  </div>
+  <div class="card">
+    <div class="num">가사 창</div>
+    <h3>가사 적는 곳</h3>
+    <p>직접 쓴 가사를 넣는 칸입니다. 음악 AI는 보통 "스타일 주문서 + 가사"를 함께 받습니다.</p>
+    <div class="fx"><b>효과 팁:</b> 가사에 [Verse], [Chorus] 같은 구획 표시를 넣으면 AI가 곡 구조를 더 잘 잡습니다. 후렴 가사는 반복해 적으면 후크가 강해져요.</div>
+  </div>
+  <div class="card">
+    <div class="num">조회수형 음악 스타일 추천</div>
+    <h3>뭘 만들지 막막할 때</h3>
+    <p>인기 있을 만한 스타일 방향을 추천받는 칸. 아이디어가 없을 때 출발점으로 좋습니다.</p>
+  </div>
+</section>
+
+<section id="recipes">
+  <div class="sec-label">따라 하기</div>
+  <h2 class="title">상황별 <span class="em">레시피 7종</span></h2>
+  <div class="sec-divider"><span>그대로 따라만 하세요 · 🎧는 예상 결과</span></div>
+
+  <div class="recipe"><div class="rtitle">🌧️ 비 오는 날 슬픈 국악 발라드</div><div class="rgoal">잔잔하고 구슬프게, 한국적 감성</div>
+  <ol><li><b>05B</b>에서 <b>판소리창법</b> 또는 <b>수심가창법</b> 클릭</li><li><b>02 분위기</b> 슬픔·그리움 2개</li><li><b>10 BPM</b> 65~75</li><li><b>11 강도</b> 6~7, <b>14 아크</b> 슬로우 번</li><li><b>프롬프트 생성</b> 복사 → 붙여넣기</li></ol>
+  <div class="result"><b>결과:</b> 가야금·아쟁이 흐느끼고 득음 보컬이 절절하게 차오르는, 새벽 빗소리 같은 발라드.</div></div>
+
+  <div class="recipe"><div class="rtitle">🎸 거칠게 긁는 허스키 소울 (남성)</div><div class="rgoal">굵고 갈라지는 멋있는 목소리</div>
+  <ol><li><b>06 보컬 톤</b> 성별 <b>남성</b> → <span class="tag">🌙 발라드형</span></li><li><b>05B</b> <b>판소리창법</b>도 함께 클릭 (그릿 2겹)</li><li><b>10 BPM</b> 72~82</li><li><b>11 강도</b> 8</li><li>복사 → 붙여넣기</li></ol>
+  <div class="result"><b>결과:</b> 임재범·조째즈풍의 묵직하고 거친 블루스 벨팅. 득음과 서양 소울 그릿이 겹쳐 진함.</div></div>
+
+  <div class="recipe"><div class="rtitle">🔥 여성 폭발 소울 (강한 그릿)</div><div class="rgoal">거칠고 폭발적인 여성 보컬</div>
+  <ol><li><b>06 보컬 톤</b> 성별 <b>여성</b> → <span class="tag">🌙 발라드형</span> (growl·강도↑·구음 최대 자동)</li><li>약하면 <b>11 강도</b> 9~10</li><li><b>13 조성</b> Dm·계면조 유지</li><li>복사</li></ol>
+  <div class="result"><b>결과:</b> 재니스 조플린·티나 터너처럼 그르렁대며 폭발하는 거친 여성 소울.</div></div>
+
+  <div class="recipe"><div class="rtitle">💃 신나게 밀어붙이는 국악 그루브</div><div class="rgoal">흥나고 리듬감 있는 곡</div>
+  <ol><li><b>05B</b> <b>경기민요창법</b> 또는 빠른시작 그루브 프리셋</li><li><b>10 BPM</b> 95~110</li><li><b>08 고급 사운드</b> 그루브·당김음 칩 + 펑키 베이스</li><li><b>14 아크</b> 지속 그루브</li><li>복사</li></ol>
+  <div class="result"><b>결과:</b> 장구·꽹과리 리듬 위에 펑키 베이스가 들썩이는, 몸이 움직이는 국악 그루브.</div></div>
+
+  <div class="recipe"><div class="rtitle">🌌 늦은 밤 재즈풍 국악</div><div class="rgoal">차분하고 세련된 새벽 감성</div>
+  <ol><li><b>05B</b> <b>정악창법</b> 또는 <b>가사시창창법</b></li><li><b>05 보컬</b> 재즈 계열</li><li><b>10 BPM</b> 70~85, <b>08</b> 공간감 칩 1개</li><li>복사</li></ol>
+  <div class="result"><b>결과:</b> 대금·피리가 여백을 채우는, 재즈 바 같은 고요하고 품격 있는 곡.</div></div>
+
+  <div class="recipe"><div class="rtitle">📱 쇼츠용 15초 임팩트</div><div class="rgoal">짧고 강렬한 후크</div>
+  <ol><li><b>09 곡 길이</b> 가장 짧게</li><li><b>11 강도</b> 8~9, <b>14 아크</b> 마운틴 피크</li><li><b>06</b> 허스키 단추로 임팩트</li><li>복사</li></ol>
+  <div class="result"><b>결과:</b> 인트로 없이 바로 터지는 후크 중심의 짧고 강렬한 클립.</div></div>
+
+  <div class="recipe"><div class="rtitle">🏆 한 방에 완성도 높게</div><div class="rgoal">고민 없이 멋진 곡</div>
+  <ol><li><b>⚡ 원클릭 퀄리티 엔진</b> 실행</li><li><b>06</b> 허스키 또는 <b>02</b> 분위기만 취향대로 살짝</li><li><b>05B</b> <span class="tag">🎯 스마트 자동 조합</span>로 한국색 보강</li><li>복사</li></ol>
+  <div class="result"><b>결과:</b> 검증된 고급 조합에 내 취향이 살짝 얹힌, 빠르지만 완성도 높은 곡.</div></div>
+</section>
+
+<section id="combo">
+  <div class="sec-label">고급</div>
+  <h2 class="title">효과 극대화 <span class="em">조합 원리</span></h2>
+  <div class="sec-divider"><span>외워두면 평생 써먹는 5가지</span></div>
+  <div class="card">
+    <ul>
+      <li><b style="color:var(--gold2)">① 장르 먼저, 나머지는 거기 맞춰</b> — 장르가 곡의 8할. 충돌을 막는 가장 쉬운 법칙.</li>
+      <li><b style="color:var(--gold2)">② 거친 보컬 = 거친 톤 + 낮은 BPM + 어두운 조성</b> — 셋이 맞물릴 때 긁는 질감이 산다.</li>
+      <li><b style="color:var(--gold2)">③ 드라마 = 감정 강도 × 에너지 아크</b> — 강도만 높이면 시끄럽고, 아크만 주면 밋밋. 둘을 같이.</li>
+      <li><b style="color:var(--gold2)">④ 한국색 = 비율 슬라이더 + 국악기 강조 + 구음 + 창법</b> — 네 개를 같은 방향으로 모으면 전통색이 폭발.</li>
+      <li><b style="color:var(--gold2)">⑤ 그릿 2겹</b> — 05B 전통 창법 + 06 허스키 단추를 겹치면 거칢이 두 배.</li>
+    </ul>
+  </div>
+  <div class="note tip"><b>마지막 한 가지:</b> 무엇이든 "프롬프트 생성" 칸의 글이 어떻게 바뀌는지 보면서 익히세요. 한 칸 켜고 → 글 확인 → 한 칸 더. 이 방식이 모든 조합을 내 것으로 만드는 가장 빠른 길입니다.</div>
+</section>
+
+<section id="gloss">
+  <div class="sec-label">부록</div>
+  <h2 class="title">음악 용어 <span class="em">일상어 사전</span></h2>
+  <div class="sec-divider"><span>모르는 단어가 나오면 여기</span></div>
+  <dl class="gloss">
+    <div class="term"><dt>장르</dt><dd>음악의 큰 종류. 발라드·소울·힙합·국악 퓨전 같은 갈래.</dd></div>
+    <div class="term"><dt>분위기 / 무드</dt><dd>곡이 주는 감정의 색깔. 슬픔·그리움·희망 등.</dd></div>
+    <div class="term"><dt>BPM</dt><dd>곡의 빠르기. 숫자가 클수록 빠름. 60~70 느림, 90~100 보통, 120+ 빠름.</dd></div>
+    <div class="term"><dt>조성 / 키</dt><dd>곡의 기준 음높이와 밝기. 장조=밝음, 단조(Dm 등)=어둡고 슬픔.</dd></div>
+    <div class="term"><dt>계면조</dt><dd>한국 전통 음계 중 슬프고 구슬픈 느낌. 한(恨)의 정서.</dd></div>
+    <div class="term"><dt>평조</dt><dd>한국 전통 음계 중 평온하고 담백한 느낌.</dd></div>
+    <div class="term"><dt>구음</dt><dd>"으~흐~이~야~"처럼 노래 사이에 넣는 한국식 소리·추임새.</dd></div>
+    <div class="term"><dt>득음</dt><dd>판소리에서 목을 긁어내듯 갈라지게 내는 거친 발성. 허스키함의 핵심.</dd></div>
+    <div class="term"><dt>창법</dt><dd>노래 부르는 전통적 방식. 판소리·민요·정악 등.</dd></div>
+    <div class="term"><dt>꺾는목</dt><dd>음을 살짝 꺾어 떨어뜨리는 한국 전통 창법 특유의 기교.</dd></div>
+    <div class="term"><dt>그루브</dt><dd>리듬이 주는 흥, 몸이 들썩이는 느낌.</dd></div>
+    <div class="term"><dt>당김음</dt><dd>박자를 살짝 당겨 어긋나게 치는 리듬. 흥과 긴장을 줌.</dd></div>
+    <div class="term"><dt>텍스처</dt><dd>소리의 질감. 거칠다/매끄럽다/따뜻하다 같은 감촉.</dd></div>
+    <div class="term"><dt>그릿 / raspy</dt><dd>거칠고 갈라지는 목소리 질감. "긁는" 느낌.</dd></div>
+    <div class="term"><dt>growl(그르렁)</dt><dd>목을 긁어 으르렁대듯 내는 더 강한 거친 발성.</dd></div>
+    <div class="term"><dt>애드립</dt><dd>정해진 멜로디 외에 즉흥적으로 지르거나 꾸미는 보컬.</dd></div>
+    <div class="term"><dt>벨트 / belt</dt><dd>가슴에서 힘 있게 내지르는 강한 발성.</dd></div>
+    <div class="term"><dt>비브라토</dt><dd>음을 가늘게 떨어 울리게 하는 창법. 감정 표현에 씀.</dd></div>
+    <div class="term"><dt>에너지 아크</dt><dd>곡이 잔잔→고조→폭발로 흘러가는 드라마 곡선(기승전결).</dd></div>
+    <div class="term"><dt>한(恨)</dt><dd>한국 특유의 깊은 슬픔·응어리 정서. 구슬프면서 묵직함.</dd></div>
+    <div class="term"><dt>프롬프트</dt><dd>음악 AI에게 주는 "주문서". 이 프로그램의 최종 결과물.</dd></div>
+    <div class="term"><dt>네거티브 프롬프트</dt><dd>"이런 건 빼주세요"라고 알려주는 제외 목록. 자동으로 들어갑니다.</dd></div>
+  </dl>
+</section>
+
+<footer>
+  <div class="brush">音樂은 누구나 만들 수 있습니다</div>
+  <p>BV 뮤직 프롬프트 메이커(v48) 활용 상세 가이드<br>한 칸 켜고 → "프롬프트 생성" 칸 확인 → 한 칸 더. 이 반복이 모든 기능을 내 것으로 만듭니다.</p>
+  <p style="margin-top:18px"><a class="back" href="#">▲ 맨 위로</a></p>
+</footer>
+
+</div>
+</body>
+</html>
 
 </script>
 </body>
