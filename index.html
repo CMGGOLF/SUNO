@@ -1433,6 +1433,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
         <button class="btn btn-gold" onclick="genLyrics('kr')">✦ 한국어 가사 생성</button>
         <button class="btn btn-red" onclick="genTrendLyrics('kr')">🔥 요즘 트렌드 가사 (한국어)</button>
+        <button class="btn btn-outline" onclick="reshuffleLyricStructure()" title="AI 호출 없이 섹션 순서만 새로 섞어 미리봅니다" style="border-color:var(--korean2);color:var(--korean2)">🔀 구조 다시 섞기</button>
         <div style="display:flex;align-items:center;gap:4px">
           <span style="font-size:12px;color:var(--muted)">곡 길이:</span>
           <input type="text" id="lyricsDurationKr" value="3:30" style="width:70px;padding:4px 8px;font-size:12px" onblur="enforceDuration(this)" oninput="softCheckDuration(this)" placeholder="3:30">
@@ -1449,6 +1450,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <div style="font-size:12px;color:var(--korean2);margin-bottom:4px"><b>📖 가사 스토리/상황 (선택)</b> <span style="font-size:10px;color:var(--muted)">— 키워드·인물·장면·대사를 넣으면 그 이야기로 가사를 만듭니다</span></div>
         <textarea id="lyricsStoryKr" style="width:100%;min-height:60px;font-size:12px;padding:8px;box-sizing:border-box" placeholder="예) 어머니 산소 가는 길, 칠석날, 베옷 한 벌&#10;예) 첫사랑이 살던 그 골목, 눈 내리는 밤, '잘 지내냐' 한마디&#10;예) 떠난 임 / 막걸리 한잔 / 빈 의자 / 옛 노래"></textarea>
       </div>
+      <div id="lyricStructPreview" style="display:none;margin-bottom:10px;padding:11px 14px;border-radius:10px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.28);line-height:1.9"></div>
       <div class="ai-loading" id="lyricsKrLoading"><div class="dot-anim"><span></span><span></span><span></span></div>한국어 가사 생성 중...</div>
       <textarea id="lyricsKrOut" style="margin-top:12px;min-height:160px" placeholder="한국어 가사가 여기 생성됩니다..."></textarea>
       <div class="prompt-actions" style="margin-top:8px"><button class="btn btn-outline" onclick="copyField('lyricsKrOut')">📋 복사</button></div>
@@ -4393,35 +4395,66 @@ pickTrotDiversity._rot = function(arr, s, i) {
 ────────────────────────────────────────────────────────────────── */
 function buildConstrainedStructure(seed, opts) {
   const o = opts || {};
-  const longSong = o.long;     // 4분 이상이면 블록 수 증가
-  // 사용할 미들 블록 풀 (intro/outro/finalchorus 제외)
-  // 기본 구성: 절 2~3, 후렴 2, 프리 1~2, 브릿지 1, 구음 1~2
-  const blocks = [];
-  const verseCount = longSong ? 3 : 2;
-  const choCount = 2;
+  const longSong = o.long;            // 4분 이상이면 블록 수 증가
+  const mode = o.mode || 'trot';       // 'trot' | 'general' | 'hiphop'
+  const allowGuum = (o.allowGuum !== false) && (mode === 'trot' || o.gugakBase);
   // 시드 기반 의사난수
-  let _s = Math.floor(seed * 100000) || 1;
+  let _s = Math.floor(seed * 1000000) || 1;
   const rnd = () => { _s = (_s * 1103515245 + 12345) & 0x7fffffff; return _s / 0x7fffffff; };
+  const ri = (a, b) => a + Math.floor(rnd() * (b - a + 1)); // a..b 정수
 
-  // 절·후렴 페어를 기본 골격으로 만들고, 프리/구음/브릿지를 확률적으로 끼워넣음
   const seq = [];
-  seq.push('verse'); // 항상 절로 시작
+
+  /* ── 힙합: 훅 중심. 훅으로 시작할 수도/절로 시작할 수도 ── */
+  if (mode === 'hiphop') {
+    const hookCount = ri(2, 3);
+    const verseCount = ri(2, longSong ? 4 : 3);
+    const startWithHook = rnd() > 0.5;
+    if (startWithHook) seq.push('chorus');           // chorus = 훅
+    let v = 0, h = startWithHook ? 1 : 0;
+    let guard = 0;
+    while ((v < verseCount || h < hookCount) && guard++ < 20) {
+      if (v < verseCount) {
+        if (rnd() > 0.7) seq.push('prechorus');        // 프리훅 가끔
+        seq.push('verse'); v++;
+        if (v < verseCount && rnd() > 0.75) { seq.push('verse'); v++; } // 절 연속 가끔
+      }
+      if (h < hookCount) { seq.push('chorus'); h++; }
+    }
+    if (rnd() > 0.4) seq.push('bridge');               // 브릿지 60%
+    return seq;
+  }
+
+  /* ── 트롯/일반: 항상 절로 시작 ── */
+  const verseCount = ri(2, longSong ? 4 : 3);          // 과감: 절 2~3 (롱이면 2~4)
+  const choCount   = ri(2, 3);                          // 후렴 2~3
+  let guumBudget   = allowGuum ? ri(0, 2) : 0;           // 구음 0~2
+  seq.push('verse');
+  let placedV = 1;
   for (let i = 0; i < choCount; i++) {
-    // 절 다음에 프리코러스를 넣을지 (50%)
-    if (rnd() > 0.5) seq.push('prechorus');
+    if (rnd() > 0.5) seq.push('prechorus');             // 프리코러스 50%
     seq.push('chorus');
-    // 후렴 뒤 구음 (60%)
-    if (rnd() > 0.4) seq.push('guum');
-    // 다음 절 (마지막 후렴 직전이 아니면)
-    if (i < choCount - 1) seq.push('verse');
+    if (rnd() > 0.82 && i < choCount - 1) seq.push('chorus'); // 더블 후렴 가끔
+    if (guumBudget > 0 && rnd() > 0.45) { seq.push('guum'); guumBudget--; } // 후렴 뒤 구음
+    if (placedV < verseCount && i < choCount - 1) {
+      seq.push('verse'); placedV++;
+      if (placedV < verseCount && rnd() > 0.7) { seq.push('verse'); placedV++; } // 절 연속 가끔
+    }
   }
-  // 추가 절 (긴 곡)
-  if (longSong && rnd() > 0.5) {
-    seq.splice(seq.length - 1, 0, 'verse');
-  }
-  // 브릿지를 finalchorus 직전에 (70% 확률로 포함)
-  if (rnd() > 0.3) seq.push('bridge');
-  return seq; // intro/finalchorus/adlib/outro는 빌더에서 앞뒤로 고정 배치
+  while (placedV < verseCount) { seq.push('verse'); placedV++; }      // 남은 절 소진
+  while (guumBudget > 0 && rnd() > 0.5) { seq.push('guum'); guumBudget--; } // 남은 구음
+  if (rnd() > 0.25) seq.push('bridge');                 // 브릿지 75% (finalchorus 직전)
+  return seq; // intro/finalchorus/adlib/outro는 렌더러에서 앞뒤로 고정 배치
+}
+
+/* ── 🔀 구조 잠금(다시 섞기 미리보기용) ── */
+let _lyricStructOverride = null;   // 잠긴 미들 시퀀스
+let _lyricStructMode = null;       // 잠긴 시퀀스의 모드
+/* genLyrics·미리보기가 공통으로 미들 시퀀스를 얻는 헬퍼.
+   🔀로 잠긴 구조가 있고 모드가 맞으면 그걸 쓰고, 없으면 새로 뽑는다. */
+function _getMidSeq(mode, longSong, gugakBase) {
+  if (_lyricStructOverride && _lyricStructMode === mode) return _lyricStructOverride.slice();
+  return buildConstrainedStructure(Math.random(), { long: longSong, mode, gugakBase });
 }
 
 /* ── ⑥ 가사용 무드 시드 추출 — 음악 기술 설명 제거 ────────────────
@@ -4443,6 +4476,48 @@ function extractLyricMoodSeed(promptText) {
     return false;
   });
   return allowed.join('\n').trim();
+}
+
+/* ── 🔀 가사 구조 다시 섞기 — AI 호출 없이 섹션 순서를 새로 뽑아 미리보기 + 잠금 ── */
+function reshuffleLyricStructure() {
+  const form = (STATE.genre !== null && typeof GENRE_SONGFORM !== 'undefined' && GENRE_SONGFORM[STATE.genre]) ? GENRE_SONGFORM[STATE.genre] : SONGFORM_DEFAULT;
+  const isHiphop = (form.id === 'gugak_hiphop');
+  const useGugakBase = (form.id === 'gugak_trot') || STATE.gugakTrotBase;
+  const isTrot = (form.id === 'gugak_trot') || (STATE.gugakTrotBase && !isHiphop);
+  const mode = isHiphop ? 'hiphop' : isTrot ? 'trot' : 'general';
+
+  const di = document.getElementById('lyricsDurationKr');
+  const dur = (di && di.value) ? di.value : '3:30';
+  const pp = dur.split(':');
+  const totalSec = (parseInt(pp[0]) || 3) * 60 + (parseInt(pp[1]) || 0);
+  const longSong = totalSec >= (mode === 'general' ? 270 : 240);
+
+  const seq = buildConstrainedStructure(Math.random(), { long: longSong, mode, gugakBase: useGugakBase });
+  _lyricStructOverride = seq.slice();
+  _lyricStructMode = mode;
+
+  /* 미리보기용 태그 라벨링 (생성될 실제 순서와 동일) */
+  const tags = ['[인트로]'];
+  let v = 0, c = 0;
+  for (const blk of seq) {
+    if (blk === 'verse') tags.push((mode === 'trot' ? '[전절 ' : '[절 ') + (++v) + ']');
+    else if (blk === 'prechorus') tags.push(isHiphop ? '[프리훅]' : '[프리코러스]');
+    else if (blk === 'chorus') tags.push((isHiphop ? '[훅 ' : '[후렴 ') + (++c) + ']');
+    else if (blk === 'guum' && useGugakBase) tags.push('[Gugak Guum]');
+    else if (blk === 'bridge') tags.push('[브릿지]');
+  }
+  tags.push(isHiphop ? '[훅 - 마지막]' : '[후렴 - 마지막]');
+  if (useGugakBase || isTrot) tags.push('[Ad-lib]');
+  tags.push('[아웃트로]', '[fade out] [end]');
+
+  const box = document.getElementById('lyricStructPreview');
+  if (box) {
+    box.style.display = 'block';
+    const chips = tags.map(t => `<span style="display:inline-block;background:rgba(201,168,76,.14);border:1px solid rgba(201,168,76,.35);color:var(--gold2);border-radius:12px;padding:3px 10px;margin:3px 4px 3px 0;font-size:12px">${t}</span>`).join('<span style="color:var(--korean2);margin:0 2px">›</span>');
+    const modeKr = mode === 'trot' ? '트롯/국악' : mode === 'hiphop' ? '힙합' : '일반';
+    box.innerHTML = `<div style="font-size:11px;color:var(--korean2);font-weight:700;margin-bottom:8px">🔀 이 구조로 잠김 — "✦ 한국어 가사 생성"을 누르면 이 순서로 채워집니다 <span style="color:var(--muted);font-weight:400">(${modeKr} 폼)</span></div>${chips}`;
+  }
+  if (typeof showToast === 'function') showToast('🔀 새 가사 구조로 섞었습니다 — 미리보기를 확인하세요');
 }
 
 async function genLyrics(lang) {
@@ -4508,18 +4583,28 @@ async function genLyrics(lang) {
   let structureKr = `[인트로]\n${_introStyle}\n\n`;
 
   if (isHiphop) {
+    const _hipSeq = _getMidSeq('hiphop', totalSec >= 240, false);
+    let _vIdx = 0, _hIdx = 0;
+    for (const blk of _hipSeq) {
+      if (blk === 'verse') {
+        _vIdx++;
+        structureKr += `[절 ${_vIdx}] 긴장 ${tr.verse}\n(정확히 ${verseLines}줄 — 이야기 전달, 리드미컬, ${_vIdx > 1 ? '앞 절보다 더 강렬하게, ' : ''}긴장 쌓기, 라임 체계: ${form.rhyme})\n\n`;
+      } else if (blk === 'prechorus') {
+        structureKr += `[프리훅] 이완 ${tr.prechorus || 'R-6'}\n(정확히 ${preLines || 2}줄 — 훅 직전 긴장 응축)\n\n`;
+      } else if (blk === 'chorus') {
+        _hIdx++;
+        structureKr += `[훅] 긴장 ${tr.hook}\n(${_hIdx === 1 ? `정확히 ${choLines}줄 — 중독성, 임팩트, 줄당 최대 6단어, 즉각 귀에 꽂히는` : '앞 훅과 동일한 줄 반복'})\n\n`;
+      } else if (blk === 'bridge') {
+        structureKr += `[브릿지] 긴장 ${tr.bridge}\n(정확히 ${bridgeLines}줄 — 최대 긴장, 마지막 드롭 전 수축)\n\n`;
+      }
+    }
     structureKr +=
-      `[훅] 긴장 ${tr.hook}\n(정확히 ${choLines}줄 — 중독성, 임팩트, 줄당 최대 6단어, 즉각 귀에 꽂히는)\n\n` +
-      `[절 1] 긴장 ${tr.verse}\n(정확히 ${verseLines}줄 — 이야기 전달, 리드미컬, 긴장 쌓기, 라임 체계: ${form.rhyme})\n\n` +
-      `[훅] 긴장 ${tr.hook}\n(첫 번째 훅과 동일한 줄 반복)\n\n` +
-      `[절 2] 긴장 ${tr.verse}\n(정확히 ${verseLines}줄 — 이야기 고조, 절 1보다 더 강렬하게, 라임 체계: ${form.rhyme})\n\n` +
-      `[브릿지] 긴장 ${tr.bridge}\n(정확히 ${bridgeLines}줄 — 최대 긴장, 마지막 드롭 전 수축)\n\n` +
       `[훅 - 마지막] 긴장 +10\n[Big Finish]\n(강도 10/10 — 동일한 훅 — 더 크고, 더 필연적으로)\n\n` +
-      `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지 소멸)\n${form.outroStyle||'[fade out]\n[end]'}`;
+      `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지 소멸)\n${form.outroStyle || '[fade out]\n[end]'}`;
   } else if (isTrot) {
     /* 국악 트롯트 폼: 제약된 랜덤 구조 — 곡마다 절·후렴·프리·구음·브릿지 순서 변경
        인트로(이미 위에서 추가됨) → [셔플된 미들블록들] → 빅피니시 → 애드립 → 아웃트로 */
-    const _midSeq = buildConstrainedStructure(Math.random(), { long: totalSec >= 240 });
+    const _midSeq = _getMidSeq('trot', totalSec >= 240, true);
     let _vIdx = 0, _cIdx = 0, _gIdx = 0;
     const _choTLabels = ['긴장 T+4 ↔ 이완 R-8 — 첫 후렴, 한(恨)을 카타르시스로',
                          '긴장 T+6 ↔ 이완 R-9 — 앞 후렴보다 더 깊고 절절하게'];
@@ -4569,33 +4654,36 @@ async function genLyrics(lang) {
       `[Ad-lib]\n(non-lexical vocal ad-lib — NOT lyrics: extended melisma on a single syllable like "하~~~" or "흐어~~~", wordless. Do not sing direction words)\n\n` +
       `[아웃트로] 이완 ${_trTrot.outro}\n(정확히 ${_oLines}줄 — 감정이 서서히 가라앉음, 종결어미 ${_trotDiv.ending})\n${(form.outroStyle||_trotForm.outroStyle)||'[fade out]\n[end]'}`;
   } else {
-    /* 일반 폼: Verse → (Pre-Chorus) → Chorus 반복 */
-    const repeatCount = totalSec >= 270 ? 3 : 2;
-    for (let i = 1; i <= repeatCount; i++) {
-      const choIntKr = i === 1
-        ? `긴장 T+5 ↔ 이완 R-5 — 훅을 명확히 확립`
-        : `긴장 T+${Math.min(8, 5+i)} ↔ 이완 R-${Math.min(8, 5+i)} — 앞 후렴보다 더 크게`;
-
-      structureKr += `[절 ${i}] 긴장 ${tr.verse}\n(정확히 ${verseLines}줄 — 감정 긴장 쌓기, 라임 체계: ${form.rhyme}, 줄당 최대 8단어)\n\n`;
-
-      if (hasPreChorus && preLines > 0) {
-        structureKr += `[프리코러스] 이완 ${tr.prechorus}\n(정확히 ${preLines}줄 — 에너지 잠시 수축, 후렴 기대감 조성)${(_useGugakBase&&_trotDiv) ? `, 끝줄에만 추임새 ${_trotDiv.chuimsaeA}` : ''}\n\n`;
-      }
-
-      structureKr += `[후렴] ${choIntKr}\n(정확히 ${choLines}줄 — 앵커 라인 먼저, 1회 반복, 줄당 최대 6단어, 따라부를 수 있는 훅${(_useGugakBase&&_trotDiv) ? `. 추임새는 ${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만, 1·3번째 줄 끝에만 — 줄마다 반복 금지` : ''})\n\n`;
-
-      // 국악 정서 베이스: 후렴 뒤 구음 삽입 (마지막 후렴 제외)
-      if (_useGugakBase && _trotDiv && i < repeatCount) {
+    /* 일반 폼: 제약된 랜덤 구조 — 절·후렴·(프리)·(구음)·(브릿지) 순서/개수 곡마다 변경 */
+    const _genSeq = _getMidSeq('general', totalSec >= 270, _useGugakBase);
+    let _vIdx = 0, _cIdx = 0;
+    for (const blk of _genSeq) {
+      if (blk === 'verse') {
+        _vIdx++;
+        structureKr += `[절 ${_vIdx}] 긴장 ${tr.verse}\n(정확히 ${verseLines}줄 — 감정 긴장 쌓기, 라임 체계: ${form.rhyme}, 줄당 최대 8단어)\n\n`;
+      } else if (blk === 'prechorus') {
+        structureKr += `[프리코러스] 이완 ${tr.prechorus}\n(정확히 ${preLines || 2}줄 — 에너지 잠시 수축, 후렴 기대감 조성)${(_useGugakBase&&_trotDiv) ? `, 끝줄에만 추임새 ${_trotDiv.chuimsaeA}` : ''}\n\n`;
+      } else if (blk === 'chorus') {
+        _cIdx++;
+        const choIntKr = _cIdx === 1
+          ? `긴장 T+5 ↔ 이완 R-5 — 훅을 명확히 확립`
+          : `긴장 T+${Math.min(8, 5+_cIdx)} ↔ 이완 R-${Math.min(8, 5+_cIdx)} — 앞 후렴보다 더 크게`;
+        structureKr += `[후렴 ${_cIdx}] ${choIntKr}\n(정확히 ${choLines}줄 — 앵커 라인 먼저, 1회 반복, 줄당 최대 6단어, 따라부를 수 있는 훅${(_useGugakBase&&_trotDiv) ? `. 추임새는 ${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만, 1·3번째 줄 끝에만 — 줄마다 반복 금지` : ''})\n\n`;
+      } else if (blk === 'guum' && _useGugakBase && _trotDiv) {
         structureKr += `[Gugak Guum]\n${_trotDiv.guumHigh} [고음]\n${_trotDiv.guumLow} [저음]\n(위 두 줄을 그대로 출력 — 가사가 아닌 무의미 구음 멜리스마. [고음]/[저음]은 음역 표시이며 단어로 부르지 말 것)\n\n`;
+      } else if (blk === 'bridge') {
+        structureKr += `[브릿지] 긴장 ${tr.bridge}\n(정확히 ${bridgeLines}줄 — 최대 대비, 마지막 폭발 전 수축)\n\n`;
       }
     }
 
     structureKr +=
-      `[브릿지] 긴장 ${tr.bridge}\n(정확히 ${bridgeLines}줄 — 최대 대비, 마지막 폭발 전 수축)\n\n` +
       `[후렴 - 마지막] 긴장 ${tr.finalchorus}\n[Big Finish]\n(정확히 ${choLines}줄 — 앵커 라인으로 시작하되 같은 줄 복붙 금지: 1줄 앵커 그대로, 중간 줄은 감정 응축한 변형, 마지막 줄은 가장 짧고 강하게 끊어 절정${(_useGugakBase&&_trotDiv) ? `, 마지막 줄 끝에만 추임새 ${_trotDiv.chuimsaeA}` : ''})\n\n` +
       ((_useGugakBase&&_trotDiv) ? `[Ad-lib]\n(non-lexical vocal ad-lib — NOT lyrics: wordless extended melisma like "하~~~" or "흐어~~~". Do not sing direction words)\n\n` : '') +
       `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내림)\n${form.outroStyle||'[fade out]\n[end]'}`;
   }
+
+  /* 🔀 잠긴 구조는 1회 소비 후 해제 (다음 생성은 새 랜덤, 또는 다시 섞기로 재잠금) */
+  _lyricStructOverride = null; _lyricStructMode = null;
 
   /* ── ④ 라이밍 지시 + ⑤ 금칙어 (트롯트 모드 분기) ── */
   const activeClicheWords = getLyricClicheWords();
