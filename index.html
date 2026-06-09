@@ -1905,7 +1905,7 @@ const DATA = {
 ═══════════════════════════════════════════ */
 let recItems = null;
 const STATE = {
-  genre:null, moods:[], instr:null, instrCategory:null,
+  genre:null, moods:[], instrList:[],
   concept:null, vocalStyle:null, gugakVocalStyle:null, vocalTones:[],
   textures:[], grooves:[], spaces:[], koreanGrooves:[],
   bassStyles:[], koreanFeelings:[], blackSoulElements:[], humanFeelElements:[],
@@ -2348,8 +2348,7 @@ function _applyPools(type) {
   if (p.blackSoulElements && p.blackSoulElements.length) STATE.blackSoulElements = [..._rp(p.blackSoulElements)];
   if (p.humanFeelElements && p.humanFeelElements.length) STATE.humanFeelElements = [..._rp(p.humanFeelElements)];
   if (p.gueumPositions    && p.gueumPositions.length)    STATE.gueumPositions    = [..._rp(p.gueumPositions)];
-  const ip = _rp(p.instr);
-  selectInstrByCategory(ip.cat, ip.idx, true);
+  if (p.instr && p.instr.length) STATE.instrList = p.instr.map(x => ({cat:x.cat, idx:x.idx}));
   /* ── v27 추가: 장르 권장 BPM 범위로 BPM 설정 (GENRE_BPM_RANGE 연동) ── */
   const _bpmR = (STATE.genre !== null && GENRE_BPM_RANGE[STATE.genre])
     ? GENRE_BPM_RANGE[STATE.genre]
@@ -2420,10 +2419,8 @@ function renderMoods() {
 function renderInstrGroup(gridId,data,catKey,shortKey){
   const g=document.getElementById(gridId);
   if(!g)return;
-  const cur=STATE.instrCategory;
   g.innerHTML=data.map((d,i)=>{
-    const key=`${catKey}_${i}`;
-    return `<div class="selcard korean-card ${cur===key?'active':''}" id="instr_${shortKey}_${i}" onclick="selectInstrByCategory('${catKey}',${i})">
+    return `<div class="selcard korean-card ${isInstrSelected(catKey,i)?'active':''}" id="instr_${shortKey}_${i}" onclick="selectInstrByCategory('${catKey}',${i})">
       <div class="check-dot"></div>
       <div class="card-en">${d.en}</div>
       <div class="card-kr">${d.kr}</div>
@@ -2438,23 +2435,43 @@ function renderInstruments(){
   renderInstrGroup('instrGridWind',DATA.instrumentsWind,'wind','w');
 }
 function getCatData(cat){return cat==='string'?DATA.instrumentsString:cat==='percussion'?DATA.instrumentsPercussion:DATA.instrumentsWind;}
-function selectInstrByCategory(cat, i, skipBuild=false) {
-  /* 성능: 전체 DOM 탐색 대신 3개 그리드 내에서만 active 해제 */
-  ['instrGridString','instrGridPercussion','instrGridWind'].forEach(gid=>{
-    document.getElementById(gid)?.querySelectorAll('.selcard').forEach(el=>el.classList.remove('active'));
-  });
-  const sameKey = `${cat}_${i}`;
-  if (STATE.instrCategory === sameKey) {
-    STATE.instr=null; STATE.instrCategory=null;
+/* ── 다중 악기 선택 헬퍼 (방향 A: STATE.instrList = [{cat,idx}, ...]) ── */
+const _INSTR_PREFIX = {string:'s', percussion:'p', wind:'w'};
+function isInstrSelected(cat, idx){ return (STATE.instrList||[]).some(x => x.cat===cat && x.idx===idx); }
+function getSelectedInstrObjects(){ return (STATE.instrList||[]).map(x => getCatData(x.cat)?.[x.idx]).filter(Boolean); }
+/* 장르별 기본 국악기 조합 — [cat, idx] (string:s현악 / percussion:p타악 / wind:w관악)
+   현악 0가야금 1해금 2아쟁 3거문고 | 타악 0장구 1꽹과리 2북 3징808 | 관악 0대금 1피리 2단소 */
+const GENRE_DEFAULT_INSTR = {
+  0: [['string',0],['wind',0],['string',1]],      // 조선 궁중 소울: 가야금+대금+해금
+  1: [['string',0],['percussion',0],['string',2]],// 산조 재즈: 가야금+장구+아쟁
+  2: [['string',2],['percussion',0],['string',1]],// 판소리 소울: 아쟁+장구+해금
+  3: [['wind',1],['string',1],['percussion',0]],  // 민요 블루스: 피리+해금+장구
+  4: [['percussion',3],['string',0],['wind',1]],  // 국악 궁중 힙합: 징808+가야금+피리
+  5: [['wind',0],['string',0],['wind',2]],        // 대금 앰비언트: 대금+가야금+단소
+  6: [['string',2],['string',3],['string',1]],    // 아쟁 딥 소울: 아쟁+거문고+해금
+  7: [['string',0],['percussion',0],['wind',1]],  // 네오조선 퓨전: 가야금+장구+피리
+  8: [['string',1],['wind',1],['percussion',0]],  // 국악 트롯트: 해금+피리+장구
+};
+/* 현재 컨텍스트(장르)에 맞는 기본 국악기 조합을 비어 있을 때만 채움 (스마트 자동조합·허스키용) */
+function autoSeedInstruments(){
+  if (STATE.instrList && STATE.instrList.length) return false;   // 비파괴
+  let combo;
+  if (STATE.genre !== null && GENRE_DEFAULT_INSTR[STATE.genre]) {
+    combo = GENRE_DEFAULT_INSTR[STATE.genre].map(([cat, idx]) => ({cat, idx}));
   } else {
-    STATE.instrCategory = sameKey;
-    const catData = getCatData(cat);
-    STATE.instr = catData[i];
-    /* BUG-3 수정: cat[0] 취약 방식 → 명시적 prefix 맵으로 교체 */
-    const _catPrefixMap = {string:'s', percussion:'p', wind:'w'};
-    const _prefix = _catPrefixMap[cat] || cat[0];
-    document.getElementById(`instr_${_prefix}_${i}`)?.classList.add('active');
+    combo = [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'string',idx:2}]; // 기본: 가야금+해금+아쟁
   }
+  STATE.instrList = combo;
+  if (typeof renderInstruments === 'function') renderInstruments();
+  return true;
+}
+function selectInstrByCategory(cat, i, skipBuild=false) {
+  if (!Array.isArray(STATE.instrList)) STATE.instrList = [];
+  const pos = STATE.instrList.findIndex(x => x.cat===cat && x.idx===i);
+  if (pos >= 0) STATE.instrList.splice(pos, 1);   // 이미 선택됨 → 해제
+  else STATE.instrList.push({cat, idx:i});         // 미선택 → 추가 (다중)
+  const _prefix = _INSTR_PREFIX[cat] || cat[0];
+  document.getElementById(`instr_${_prefix}_${i}`)?.classList.toggle('active');
   if (!skipBuild) buildPrompt();
 }
 function renderConcepts() {
@@ -2760,6 +2777,9 @@ function _applyGugakVocalCombo(c, changsikName, statusBox) {
   _openSec('scaleBody', 'scaleIcon');   // 조성 & 국악 음계 (Dm·계면조 등)
   _openSec('gueumBody', 'gueumIcon');   // 구음 설정 (자동 세팅된 구음 스타일·위치)
 
+  /* 악기 조합이 비어 있으면 기본 국악기 조합 자동 세팅 (비파괴) */
+  autoSeedInstruments();
+
   /* 적용 결과(상태박스)를 화면 중앙으로 부드럽게 스크롤해 변화를 바로 확인 */
   if (statusBox && typeof statusBox.scrollIntoView === 'function') {
     setTimeout(() => statusBox.scrollIntoView({ behavior: 'smooth', block: 'center' }), 120);
@@ -2913,6 +2933,7 @@ function applyHuskyGritVocal(style) {
   }
 
   /* ── UI 동기화 + 프롬프트 재생성 ── */
+  autoSeedInstruments();
   syncGueumUI();
   syncSliders();
   renderAll();
@@ -3453,15 +3474,20 @@ function _doBuildPrompt() {
       'Gayageum 25':'extended plucked zither — chromatic range beyond pentatonic, richer harmonic colors, contemporary modal bend',
     };
 
-    /* ── 선택된 악기 리드명 + 음색 추출 ── */
+    /* ── 선택된 악기들 리드명 + 음색 추출 (다중) ── */
     let leadInstrName = '';
     let sonicParts = [];
-    if (STATE.instr) {
-      const instrEn = STATE.instr.en;
-      for (const [name, sonic] of Object.entries(instrSonicMap)) {
-        if (instrEn.includes(name)) {
-          sonicParts.push(`${name} (${sonic})`);
-          if (!leadInstrName) leadInstrName = name;
+    const _selInstr = getSelectedInstrObjects();
+    const _seenSonic = new Set();
+    if (_selInstr.length) {
+      for (const _ins of _selInstr) {
+        const instrEn = _ins.en;
+        for (const [name, sonic] of Object.entries(instrSonicMap)) {
+          if (instrEn.includes(name) && !_seenSonic.has(name)) {
+            _seenSonic.add(name);
+            sonicParts.push(`${name} (${sonic})`);
+            if (!leadInstrName) leadInstrName = name;
+          }
         }
       }
     }
@@ -3480,12 +3506,12 @@ function _doBuildPrompt() {
     const _moodPart  = STATE.moods.length ? getEnList(STATE.moods,DATA.moods) : '';
     if (_genrePart || _moodPart) parts.push(`[Genre/Mood] ${[_genrePart,_moodPart].filter(Boolean).join(' · ')}`);
 
-    /* ── ③ 악기 + TIMBRE 서술 ── */
-    if (STATE.instr) {
+    /* ── ③ 악기 + TIMBRE 서술 (선택된 악기 조합 전체) ── */
+    if (_selInstr.length) {
       if (sonicParts.length) {
-        parts.push(`[TIMBRE] ${sonicParts.join(' | ')} — lead melody carried entirely by Korean instrument, silence between phrases as important as the notes`);
+        parts.push(`[TIMBRE] ${sonicParts.join(' | ')} — Korean instrument ensemble carries the melody together (lead + supporting layers), sigimsae and nonghyeon throughout, silence between phrases as important as the notes`);
       } else {
-        parts.push(`[Instruments] ${STATE.instr.en}`);
+        parts.push(`[Instruments] ${_selInstr.map(x=>x.en).join(' + ')}`);
       }
     }
 
@@ -3495,7 +3521,7 @@ function _doBuildPrompt() {
       const coreMoods = c.core.slice(0,3).join(', ');
       const genreRefs = c.genres&&c.genres.length ? c.genres.slice(0,2).join('/') : '';
       parts.push(`[Concept] ${c.name} — ${coreMoods}${genreRefs?' · '+genreRefs:''}`);
-      if (!STATE.instr && c.inst.length) parts.push(`[Instruments] ${c.inst.slice(0,3).join(', ')}`);
+      if (!_selInstr.length && c.inst.length) parts.push(`[Instruments] ${c.inst.slice(0,3).join(', ')}`);
     }
 
     /* ── ⑤ 보컬 스타일 + 성별 ── */
@@ -3626,7 +3652,7 @@ function _doBuildPrompt() {
     /* ── NOTE: [Writing Style] 가이드는 AI 호출 시 시스템 프롬프트로만 전달 (promptBox 제외) ── */
 
     const box=document.getElementById('promptBox');
-    const hasUserSelection = STATE.genre!==null || STATE.moods.length>0 || STATE.instr!==null || STATE.concept!==null || STATE.vocalStyle!==null || STATE.gugakVocalStyle!==null || STATE.hanSoulStyle!==null;
+    const hasUserSelection = STATE.genre!==null || STATE.moods.length>0 || STATE.instrList.length>0 || STATE.concept!==null || STATE.vocalStyle!==null || STATE.gugakVocalStyle!==null || STATE.hanSoulStyle!==null;
     box.textContent=hasUserSelection?scrubArtistNames(parts.join('\n')):'← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
     /* UPG-1: 빌드 완료 후 히스토리 저장 */
     if (typeof _saveHistoryAfterBuild === 'function') _saveHistoryAfterBuild();
@@ -3943,27 +3969,26 @@ function applyAnalysisToUI(analysis) {
   if (analysis.moods&&Array.isArray(analysis.moods)) { analysis.moods.forEach(m=>{const idx=DATA.moods.findIndex(d=>d.en.toLowerCase().includes(m.toLowerCase())||d.kr.includes(m));if(idx!==-1&&!STATE.moods.includes(idx))STATE.moods.push(idx);}); }
   // ── BPM 매핑 ──
   if (analysis.bpm&&analysis.bpm>=65&&analysis.bpm<=145) STATE.bpm=parseInt(analysis.bpm);
-  // ── [수정1] 악기 매핑 (instruments → STATE.instr) ──
+  // ── 악기 매핑 (instruments → STATE.instrList, 다중) ──
   if (analysis.instruments) {
     const instrStr=(analysis.instruments||'').toLowerCase();
+    STATE.instrList = [];   // 다중 매핑: 매칭되는 악기를 모두 추가
     let found=false;
     ['string','percussion','wind'].forEach(cat=>{
-      if(found)return;
       const catArr=cat==='string'?DATA.instrumentsString:cat==='percussion'?DATA.instrumentsPercussion:DATA.instrumentsWind;
       catArr.forEach((item,idx)=>{
-        if(found)return;
         const enLow=(item.en||'').toLowerCase();
         const krStr=(item.kr||'');
         if(instrStr.split(/[,·\s]+/).some(w=>w.length>1&&(enLow.includes(w)||krStr.includes(w)))){
-          selectInstrByCategory(cat,idx,true);
+          if(!isInstrSelected(cat,idx)) STATE.instrList.push({cat,idx});
           found=true;
         }
       });
     });
-    // 매핑 실패 시 기본 악기(string[0]) 자동 선택 + 알림
+    // 매핑 실패 시 기본 악기 조합 자동 선택 + 알림
     if (!found) {
-      selectInstrByCategory('string', 0, true);
-      showToast('⚠️ 악기 자동 매핑 실패 — 기본 악기로 설정되었습니다.');
+      STATE.instrList = [{cat:'string',idx:0},{cat:'string',idx:1}];
+      showToast('⚠️ 악기 자동 매핑 실패 — 기본 악기 조합으로 설정되었습니다.');
     }
   }
   // ── [수정1] 컨셉 매핑 (concept → STATE.concept) ──
@@ -5107,6 +5132,28 @@ function toggleSection(bodyId,iconId) {
   else{body.style.display='none';icon.textContent='▼';}
 }
 
+/* 프리셋 적용 후: 1~7번 섹션을 접고, 자동조합으로 채워진 섹션만 펼침 */
+function _collapseAndRevealFilled() {
+  const A = STATE; const len = a => Array.isArray(a) && a.length > 0;
+  const advFilled = len(A.textures)||len(A.grooves)||len(A.spaces)||len(A.koreanGrooves)||
+                    len(A.bassStyles)||len(A.koreanFeelings)||len(A.blackSoulElements)||len(A.humanFeelElements);
+  const secs = [
+    ['genreBody','genreIcon',            A.genre !== null],            // 01 장르
+    ['moodBody','moodIcon',              len(A.moods)],                // 02 분위기
+    ['instrBody','instrIcon',            len(A.instrList)],            // 03 악기 조합
+    ['conceptBody','conceptIcon',        A.concept !== null],          // 04 컨셉
+    ['vocalStyleBody','vocalStyleIcon',  A.vocalStyle !== null],       // 05 보컬 스타일
+    ['toneBody','toneIcon',              len(A.vocalTones)],           // 06 보컬 톤
+    ['advancedSettingsBody','advancedToggleIcon', advFilled],          // 07 고급 사운드
+  ];
+  secs.forEach(([bodyId, iconId, filled]) => {
+    const body = document.getElementById(bodyId), icon = document.getElementById(iconId);
+    if (!body) return;
+    body.style.display = filled ? 'block' : 'none';
+    if (icon) icon.textContent = filled ? '▲' : '▼';
+  });
+}
+
 /* ═══════════════════════════════════════════
    3:7 PRESETS
 ═══════════════════════════════════════════ */
@@ -5115,6 +5162,7 @@ function _finalizePreset(toastMsg) {
   STATE.dnaSeed = Math.random();
   STATE.negativeSeed = Math.random();
   syncSliders(); renderAll(); syncGueumUI(); buildPrompt(true);
+  _collapseAndRevealFilled();
   showToast(toastMsg);
 }
   /* ===== 랜덤 마법 추가 ===== */
@@ -5298,6 +5346,7 @@ function apply73Preset(type) {
   _applyPools(type);
   applyPresetRandomness(isStrong73);
   syncSliders();renderAll();syncGueumUI();buildPrompt(true);
+  _collapseAndRevealFilled();
   showToast(`✅ 7:3 ${type.toUpperCase()} Joseon Core 프리셋 적용 완료! (구음+한소울 자동 조합)`);
 }
 function applyUltimateGroovePreset() {
@@ -5646,14 +5695,12 @@ function loadPreset(index) {
   let presets=JSON.parse(localStorage.getItem('gugak_presets')||'[]');
   const preset=presets[index]; if(!preset)return;
   Object.assign(STATE,preset.state);
-  // instrCategory 유효성 검사 후 악기 재선택
-  if (STATE.instrCategory) {
-    const [cat, idx] = STATE.instrCategory.split('_');
-    if (['string','percussion','wind'].includes(cat) && idx !== undefined) {
-      selectInstrByCategory(cat, parseInt(idx), true);
-    } else {
-      STATE.instr = null; STATE.instrCategory = null;
-      showToast('⚠️ 저장된 악기 정보가 올바르지 않아 초기화되었습니다.');
+  // 악기 목록 정규화 (구버전 instrCategory 호환)
+  if (!Array.isArray(STATE.instrList)) {
+    STATE.instrList = [];
+    if (preset.state && preset.state.instrCategory) {
+      const [c, ix] = String(preset.state.instrCategory).split('_');
+      if (['string','percussion','wind'].includes(c)) STATE.instrList.push({cat:c, idx:parseInt(ix)});
     }
   }
   syncSliders();renderAll();syncGueumUI();buildPrompt(true);
@@ -5674,7 +5721,7 @@ function copyField(id){const el=document.getElementById(id);doCopy(el.value!==un
 function showToast(msg="✅ 완료!"){const t=document.getElementById('toast');if(t){t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}}
 
 function resetAll(doRender=true) {
-  STATE.genre=null;STATE.moods=[];STATE.instr=null;STATE.instrCategory=null;
+  STATE.genre=null;STATE.moods=[];STATE.instrList=[];
   STATE.concept=null;STATE.vocalStyle=null;STATE.gugakVocalStyle=null;STATE.vocalTones=[];STATE.textures=[];
   STATE.grooves=[];STATE.spaces=[];STATE.koreanGrooves=[];STATE.bassStyles=[];
   STATE.koreanFeelings=[];STATE.blackSoulElements=[];STATE.humanFeelElements=[];
@@ -5729,7 +5776,7 @@ function renderAll() {
   if(STATE.concept!==null)document.getElementById('concept_'+STATE.concept)?.classList.add('active');
   if(STATE.vocalStyle!==null)document.getElementById('vs_'+STATE.vocalStyle)?.classList.add('active');
   if(STATE.gugakVocalStyle!==null)document.getElementById('gvs_'+STATE.gugakVocalStyle)?.classList.add('active');
-  if(STATE.instrCategory){const[cat,idx]=STATE.instrCategory.split('_');document.getElementById(`instr_${cat[0]}_${idx}`)?.classList.add('active');}
+  (STATE.instrList||[]).forEach(x=>{const _pf={string:'s',percussion:'p',wind:'w'}[x.cat]||x.cat[0];document.getElementById(`instr_${_pf}_${x.idx}`)?.classList.add('active');});
   document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active'));
   const activeGBtn=[...document.querySelectorAll('.gender-btn')].find(b=>(STATE.gender==='all'&&b.textContent.includes('전체'))||(STATE.gender==='male'&&b.textContent.includes('남성'))||(STATE.gender==='female'&&b.textContent.includes('여성')));
   if(activeGBtn)activeGBtn.classList.add('active');
@@ -6642,7 +6689,7 @@ function exportState() {
       gueumGender: STATE.gueumGender, gueumStyle: STATE.gueumStyle,
       hanSoulStyle: STATE.hanSoulStyle, gueumStrength: STATE.gueumStrength,
       musicKey: STATE.musicKey, koreanScale: STATE.koreanScale, energyArc: STATE.energyArc,
-      songDuration: STATE.songDuration, instrCategory: STATE.instrCategory,
+      songDuration: STATE.songDuration, instrList: STATE.instrList,
       shortsMode: STATE.shortsMode, shortsSubMode: STATE.shortsSubMode, shortsPreset: STATE.shortsPreset,
     }
   };
@@ -6670,14 +6717,13 @@ function importState() {
           'blackSoulElements','humanFeelElements','bpm','intensity','gender',
           'koreanDominance','koreanRatio','gueumPositions','gueumPitch','gueumGender',
           'gueumStyle','hanSoulStyle','gueumStrength','musicKey','koreanScale',
-          'energyArc','songDuration','instrCategory',
+          'energyArc','songDuration','instrList','instrCategory',
           'shortsMode','shortsSubMode','shortsPreset'];
         keys.forEach(k => { if (s[k] !== undefined) STATE[k] = s[k]; });
-        // instrCategory 복원 시 악기 재선택
-        if (s.instrCategory) {
-          const [cat, idx] = s.instrCategory.split('_');
-          if (cat && idx !== undefined) selectInstrByCategory(cat, parseInt(idx), true);
-        }
+        // 악기 목록 복원 (구버전 instrCategory 호환)
+        if (Array.isArray(s.instrList)) STATE.instrList = s.instrList.map(x=>({cat:x.cat,idx:x.idx}));
+        else if (s.instrCategory) { const [c, ix] = String(s.instrCategory).split('_'); STATE.instrList = (['string','percussion','wind'].includes(c)) ? [{cat:c,idx:parseInt(ix)}] : []; }
+        if (!Array.isArray(STATE.instrList)) STATE.instrList = [];
         syncSliders(); renderAll(); syncGueumUI(); buildPrompt(true);
         showToast('✅ 설정 불러오기 완료!');
       } catch(err) { showToast('⚠️ 파일 형식 오류: ' + err.message); }
@@ -7044,7 +7090,7 @@ async function runQualityEngine() {
     const _qScore = [
       STATE.genre !== null                ? 15 : 0,   // 장르 선택
       STATE.moods.length > 0              ? 10 : 0,   // 분위기 선택
-      STATE.instr !== null                ? 10 : 0,   // 악기 선택
+      STATE.instrList.length > 0          ? 10 : 0,   // 악기 선택
       STATE.gueumPositions.length > 0     ? 15 : 0,   // 구음 위치 설정
       STATE.gueumStyle !== null           ? 10 : 0,   // 구음 스타일 선택
       STATE.energyArc !== null            ? 10 : 0,   // 에너지 아크 선택
