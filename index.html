@@ -563,6 +563,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <button class="btn btn-soul" onclick="applyGueumPreset('ajaeng_soul_ballad')">🎻 아쟁 소울 발라드 <span style="font-size:10px;opacity:0.75">(저음 구음)</span></button>
         <button class="btn btn-hyper" onclick="applyGueumPreset('hyper_catchy_gugak')">✨ Hyper Catchy Gugak <span style="font-size:10px;opacity:0.75">(밝고 중독성 강함)</span></button>
         <button class="btn btn-soul" onclick="applyGueumPreset('jersey_bounce_gugak')">🔥 Jersey Bounce Gugak <span style="font-size:10px;opacity:0.75">(강한 비트 그루브)</span></button>
+        <button class="btn btn-soul" onclick="applyGugakTrotPreset()" style="border-color:#d4845a">🌹 국악 트롯트 <span style="font-size:10px;opacity:0.75">(허스키 여성 · 판소리 · 깊은 한)</span></button>
       </div>
     </div>
     <div style="border-top:1px solid rgba(201,168,76,.2)"></div>
@@ -2826,6 +2827,19 @@ const _HANSOUL_KEY_MAP = [
   [0, 0], // 5 Gritty Korean R&B      → Am + 계면조
 ];
 
+/* 장르별 어울리는 국악 창법 후보 (0판소리 1남도민요 2경기민요 3정악 4수심가 5가사시창)
+   장르 선택 시 이 후보 중 무작위로 하나가 자동으로 켜짐 → 곡마다 창법이 달라져 다양 */
+const GENRE_CHANGSIK_CANDIDATES = {
+  0: [3, 5],        // 조선 궁중 소울 → 정악·가사시창 (정제·기품)
+  1: [0, 4, 1],     // 산조 재즈 → 판소리·수심가·남도민요 (즉흥·블루지)
+  2: [0, 4, 1],     // 판소리 소울 → 판소리·수심가·남도민요 (깊은 한)
+  3: [1, 4, 0],     // 민요 블루스 → 남도민요·수심가·판소리
+  4: [2, 0],        // 국악 궁중 힙합 → 경기민요·판소리 (경쾌·리듬)
+  5: [5, 3, 4],     // 대금 앰비언트 → 가사시창·정악·수심가 (여백·서정)
+  6: [4, 0, 1],     // 아쟁 딥 소울 → 수심가·판소리·남도민요 (처연·깊음)
+  7: [0, 2, 1],     // 네오조선 퓨전 → 판소리·경기민요·남도민요 (다양)
+  8: [0, 1, 4],     // 국악 트롯트 → 판소리·남도민요·수심가 (한+흥)
+};
 function selectGenre(i) {
   document.querySelectorAll('#genreGrid .selcard').forEach(el => el.classList.remove('active'));
   STATE.genre = (STATE.genre === i) ? null : i;
@@ -2833,6 +2847,13 @@ function selectGenre(i) {
     document.getElementById('genre_' + i)?.classList.add('active');
     const map = _GENRE_KEY_MAP[i];
     if (map) _autoSetKeyScale(map[0], map[1]);
+    /* 장르 선택 시, 아직 창법 미선택이면 어울리는 창법 중 무작위로 하나 자동 활성화 */
+    const cand = GENRE_CHANGSIK_CANDIDATES[i];
+    if (cand && cand.length && STATE.gugakVocalStyle === null) {
+      const pick = cand[Math.floor(Math.random() * cand.length)];
+      selectGugakVocalStyle(pick);   // 내부에서 buildPrompt 호출
+      return;
+    }
   }
   buildPrompt();
 }
@@ -3474,23 +3495,45 @@ function _doBuildPrompt() {
       'Gayageum 25':'extended plucked zither — chromatic range beyond pentatonic, richer harmonic colors, contemporary modal bend',
     };
 
-    /* ── 선택된 악기들 리드명 + 음색 추출 (다중) ── */
+    /* ── 선택 악기: 국악기 음색 + 역할 배정(A) + 서양 반주 추출(B) ── */
+    const _ROLE_MAP = {
+      'Gayageum':'melody','Haegeum':'melody','Daegeum':'melody','Piri':'melody','Danso':'melody',
+      'Sogeum':'melody','Saenghwang':'melody','Yanggeum':'melody','Pyeonjong':'melody',
+      'Gayageum 25':'melody','Taepyeongso':'melody',
+      'Ajaeng':'bass','Geomungo':'bass',
+      'Janggu':'rhythm','Kkwaenggwari':'rhythm','Buk':'rhythm','Jing':'rhythm','Jwago':'rhythm'
+    };
     let leadInstrName = '';
-    let sonicParts = [];
     const _selInstr = getSelectedInstrObjects();
-    const _seenSonic = new Set();
+    const _seenKorean = new Set();
+    const _koreanInstr = [];     // {name, sonic, role}
+    const _backingSet = new Set(); // 서양 반주 (카드 묶음의 ' + ' 뒤 토막)
     if (_selInstr.length) {
+      const _sonicKeys = Object.keys(instrSonicMap).sort((a,b)=>b.length-a.length); // 'Gayageum 25' 우선
       for (const _ins of _selInstr) {
         const instrEn = _ins.en;
-        for (const [name, sonic] of Object.entries(instrSonicMap)) {
-          if (instrEn.includes(name) && !_seenSonic.has(name)) {
-            _seenSonic.add(name);
-            sonicParts.push(`${name} (${sonic})`);
-            if (!leadInstrName) leadInstrName = name;
-          }
+        let matched = null;
+        for (const name of _sonicKeys) { if (instrEn.includes(name)) { matched = name; break; } }
+        if (matched && !_seenKorean.has(matched)) {
+          _seenKorean.add(matched);
+          _koreanInstr.push({ name: matched, sonic: instrSonicMap[matched], role: _ROLE_MAP[matched] || 'melody' });
         }
+        const segs = instrEn.split(' + ');
+        for (let s = 1; s < segs.length; s++) { const seg = segs[s].trim(); if (seg) _backingSet.add(seg); }
       }
     }
+    /* 멜로디는 lead→counter→harmony 순으로 역할 라벨 부여 → 같은 멜로디 경쟁/뭉침 방지 */
+    let _melCount = 0;
+    const _roleLabel = (role) => {
+      if (role === 'bass')   return 'deep bassline / low drone';
+      if (role === 'rhythm') return 'rhythmic backbone';
+      _melCount++;
+      return _melCount === 1 ? 'LEAD melody'
+           : _melCount === 2 ? 'answering counter-melody (call-and-response)'
+           : 'harmony & ornamental fills';
+    };
+    const sonicParts = _koreanInstr.map(k => `${k.name} (${k.sonic}) — ${_roleLabel(k.role)}`);
+    leadInstrName = (_koreanInstr.find(k => (_ROLE_MAP[k.name]||'melody') === 'melody') || _koreanInstr[0] || {}).name || '';
 
     /* ── ① 리드 악기 + 장르 구조 ── */
     const _genreStructureLabel = (STATE.genre !== null && _GENRE_STRUCTURE_MAP[STATE.genre])
@@ -3506,10 +3549,13 @@ function _doBuildPrompt() {
     const _moodPart  = STATE.moods.length ? getEnList(STATE.moods,DATA.moods) : '';
     if (_genrePart || _moodPart) parts.push(`[Genre/Mood] ${[_genrePart,_moodPart].filter(Boolean).join(' · ')}`);
 
-    /* ── ③ 악기 + TIMBRE 서술 (선택된 악기 조합 전체) ── */
+    /* ── ③ 악기 + TIMBRE 서술 (역할 분리 + 서양 반주 포함 + 개별 가청 지시) ── */
     if (_selInstr.length) {
       if (sonicParts.length) {
-        parts.push(`[TIMBRE] ${sonicParts.join(' | ')} — Korean instrument ensemble carries the melody together (lead + supporting layers), sigimsae and nonghyeon throughout, silence between phrases as important as the notes`);
+        let _timbre = `[TIMBRE — distinct layered ensemble] ${sonicParts.join(' | ')}`;
+        if (_backingSet.size) _timbre += ` || [Backing] ${[..._backingSet].join(', ')} (soft supporting bed under the Korean instruments)`;
+        _timbre += ` — EACH instrument individually audible and distinct, trading phrases in call-and-response, NOT blended into one texture and none dropped; every listed instrument stays present across the arrangement; sigimsae and nonghyeon throughout`;
+        parts.push(_timbre);
       } else {
         parts.push(`[Instruments] ${_selInstr.map(x=>x.en).join(' + ')}`);
       }
@@ -5349,6 +5395,42 @@ function apply73Preset(type) {
   _collapseAndRevealFilled();
   showToast(`✅ 7:3 ${type.toUpperCase()} Joseon Core 프리셋 적용 완료! (구음+한소울 자동 조합)`);
 }
+/* 🌹 국악 트롯트 프리셋 — 판소리 득음 기반, 깊은 한(恨), 강한 허스키 여성 벨팅
+   (실존 가수명은 음악 AI가 차단하므로 목소리·창법 특성으로 구성) */
+function applyGugakTrotPreset() {
+  resetAll(false);
+  STATE.genre = 8;                 // 국악 트롯트
+  STATE.gugakTrotBase = true;
+  STATE.gender = 'female';
+  STATE.moods = [7, 8];            // 현대적 한국 애절함 + 늦은 밤 애절한 블루스
+  STATE.vocalStyle = 7;            // Cinematic Soul Fusion (웅장·드라마틱 감정 고조)
+  STATE.gugakVocalStyle = [0, 1, 4][Math.floor(Math.random() * 3)]; // 판소리·남도민요·수심가 중 랜덤
+  STATE.vocalTones = [11, 1, 9];   // 거친 소울풀 여성 벨트 + 소울풀 여성 + 감성적 표현
+  STATE.hanSoulStyle = 4;          // 한(恨) 소울 발라드
+  STATE.musicKey = 1;              // Dm
+  STATE.koreanScale = 0;           // 계면조
+  STATE.energyArc = 0;             // 슬로우 번 (절절 → 폭발)
+  STATE.bpm = 88;
+  STATE.intensity = 8;             // 파워풀
+  // 06B 구음 — 판소리 딥 블루스 구음, 여성, 전 구간, 최대 강도
+  STATE.gueumPositions = ['start','mid','end'];
+  STATE.gueumPitch = 'midhigh';
+  STATE.gueumGender = 'female';
+  STATE.gueumStyle = 0;            // 판소리 딥 블루스 구음
+  STATE.gueumStrength = 'maximum';
+  // 08 고급 사운드 — 거칠고 한 가득
+  STATE.textures = [5, 6];
+  STATE.koreanGrooves = [2, 3];
+  STATE.koreanFeelings = [4, 5];
+  STATE.blackSoulElements = [2];
+  STATE.humanFeelElements = [1, 6];
+  // 03 악기 — 트롯 조합: 해금 + 피리 + 장구
+  STATE.instrList = [{cat:'string',idx:1},{cat:'wind',idx:1},{cat:'percussion',idx:0}];
+  // 트롯 베이스 체크박스 동기화
+  const _tb = document.getElementById('gugakTrotBaseToggle'); if (_tb) _tb.checked = true;
+  _finalizePreset('🌹 국악 트롯트 프리셋 적용! (판소리 득음 · 깊은 한 · 허스키 여성 벨팅)');
+}
+
 function applyUltimateGroovePreset() {
   resetAll(false);
   STATE.genre=7;STATE.moods=[0,1,5];STATE.concept=7;STATE.vocalStyle=0;STATE.vocalTones=[5,9];
