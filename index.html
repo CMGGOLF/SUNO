@@ -2442,16 +2442,19 @@ function isInstrSelected(cat, idx){ return (STATE.instrList||[]).some(x => x.cat
 function getSelectedInstrObjects(){ return (STATE.instrList||[]).map(x => getCatData(x.cat)?.[x.idx]).filter(Boolean); }
 /* 장르별 기본 국악기 조합 — [cat, idx] (string:s현악 / percussion:p타악 / wind:w관악)
    현악 0가야금 1해금 2아쟁 3거문고 | 타악 0장구 1꽹과리 2북 3징808 | 관악 0대금 1피리 2단소 */
+/* 장르별 기본 국악기 조합 — 음역대 균형(멜로디 + 저음/베이스 + 리듬)으로 구성해
+   소리가 한 음역에 뭉치지 않고 위·중간·아래가 다 채워져 풍성하게 들리도록 함.
+   string: 0가야금 1해금 2아쟁(저음) 3거문고(저음) | wind: 0대금 1피리 2단소 | perc: 0장구 1꽹과리 2북 3징808 */
 const GENRE_DEFAULT_INSTR = {
-  0: [['string',0],['wind',0],['string',1]],      // 조선 궁중 소울: 가야금+대금+해금
-  1: [['string',0],['percussion',0],['string',2]],// 산조 재즈: 가야금+장구+아쟁
-  2: [['string',2],['percussion',0],['string',1]],// 판소리 소울: 아쟁+장구+해금
-  3: [['wind',1],['string',1],['percussion',0]],  // 민요 블루스: 피리+해금+장구
-  4: [['percussion',3],['string',0],['wind',1]],  // 국악 궁중 힙합: 징808+가야금+피리
-  5: [['wind',0],['string',0],['wind',2]],        // 대금 앰비언트: 대금+가야금+단소
-  6: [['string',2],['string',3],['string',1]],    // 아쟁 딥 소울: 아쟁+거문고+해금
-  7: [['string',0],['percussion',0],['wind',1]],  // 네오조선 퓨전: 가야금+장구+피리
-  8: [['string',1],['wind',1],['percussion',0]],  // 국악 트롯트: 해금+피리+장구
+  0: [['string',0],['wind',0],['string',2],['percussion',0]], // 조선 궁중 소울: 가야금+대금 / 아쟁(저음) / 장구
+  1: [['string',0],['string',1],['string',2],['percussion',0]],// 산조 재즈: 가야금+해금 / 아쟁 / 장구
+  2: [['string',1],['wind',1],['string',2],['percussion',0]], // 판소리 소울: 해금+피리 / 아쟁 / 장구
+  3: [['wind',1],['string',1],['string',2],['percussion',0]], // 민요 블루스: 피리+해금 / 아쟁 / 장구
+  4: [['string',0],['wind',1],['string',3],['percussion',3]], // 국악 궁중 힙합: 가야금+피리 / 거문고(저음) / 징808
+  5: [['wind',0],['wind',2],['string',3],['percussion',0]],   // 대금 앰비언트: 대금+단소 / 거문고(저음 드론) / 장구
+  6: [['string',2],['string',1],['string',3],['percussion',0]],// 아쟁 딥 소울: 아쟁(리드 저음)+해금 / 거문고 / 장구
+  7: [['string',0],['wind',1],['string',2],['percussion',0]], // 네오조선 퓨전: 가야금+피리 / 아쟁 / 장구
+  8: [['string',1],['wind',1],['string',2],['percussion',0]], // 국악 트롯트: 해금+피리 / 아쟁 / 장구
 };
 /* 현재 컨텍스트(장르)에 맞는 기본 국악기 조합을 비어 있을 때만 채움 (스마트 자동조합·허스키용) */
 function autoSeedInstruments(){
@@ -2460,7 +2463,7 @@ function autoSeedInstruments(){
   if (STATE.genre !== null && GENRE_DEFAULT_INSTR[STATE.genre]) {
     combo = GENRE_DEFAULT_INSTR[STATE.genre].map(([cat, idx]) => ({cat, idx}));
   } else {
-    combo = [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'string',idx:2}]; // 기본: 가야금+해금+아쟁
+    combo = [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'string',idx:2},{cat:'percussion',idx:0}]; // 기본: 가야금+해금 / 아쟁(저음) / 장구 (음역 균형)
   }
   STATE.instrList = combo;
   if (typeof renderInstruments === 'function') renderInstruments();
@@ -3549,12 +3552,21 @@ function _doBuildPrompt() {
     const _moodPart  = STATE.moods.length ? getEnList(STATE.moods,DATA.moods) : '';
     if (_genrePart || _moodPart) parts.push(`[Genre/Mood] ${[_genrePart,_moodPart].filter(Boolean).join(' · ')}`);
 
-    /* ── ③ 악기 + TIMBRE 서술 (역할 분리 + 서양 반주 포함 + 개별 가청 지시) ── */
+    /* ── ③ 악기 + TIMBRE 서술 (역할 분리 + 서양 반주 압축 + 풍성한 층 지시) ── */
     if (_selInstr.length) {
       if (sonicParts.length) {
         let _timbre = `[TIMBRE — distinct layered ensemble] ${sonicParts.join(' | ')}`;
-        if (_backingSet.size) _timbre += ` || [Backing] ${[..._backingSet].join(', ')} (soft supporting bed under the Korean instruments)`;
-        _timbre += ` — EACH instrument individually audible and distinct, trading phrases in call-and-response, NOT blended into one texture and none dropped; every listed instrument stays present across the arrangement; sigimsae and nonghyeon throughout`;
+        if (_backingSet.size) {
+          /* 서양 반주 압축: 같은 종류(베이스/피아노/드럼 등)는 하나로, 최대 4개 */
+          const _byType = new Map();
+          for (const b of _backingSet) {
+            const k = b.toLowerCase().replace(/subtle|gentle|warm|soft|light|minimal|upright|soul|jazz|deep|electric/g, '').trim().split(/\s+/).pop() || b;
+            if (!_byType.has(k)) _byType.set(k, b);
+          }
+          const _backing = [..._byType.values()].slice(0, 4);
+          _timbre += ` || [Backing] ${_backing.join(', ')} (soft supporting bed under the Korean instruments)`;
+        }
+        _timbre += ` — EACH instrument individually audible and distinct, trading phrases in call-and-response, NOT blended into one texture and none dropped; LAYERED FULL ARRANGEMENT where every instrument occupies its own frequency range (high melody · mid counter-melody · low bass/drone · rhythm) for a rich full sound that never turns muddy; sigimsae and nonghyeon throughout`;
         parts.push(_timbre);
       } else {
         parts.push(`[Instruments] ${_selInstr.map(x=>x.en).join(' + ')}`);
@@ -4849,7 +4861,7 @@ ${clicheRuleKr}
 - 앵커 구절(최대 6단어) — 가사 쓰기 전에 먼저 결정
 - 앵커는 모든 후렴/훅의 첫 줄
 - 각 섹션 내에서 앵커 최소 1회 반복
-- 후렴 줄: 최대 6단어, 짧고, 따라부를 수 있고, 감정이 직접적
+- 후렴 줄: 6~9음절 내외로 짧고 일정하게, 따라부르기 쉽고 감정이 직접적 (줄마다 길이를 비슷하게)
 - 음악·악기·장르 관련 단어 가사에 절대 금지
 
 ★★★ [Big Finish] 규칙 — 최최최우선 ★★★
@@ -4861,7 +4873,7 @@ ${clicheRuleKr}
 ★ 절(Verse) 규칙 ★
 - 각 절은 이전 절보다 더 강한 긴장감 (T/R 수치가 에너지 가이드)
 - 구체적 이미지: 물, 돌, 불, 계절, 몸, 숨 — 추상적 감정 레이블 금지
-- 줄당 최대 8단어
+- 각 줄 8~11음절 내외로 일정하게 (단어 수가 아니라 부를 때의 음절 수 기준, 같은 절 안에서 줄 길이를 비슷하게)
 
 ★ 긴장/이완 수치 ★
 - 섹션 옆 숫자(예: 긴장 +6, 이완 -4)는 감정 강도 지표
@@ -4875,7 +4887,7 @@ ${lyricMoodSeed}
 ${structureKr}`;
     }
 
-    const _outputRule = `\n[출력 형식 — 엄격]\n- 반드시 [인트로] 같은 [섹션명] 태그로 시작. 곡 제목·머리말을 맨 앞에 붙이지 말 것 (제목을 쓰면 가사로 불림)\n- [섹션명] 태그와 가사 줄만 출력. "긴장 +7", "이완 -3", "T+5↔R-5" 같은 수치·라벨은 절대 가사에 쓰지 말 것 (이건 너에게 주는 감정 강도 지침일 뿐, 출력하면 안 됨)\n- 번호·설명·마크다운(##)·악기명 금지\n- 종결어미를 매 줄 똑같이("~다"로만) 끝내지 말 것 — ~로다/~네/~여/~구나/~련만 등을 섞어 단조로움 회피`;
+    const _outputRule = `\n[출력 형식 — 엄격]\n- 반드시 [인트로] 같은 [섹션명] 태그로 시작. 곡 제목·머리말을 맨 앞에 붙이지 말 것 (제목을 쓰면 가사로 불림)\n- [섹션명] 태그와 가사 줄만 출력. "긴장 +7", "이완 -3", "T+5↔R-5" 같은 수치·라벨은 절대 가사에 쓰지 말 것 (이건 너에게 주는 감정 강도 지침일 뿐, 출력하면 안 됨)\n- 번호·설명·마크다운(##)·악기명 금지\n- 종결어미를 매 줄 똑같이("~다"로만) 끝내지 말 것 — ~로다/~네/~여/~구나/~련만 등을 섞어 단조로움 회피\n\n[부르기 자연스러움 — 매우 중요]\n- 각 줄은 그 자체로 의미가 완결되게 끝낼 것. 한 문장을 어색하게 두 줄로 쪼개지 말고, 조사·꾸밈말만 다음 줄로 넘기지 말 것 (예: "그리운 / 마음" 처럼 끊지 말 것)\n- 한 섹션 안에서 각 줄의 음절(글자) 수를 비슷하게 맞춰, 같은 멜로디에 얹어 불렀을 때 박자가 일정하게 흐르도록 할 것 — 줄마다 길이가 들쭉날쭉하면 부르기 어색함\n- "단어 수"가 아니라 "소리 내어 부를 때의 음절 수"를 기준으로 맞출 것\n- 실제로 소리 내어 불렀을 때 자연스러운 한국어 어순·말맛을 유지 — 번역체·억지 도치·부자연스러운 축약 금지\n- 어미와 조사가 흐르듯 이어져 한 줄이 노래로 매끄럽게 불릴 것`;
     const sysP = isTrot
       ? `당신은 한국 국악 트롯트 전문 작사가입니다. 최우선: ① 음수율(3·4조/7·5조) 일관 유지 ② 전절 체념→후렴 카타르시스 맺풀기 구조 ③ 문어체 시적 문장 (문체 예: "${_trotDiv?.sampleA||'저무는 강가에 달빛이 서리고'}", "${_trotDiv?.sampleB||'풍진 세상에 외로운 한숨이여'}" — 단, 예시 문장·단어를 그대로 베끼지 말 것) ④ 종결어미 ~로다/~노라/~네/~여/~더라/~구나 등 전통 문어체를 섞어 사용 — 절대 모든 줄을 "~다"로 끝내지 말 것 ⑤ 은유·상징으로 표현, 직설적 감정어 금지 ⑥ 후렴 핵심 앵커구를 반복하되 추임새 (아아~)로 마무리 ⑦ 어휘 다양성: 곡마다 신선한 단어·이미지를 쓰고 흔한 상투어(달빛·강가·풍진·님 등)를 매 곡 반복하지 말 것. 한국 정통 트로트 명곡(초혼·옥수수밭 옆에 당신을 묻고·그 강을 건너지 마오)의 격조 있는 문장미를 목표로.${_outputRule}`
       : (_useGugakBase
