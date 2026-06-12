@@ -2337,7 +2337,9 @@ function _applyPools(type) {
   STATE.musicKey     = _rp(p.keys);
   STATE.koreanScale  = _rp(p.scales);
   if (p.vocalStyle        && p.vocalStyle.length)        STATE.vocalStyle        = _rp(p.vocalStyle);
-  if (p.concept           && p.concept.length)           STATE.concept           = _rp(p.concept);
+  // 컨셉은 항상 뽑힌 장르와 일치시킴 (concept 인덱스 0~8 = genre 인덱스 0~8) → 컨셉-장르 모순 방지
+  if (STATE.genre !== null) STATE.concept = STATE.genre;
+  else if (p.concept && p.concept.length) STATE.concept = _rp(p.concept);
   // 배열의 배열 → 세트 중 랜덤 1개 선택
   if (p.vocalTones        && p.vocalTones.length)        STATE.vocalTones        = [..._rp(p.vocalTones)];
   if (p.textures          && p.textures.length)          STATE.textures          = [..._rp(p.textures)];
@@ -3563,9 +3565,10 @@ function _doBuildPrompt() {
             if (!_byType.has(k)) _byType.set(k, b);
           }
           const _backing = [..._byType.values()].slice(0, 4);
-          _timbre += ` || [Backing] ${_backing.join(', ')} (soft supporting bed under the Korean instruments)`;
+          _timbre += ` || [Backing] ${_backing.join(', ')} (kept LOW in the mix — quiet supporting bed only, never louder than the Korean instruments)`;
         }
-        _timbre += ` — EACH instrument individually audible and distinct, trading phrases in call-and-response, NOT blended into one texture and none dropped; LAYERED FULL ARRANGEMENT where every instrument occupies its own frequency range (high melody · mid counter-melody · low bass/drone · rhythm) for a rich full sound that never turns muddy; sigimsae and nonghyeon throughout`;
+        const _krFront = _koreanInstr.map(k => k.name).join(', ');
+        _timbre += ` — the KOREAN instruments (${_krFront}) are the FOREGROUND lead voices and take ALL solos; western backing stays quietly in the background. EACH instrument individually audible and distinct, trading phrases in call-and-response, NOT blended into one texture and none dropped; LAYERED FULL ARRANGEMENT where every instrument occupies its own frequency range (high melody · mid counter-melody · low bass/drone · rhythm) for a rich full sound that never turns muddy; Korean instruments clearly in front, sigimsae and nonghyeon throughout`;
         parts.push(_timbre);
       } else {
         parts.push(`[Instruments] ${_selInstr.map(x=>x.en).join(' + ')}`);
