@@ -535,34 +535,51 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
   <div class="section-body" style="display:flex;flex-direction:column;gap:18px">
     <div>
-      <div style="font-size:11px;color:var(--korean2);font-weight:700;letter-spacing:2px;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+      <div style="font-size:11px;color:var(--korean2);font-weight:700;letter-spacing:2px;margin-bottom:10px;display:flex;align-items:center;gap:6px">
         <span style="display:inline-block;width:3px;height:14px;background:var(--korean2);border-radius:2px"></span>
-        조선 코어 장르 프리셋
+        장르별 프리셋
+        <span style="font-size:10px;color:var(--muted);font-weight:400;letter-spacing:0">— 같은 장르의 여러 스타일을 묶었습니다 (코어=정통 7:3 · 그 외=구음 기반)</span>
       </div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px">
+
+      <div style="font-size:10px;color:var(--muted);font-weight:600;margin:2px 0 5px 2px">🎵 조선 궁중 소울</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
         <button class="btn btn-korean" onclick="apply73Preset('joseon')">🎵 Joseon Court <span style="font-size:11px;opacity:0.75">(조선 궁중)</span></button>
-        <button class="btn btn-korean" onclick="apply73Preset('sanjo')">🥁 Sanjo Jazz <span style="font-size:11px;opacity:0.75">(산조 재즈)</span></button>
+      </div>
+
+      <div style="font-size:10px;color:var(--muted);font-weight:600;margin:2px 0 5px 2px">🎷 산조 재즈</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+        <button class="btn btn-korean" onclick="apply73Preset('sanjo')">🥁 Sanjo Jazz <span style="font-size:11px;opacity:0.75">(정통 산조 재즈)</span></button>
+        <button class="btn btn-soul" onclick="applyGueumPreset('seoul_midnight_jazz')">🎷 서울 심야 재즈 <span style="font-size:10px;opacity:0.75">(심야 재즈 · 구음)</span></button>
+      </div>
+
+      <div style="font-size:10px;color:var(--muted);font-weight:600;margin:2px 0 5px 2px">🎙️ 판소리 소울</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
         <button class="btn btn-korean" onclick="apply73Preset('pansori')">🎷 Pansori Soul <span style="font-size:11px;opacity:0.75">(판소리 소울)</span></button>
-        <button class="btn btn-korean" onclick="apply73Preset('minyo')">🌙 Minyo Blues <span style="font-size:11px;opacity:0.75">(민요 블루스)</span></button>
-        <button class="btn btn-korean" onclick="apply73Preset('court')">🎬 Court Elevation <span style="font-size:11px;opacity:0.75">(궁중 격상)</span></button>
-      </div>
-    </div>
-    <div style="border-top:1px solid rgba(200,80,80,.25)"></div>
-    <div>
-      <div style="font-size:11px;color:var(--soul);font-weight:700;letter-spacing:2px;margin-bottom:8px;display:flex;align-items:center;gap:6px">
-        <span style="display:inline-block;width:3px;height:14px;background:var(--soul-dark);border-radius:2px"></span>
-        구음 · 한(恨) 소울 프리셋
-        <span style="font-size:10px;color:var(--muted);font-weight:400;letter-spacing:0">— 째즈 · 블루스 · 소울 × 국악 구음</span>
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px">
         <button class="btn btn-soul" onclick="applyGueumPreset('pansori_han_blues')">🎙️ 판소리 한 블루스 <span style="font-size:10px;opacity:0.75">(구음·시작+끝)</span></button>
-        <button class="btn btn-soul" onclick="applyGueumPreset('seoul_midnight_jazz')">🎷 서울 심야 재즈 <span style="font-size:10px;opacity:0.75">(구음·중간)</span></button>
-        <button class="btn btn-soul" onclick="applyGueumPreset('sanjo_blue')">🎸 산조 블루 노트 <span style="font-size:10px;opacity:0.75">(즉흥 구음)</span></button>
+      </div>
+
+      <div style="font-size:10px;color:var(--muted);font-weight:600;margin:2px 0 5px 2px">🌙 민요 블루스</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+        <button class="btn btn-korean" onclick="apply73Preset('minyo')">🌙 Minyo Blues <span style="font-size:11px;opacity:0.75">(민요 블루스)</span></button>
+        <button class="btn btn-soul" onclick="applyGueumPreset('sanjo_blue')">🎸 산조 블루 노트 <span style="font-size:10px;opacity:0.75">(즉흥 구음 · 블루스)</span></button>
+      </div>
+
+      <div style="font-size:10px;color:var(--muted);font-weight:600;margin:2px 0 5px 2px">🥁 국악 궁중 힙합 · 네오조선 퓨전</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+        <button class="btn btn-korean" onclick="apply73Preset('court')">🎬 Court Elevation <span style="font-size:11px;opacity:0.75">(궁중 격상)</span></button>
         <button class="btn btn-korean" onclick="applyGueumPreset('arirang_hyper')">🌟 ARIRANG Hyper Fusion <span style="font-size:10px;opacity:0.75">(Rage + Hyper 2026)</span></button>
-        <button class="btn btn-teal" onclick="applyGueumPreset('uk_garage_gugak')">🎛️ UK Garage Gugak <span style="font-size:10px;opacity:0.75">(KiiiKiii 스타일)</span></button>
-        <button class="btn btn-soul" onclick="applyGueumPreset('ajaeng_soul_ballad')">🎻 아쟁 소울 발라드 <span style="font-size:10px;opacity:0.75">(저음 구음)</span></button>
+        <button class="btn btn-teal" onclick="applyGueumPreset('uk_garage_gugak')">🎛️ UK Garage Gugak <span style="font-size:10px;opacity:0.75">(거라지 비트)</span></button>
         <button class="btn btn-hyper" onclick="applyGueumPreset('hyper_catchy_gugak')">✨ Hyper Catchy Gugak <span style="font-size:10px;opacity:0.75">(밝고 중독성 강함)</span></button>
-        <button class="btn btn-soul" onclick="applyGueumPreset('jersey_bounce_gugak')">🔥 Jersey Bounce Gugak <span style="font-size:10px;opacity:0.75">(강한 비트 그루브)</span></button>
+        <button class="btn btn-soul" onclick="applyGueumPreset('jersey_bounce_gugak')">🔥 Jersey Bounce Gugak <span style="font-size:10px;opacity:0.75">(저지 클럽 그루브)</span></button>
+      </div>
+
+      <div style="font-size:10px;color:var(--muted);font-weight:600;margin:2px 0 5px 2px">🎻 아쟁 딥 소울</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+        <button class="btn btn-soul" onclick="applyGueumPreset('ajaeng_soul_ballad')">🎻 아쟁 소울 발라드 <span style="font-size:10px;opacity:0.75">(저음 구음)</span></button>
+      </div>
+
+      <div style="font-size:10px;color:var(--muted);font-weight:600;margin:2px 0 5px 2px">🌹 국악 트롯트</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
         <button class="btn btn-soul" onclick="applyGugakTrotPreset()" style="border-color:#d4845a">🌹 국악 트롯트 <span style="font-size:10px;opacity:0.75">(허스키 여성 · 판소리 · 깊은 한)</span></button>
       </div>
     </div>
@@ -1181,7 +1198,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   <div class="section-head">
     <div class="sec-num">09</div>
     <div class="sec-title">프롬프트 생성</div>
-    <div class="sec-sub">7:3 정통화 · 국악기 강도 조절 가능 · Suno 230자 이하</div>
+    <div class="sec-sub">7:3 정통화 · 국악기 강도 조절 가능 · Suno 5.5 (1000자)</div>
   </div>
   <div class="section-body">
     <div class="prompt-box" id="promptBox">← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.</div>
@@ -1200,27 +1217,43 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <!-- ⚡ 슈퍼 프롬프트 섹션 -->
     <div style="margin-top:14px;padding:16px 18px;background:linear-gradient(135deg,rgba(255,180,50,.07),rgba(201,168,76,.04));border:1px solid rgba(255,180,50,.4);border-radius:10px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        <span style="font-size:15px">⚡</span>
-        <span style="font-size:13px;font-weight:700;color:#ffb432;font-family:'Noto Serif KR',serif;letter-spacing:1px">슈퍼 프롬프트 생성기</span>
-        <span style="font-size:10px;color:var(--muted);margin-left:2px">— AI가 Suno 전문가 수준으로 최적화</span>
+        <span style="font-size:15px">🎯</span>
+        <span style="font-size:13px;font-weight:700;color:#ffb432;font-family:'Noto Serif KR',serif;letter-spacing:1px">수노 프롬프트 생성기</span>
+        <span style="font-size:10px;color:var(--muted);margin-left:2px">— 수노 5.5 최적 (스타일 박스 1000자)</span>
       </div>
       <div style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.7">
-        💡 현재 설정을 기반으로 <b style="color:#ffb432">각도가 다른 3가지 변형</b>을 동시에 생성합니다. 전부 230자 이하, Suno 스타일 박스에 바로 붙여넣기 가능.<br>
+        긴 설정을 <b style="color:#3fd0a0">수노 스타일 박스(1000자)</b>에 맞게 다듬는 두 가지 방법이 있습니다.<br>
+        <br>
+        🎯 <b style="color:#3fd0a0">수노 압축 프롬프트 (악기 보존)</b> — 추천. 가야금·해금 등 <b>악기별 음색·역할 지시를 원문 그대로 유지</b>하며 1000자로 압축합니다. AI를 쓰지 않아 항상 일정하고 빠릅니다.<br>
+        <br>
+        ⚡ <b style="color:#ffb432">AI 슈퍼 프롬프트 3종</b> — 각도가 다른 3가지 변형을 AI가 생성합니다(악기 지시 유지). A/B 테스트용.<br>
         &nbsp;&nbsp;&nbsp;• <b style="color:#ffb432">감정 강조형</b> — 한(恨)·그리움·깊은 감정 극대화<br>
         &nbsp;&nbsp;&nbsp;• <b style="color:var(--korean2)">리듬 강조형</b> — 그루브·장단·추진력 극대화<br>
         &nbsp;&nbsp;&nbsp;• <b style="color:var(--teal)">악기 강조형</b> — 국악기 음색·레이어링·질감 극대화
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button class="btn" style="background:linear-gradient(135deg,#1f6f5c,#2fa07f);border-color:#3fd0a0;color:#fff;font-weight:700;font-size:13px;padding:10px 22px;letter-spacing:0.5px" onclick="genCompactSuno()">
+          🎯 수노 압축 프롬프트 (악기 보존)
+        </button>
         <button class="btn" style="background:linear-gradient(135deg,#7a5200,#c9a84c);border-color:#ffb432;color:#fff;font-weight:700;font-size:13px;padding:10px 22px;letter-spacing:0.5px" onclick="genSuperPrompt()">
-          ⚡ 슈퍼 프롬프트 3종 생성
+          ⚡ AI 슈퍼 프롬프트 3종 (변형)
         </button>
       </div>
-      <div class="ai-loading" id="superLoading" style="margin-top:10px"><div class="dot-anim"><span></span><span></span><span></span></div>⚡ 슈퍼 프롬프트 3종 생성 중 (5~15초)...</div>
+      <!-- 🎯 방법3: 악기 보존 압축 결과 -->
+      <div id="compactSunoResult" style="display:none;margin-top:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-size:12px;font-weight:700;color:#3fd0a0;font-family:'Noto Serif KR',serif">🎯 악기 보존 압축본</span>
+          <span id="compactSunoChars" style="font-size:10px;color:var(--muted);font-family:'Space Mono',monospace"></span>
+        </div>
+        <div id="compactSunoText" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text);line-height:1.8;white-space:pre-wrap;word-break:break-word;margin-bottom:10px;background:rgba(63,208,160,.06);padding:10px;border-radius:8px"></div>
+        <button class="btn btn-outline" style="font-size:11px;padding:5px 14px" onclick="copyCompactSuno()">📋 복사</button>
+      </div>
+      <div class="ai-loading" id="superLoading" style="margin-top:10px"><div class="dot-anim"><span></span><span></span><span></span></div>⚡ AI 슈퍼 프롬프트 3종 생성 중 (5~15초)...</div>
       <!-- 결과 출력 — 3가지 변형 카드 -->
       <div id="superPromptResult" style="display:none;margin-top:14px">
         <div style="font-size:11px;color:#ffb432;font-weight:700;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:6px">
           <span style="display:inline-block;width:3px;height:12px;background:#ffb432;border-radius:2px"></span>
-          3가지 변형 · 모두 230자 이하 · Suno 스타일 박스 바로 붙여넣기
+          3가지 변형 · 모두 1000자 이하 · Suno 스타일 박스 바로 붙여넣기
         </div>
         <div style="display:flex;flex-direction:column;gap:10px">
           <!-- 변형 1 -->
@@ -1929,6 +1962,7 @@ const STATE = {
   dnaSeed: Math.random(),       // 매 생성마다 다른 DNA 변형 선택용
   negativeSeed: Math.random(),  // 매 생성마다 다른 금지어 조합용
   gugakTrotBase: true,          // 전 장르 공통 — 국악 베이스 + 한(恨)의 애절함 테두리 (기본 ON)
+  sanjoBallad: false,           // 산조재즈 발라드 모드 (서울 심야 재즈용) — true면 발라드 DNA 풀 사용
 };
 
 /* ═══════════════════════════════════════════
@@ -3250,13 +3284,12 @@ const GENRE_DNA = {
     "Donny Hathaway live warmth — court melody carried like a prayer, every note means something different at 4am, audience silence after the phrase",
     "Anita Baker velvet phrasing under plucked zither, no hurry, no waste, one chord suspended until it becomes the whole song",
   ],
-  1: [ // 산조 재즈 격상 — 스윙·워킹베이스·즉흥이 살아있는 국악 베이스 재즈
+  1: [ // 산조 재즈 격상 — 업텐포 스윙·워킹베이스·즉흥 (Sanjo Jazz 활기)
     "uptempo sanjo-jazz swing — gayageum trading fours with a walking upright bass, brushed ride cymbal keeping steady swing time, haegeum blowing melodic lines like a tenor sax over ii–V–I changes, smoky club energy",
     "hard-bop groove under Korean strings — walking bass plus swung ride cymbal, piri states the head then improvises, jazz piano comping chords behind, janggu trading hits with the snare, lively and rhythmic",
     "gayageum bebop-style runs over a swinging rhythm section, double-time improvised phrases, brushed snare and ride driving forward, Rhodes comping behind, sanjo accelerating from jinyangjo to jajinmori like a jazz build",
     "haegeum as the lead horn in a jazz quartet — walking upright bass, swung ride cymbal, trading solos back and forth with gayageum, blue notes bent over the changes, finger-snap groove, full band breathing together",
     "modal sanjo-jazz vamp — grooving bass ostinato, ride and hi-hat swing, gayageum improvising freely over one mode, Rhodes stabs and comping, intensity building, percussion and bass present and grooving throughout",
-    "late-night jazz-ballad with Korean soul — soft brushed drums and a gentle walking bass, gayageum and haegeum trading tender improvised phrases over warm jazz-piano voicings, relaxed swing feel, intimate but always moving",
   ],
   2: [ // 판소리 소울
     "raw field holler voice cracking under its own weight, church shout broken mid-syllable, Delta swamp grief, single candle in darkness, Sam Cooke edge-of-collapse",
@@ -3317,6 +3350,15 @@ const GENRE_DNA = {
     "황해도 민요 평조 선율, 해금 통곡 후 단소 위로, 느린 중모리, 마지막 절정 모든 악기 유니즌, 한바탕 울음",
   ],
 };
+
+/* 산조 재즈 발라드 전용 DNA (서울 심야 재즈용 — 다운템포·고요·새벽 재즈바) */
+const SANJO_BALLAD_DNA = [
+  "late-night jazz ballad with Korean soul — soft brushed drums and a gentle slow walking bass, gayageum and haegeum trading tender phrases over warm Rhodes voicings, hushed and intimate, the last song in an empty club",
+  "downtempo nocturne — haegeum weeping long sustained lines like a muted trumpet at 3am, sparse Rhodes chords, soft brushed snare, gayageum answering quietly, smoke and dim light, deeply melancholic",
+  "slow sanjo-jazz ballad, rubato feel — gayageum placing notes with space between them, upright bass walking slowly, brush on the snare barely there, haegeum sobbing softly, a quiet rainy Seoul midnight",
+  "tender Korean jazz lullaby — warm piano comping in slow swing, gayageum gentle melody, haegeum long aching bends, soft cymbal swells, intimate late-night whisper, restrained and full of longing",
+  "ballad-tempo sanjo jazz — sparse and breathing, gayageum and haegeum in slow call-and-response over a soft walking bass and brushed drums, warm Rhodes underneath, the ache held quietly, never rushed",
+];
 
 /* ── 한소울스타일별 DNA — 각 3개 변형 ─────────────────────────── */
 const HANSOUL_DNA = {
@@ -3461,7 +3503,7 @@ function _doBuildPrompt() {
     const domLabel = dom>=90?'ABSOLUTE DOMINANCE':dom>=80?'STRONG LEAD':dom>=70?'MAIN FOCUS':'MODERATE LEAD';
 
     /* ── ❶ 장르 DNA 주입 — DNA 3종 모두 녹여 맥락 극대화 ── */
-    const _dnaPool = (STATE.genre !== null) ? GENRE_DNA[STATE.genre] :
+    const _dnaPool = (STATE.genre === 1 && STATE.sanjoBallad) ? SANJO_BALLAD_DNA : (STATE.genre !== null) ? GENRE_DNA[STATE.genre] :
                      (STATE.hanSoulStyle !== null) ? HANSOUL_DNA[STATE.hanSoulStyle] : null;
     if (_dnaPool) {
       const _dnaIdx = Math.floor((STATE.dnaSeed || 0) * _dnaPool.length) % _dnaPool.length;
@@ -4114,7 +4156,7 @@ async function aiExpandPrompt() {
   const _guideGenre  = (STATE.genre !== null)        ? GENRE_SUNO_GUIDE[STATE.genre]        : null;
   const _guideHsoul  = (STATE.hanSoulStyle !== null)  ? HANSOUL_SUNO_GUIDE[STATE.hanSoulStyle] : null;
   const _activeGuide = _guideGenre || _guideHsoul || '';
-  const _dnaPool2    = (STATE.genre !== null)        ? GENRE_DNA[STATE.genre]        :
+  const _dnaPool2    = (STATE.genre === 1 && STATE.sanjoBallad) ? SANJO_BALLAD_DNA : (STATE.genre !== null)        ? GENRE_DNA[STATE.genre]        :
                        (STATE.hanSoulStyle !== null)  ? HANSOUL_DNA[STATE.hanSoulStyle] : null;
   const _dnaIdx2     = _dnaPool2 ? Math.floor((STATE.dnaSeed||0) * _dnaPool2.length) % _dnaPool2.length : 0;
   const _dnaHint     = _dnaPool2 ? scrubArtistNames(_dnaPool2[_dnaIdx2]) : '';
@@ -4122,8 +4164,8 @@ async function aiExpandPrompt() {
   try {
     const _writingGuide = _activeGuide ? `\nWRITING STYLE GUIDE: ${_activeGuide}` : '';
     const text = await callClaude(
-      `Create ONE Suno AI style prompt from 7:3 Joseon Core settings below.\nRules:\n- English only, maximum 230 characters, one line only\n- Korean traditional music carries 70% melodic & emotional core\n- Modern jazz/blues/soul elements serve as elegant elevation (30%)\n- Include Korean instrument name, traditional phrasing, BPM, emotional tone\n- MANDATORY: begin the prompt with this sonic DNA to differentiate from other genres: "${_dnaHint}"\nSettings:\n${current}`,
-      `You are a Suno AI music prompt expert. Output only one concise English prompt under 230 characters.${_writingGuide}`
+      `Create ONE Suno AI style prompt from 7:3 Joseon Core settings below.\nRules:\n- English only, up to 950 characters, keep Korean instrument timbre+role detail (gayageum NOT harp / haegeum NOT violin etc.)\n- Korean traditional music carries 70% melodic & emotional core\n- Modern jazz/blues/soul elements serve as elegant elevation (30%)\n- Include Korean instrument name, traditional phrasing, BPM, emotional tone\n- MANDATORY: begin the prompt with this sonic DNA to differentiate from other genres: "${_dnaHint}"\nSettings:\n${current}`,
+      `You are a Suno AI music prompt expert. Output only one English prompt under 950 characters that keeps the per-instrument timbre and role detail.${_writingGuide}`
     );
     box.textContent = sanitizeSunoPrompt(text, 230);
     showToast('✅ Suno 프롬프트 생성 완료!');
@@ -5066,7 +5108,7 @@ BPM: ${bpm} | 국악:정통 비율: ${ratio}%:${100-ratio}%
     "titleEn": "Variation Title (English)",
     "mood": "핵심 감정/분위기",
     "tags": ["태그1", "태그2", "태그3"],
-    "prompt": "Suno 스타일 프롬프트 (영어, 230자 이하, 한 줄)"
+    "prompt": "Suno 스타일 프롬프트 (영어, 950자 이하, 악기 지시 유지)"
   },
   ...5개
 ]`;
@@ -5094,7 +5136,7 @@ BPM: ${bpm} | 국악:정통 비율: ${ratio}%:${100-ratio}%
     "titleEn": "Variation Title (English)",
     "genreTag": "장르 태그",
     "tags": ["태그1", "태그2", "태그3"],
-    "prompt": "Suno 스타일 프롬프트 (영어, 230자 이하, 한 줄)"
+    "prompt": "Suno 스타일 프롬프트 (영어, 950자 이하, 악기 지시 유지)"
   },
   ...5개
 ]`;
@@ -5417,6 +5459,8 @@ function apply73Preset(type) {
   }
   const isStrong73 = STRONG_RANDOM_PRESETS.includes(type);
   _applyPools(type);
+  // 산조 재즈 = 업텐포 활기 (발라드 모드 OFF + 빠른 BPM)
+  if (type === 'sanjo') { STATE.sanjoBallad = false; STATE.bpm = 100 + Math.floor(Math.random() * 16); } // 100~115
   applyPresetRandomness(isStrong73);
   syncSliders();renderAll();syncGueumUI();buildPrompt(true);
   _collapseAndRevealFilled();
@@ -5686,6 +5730,9 @@ function applyGueumPreset(type) {
   };
     const isStrongGueum = STRONG_RANDOM_PRESETS.includes(type);
   _applyPools(type);
+  // 서울 심야 재즈 = 발라드 고요 (발라드 DNA 모드 ON + 느린 BPM); 그 외 산조 계열은 업텐포 유지
+  if (type === 'seoul_midnight_jazz') { STATE.sanjoBallad = true; STATE.bpm = 68 + Math.floor(Math.random() * 13); } // 68~80
+  else { STATE.sanjoBallad = false; }
   applyPresetRandomness(isStrongGueum);
   _finalizePreset((labels[type]||'✅')+' 프리셋 적용 완료!');
 }
@@ -5840,6 +5887,7 @@ function resetAll(doRender=true) {
   STATE.musicKey=null;STATE.koreanScale=null;STATE.energyArc=null;
   STATE.songDuration='3:30';
   STATE.shortsMode=false;
+  STATE.sanjoBallad=false;
   STATE.shortsPreset=null;
   STATE.shortsSubMode=null;
   if(doRender){
@@ -6616,6 +6664,56 @@ async function genShortsLyricsWithGueum(lang) {
 ═══════════════════════════════════════════ */
 let _superVariations = [];
 
+/* ── 방법 3: 악기 지시 보존 압축 (AI 없이 코드가 직접 계산) ──
+   긴 promptBox 출력에서 [TIMBRE] 악기 지시·핵심 사운드는 원문 그대로 유지하고
+   공통 보일러플레이트(Emotional Foundation·Sound Design·Energy Arc·GUEUM·구조 등)만
+   덜어내 수노 5.5 한도(1000자) 안에 맞춘다. 악기 정보가 절대 빠지지 않음. */
+function buildCompactSunoPrompt() {
+  _doBuildPrompt();
+  const full = (document.getElementById('promptBox').textContent || '').trim();
+  if (!full || full.includes('←')) return '';
+  const pick = (label) => {
+    const re = new RegExp('\\[' + label + '[^\\]]*\\][\\s\\S]*?(?=\\n\\[|$)', 'i');
+    const m = full.match(re);
+    return m ? m[0].trim() : '';
+  };
+  const sonic  = pick('SONIC IDENTITY');
+  const genre  = pick('Genre/Mood');
+  const timbre = pick('TIMBRE');          // ★ 악기 지시 — 반드시 원문 유지
+  const instr2 = timbre ? '' : pick('Instruments');
+  const vocal  = pick('Vocal');
+  const gueumV = pick('Gueum Voice');
+  const key    = pick('Key');
+  const bpmM   = full.match(/BPM \d+[^\n]*/);
+  const bpm    = bpmM ? bpmM[0].split('·')[0].trim() : '';
+
+  let out = [sonic, genre, (timbre||instr2), vocal, gueumV, key, bpm].filter(Boolean).join('\n');
+  if (out.length > 1000) out = [sonic, genre, (timbre||instr2), vocal, key, bpm].filter(Boolean).join('\n');
+  if (out.length > 1000) out = [sonic, genre, (timbre||instr2), key, bpm].filter(Boolean).join('\n');
+  if (out.length > 1000 && sonic) {
+    const sonicShort = sonic.split(/[.;]/)[0];
+    out = [sonicShort, genre, (timbre||instr2), key, bpm].filter(Boolean).join('\n');
+  }
+  return out.slice(0, 1000);
+}
+function genCompactSuno() {
+  const p = buildCompactSunoPrompt();
+  const box = document.getElementById('compactSunoText');
+  const chars = document.getElementById('compactSunoChars');
+  if (!p) { showToast('⚠️ 먼저 장르나 분위기를 선택해주세요!'); return; }
+  if (box) box.textContent = p;
+  if (chars) chars.textContent = `${p.length} / 1000자 (악기 지시 보존)`;
+  const wrap = document.getElementById('compactSunoResult');
+  if (wrap) wrap.style.display = 'block';
+  showToast('✅ 악기 보존 압축본 완성! (수노 5.5 최적)');
+}
+function copyCompactSuno() {
+  const p = (document.getElementById('compactSunoText')||{}).textContent || '';
+  if (!p) { showToast('⚠️ 먼저 생성해주세요.'); return; }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(p).then(()=>showToast()).catch(()=>fallbackCopy(p));
+  else fallbackCopy(p);
+}
+
 /* silent=true 시: UI loading/resultBox를 조작하지 않음 (QE 내부 호출용) */
 async function genSuperPrompt(silent = false) {
   _doBuildPrompt();
@@ -6636,7 +6734,7 @@ async function genSuperPrompt(silent = false) {
   const _guideGenre  = (STATE.genre !== null)        ? GENRE_SUNO_GUIDE[STATE.genre]        : null;
   const _guideHsoul  = (STATE.hanSoulStyle !== null)  ? HANSOUL_SUNO_GUIDE[STATE.hanSoulStyle] : null;
   const _activeGuide = _guideGenre || _guideHsoul || '';
-  const _dnaPool     = (STATE.genre !== null) ? GENRE_DNA[STATE.genre] :
+  const _dnaPool     = (STATE.genre === 1 && STATE.sanjoBallad) ? SANJO_BALLAD_DNA : (STATE.genre !== null) ? GENRE_DNA[STATE.genre] :
                        (STATE.hanSoulStyle !== null) ? HANSOUL_DNA[STATE.hanSoulStyle] : null;
   /* ── v27: 3개 변형에 서로 다른 DNA 인덱스 강제 배정 (동일 문장 방지) ── */
   const _dnaLen = _dnaPool ? _dnaPool.length : 1;
@@ -6655,7 +6753,8 @@ SUNO PROMPT ENGINEERING RULES:
 3. Korean instruments in English: gayageum, haegeum, daegeum, piri, janggu, ajeng, geomungo
 4. Use micro-texture words Suno responds to: "breathy", "raw", "resonant", "pulsing", "aching", "urgent"
 5. NEVER use "Joseon Core" or "7:3" — describe the SOUND
-6. Hard limit: 230 chars per prompt, single line, no newlines
+6. ★ MUST KEEP the per-instrument TIMBRE detail from the settings — each Korean instrument's timbre AND role (e.g. "gayageum — crystalline plucked zither, NOT harp, LEAD melody", "haegeum — nasal crying bowed fiddle, NOT violin, counter-melody", "ajaeng — low bowed zither bass", "janggu — rhythm"). Korean instruments must be the FOREGROUND and take the solos; western backing stays low. NEVER drop instruments to save space.
+7. Limit: up to 950 chars per prompt (Suno v5.5 allows 1000). Use the room to KEEP instrument detail; do not pad with fluff.
 ${_activeGuide ? `\nGENRE GUIDE: ${_activeGuide}` : ''}
 
 Generate 3 variations, each MUST start with a DIFFERENT sonic DNA phrase, optimized for a DIFFERENT angle:
@@ -6666,14 +6765,14 @@ Generate 3 variations, each MUST start with a DIFFERENT sonic DNA phrase, optimi
 - VAR 3 (악기 강조형): maximize instrumental texture and tonal color — timbre, layering, sonic detail
   MANDATORY opening phrase: "${_dnaHints[2]}"
 
-Each variation MUST be distinct — different opening, different angle, different emphasis.
+Each variation MUST be distinct AND must keep the Korean instrument timbre+role detail (rule 6).
 
 OUTPUT — ONLY valid JSON, nothing else:
 {
   "variations": [
-    { "label": "감정 강조형", "prompt": "< ≤230 char prompt starting with VAR1 DNA >" },
-    { "label": "리듬 강조형", "prompt": "< ≤230 char prompt starting with VAR2 DNA >" },
-    { "label": "악기 강조형", "prompt": "< ≤230 char prompt starting with VAR3 DNA >" }
+    { "label": "감정 강조형", "prompt": "< ≤950 char prompt starting with VAR1 DNA, keeps instrument detail >" },
+    { "label": "리듬 강조형", "prompt": "< ≤950 char prompt starting with VAR2 DNA, keeps instrument detail >" },
+    { "label": "악기 강조형", "prompt": "< ≤950 char prompt starting with VAR3 DNA, keeps instrument detail >" }
   ]
 }`;
 
@@ -6694,7 +6793,7 @@ Return ONLY the JSON object.`;
 
     _superVariations = vars.map(v => ({
       label:  v.label  || '',
-      prompt: (v.prompt || '').trim().slice(0, 230),
+      prompt: (v.prompt || '').trim().slice(0, 1000),
     }));
 
     const ids = [
@@ -6705,7 +6804,7 @@ Return ONLY the JSON object.`;
     _superVariations.forEach((v, i) => {
       document.getElementById(ids[i][0]).textContent = v.label;
       document.getElementById(ids[i][1]).textContent = v.prompt;
-      document.getElementById(ids[i][2]).textContent = `${v.prompt.length} / 230자`;
+      document.getElementById(ids[i][2]).textContent = `${v.prompt.length} / 1000자`;
     });
 
     if (!silent) {
