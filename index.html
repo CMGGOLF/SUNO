@@ -567,10 +567,10 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       <div style="font-size:10px;color:var(--muted);font-weight:600;margin:2px 0 5px 2px">🥁 국악 궁중 힙합 · 네오조선 퓨전</div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
         <button class="btn btn-korean" onclick="apply73Preset('court')">🎬 Court Elevation <span style="font-size:11px;opacity:0.75">(궁중 격상)</span></button>
-        <button class="btn btn-korean" onclick="applyGueumPreset('arirang_hyper')">🌟 ARIRANG Hyper Fusion <span style="font-size:10px;opacity:0.75">(Rage + Hyper 2026)</span></button>
-        <button class="btn btn-teal" onclick="applyGueumPreset('uk_garage_gugak')">🎛️ UK Garage Gugak <span style="font-size:10px;opacity:0.75">(거라지 비트)</span></button>
-        <button class="btn btn-hyper" onclick="applyGueumPreset('hyper_catchy_gugak')">✨ Hyper Catchy Gugak <span style="font-size:10px;opacity:0.75">(밝고 중독성 강함)</span></button>
-        <button class="btn btn-soul" onclick="applyGueumPreset('jersey_bounce_gugak')">🔥 Jersey Bounce Gugak <span style="font-size:10px;opacity:0.75">(저지 클럽 그루브)</span></button>
+        <button class="btn btn-korean" onclick="applyGueumPreset()">🌟 ARIRANG Hyper Fusion <span style="font-size:10px;opacity:0.75">(Rage + Hyper 2026)</span></button>
+        <button class="btn btn-teal" onclick="applyGueumPreset()">🎛️ UK Garage Gugak <span style="font-size:10px;opacity:0.75">(거라지 비트)</span></button>
+        <button class="btn btn-hyper" onclick="applyGueumPreset()">✨ Hyper Catchy Gugak <span style="font-size:10px;opacity:0.75">(밝고 중독성 강함)</span></button>
+        <button class="btn btn-soul" onclick="applyGueumPreset()">🔥 Jersey Bounce Gugak <span style="font-size:10px;opacity:0.75">(저지 클럽 그루브)</span></button>
       </div>
 
       <div style="font-size:10px;color:var(--muted);font-weight:600;margin:2px 0 5px 2px">🎻 아쟁 딥 소울</div>
@@ -580,7 +580,9 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 
       <div style="font-size:10px;color:var(--muted);font-weight:600;margin:2px 0 5px 2px">🌹 국악 트롯트</div>
       <div style="display:flex;flex-wrap:wrap;gap:8px">
-        <button class="btn btn-soul" onclick="applyGugakTrotPreset()" style="border-color:#d4845a">🌹 국악 트롯트 <span style="font-size:10px;opacity:0.75">(허스키 여성 · 판소리 · 깊은 한)</span></button>
+        <button class="btn btn-soul" onclick="applyGugakTrotPreset('classic')" style="border-color:#d4845a">🌹 국악 트롯트 · 정통 <span style="font-size:10px;opacity:0.75">(판소리 · 깊은 한)</span></button>
+        <button class="btn btn-soul" onclick="applyGugakTrotPreset('ballad')" style="border-color:#d4845a">🌹 국악 트롯트 · 발라드 <span style="font-size:10px;opacity:0.75">(느리고 절절)</span></button>
+        <button class="btn btn-soul" onclick="applyGugakTrotPreset('gueum')" style="border-color:#d4845a">🌹 국악 트롯트 · 구음 강조 <span style="font-size:10px;opacity:0.75">(판소리 득음·추임새)</span></button>
       </div>
     </div>
     <div style="border-top:1px solid rgba(201,168,76,.2)"></div>
@@ -2267,90 +2269,6 @@ const PRESET_POOLS = {
     blackSoulElements:  [[0,4],[3,4],[0,3]],
     humanFeelElements:  [[0,1],[1,6],[0,6]],
     gueumPositions:     [['start','end'],['mid','end'],['start','mid','end']],
-  },
-  arirang_hyper: {
-    genre:              [4, 7],
-    moods:              [11, 15, 0, 12],
-    hanSoul:            [1, 2],
-    instr:              [{cat:'percussion',idx:0},{cat:'string',idx:0},{cat:'string',idx:2},{cat:'percussion',idx:1}],
-    keys:               [0, 1],
-    scales:             [0, 3],
-    moodN:              [2, 2],
-    vocalStyle:         [5, 1, 7],
-    concept:            [4, 7],
-    vocalTones:         [[8,10],[5,10],[4,10]],
-    textures:           [[1,2],[2,5],[1,5]],
-    grooves:            [[2,5],[4,5],[2,4]],
-    spaces:             [[1,2],[2],[1]],
-    koreanGrooves:      [[0,1,13],[1,13],[0,5,13]],
-    bassStyles:         [[0,3],[3,4],[0,4]],
-    koreanFeelings:     [[0,5],[0,3],[3,5]],
-    blackSoulElements:  [[1,2],[0,2],[2,5]],
-    humanFeelElements:  [[4,6],[0,4],[0,6]],
-    gueumPositions:     [['start'],['start','mid'],['mid']],
-  },
-  uk_garage_gugak: {
-    genre:              [7, 4],
-    moods:              [0, 3, 11, 16],
-    hanSoul:            [1, 2],
-    instr:              [{cat:'percussion',idx:0},{cat:'string',idx:0},{cat:'string',idx:3},{cat:'percussion',idx:1}],
-    keys:               [3, 6],
-    scales:             [3, 2],
-    moodN:              [2, 2],
-    vocalStyle:         [5, 0, 7],
-    concept:            [4, 7],
-    vocalTones:         [[8,10],[5,10],[9,10]],
-    textures:           [[1,5],[2,5],[1,2]],
-    grooves:            [[5,6],[2,6],[2,5]],
-    spaces:             [[1,2],[1],[2]],
-    koreanGrooves:      [[0,1,5],[1,5,13],[0,5,13]],
-    bassStyles:         [[0,3,4],[3,4],[0,4]],
-    koreanFeelings:     [[0,5],[3,5],[0,3]],
-    blackSoulElements:  [[1,2],[2,5],[1,5]],
-    humanFeelElements:  [[0,4],[4,6],[0,6]],
-    gueumPositions:     [['start'],['start','mid'],['mid']],
-  },
-  hyper_catchy_gugak: {
-    genre:              [7, 4],
-    moods:              [0, 16, 11, 3],
-    hanSoul:            [1, 2],
-    instr:              [{cat:'string',idx:0},{cat:'wind',idx:1},{cat:'string',idx:2},{cat:'percussion',idx:0}],
-    keys:               [5, 6],
-    scales:             [3, 2],
-    moodN:              [2, 2],
-    vocalStyle:         [5, 0, 7],
-    concept:            [4, 7],
-    vocalTones:         [[9,10],[8,10],[5,10]],
-    textures:           [[1,5],[2,5],[1,6]],
-    grooves:            [[4,6],[5,6],[4,5]],
-    spaces:             [[1,2],[2],[1]],
-    koreanGrooves:      [[0,1,5],[1,5],[0,5,13]],
-    bassStyles:         [[0,4],[3,4],[0,3]],
-    koreanFeelings:     [[0,3],[0,5],[3,5]],
-    blackSoulElements:  [[0,2],[1,2],[0,5]],
-    humanFeelElements:  [[0,4],[4,6],[0,6]],
-    gueumPositions:     [['start'],['mid'],['start','mid']],
-  },
-  jersey_bounce_gugak: {
-    genre:              [4, 7],
-    moods:              [0, 11, 15, 3],
-    hanSoul:            [1, 2],
-    instr:              [{cat:'percussion',idx:0},{cat:'string',idx:0},{cat:'string',idx:3},{cat:'percussion',idx:1}],
-    keys:               [0, 1],
-    scales:             [0, 3],
-    moodN:              [2, 2],
-    vocalStyle:         [5, 1, 7],
-    concept:            [4, 7],
-    vocalTones:         [[5,10],[8,10],[4,10]],
-    textures:           [[1,2],[2,5],[1,5]],
-    grooves:            [[2,4],[4,6],[2,6]],
-    spaces:             [[1],[1,2],[2]],
-    koreanGrooves:      [[0,1,13],[1,5,13],[0,5,13]],
-    bassStyles:         [[0,3],[3,4],[0,4]],
-    koreanFeelings:     [[0,3],[0,5],[3,5]],
-    blackSoulElements:  [[0,1],[1,2],[0,2]],
-    humanFeelElements:  [[0,4],[4,6],[0,6]],
-    gueumPositions:     [['start'],['start','mid'],['mid','end']],
   },
 };
 
@@ -5282,8 +5200,8 @@ function _finalizePreset(toastMsg) {
 }
   /* ===== 랜덤 마법 추가 ===== */
 const STRONG_RANDOM_PRESETS = [
-  'arirang_hyper','jersey_bounce_gugak','workout','hiphop','hyper_catchy_gugak', // 기존 강한 랜덤
-  'court','pansori','labor','uk_garage_gugak',                                   // 추가: 강한 감정선
+  'workout','hiphop', // 기존 강한 랜덤
+  'court','pansori','labor',                                   // 추가: 강한 감정선
   'pansori_han_blues','ajaeng_soul_ballad',                                      // 추가: 깊은 한(恨) 계열
 ];
 
@@ -5468,38 +5386,75 @@ function apply73Preset(type) {
 }
 /* 🌹 국악 트롯트 프리셋 — 판소리 득음 기반, 깊은 한(恨), 강한 허스키 여성 벨팅
    (실존 가수명은 음악 AI가 차단하므로 목소리·창법 특성으로 구성) */
-function applyGugakTrotPreset() {
+function applyGugakTrotPreset(style) {
+  style = style || 'classic';
   resetAll(false);
-  STATE.genre = 8;                 // 국악 트롯트
+  STATE.genre = 8;                 // 국악 트롯트 (모두 국악 베이스)
+  STATE.concept = 8;               // 국악 트롯트 컨셉 (genre와 일치)
   STATE.gugakTrotBase = true;
   STATE.gender = 'female';
-  STATE.moods = [7, 8];            // 현대적 한국 애절함 + 늦은 밤 애절한 블루스
-  STATE.vocalStyle = 7;            // Cinematic Soul Fusion (웅장·드라마틱 감정 고조)
-  STATE.gugakVocalStyle = [0, 1, 4][Math.floor(Math.random() * 3)]; // 판소리·남도민요·수심가 중 랜덤
-  STATE.vocalTones = [11, 1, 9];   // 거친 소울풀 여성 벨트 + 소울풀 여성 + 감성적 표현
-  STATE.hanSoulStyle = 4;          // 한(恨) 소울 발라드
   STATE.musicKey = 1;              // Dm
-  STATE.koreanScale = 0;           // 계면조
-  STATE.energyArc = 0;             // 슬로우 번 (절절 → 폭발)
-  STATE.bpm = 88;
-  STATE.intensity = 8;             // 파워풀
-  // 06B 구음 — 판소리 딥 블루스 구음, 여성, 전 구간, 최대 강도
-  STATE.gueumPositions = ['start','mid','end'];
-  STATE.gueumPitch = 'midhigh';
-  STATE.gueumGender = 'female';
-  STATE.gueumStyle = 0;            // 판소리 딥 블루스 구음
-  STATE.gueumStrength = 'maximum';
-  // 08 고급 사운드 — 거칠고 한 가득
-  STATE.textures = [5, 6];
+  STATE.koreanScale = 0;           // 계면조 (깊은 한)
+  STATE.hanSoulStyle = 4;          // 한(恨) 소울 발라드
+  // 공통 악기: 해금 + 피리 + 아쟁(저음) + 장구 (멜로디+베이스+리듬)
+  STATE.instrList = [{cat:'string',idx:1},{cat:'wind',idx:1},{cat:'string',idx:2},{cat:'percussion',idx:0}];
   STATE.koreanGrooves = [2, 3];
   STATE.koreanFeelings = [4, 5];
   STATE.blackSoulElements = [2];
   STATE.humanFeelElements = [1, 6];
-  // 03 악기 — 트롯 조합: 해금 + 피리 + 장구
-  STATE.instrList = [{cat:'string',idx:1},{cat:'wind',idx:1},{cat:'percussion',idx:0}];
-  // 트롯 베이스 체크박스 동기화
+
+  let toast;
+  if (style === 'ballad') {
+    // 트롯 발라드 — 더 느리고 애절, 슬픔 극대화
+    STATE.moods = [7, 8, 10];
+    STATE.vocalStyle = 4;          // 절절한 발라드 보컬
+    STATE.gugakVocalStyle = [1, 4][Math.floor(Math.random() * 2)]; // 남도민요·수심가
+    STATE.vocalTones = [1, 9, 8];  // 소울풀 여성 + 감성 표현 + 애절
+    STATE.energyArc = 0;           // 슬로우 번
+    STATE.bpm = 66 + Math.floor(Math.random() * 7); // 66~72 (느림)
+    STATE.intensity = 6;
+    STATE.textures = [5, 6];
+    STATE.gueumPositions = ['start','end'];
+    STATE.gueumPitch = 'mid';
+    STATE.gueumGender = 'female';
+    STATE.gueumStyle = 0;
+    STATE.gueumStrength = 'medium';
+    toast = '🌹 국악 트롯트 — 발라드 (느리고 절절한 한)';
+  } else if (style === 'gueum') {
+    // 트롯 구음 강조 — 판소리 득음·추임새·구음 전면, 전 구간 최대 강도
+    STATE.moods = [7, 8];
+    STATE.vocalStyle = 1;          // 판소리 창법 전면
+    STATE.gugakVocalStyle = 0;     // 판소리
+    STATE.vocalTones = [11, 1, 9]; // 거친 소울풀 벨트 + 소울풀 + 감성
+    STATE.energyArc = 0;
+    STATE.bpm = 82 + Math.floor(Math.random() * 8); // 82~89
+    STATE.intensity = 9;           // 가장 파워풀
+    STATE.textures = [5, 6];
+    STATE.gueumPositions = ['start','mid','end'];
+    STATE.gueumPitch = 'midhigh';
+    STATE.gueumGender = 'female';
+    STATE.gueumStyle = 0;          // 판소리 딥 블루스 구음
+    STATE.gueumStrength = 'maximum';
+    toast = '🌹 국악 트롯트 — 구음 강조 (판소리 득음·추임새 전면)';
+  } else {
+    // 정통 (classic) — 기존 기본값
+    STATE.moods = [7, 8];
+    STATE.vocalStyle = 7;          // Cinematic Soul Fusion
+    STATE.gugakVocalStyle = [0, 1, 4][Math.floor(Math.random() * 3)];
+    STATE.vocalTones = [11, 1, 9];
+    STATE.energyArc = 0;
+    STATE.bpm = 86 + Math.floor(Math.random() * 6); // 86~91
+    STATE.intensity = 8;
+    STATE.textures = [5, 6];
+    STATE.gueumPositions = ['start','mid','end'];
+    STATE.gueumPitch = 'midhigh';
+    STATE.gueumGender = 'female';
+    STATE.gueumStyle = 0;
+    STATE.gueumStrength = 'maximum';
+    toast = '🌹 국악 트롯트 — 정통 (판소리 득음 · 깊은 한 · 허스키 여성 벨팅)';
+  }
   const _tb = document.getElementById('gugakTrotBaseToggle'); if (_tb) _tb.checked = true;
-  _finalizePreset('🌹 국악 트롯트 프리셋 적용! (판소리 득음 · 깊은 한 · 허스키 여성 벨팅)');
+  _finalizePreset(toast);
 }
 
 function applyUltimateGroovePreset() {
@@ -5657,76 +5612,12 @@ function applyGueumPreset(type) {
     STATE.gueumStyle=1;STATE.hanSoulStyle=4;
     STATE.musicKey=1;STATE.koreanScale=4;
     selectInstrByCategory('string',2, true);
-  } else if (type==='arirang_hyper') {
-    // ARIRANG Hyper Fusion — Rage + Hyper 2026
-    STATE.genre=4;STATE.moods=[11,15];STATE.concept=4;STATE.vocalStyle=5;STATE.vocalTones=[4,7];
-    STATE.textures=[0,5];STATE.grooves=[2,6];
-    STATE.spaces=[0];
-    STATE.bassStyles=[3,0]; // Boom bap + Funky
-    STATE.koreanGrooves=[1,2,13];STATE.koreanFeelings=[0,3];
-    STATE.blackSoulElements=[1,2]; // Soul belt adlibs + Call-and-response
-    STATE.humanFeelElements=[0,6]; // Imperfect timing + Spontaneous fills
-    STATE.energyArc=4; // Twin Peaks — 두 번의 절정으로 Rage 폭발력 극대화
-    STATE.bpm=145;STATE.intensity=9;STATE.koreanRatio=70;
-    STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='high';STATE.gueumGender='both';
-    STATE.gueumStyle=6;STATE.hanSoulStyle=1; // Hwimori Soul Shout + 조선 힙합
-    STATE.musicKey=1;STATE.koreanScale=0; // Dm 레단조 + 계면조 (묵직·Rage·힙합)
-    selectInstrByCategory('percussion',0, true);
-  } else if (type==='uk_garage_gugak') {
-    // UK Garage Gugak — KiiiKiii 스타일 (2-step + 국악)
-    STATE.genre=7;STATE.moods=[0,3];STATE.concept=7;STATE.vocalStyle=5;STATE.vocalTones=[0,10];
-    STATE.textures=[4,6];STATE.grooves=[0,2,6];
-    STATE.spaces=[0];
-    STATE.bassStyles=[0,5]; // Funky + Syncopated bass
-    STATE.koreanGrooves=[0,4,13];STATE.koreanFeelings=[0,5];
-    STATE.blackSoulElements=[2,5]; // Call-and-response + Chicago blues shuffle
-    STATE.humanFeelElements=[0,6];
-    STATE.energyArc=5; // Sustained Groove — UK Garage는 처음부터 끝까지 일정한 그루브
-    STATE.bpm=130;STATE.intensity=7;STATE.koreanRatio=65;
-    STATE.gueumPositions=['mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
-    STATE.gueumStyle=4;STATE.hanSoulStyle=1; // Jangdan Groove Gueum + 조선 힙합
-    STATE.musicKey=3;STATE.koreanScale=3; // Gm 솔단조 + 경토리 (경쾌·신명·발랄)
-    selectInstrByCategory('percussion',0, true);
-  } else if (type==='hyper_catchy_gugak') {
-    // Hyper Catchy Gugak — 밝고 중독성 강함
-    STATE.genre=7;STATE.moods=[0,16];STATE.concept=7;STATE.vocalStyle=0;STATE.vocalTones=[0,9];
-    STATE.textures=[0,4];STATE.grooves=[0,2,6];
-    STATE.spaces=[2]; // Wide stereo — 중독성 강한 공간감
-    STATE.bassStyles=[0,5]; // Funky + Syncopated
-    STATE.koreanGrooves=[3,13];STATE.koreanFeelings=[0,5];
-    STATE.blackSoulElements=[1,2]; // Soul belt adlibs + Call-and-response
-    STATE.humanFeelElements=[0,4]; // Imperfect timing + Dynamic velocity
-    STATE.energyArc=5; // Sustained Groove — 중독성 있는 일정한 에너지
-    STATE.bpm=118;STATE.intensity=8;STATE.koreanRatio=68;
-    STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='high';STATE.gueumGender='both';
-    STATE.gueumStyle=6;STATE.hanSoulStyle=null; // Hwimori Soul Shout — 밝고 신명나는 샤우트
-    STATE.musicKey=6;STATE.koreanScale=3; // G 솔장조 + 경토리 (밝음·신명·중독성)
-    selectInstrByCategory('string',0, true);
-  } else if (type==='jersey_bounce_gugak') {
-    // Jersey Bounce Gugak — 강한 비트 그루브
-    STATE.genre=4;STATE.moods=[0,11];STATE.concept=4;STATE.vocalStyle=7;STATE.vocalTones=[4,10];
-    STATE.textures=[0,5];STATE.grooves=[2,4,6];
-    STATE.spaces=[0]; // Small jazz club — 클럽 감성
-    STATE.bassStyles=[3,5]; // Boom bap + Syncopated bass
-    STATE.koreanGrooves=[2,3,13];STATE.koreanFeelings=[0,5];
-    STATE.blackSoulElements=[1,2]; // Soul belt adlibs + Call-and-response
-    STATE.humanFeelElements=[0,6];
-    STATE.energyArc=5; // Sustained Groove — Jersey Bounce는 처음부터 끝까지 강한 그루브
-    STATE.bpm=135;STATE.intensity=8;STATE.koreanRatio=70;
-    STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='high';STATE.gueumGender='both';
-    STATE.gueumStyle=4;STATE.hanSoulStyle=1; // Jangdan Groove Gueum + 조선 힙합
-    STATE.musicKey=1;STATE.koreanScale=0; // Dm 레단조 + 계면조 (강한 비트·그루브)
-    selectInstrByCategory('percussion',0, true);
   }
   const labels={
     pansori_han_blues:'🎙️ 판소리 한 블루스',
     seoul_midnight_jazz:'🎷 서울 심야 재즈',
     sanjo_blue:'🎸 산조 블루 노트',
     ajaeng_soul_ballad:'🎻 아쟁 소울 발라드',
-    arirang_hyper:'🌟 ARIRANG Hyper Fusion',
-    uk_garage_gugak:'🎛️ UK Garage Gugak',
-    hyper_catchy_gugak:'✨ Hyper Catchy Gugak',
-    jersey_bounce_gugak:'🔥 Jersey Bounce Gugak',
   };
     const isStrongGueum = STRONG_RANDOM_PRESETS.includes(type);
   _applyPools(type);
@@ -6677,24 +6568,48 @@ function buildCompactSunoPrompt() {
     const m = full.match(re);
     return m ? m[0].trim() : '';
   };
-  const sonic  = pick('SONIC IDENTITY');
+  let sonic    = pick('SONIC IDENTITY');
   const genre  = pick('Genre/Mood');
-  const timbre = pick('TIMBRE');          // ★ 악기 지시 — 반드시 원문 유지
-  const instr2 = timbre ? '' : pick('Instruments');
+  let timbre   = pick('TIMBRE') || pick('Instruments');
   const vocal  = pick('Vocal');
-  const gueumV = pick('Gueum Voice');
   const key    = pick('Key');
   const bpmM   = full.match(/BPM \d+[^\n]*/);
   const bpm    = bpmM ? bpmM[0].split('·')[0].trim() : '';
 
-  let out = [sonic, genre, (timbre||instr2), vocal, gueumV, key, bpm].filter(Boolean).join('\n');
-  if (out.length > 1000) out = [sonic, genre, (timbre||instr2), vocal, key, bpm].filter(Boolean).join('\n');
-  if (out.length > 1000) out = [sonic, genre, (timbre||instr2), key, bpm].filter(Boolean).join('\n');
-  if (out.length > 1000 && sonic) {
-    const sonicShort = sonic.split(/[.;]/)[0];
-    out = [sonicShort, genre, (timbre||instr2), key, bpm].filter(Boolean).join('\n');
+  // 업텐포(빠른) 곡은 수노가 느린 가사에 끌려 처지지 않도록 맨 앞에 빠르기 강제
+  let tempoTag = '';
+  try {
+    const sanjoUptempo = (typeof STATE !== 'undefined' && STATE.genre === 1 && !STATE.sanjoBallad);
+    if (sanjoUptempo || (typeof STATE !== 'undefined' && STATE.bpm >= 95)) {
+      tempoTag = `[Tempo] FAST ${STATE.bpm} BPM — uptempo, driving rhythm, steady swing groove, keep the tempo and energy UP throughout. NOT slow, NOT a ballad, do not drag or slow down.`;
+    }
+  } catch (e) {}
+
+  const LIMIT = 1000;
+  const assemble = (s, t) => [tempoTag, s, genre, t, vocal, key, bpm].filter(Boolean).join('\n');
+
+  // 1) 전체가 한도 안이면 그대로
+  let out = assemble(sonic, timbre);
+  if (out.length <= LIMIT) return out;
+
+  // 2) SONIC을 첫 구절만 남겨 축소 (TIMBRE 악기 지시는 보존)
+  let sonicShort = sonic;
+  const dash = sonic.indexOf('—');
+  if (dash > 16) sonicShort = sonic.slice(0, dash).trim();
+  out = assemble(sonicShort, timbre);
+  if (out.length <= LIMIT) return out;
+
+  // 3) 그래도 길면 TIMBRE를 악기 경계(" | " / " || ")에서 잘라 온전한 악기 단위만 유지 (절대 단어 중간 X)
+  const fixedLen = assemble(sonicShort, '').length;     // TIMBRE 뺀 필수부 길이
+  let budget = LIMIT - fixedLen - 2;
+  if (timbre.length > budget) {
+    let t = timbre.slice(0, Math.max(0, budget));
+    const sep = Math.max(t.lastIndexOf(' || '), t.lastIndexOf(' | '));
+    if (sep > 40) t = timbre.slice(0, sep);
+    timbre = t;
   }
-  return out.slice(0, 1000);
+  out = assemble(sonicShort, timbre);
+  return out.slice(0, LIMIT);
 }
 function genCompactSuno() {
   const p = buildCompactSunoPrompt();
