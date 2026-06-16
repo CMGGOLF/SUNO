@@ -3274,6 +3274,107 @@ const SANJO_BALLAD_DNA = [
   "ballad-tempo sanjo jazz — sparse and breathing, gayageum and haegeum in slow call-and-response over a soft walking bass and brushed drums, warm Rhodes underneath, the ache held quietly, never rushed",
 ];
 
+/* ── 보충 DNA 풀 — 한 장르로 15~20곡 리플레이 시 묘사 겹침 방지 (기존 GENRE_DNA에 합쳐 사용) ── */
+const GENRE_DNA_EXTRA = {
+  0: [ // 조선 궁중 소울 추가
+    "moonlit palace soul — gayageum plucking sparse crystalline notes over a slow neo-soul groove, haegeum sighing in the gaps, ajaeng deep bass, warm Rhodes held low, the loneliness of an empty royal courtyard",
+    "regal slow-burn soul — geomungo low resonant strokes anchoring the floor, gayageum melody drifting above, soft janggu heartbeat, distant strings, dignified sorrow that swells late",
+    "candlelit court ballad — daegeum breathy long tones answered by gayageum, a hushed upright bass, brushed cymbals, the restrained grief of a noblewoman alone at night",
+    "ceremonial soul nocturne — haegeum crying long bent notes, gayageum tremolo, ajaeng drone underneath, sparse piano chords, incense-smoke atmosphere, deep dignified han",
+    "after-rain palace soul — gayageum droplets over warm Rhodes, haegeum weeping softly, slow janggu pulse, the stillness after weeping, elegant and heavy",
+    "twilight throne-room soul — slow swelling strings under gayageum, geomungo bass plucks, a single mournful piri line, grandeur dimmed by loss",
+    "silk-and-shadow soul — gayageum and haegeum trading aching phrases, muffled janggu, a low warm bass, the weight of unspoken longing in royal halls",
+    "lone lantern ballad — sparse gayageum, breathy daegeum, distant reverberant percussion, an intimate sorrowful soul melody that builds to a quiet ache",
+  ],
+  1: [ // 산조 재즈 (업텐포) 추가
+    "fast bebop sanjo — gayageum machine-gun runs over a sprinting walking bass, ride cymbal driving hard, haegeum blowing fierce horn-like lines, trading eights, smoky and relentless",
+    "blues-drenched sanjo jazz — gayageum bending blue notes, haegeum growling like a muted trumpet, shuffling brushed drums, upright bass strutting, gritty late-night swing",
+    "modal jazz sanjo vamp — one hypnotic mode, gayageum improvising freely, hand-percussion and bass locked in a groove, haegeum soaring, intensity rising in waves",
+    "uptempo gayageum-piri front line — head played in unison then split into trading solos, swung ride and snare, jazz piano stabs, lively bustling club energy",
+    "hard-swinging sanjo — walking bass and ride cymbal at a clip, gayageum and haegeum chasing each other through jajinmori-style acceleration, exhilarating and tense",
+    "bright cool-jazz sanjo — gayageum stating a crisp melodic head, brushed drums light and quick, piri taking a breezy solo, upright bass walking briskly, sophisticated motion",
+    "funky sanjo-jazz fusion — syncopated bass groove, gayageum riffing rhythmically, janggu accenting the backbeat, haegeum wailing over the top, danceable yet Korean",
+    "frenetic trading-fours sanjo — gayageum, haegeum and percussion swapping rapid-fire phrases over a galloping swing, building to a roaring collective improvisation",
+  ],
+  2: [ // 판소리 소울 추가
+    "raw gospel-pansori shout — a powerful Korean voice tearing on the high notes, haegeum and ajaeng answering, organ-like swells held low, janggu backbone, cathartic release of han",
+    "slow-burning pansori soul — gayageum sparse and aching, the voice starting in a hoarse whisper and breaking open into a wail, deep ajaeng bass, devastating build",
+    "field-holler pansori blues — call-and-response between a cracked deukeum (raw) voice and weeping haegeum, hand-clap percussion, raw and earthen, sorrow wrung dry",
+    "torch-song pansori soul — a single mournful melody carried by a husky breaking voice, gayageum tremolo, ajaeng drone, smoky and intimate, grief turned beautiful",
+    "explosive pansori catharsis — restrained verses erupting into full-throated belting, janggu thunder, haegeum screaming, the climax of a lifetime of held-in sorrow",
+    "midnight pansori ballad — soft gayageum, a weary aching voice telling its grief, brushed percussion, warm low bass, the quiet kind of crying",
+    "ancestral pansori soul — geomungo and ajaeng deep and grave, the voice rough as bark, sparse percussion, a ritual lament that rises and falls like breathing",
+    "blues-pansori crossroads — bent gayageum notes meeting a growling deukeum (raw) voice, walking bass, shuffling drums, the sound of sorrow that learned to swing",
+  ],
+  3: [ // 민요 블루스 추가
+    "delta-folk minyo blues — haegeum sliding like a bottleneck guitar, piri answering, a loping walking bass, brushed shuffle, dusty road weariness",
+    "slow 12-bar minyo — gayageum picking blue notes, haegeum weeping the lead, ajaeng bass walking heavy, the resignation of an old folk lament",
+    "work-song minyo blues — call-and-response vocal phrasing, rhythmic janggu like a hammer, droning ajaeng, gritty communal sorrow",
+    "rainy-day minyo blues — soft slide phrases on haegeum, sparse gayageum, a gentle shuffle, melancholy drifting like wet smoke",
+    "rolling-river minyo blues — a hypnotic mid-tempo groove, piri and haegeum trading folk melodies, warm bass, the ache of letting something float away",
+    "smoky tavern minyo blues — growling low haegeum, walking bass, brushed snare, a worn folk melody bent into blue notes, late and lonesome",
+    "highland minyo lament — wide-vibrato haegeum over a slow drone, sparse percussion, vast and sorrowful, folk melody stretched thin with longing",
+    "midnight crossroads minyo — gayageum and slide-like haegeum trading mournful licks, shuffling brushes, deep bass, blues born from Korean folk soil",
+  ],
+  4: [ // 국악 궁중 힙합 추가
+    "boom-bap gugak — dusty 808 and janggu locking a head-nod groove, piri stabs as the hook, gayageum chops, a half-sung half-rapped Korean delivery, defiant",
+    "trap-gugak — rolling hi-hats and deep 808 sub, kkwaenggwari accents, haegeum melody floating over the top, dark and brooding palace energy",
+    "lo-fi gugak hip-hop — a hazy dusty beat, gayageum loop, soft janggu, a laid-back flow, late-night introspective han",
+    "cinematic gugak rap — orchestral hits with janggu and 808, piri fanfare, a commanding vocal, the sound of a royal uprising",
+    "soulful boom-bap gugak — warm Rhodes chops under a dusty drum break, gayageum melody, sung-rap hooks, nostalgic and heavy",
+    "hard-knock gugak — punchy kick and snare, kkwaenggwari and janggu fills, aggressive piri riff, a fierce raw flow, palace-shadow grit",
+    "minimal gugak trap-soul — sparse 808, a single haunting gayageum motif, breathy sung verses sliding into rap, spacious and moody",
+    "marching gugak hip-hop — booming taepyeongso-like piri over a stomping beat, janggu and 808, chant-like hooks, ceremonial and powerful",
+  ],
+  5: [ // 대금 앰비언트 추가
+    "vast daegeum ambient — a single breathy daegeum tone stretched across huge reverb, faint gayageum droplets, sub-bass drone, the silence of distant mountains",
+    "fog-drift ambient — overlapping daegeum and haegeum long tones, no pulse, only swells, ajaeng drone beneath, dissolving and weightless",
+    "temple-bell ambient — sparse resonant strikes decaying into reverb, daegeum breath, gayageum harmonics, meditative and sorrowful",
+    "snowfall daegeum ambient — gentle gayageum specks over a sustained daegeum pad, soft wind textures, cold and beautiful stillness",
+    "deep-night ambient — low ajaeng drone, distant daegeum sighs, occasional gayageum ripple, a vast lonely darkness",
+    "river-mist ambient — flowing daegeum lines blurred in reverb, faint percussion like dripping water, gayageum echoes, hypnotic melancholy",
+    "cavern ambient gugak — echoing daegeum and haegeum in a huge space, sub drone, sparse resonant plucks, awe and grief intertwined",
+    "dawn-breath ambient — a slow swelling daegeum melody emerging from silence, warm low strings, gayageum glints like first light, fragile hope under sorrow",
+  ],
+  6: [ // 아쟁 딥 소울 추가
+    "lightless ajaeng soul — bowed ajaeng growling in the lowest register, haegeum sobbing above, sparse warm bass, a male voice on the edge of breaking, suffocating darkness",
+    "midnight ajaeng ballad — slow bowed low strings, gayageum fills, brushed percussion barely there, the heaviest kind of longing",
+    "raw ajaeng deep soul — gravelly bow friction up front, haegeum crying, a hushed organ pad low, intimate and devastating",
+    "subterranean soul — ajaeng drone like a cello in mourning, distant gayageum, soft janggu pulse, a voice that aches from the gut",
+    "candle-out ajaeng soul — sparse bowed phrases, long silences, haegeum answering faintly, warm bass, grief sitting in the dark",
+    "slow-bleed ajaeng ballad — the bow drawing out one long anguished note, gayageum tremor, sub bass, emotion held until it cracks",
+    "smoke-and-ash deep soul — ajaeng and haegeum entwined low and mournful, brushed drums, a worn soulful voice, embers of a lost love",
+    "abyssal ajaeng nocturne — the deepest bowed strings under a thin crying melody, vast reverb, near-silence broken by sorrow",
+  ],
+  7: [ // 네오조선 퓨전 추가
+    "bass-led neojoseon groove — a deep modern bassline with gayageum counter-melody, crisp programmed drums and janggu, haegeum hook, sleek yet rooted",
+    "electronic neojoseon — warm synth pads under gayageum, a steady beat, haegeum lead, ajaeng sub, future-traditional and bittersweet",
+    "cinematic neojoseon fusion — building strings and a half-time beat, gayageum and haegeum trading the theme, janggu accents, epic and emotional",
+    "downtempo neojoseon soul — a chilled groove, gayageum melody over Rhodes, soft haegeum, modern and melancholic",
+    "anthemic neojoseon — a driving beat with soaring haegeum, gayageum riffs, layered percussion, old roots in a bright new frame",
+    "neo-folk fusion — acoustic textures meeting gayageum and haegeum, a gentle modern groove, warm and nostalgic with quiet han",
+    "glitch-gugak fusion — chopped gayageum samples over a crisp beat, haegeum lines, sub bass, inventive and moody",
+    "widescreen neojoseon — spacious production, gayageum and daegeum over a deep groove, slow build to an emotional drop, modern grandeur",
+  ],
+  8: [ // 국악 트롯트 추가
+    "classic gugak trot — haegeum sustaining then bending into a kkeokneun-mok, piri behind, ajaeng bass, janggu pulse, a trembling husky voice, resignation then a sob",
+    "slow trot ballad — sparse haegeum, a quivering low female voice carrying the melody, soft janggu, the ache of a love that left on the last train",
+    "namdo-minyo trot — wide vibrato and bent notes, gayageum and piri behind, a powerful belting voice, deep gyemyeonjo sorrow",
+    "retro gugak trot — a nostalgic two-beat feel with janggu, haegeum lead, warm bass, the bittersweet swing of old Korean melodrama",
+    "torch trot — a single mournful haegeum line, a husky voice swelling from whisper to wail, sparse percussion, theatrical heartbreak",
+    "deep-han trot — pansori-tinged belting over haegeum and ajaeng, janggu backbone, chuimsae interjections, raw and cathartic",
+    "rainy-night trot ballad — soft haegeum and piri, a weary trembling voice, brushed percussion, the quiet sorrow of waiting in vain",
+    "grand finale trot — slow build to a huge emotional belt, haegeum soaring, janggu thundering, the full release of a lifetime of han",
+  ],
+};
+const SANJO_BALLAD_DNA_EXTRA = [
+  "3am jazz-bar nocturne — haegeum like a muted trumpet over sparse Rhodes, brushed snare whispering, gayageum placing single notes, smoke and empty chairs",
+  "rain-on-window jazz ballad — slow rubato gayageum, a soft walking bass, haegeum sighing long bends, the loneliness of a closing bar",
+  "last-call sanjo ballad — gentle brushed drums, warm piano chords, gayageum and haegeum trading hushed phrases, intimate and aching",
+  "blue-hour jazz lullaby — sparse and breathing, a tender gayageum melody, haegeum answering softly, the world asleep, grief kept quiet",
+  "candle-low jazz ballad — minimal upright bass, a single mournful haegeum line, gayageum glints, deep restrained longing at midnight",
+];
+
 /* ── 한소울스타일별 DNA — 각 3개 변형 ─────────────────────────── */
 const HANSOUL_DNA = {
   0: [ // Mississippi Han Blues
@@ -3417,7 +3518,7 @@ function _doBuildPrompt() {
     const domLabel = dom>=90?'ABSOLUTE DOMINANCE':dom>=80?'STRONG LEAD':dom>=70?'MAIN FOCUS':'MODERATE LEAD';
 
     /* ── ❶ 장르 DNA 주입 — DNA 3종 모두 녹여 맥락 극대화 ── */
-    const _dnaPool = (STATE.genre === 1 && STATE.sanjoBallad) ? SANJO_BALLAD_DNA : (STATE.genre !== null) ? GENRE_DNA[STATE.genre] :
+    const _dnaPool = (STATE.genre === 1 && STATE.sanjoBallad) ? SANJO_BALLAD_DNA.concat(SANJO_BALLAD_DNA_EXTRA) : (STATE.genre !== null) ? GENRE_DNA[STATE.genre].concat(GENRE_DNA_EXTRA[STATE.genre]||[]) :
                      (STATE.hanSoulStyle !== null) ? HANSOUL_DNA[STATE.hanSoulStyle] : null;
     if (_dnaPool) {
       const _dnaIdx = Math.floor((STATE.dnaSeed || 0) * _dnaPool.length) % _dnaPool.length;
@@ -4070,7 +4171,7 @@ async function aiExpandPrompt() {
   const _guideGenre  = (STATE.genre !== null)        ? GENRE_SUNO_GUIDE[STATE.genre]        : null;
   const _guideHsoul  = (STATE.hanSoulStyle !== null)  ? HANSOUL_SUNO_GUIDE[STATE.hanSoulStyle] : null;
   const _activeGuide = _guideGenre || _guideHsoul || '';
-  const _dnaPool2    = (STATE.genre === 1 && STATE.sanjoBallad) ? SANJO_BALLAD_DNA : (STATE.genre !== null)        ? GENRE_DNA[STATE.genre]        :
+  const _dnaPool2    = (STATE.genre === 1 && STATE.sanjoBallad) ? SANJO_BALLAD_DNA.concat(SANJO_BALLAD_DNA_EXTRA) : (STATE.genre !== null)        ? GENRE_DNA[STATE.genre].concat(GENRE_DNA_EXTRA[STATE.genre]||[])        :
                        (STATE.hanSoulStyle !== null)  ? HANSOUL_DNA[STATE.hanSoulStyle] : null;
   const _dnaIdx2     = _dnaPool2 ? Math.floor((STATE.dnaSeed||0) * _dnaPool2.length) % _dnaPool2.length : 0;
   const _dnaHint     = _dnaPool2 ? scrubArtistNames(_dnaPool2[_dnaIdx2]) : '';
@@ -5376,6 +5477,7 @@ function apply73Preset(type) {
   // 산조 재즈 = 업텐포 활기 (발라드 모드 OFF + 빠른 BPM)
   if (type === 'sanjo') { STATE.sanjoBallad = false; STATE.bpm = 100 + Math.floor(Math.random() * 16); } // 100~115
   applyPresetRandomness(isStrong73);
+  STATE.dnaSeed = Math.random(); STATE.negativeSeed = Math.random();  // 누를 때마다 다른 DNA 변형 (한 장르 리플레이 겹침 방지)
   syncSliders();renderAll();syncGueumUI();buildPrompt(true);
   _collapseAndRevealFilled();
   showToast(`✅ 7:3 ${type.toUpperCase()} Joseon Core 프리셋 적용 완료! (구음+한소울 자동 조합)`);
@@ -5693,7 +5795,11 @@ function syncSliders() {
   document.getElementById('intensityValue').textContent=STATE.intensity;
   document.getElementById('intensityLabel').textContent=_intensityLabel(STATE.intensity);
   if(document.getElementById('koreanDomSlider')){
-    const v=STATE.koreanDominance||80;
+    // koreanRatio를 master로 삼아 dominance를 비율에서 자동 계산 → 프리셋 적용 후 두 슬라이더가 어긋나는 문제 방지
+    // (드래그 연동 공식과 동일: kr 0~100% → dom 60~95)
+    const _kr = (STATE.koreanRatio==null ? 70 : STATE.koreanRatio);
+    const v = Math.max(60, Math.min(95, Math.round(60+(_kr/100)*35)));
+    STATE.koreanDominance = v;
     document.getElementById('koreanDomSlider').value=v;
     document.getElementById('koreanDomValue').textContent=v;
     document.getElementById('koreanDomLabel').textContent=_koreanDomLabel(v);
@@ -6645,7 +6751,7 @@ async function genSuperPrompt(silent = false) {
   const _guideGenre  = (STATE.genre !== null)        ? GENRE_SUNO_GUIDE[STATE.genre]        : null;
   const _guideHsoul  = (STATE.hanSoulStyle !== null)  ? HANSOUL_SUNO_GUIDE[STATE.hanSoulStyle] : null;
   const _activeGuide = _guideGenre || _guideHsoul || '';
-  const _dnaPool     = (STATE.genre === 1 && STATE.sanjoBallad) ? SANJO_BALLAD_DNA : (STATE.genre !== null) ? GENRE_DNA[STATE.genre] :
+  const _dnaPool     = (STATE.genre === 1 && STATE.sanjoBallad) ? SANJO_BALLAD_DNA.concat(SANJO_BALLAD_DNA_EXTRA) : (STATE.genre !== null) ? GENRE_DNA[STATE.genre].concat(GENRE_DNA_EXTRA[STATE.genre]||[]) :
                        (STATE.hanSoulStyle !== null) ? HANSOUL_DNA[STATE.hanSoulStyle] : null;
   /* ── v27: 3개 변형에 서로 다른 DNA 인덱스 강제 배정 (동일 문장 방지) ── */
   const _dnaLen = _dnaPool ? _dnaPool.length : 1;
