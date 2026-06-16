@@ -7417,6 +7417,7 @@ a.back{color:var(--korean2); text-decoration:none; font-size:13px}
 <nav class="toc">
   <h2>목 차</h2>
   <ol>
+    <li><a href="#presets">빠른 시작 프리셋 — 한 번에 세팅</a></li>
     <li><a href="#sections">번호 섹션 완전 해부 (01~14)</a></li>
     <li><a href="#vocal">목소리 굵고 거칠게</a></li>
     <li><a href="#gugak">국악 창법 스마트 조합</a></li>
@@ -7426,6 +7427,51 @@ a.back{color:var(--korean2); text-decoration:none; font-size:13px}
     <li><a href="#gloss">음악 용어 일상어 사전</a></li>
   </ol>
 </nav>
+
+<section id="presets">
+  <div class="sec-label">가장 먼저</div>
+  <h2 class="title">빠른 시작 <span class="em">프리셋</span> — 한 번에 세팅</h2>
+  <div class="sec-divider"><span>버튼 하나로 모든 칸이 자동으로 채워집니다</span></div>
+
+  <p>맨 위 <strong>빠른 시작 프리셋</strong> 패널의 버튼을 누르면, 아래 01~14 칸이 그 스타일에 맞게 <strong>한꺼번에 자동으로 채워집니다.</strong> 음악을 몰라도 버튼 하나로 완성된 세팅이 깔려요. 누른 뒤 마음에 안 드는 칸만 손보면 됩니다.</p>
+
+  <div class="note beginner"><b>가장 쉬운 길:</b> 원하는 분위기의 버튼 하나 누르기 → 결과물 영역의 <b>🎯 수노 압축 프롬프트</b> 누르기 → 복사 → 수노에 붙여넣기. 이게 전부입니다.</div>
+
+  <h3>장르별 프리셋 (모두 국악 베이스)</h3>
+  <div class="card korean">
+    <div class="num">느린 한(恨) 계열 — 채널 주력</div>
+    <ul>
+      <li><strong>🎵 Joseon Court</strong> — 조선 궁중 소울. 가야금·해금이 흐느끼는 궁중 발라드</li>
+      <li><strong>🎷 Pansori Soul</strong> / <strong>🎙️ 판소리 한 블루스</strong> — 득음 보컬의 판소리 소울·블루스</li>
+      <li><strong>🌙 Minyo Blues</strong> / <strong>🎸 산조 블루 노트</strong> — 민요 가락의 느린 블루스</li>
+      <li><strong>🎻 아쟁 소울 발라드</strong> — 아쟁 저음이 깔리는 가장 어둡고 깊은 소울</li>
+      <li><strong>🌙 늦은 밤 감성</strong> — 대금·여백 중심의 고요한 새벽 곡</li>
+    </ul>
+  </div>
+  <div class="card korean">
+    <div class="num">🎷 산조 재즈 — 두 가지 결</div>
+    <ul>
+      <li><strong>🥁 Sanjo Jazz (정통)</strong> — 빠른 스윙·즉흥의 업텐포 재즈 (BPM 100~115). 압축 프롬프트에 "빠르게" 지시가 자동으로 붙어 처지지 않습니다</li>
+      <li><strong>🎷 서울 심야 재즈</strong> — 느리고 고요한 발라드 재즈 (BPM 65~80). 같은 산조 재즈지만 새벽 재즈바 분위기</li>
+    </ul>
+  </div>
+  <div class="card korean">
+    <div class="num">🌹 국악 트롯트 — 세 가지 스타일</div>
+    <ul>
+      <li><strong>정통</strong> — 판소리 득음·깊은 한의 정통 트롯 (BPM 86~91)</li>
+      <li><strong>발라드</strong> — 더 느리고 절절한 트롯 발라드 (BPM 66~72). 채널 톤에 가장 잘 맞음</li>
+      <li><strong>구음 강조</strong> — 판소리 창법·추임새를 전면에 (BPM 83~89)</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="num">🎬 그 외</div>
+    <ul>
+      <li><strong>🎬 Court Elevation</strong> — 궁중 격상·네오조선 퓨전</li>
+      <li><strong>용도별 빠른 시작</strong> — 드라이브 / 운동·조깅 / 힙합 / 노동가·작업 / 늦은 밤 감성 / 랜덤 추천. "무슨 곡인지"보다 "언제 들을지"로 고르는 버튼</li>
+    </ul>
+    <div class="fx"><b>팁:</b> 같은 버튼이라도 BPM·악기 디테일이 매번 조금씩 달라져 변주가 생깁니다. 장르 자체를 고정하고 싶으면 버튼을 누른 뒤 01 장르 칸을 직접 확인·수정하세요.</div>
+  </div>
+</section>
 
 <section id="sections">
   <div class="sec-label">상세 설명</div>
@@ -7643,6 +7689,17 @@ a.back{color:var(--korean2); text-decoration:none; font-size:13px}
     <p>지금까지 고른 모든 게 영어 주문서로 실시간 정리됩니다. <strong>"복사"로 복사해 음악 AI에 붙여넣으세요.</strong></p>
     <div class="ex"><b>붙여넣는 법:</b> 보통 음악 AI의 "스타일/Style" 칸에 이 주문서를 넣고, 가사는 별도 "가사/Lyrics" 칸에 넣습니다. 주문서 안의 [Vocal], [Key], [GUEUM] 같은 표시는 AI에게 주는 지시라 그대로 두면 됩니다.</div>
     <div class="fx"><b>효과 팁:</b> 결과가 마음에 안 들 때 처음부터 다시 하지 말고, 한두 칸(분위기·BPM·창법)만 바꿔 다시 복사하세요. 같은 씨앗에서 변주가 나옵니다.</div>
+  </div>
+  <div class="card korean">
+    <div class="num">🎯 수노 5.5 — 프롬프트 길이</div>
+    <h3>긴 주문서를 그대로 넣지 마세요</h3>
+    <p>위의 전체 주문서는 아주 깁니다(4,000자 정도). 수노 5.5의 스타일 칸은 <strong>1,000자까지만</strong> 받고, 넘으면 뒷부분(악기 지시·키·BPM)이 <strong>경고 없이 잘려</strong> 이상한 소리(윙~ 드론)가 나거나 음질이 떨어집니다. 그래서 결과물 영역에 두 가지 버튼이 있습니다.</p>
+    <ul>
+      <li><strong>🎯 수노 압축 프롬프트 (악기 보존)</strong> — <em>추천.</em> 가야금·해금 등 악기별 음색·역할 지시는 원문 그대로 살리고, 공통 설명만 덜어내 1,000자 안에 맞춰줍니다. AI를 쓰지 않아 빠르고 매번 일정합니다. 평소엔 이 버튼을 쓰세요.</li>
+      <li><strong>⚡ AI 슈퍼 프롬프트 3종</strong> — 감정 강조 / 리듬 강조 / 악기 강조, 세 가지 버전을 AI가 만들어 줍니다(API 키 필요). 여러 느낌을 A/B로 비교하고 싶을 때만.</li>
+    </ul>
+    <div class="ex"><b>붙여넣는 법:</b> 🎯 버튼을 눌러 나온 압축본을 복사 → 수노 <b>Style of Music</b> 칸에, 가사는 <b>Lyrics</b> 칸에 넣습니다.</div>
+    <div class="fx"><b>주의:</b> 긴 원본을 그대로 수노에 붙이면 악기 지시가 잘려 국악기가 약해지거나 노이즈가 납니다. 수노 5.5에선 반드시 🎯 압축 프롬프트를 쓰세요.</div>
   </div>
   <div class="card gold">
     <div class="num">⚡ 원클릭 퀄리티 엔진</div>
