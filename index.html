@@ -3946,6 +3946,36 @@ function cleanLyrics(text) {
   return cleaned;
 }
 function cleanModelText(text) { return (text||'').replace(/```(?:json)?/g,'').replace(/```/g,'').trim(); }
+/* ── 구분자 기반 변형 파서 — 따옴표·쉼표·중괄호로 안 깨짐 (JSON 파싱 실패 방지) ── */
+function _parseDelimitedVariations(text) {
+  const raw = cleanModelText(text || '');
+  const blocks = raw.split(/\n?\s*={2,}\s*변형\s*\d+\s*={2,}\s*\n?/).map(b => b.trim()).filter(Boolean);
+  const field = (block, ...labels) => {
+    for (const lb of labels) {
+      const re = new RegExp('^\\s*' + lb + '\\s*[:：]\\s*(.+)$', 'im');
+      const m = block.match(re);
+      if (m) return m[1].trim();
+    }
+    return '';
+  };
+  const items = [];
+  for (const b of blocks) {
+    const title   = field(b, 'TITLE', '제목');
+    const prompt  = field(b, 'PROMPT', '프롬프트');
+    if (!title && !prompt) continue;
+    const tagsRaw = field(b, 'TAGS', '태그');
+    items.push({
+      num: items.length + 1,
+      title,
+      titleEn: field(b, 'TITLE_EN', '영문제목', 'TITLEEN'),
+      mood: field(b, 'MOOD', '분위기', '감정'),
+      genreTag: field(b, 'GENRE', 'GENRE_TAG', '장르'),
+      tags: tagsRaw ? tagsRaw.split(/[,，]/).map(s => s.trim()).filter(Boolean).slice(0, 4) : [],
+      prompt,
+    });
+  }
+  return items;
+}
 /* ── AI가 만든 살짝 깨진 JSON도 최대한 복구해서 파싱 ── */
 function _parseJsonLoose(text) {
   let raw = cleanModelText(text);
@@ -5157,19 +5187,23 @@ BPM: ${bpm} | 국악:정통 비율: ${ratio}%:${100-ratio}%
 ★ 5개 변형은 다음 한(恨)의 세부 정서 중 서로 다른 것을 하나씩 택하세요: 체념(담담한 받아들임), 그리움(사무치게 보고픔), 회한(후회·자책), 원망(야속함·서러움), 사무침(뼈에 맺힌 한), 적막한 슬픔(고요한 외로움), 미련(놓지 못함), 서글픔(덧없음·허무).
 각 변형은 7:3 Joseon Core 철학(국악기 주도)을 유지하세요.
 
-다음 JSON 배열만 출력 (다른 텍스트 없이):
-[
-  {
-    "num": 1,
-    "title": "변형 제목 (한글)",
-    "titleEn": "Variation Title (English)",
-    "mood": "핵심 감정/분위기",
-    "tags": ["태그1", "태그2", "태그3"],
-    "prompt": "Suno 스타일 프롬프트 (영어, 950자 이하, 악기 지시 유지)"
-  },
-  ...5개
-]`;
-    sysP = 'You are a Suno AI music prompt expert specializing in Korean traditional music fusion with a strictly DARK, sorrowful, han-driven aesthetic. Every variation MUST stay melancholic, heavy, mournful — NEVER bright, happy, cheerful, hopeful, uplifting, or celebratory. Output ONLY a valid JSON array — no markdown, no code fences, no backticks, no comments, no trailing text. Every property name and string value in double quotes; escape any inner double-quote as \\"; NO trailing commas; never use backticks or smart quotes. Return raw JSON only.';
+★ 반드시 정확히 5개를 출력하세요 (3개·4개 안 됨, 무조건 5개). 각 프롬프트는 짧게 써서 5개가 다 들어가게 하세요.
+아래 형식으로 정확히 5개를 출력하세요. JSON 쓰지 말고, 이 구분자 형식 그대로:
+
+=== 변형 1 ===
+TITLE: 변형 제목 (한글)
+TITLE_EN: Variation Title (English)
+MOOD: 세부 감정 색 (한글, 예: 체념·그리움)
+TAGS: 태그1, 태그2, 태그3
+PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 300~400자, 핵심 악기·분위기·정서만, 어둡고 슬프게)
+=== 변형 2 ===
+(같은 형식)
+=== 변형 3 ===
+=== 변형 4 ===
+=== 변형 5 ===
+
+각 항목은 한 줄로. PROMPT 안에 큰따옴표 쓰지 말 것. 반드시 5개 블록 모두 채울 것.`;
+    sysP = 'You are a Suno AI music prompt expert specializing in Korean traditional music fusion with a strictly DARK, sorrowful, han-driven aesthetic. Every variation MUST stay melancholic, heavy, mournful — NEVER bright, happy, cheerful, hopeful, uplifting, or celebratory. Output the 5 variations in the exact delimiter format requested (=== 변형 N === blocks with TITLE/PROMPT lines). Do NOT use JSON, brackets, or quotes around values. Always output all 5 blocks. No markdown, no code fences.';
 
   } else {
     // 같은 분위기, 다른 장르 5개
@@ -5186,24 +5220,27 @@ BPM: ${bpm} | 국악:정통 비율: ${ratio}%:${100-ratio}%
 4. 힙합/트랩 계열 퓨전
 5. 앰비언트/신스팝 계열 퓨전
 
-다음 JSON 배열만 출력 (다른 텍스트 없이):
-[
-  {
-    "num": 1,
-    "title": "변형 제목 (한글)",
-    "titleEn": "Variation Title (English)",
-    "genreTag": "장르 태그",
-    "tags": ["태그1", "태그2", "태그3"],
-    "prompt": "Suno 스타일 프롬프트 (영어, 950자 이하, 악기 지시 유지)"
-  },
-  ...5개
-]`;
-    sysP = 'You are a Suno AI music prompt expert specializing in Korean traditional music fusion with a strictly DARK, sorrowful, han-driven aesthetic. Every variation MUST stay melancholic, heavy, mournful — NEVER bright, happy, cheerful, hopeful, uplifting, or celebratory. Output ONLY a valid JSON array — no markdown, no code fences, no backticks, no comments, no trailing text. Every property name and string value in double quotes; escape any inner double-quote as \\"; NO trailing commas; never use backticks or smart quotes. Return raw JSON only.';
+★ 반드시 정확히 5개를 출력하세요 (3개·4개 안 됨, 무조건 5개). 각 프롬프트는 짧게 써서 5개가 다 들어가게 하세요.
+아래 형식으로 정확히 5개를 출력하세요. JSON 쓰지 말고, 이 구분자 형식 그대로:
+
+=== 변형 1 ===
+TITLE: 변형 제목 (한글)
+TITLE_EN: Variation Title (English)
+GENRE: 장르 태그 (한글)
+TAGS: 태그1, 태그2, 태그3
+PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 300~400자, 핵심 악기·분위기·정서만, 어둡고 슬프게)
+=== 변형 2 ===
+=== 변형 3 ===
+=== 변형 4 ===
+=== 변형 5 ===
+
+각 항목은 한 줄로. PROMPT 안에 큰따옴표 쓰지 말 것. 반드시 5개 블록 모두 채울 것.`;
+    sysP = 'You are a Suno AI music prompt expert specializing in Korean traditional music fusion with a strictly DARK, sorrowful, han-driven aesthetic. Every variation MUST stay melancholic, heavy, mournful — NEVER bright, happy, cheerful, hopeful, uplifting, or celebratory. Output the 5 variations in the exact delimiter format requested (=== 변형 N === blocks with TITLE/PROMPT lines). Do NOT use JSON, brackets, or quotes around values. Always output all 5 blocks. No markdown, no code fences.';
   }
 
   try {
     const text = await callClaude(aiPrompt, sysP, 0.85, 8000);
-    const items = _parseJsonLoose(text);
+    const items = _parseDelimitedVariations(text);
     if (!Array.isArray(items) || items.length === 0) throw new Error('변형 목록을 만들지 못했습니다. 다시 시도해주세요.');
     if (items.length < 5) showToast(`⚠️ ${items.length}개만 생성됐어요. 다시 누르면 5개가 나올 수 있습니다.`);
     _lastVariations[type] = items;  // ✅ 전역 저장소에 저장 (apply/copy에서 참조)
