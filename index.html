@@ -3835,7 +3835,7 @@ function initModelSelector() {
   selectModel(_selectedModel);
 }
 
-async function _callOnce(model, messages, temperature, apiKey) {
+async function _callOnce(model, messages, temperature, apiKey, maxTokens) {
   const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -3846,7 +3846,7 @@ async function _callOnce(model, messages, temperature, apiKey) {
     },
     body: JSON.stringify({
       model, messages,
-      max_tokens: 2500,
+      max_tokens: maxTokens || 4000,
       temperature,
       top_p: 0.95,
       frequency_penalty: 0.4,
@@ -3866,7 +3866,7 @@ async function _callOnce(model, messages, temperature, apiKey) {
   return text;
 }
 
-async function callClaude(prompt, systemPrompt = '', temperature = 0.85) {
+async function callClaude(prompt, systemPrompt = '', temperature = 0.85, maxTokens = 4000) {
   const apiKey = getApiKey();
   if (!apiKey) {
     const inp = document.getElementById('apiKeyInput');
@@ -3883,7 +3883,7 @@ async function callClaude(prompt, systemPrompt = '', temperature = 0.85) {
   const messages = [];
   if (systemPrompt) messages.push({ role: 'system', content: systemPrompt });
   messages.push({ role: 'user', content: prompt });
-  return await _callOnce(_selectedModel, messages, temperature, apiKey);
+  return await _callOnce(_selectedModel, messages, temperature, apiKey, maxTokens);
 }
 function cleanLyrics(text) {
   if (!text) return '';
@@ -5152,8 +5152,10 @@ async function generateVariations(type) {
 현재 분위기: ${currentMoods.map(m=>m.en).join(', ')||'없음'}
 BPM: ${bpm} | 국악:정통 비율: ${ratio}%:${100-ratio}%
 
-이 장르를 완전히 유지하면서, 분위기·감정·색채가 완전히 다른 5가지 Suno 스타일 프롬프트를 생성하세요.
-각 변형은 7:3 Joseon Core 철학을 유지하되, 서로 완전히 다른 감정선을 가져야 합니다.
+이 장르를 완전히 유지하면서, "슬픔·한(恨)·무거움"이라는 큰 정서는 그대로 두되, 그 안에서 서로 다른 "세부 감정 색"을 가진 5가지 Suno 스타일 프롬프트를 생성하세요.
+★ 절대 규칙: 모든 변형은 어둡고 무겁고 애절해야 합니다. 밝음·행복·희망·경쾌·활기·긍정·축하 정서는 절대 금지(joy/happy/hopeful/uplifting/cheerful/bright/celebration 금지).
+★ 5개 변형은 다음 한(恨)의 세부 정서 중 서로 다른 것을 하나씩 택하세요: 체념(담담한 받아들임), 그리움(사무치게 보고픔), 회한(후회·자책), 원망(야속함·서러움), 사무침(뼈에 맺힌 한), 적막한 슬픔(고요한 외로움), 미련(놓지 못함), 서글픔(덧없음·허무).
+각 변형은 7:3 Joseon Core 철학(국악기 주도)을 유지하세요.
 
 다음 JSON 배열만 출력 (다른 텍스트 없이):
 [
@@ -5167,7 +5169,7 @@ BPM: ${bpm} | 국악:정통 비율: ${ratio}%:${100-ratio}%
   },
   ...5개
 ]`;
-    sysP = 'You are a Suno AI music prompt expert specializing in Korean traditional music fusion. Output ONLY a valid JSON array — no markdown, no code fences, no backticks, no comments, no trailing text. Every property name and string value in double quotes; escape any inner double-quote as \\"; NO trailing commas; never use backticks or smart quotes. Return raw JSON only.';
+    sysP = 'You are a Suno AI music prompt expert specializing in Korean traditional music fusion with a strictly DARK, sorrowful, han-driven aesthetic. Every variation MUST stay melancholic, heavy, mournful — NEVER bright, happy, cheerful, hopeful, uplifting, or celebratory. Output ONLY a valid JSON array — no markdown, no code fences, no backticks, no comments, no trailing text. Every property name and string value in double quotes; escape any inner double-quote as \\"; NO trailing commas; never use backticks or smart quotes. Return raw JSON only.';
 
   } else {
     // 같은 분위기, 다른 장르 5개
@@ -5176,6 +5178,7 @@ BPM: ${bpm} | 국악:정통 비율: ${ratio}%:${100-ratio}%
 BPM: ${bpm} | 국악:정통 비율: ${ratio}%:${100-ratio}%
 
 이 분위기·감정을 완전히 유지하면서, 장르만 완전히 다른 5가지 Suno 스타일 프롬프트를 생성하세요.
+★ 절대 규칙: 장르가 무엇이든 모든 변형은 어둡고 무겁고 애절한 슬픔·한(恨)의 정서를 유지해야 합니다. 밝음·행복·희망·경쾌·축하 정서는 절대 금지(joy/happy/hopeful/uplifting/cheerful/bright 금지).
 각 변형은 7:3 Joseon Core 철학을 유지하되 (국악기가 주도), 다음 5개 장르 방향을 각각 시도하세요:
 1. 전혀 다른 국악 장르 계열 (예: 산조 → 판소리, 민요 → 무악 등)
 2. 재즈/블루스 계열 퓨전
@@ -5195,13 +5198,14 @@ BPM: ${bpm} | 국악:정통 비율: ${ratio}%:${100-ratio}%
   },
   ...5개
 ]`;
-    sysP = 'You are a Suno AI music prompt expert specializing in Korean traditional music fusion. Output ONLY a valid JSON array — no markdown, no code fences, no backticks, no comments, no trailing text. Every property name and string value in double quotes; escape any inner double-quote as \\"; NO trailing commas; never use backticks or smart quotes. Return raw JSON only.';
+    sysP = 'You are a Suno AI music prompt expert specializing in Korean traditional music fusion with a strictly DARK, sorrowful, han-driven aesthetic. Every variation MUST stay melancholic, heavy, mournful — NEVER bright, happy, cheerful, hopeful, uplifting, or celebratory. Output ONLY a valid JSON array — no markdown, no code fences, no backticks, no comments, no trailing text. Every property name and string value in double quotes; escape any inner double-quote as \\"; NO trailing commas; never use backticks or smart quotes. Return raw JSON only.';
   }
 
   try {
-    const text = await callClaude(aiPrompt, sysP);
+    const text = await callClaude(aiPrompt, sysP, 0.85, 8000);
     const items = _parseJsonLoose(text);
     if (!Array.isArray(items) || items.length === 0) throw new Error('변형 목록을 만들지 못했습니다. 다시 시도해주세요.');
+    if (items.length < 5) showToast(`⚠️ ${items.length}개만 생성됐어요. 다시 누르면 5개가 나올 수 있습니다.`);
     _lastVariations[type] = items;  // ✅ 전역 저장소에 저장 (apply/copy에서 참조)
 
     const colorPalette = [
