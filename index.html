@@ -5152,6 +5152,8 @@ function applyRecCard(idx) {
 ═══════════════════════════════════════════ */
 /* 변형 카드 전역 저장소 — generateVariations보다 앞에 선언 */
 let _lastVariations = {};
+/* 재생성 시 이전 결과 회피용 — 이번 세션에 만든 제목 누적 (15~20곡 리플레이 다양성) */
+let _seenVariations = { mood: [], genre: [], _ctxMood: '', _ctxGenre: '' };
 async function generateVariations(type) {
   const loadingEl = document.getElementById('varLoading_'+type);
   const resultEl  = document.getElementById('varResult_'+type);
@@ -5195,7 +5197,7 @@ TITLE: 변형 제목 (한글)
 TITLE_EN: Variation Title (English)
 MOOD: 세부 감정 색 (한글, 예: 체념·그리움)
 TAGS: 태그1, 태그2, 태그3
-PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 300~400자, 핵심 악기·분위기·정서만, 어둡고 슬프게)
+PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 450자, 어둡고 슬프게. ★반드시 핵심 국악기를 영어 이름으로 명시: gayageum, haegeum, ajaeng, geomungo, daegeum, piri, janggu 중 최소 2~3개를 골라 각각 어떤 소리·역할인지 구체적으로. harp/violin 같은 서양악기 이름으로 바꾸지 말 것)
 === 변형 2 ===
 (같은 형식)
 === 변형 3 ===
@@ -5228,7 +5230,7 @@ TITLE: 변형 제목 (한글)
 TITLE_EN: Variation Title (English)
 GENRE: 장르 태그 (한글)
 TAGS: 태그1, 태그2, 태그3
-PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 300~400자, 핵심 악기·분위기·정서만, 어둡고 슬프게)
+PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 450자, 어둡고 슬프게. ★반드시 핵심 국악기를 영어 이름으로 명시: gayageum, haegeum, ajaeng, geomungo, daegeum, piri, janggu 중 최소 2~3개를 골라 각각 어떤 소리·역할인지 구체적으로. harp/violin 같은 서양악기 이름으로 바꾸지 말 것)
 === 변형 2 ===
 === 변형 3 ===
 === 변형 4 ===
@@ -5239,11 +5241,22 @@ PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 300~400자, 핵심 악기·
   }
 
   try {
-    const text = await callClaude(aiPrompt, sysP, 0.85, 8000);
+    // ── 재생성 누적 회피: 컨텍스트(장르/분위기)가 바뀌면 회피목록 초기화, 아니면 이전 제목들 누적 회피 ──
+    const ctxKey = type === 'mood' ? (currentGenre ? currentGenre.en : '') : currentMoods.map(m=>m.en).join('|');
+    const ctxField = type === 'mood' ? '_ctxMood' : '_ctxGenre';
+    if (_seenVariations[ctxField] !== ctxKey) { _seenVariations[type] = []; _seenVariations[ctxField] = ctxKey; }
+    const avoid = _seenVariations[type];
+    let aiPromptFinal = aiPrompt;
+    if (avoid.length > 0) {
+      const list = avoid.slice(-20).join(', ');
+      aiPromptFinal += `\n\n★ 이미 만든 변형들이니 절대 겹치지 말고 완전히 다른 제목·분위기·접근으로 만드세요 (제목 재사용 금지): ${list}`;
+    }
+    const text = await callClaude(aiPromptFinal, sysP, 0.9, 8000);
     const items = _parseDelimitedVariations(text);
     if (!Array.isArray(items) || items.length === 0) throw new Error('변형 목록을 만들지 못했습니다. 다시 시도해주세요.');
     if (items.length < 5) showToast(`⚠️ ${items.length}개만 생성됐어요. 다시 누르면 5개가 나올 수 있습니다.`);
     _lastVariations[type] = items;  // ✅ 전역 저장소에 저장 (apply/copy에서 참조)
+    items.forEach(it => { if (it.title) _seenVariations[type].push(it.title); });  // 다음 재생성 때 회피
 
     const colorPalette = [
       {border:'rgba(201,168,76,.5)',bg:'rgba(201,168,76,.06)',accent:'var(--gold)'},
