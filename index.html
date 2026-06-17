@@ -3946,6 +3946,32 @@ function cleanLyrics(text) {
   return cleaned;
 }
 function cleanModelText(text) { return (text||'').replace(/```(?:json)?/g,'').replace(/```/g,'').trim(); }
+/* ── AI가 만든 살짝 깨진 JSON도 최대한 복구해서 파싱 ── */
+function _parseJsonLoose(text) {
+  let raw = cleanModelText(text);
+  let m = raw.match(/\[[\s\S]*\]/) || raw.match(/\{[\s\S]*\}/);
+  let s = m ? m[0] : raw;
+  const repairs = [
+    x => x,
+    x => x.replace(/`/g, '"'),
+    x => x.replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, "'"),
+    x => x.replace(/,\s*([\]}])/g, '$1'),
+    x => x.replace(/,\s*([\]}])/g, '$1').replace(/`/g, '"').replace(/[\u201C\u201D]/g, '"'),
+    x => x.replace(/,\s*([\]}])/g, '$1').replace(/`/g, '"').replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, "'").replace(/([{,]\s*)([A-Za-z_][A-Za-z0-9_]*)\s*:/g, '$1"$2":'),
+  ];
+  let last;
+  for (const fix of repairs) {
+    try { return JSON.parse(fix(s)); } catch (e) { last = e; }
+  }
+  try {
+    const objs = s.match(/\{[^{}]*\}/g);
+    if (objs && objs.length) {
+      const parsed = objs.map(o => { try { return JSON.parse(o.replace(/,\s*}/,'}').replace(/`/g,'"')); } catch { return null; } }).filter(Boolean);
+      if (parsed.length) return parsed;
+    }
+  } catch (e) {}
+  throw last || new Error('JSON 파싱 실패');
+}
 function escapeHtml(s) { return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function sanitizeSunoPrompt(text,maxLen=230) {
   let t=cleanModelText(text).replace(/^[-•\s]*(Suno prompt|Prompt|프롬프트)\s*[:：-]\s*/i,'').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim();
@@ -5141,7 +5167,7 @@ BPM: ${bpm} | 국악:정통 비율: ${ratio}%:${100-ratio}%
   },
   ...5개
 ]`;
-    sysP = 'You are a Suno AI music prompt expert specializing in Korean traditional music fusion. Output ONLY valid JSON array, no other text.';
+    sysP = 'You are a Suno AI music prompt expert specializing in Korean traditional music fusion. Output ONLY a valid JSON array — no markdown, no code fences, no backticks, no comments, no trailing text. Every property name and string value in double quotes; escape any inner double-quote as \\"; NO trailing commas; never use backticks or smart quotes. Return raw JSON only.';
 
   } else {
     // 같은 분위기, 다른 장르 5개
@@ -5169,15 +5195,13 @@ BPM: ${bpm} | 국악:정통 비율: ${ratio}%:${100-ratio}%
   },
   ...5개
 ]`;
-    sysP = 'You are a Suno AI music prompt expert specializing in Korean traditional music fusion. Output ONLY valid JSON array, no other text.';
+    sysP = 'You are a Suno AI music prompt expert specializing in Korean traditional music fusion. Output ONLY a valid JSON array — no markdown, no code fences, no backticks, no comments, no trailing text. Every property name and string value in double quotes; escape any inner double-quote as \\"; NO trailing commas; never use backticks or smart quotes. Return raw JSON only.';
   }
 
   try {
     const text = await callClaude(aiPrompt, sysP);
-    const clean = cleanModelText(text);
-    const match = clean.match(/\[[\s\S]*\]/);
-    if (!match) throw new Error('JSON 배열 형식이 응답에 없습니다.');
-    const items = JSON.parse(match[0]);
+    const items = _parseJsonLoose(text);
+    if (!Array.isArray(items) || items.length === 0) throw new Error('변형 목록을 만들지 못했습니다. 다시 시도해주세요.');
     _lastVariations[type] = items;  // ✅ 전역 저장소에 저장 (apply/copy에서 참조)
 
     const colorPalette = [
