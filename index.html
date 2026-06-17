@@ -4510,6 +4510,17 @@ const TROT_DIVERSITY = {
     '능수버들 정거장 막차는 떠나가고',
     '잔설 녹는 처마에 제비가 돌아오네',
   ],
+  // 하위 정서 — 슬픔·한 안에서 곡마다 다른 감정 색 (리플레이 정서 다양화)
+  subEmotions: [
+    '체념 — 다 내려놓고 받아들이는 마음. "어쩔 수 없지", "이제는 보내야지"의 담담한 슬픔',
+    '그리움 — 사무치게 보고픔. 잊지 못하고 자꾸 떠올리는, 애타게 부르는 정서',
+    '회한 — 후회와 자책. "그때 그러지 말걸", "내 탓이오" 하는 뉘우침의 슬픔',
+    '원망 — 야속하고 서운함. "어찌 그리 매정한가", "너무하오" 하는 서러운 원망',
+    '사무침 — 뼈에 사무치는 한. 가슴 깊이 맺혀 풀리지 않는, 토해내는 절절함',
+    '적막한 슬픔 — 고요하고 외로운. 텅 빈 자리에 홀로 남은 적막과 쓸쓸함',
+    '미련 — 끝내 놓지 못하는 마음. 돌아올 리 없는 줄 알면서 기다리는 안타까움',
+    '서글픔 — 덧없고 허무함. 세월·청춘이 다 지나가 버린 아련하고 쓸쓸한 정조',
+  ],
 };
 // 시드(0~1)로 풀에서 항목 회전 선택
 function pickTrotDiversity(seed) {
@@ -4532,6 +4543,7 @@ function pickTrotDiversity(seed) {
     chuimsaeB: chuimsae[1],   // 후렴 추임새 2
     guumHigh: pick(TROT_DIVERSITY.guumHighs, 5),
     guumLow:  pick(TROT_DIVERSITY.guumLows, 6),
+    subEmotion: pick(TROT_DIVERSITY.subEmotions, 8),   // 곡마다 슬픔 안의 다른 감정 색
     sampleA, sampleB,         // 곡마다 회전하는 문어체 예시 문장
   };
 }
@@ -4890,6 +4902,7 @@ ${clicheRuleKr}
 ★★ 국악 트롯트 8대 필수 규칙 ★★
 ① 음수율: 한 줄은 3·4조 / 4·4조 / 7·5조 중 하나로 선택해 전체 일관 유지
 ② 한(恨)의 정서: 감정 직접 서술 금지 — 체념·상황·구체 사물로 표현
+   → 이번 곡의 감정 색: 「${_trotDiv.subEmotion}」 — 슬픔·한 안에서 이 결을 일관되게 유지할 것
 ③ 종결어미 (이번 곡 권장 계열): ${_trotDiv.ending}
 ④ 향토 소재 ${lyricStory ? '— 위 스토리를 우선하되, 배경으로 활용 가능한 소재' : '— 이번 곡 중심 장면'}: ${_trotDiv.motif}
    → ${lyricStory ? '스토리의 장면을' : '이 장면을'} 중심으로 오감 구체 묘사, 절마다 다른 각도로 전개
@@ -4915,6 +4928,7 @@ ${structureKr}`;
 ${storyBlockKr}${(_useGugakBase && _trotDiv) ? `
 ★★ 정서 테두리 (필수) — 장르 불문 국악 트롯트의 깊은 애절함 ★★
 - 어떤 장르든 깊고 서글프고 애절한 한(恨)의 정서를 바탕에 깔 것
+- 이번 곡의 감정 색: 「${_trotDiv.subEmotion}」 — 슬픔 안에서 이 결로 일관되게
 - 문어체 시적 문장 지향 (예: "${_trotDiv.sampleA}" — 문체 참고일 뿐, 예시 문장·단어를 그대로 베끼지 말 것)
 - 참고 문학 어휘(이 중 일부만 자연스럽게, 그대로 나열·매 곡 반복 금지): ${_trotDiv.literary}
 - 어휘 다양성: 매 곡 신선한 단어·이미지를 쓰고, 흔한 상투어(달빛·강가·풍진·님 등)를 반복하지 말 것
@@ -5393,6 +5407,36 @@ function applyPresetRandomness(isStrong) {
   } else if (Math.random() < 0.45) {
     STATE.gueumStrength = _rp(['strong', 'maximum']);
   }
+
+  // ── (A) 악기 조합 변주 — 장르색은 지키되 곡마다 질감을 다르게 (리플레이 겹침 방지)
+  //     리드 현악(가야금/해금)·베이스·장구는 유지, 관악 교체 + 타악 액센트만 변화
+  if (Array.isArray(STATE.instrList) && STATE.instrList.length > 0) {
+    // 관악 1개 교체 (40%): 대금0 / 피리1 / 단소2 — 모두 국악 선율 관악이라 장르 안전
+    if (Math.random() < 0.4) {
+      const wi = STATE.instrList.findIndex(x => x.cat === 'wind');
+      const newWind = _rp([0, 1, 2]);
+      if (wi >= 0) STATE.instrList[wi] = { cat: 'wind', idx: newWind };
+      else if (STATE.instrList.length < 6) STATE.instrList.push({ cat: 'wind', idx: newWind });
+    }
+    // 타악 액센트 추가 (30%): 북2 / 징3 (장구 외 보조 타악) — 리듬 질감 변화
+    if (Math.random() < 0.3) {
+      const acc = _rp([2, 3]);
+      if (!STATE.instrList.some(x => x.cat === 'percussion' && x.idx === acc) && STATE.instrList.length < 6) {
+        STATE.instrList.push({ cat: 'percussion', idx: acc });
+      }
+    }
+    // 보조 현악 추가 (20%): 거문고3 (저음 현악) — 깊이 추가, 가야금/해금은 유지
+    if (Math.random() < 0.2 && !STATE.instrList.some(x => x.cat === 'string' && x.idx === 3) && STATE.instrList.length < 6) {
+      STATE.instrList.push({ cat: 'string', idx: 3 });
+    }
+    STATE.instrList = STATE.instrList.filter((x, i, a) => a.findIndex(y => y.cat === x.cat && y.idx === x.idx) === i);
+  }
+
+  // ── (B) 국악 창법 변주 — 한(恨)·어두운 정서에 맞는 전통 창법 안에서만 (장르색 유지)
+  //     판소리0 / 남도민요1 / 수심가4 — 모두 어둡고 애절한 계열
+  if (STATE.gugakVocalStyle !== null && STATE.gugakVocalStyle !== undefined && Math.random() < 0.45) {
+    STATE.gugakVocalStyle = _rp([STATE.gugakVocalStyle, 0, 1, 4]);
+  }
 }
 function apply73Preset(type) {
   resetAll(false);
@@ -5552,6 +5596,23 @@ function applyGugakTrotPreset(style) {
     toast = '🌹 국악 트롯트 — 정통 (판소리 득음 · 깊은 한 · 허스키 여성 벨팅)';
   }
   const _tb = document.getElementById('gugakTrotBaseToggle'); if (_tb) _tb.checked = true;
+
+  // (C) 트롯트 곡마다 변주 — 키(Dm)·음계(계면조)·장르(8)는 고정, 나머지를 곡마다 다르게
+  STATE.energyArc = _rp([0, 1, 5]);                       // 슬로우번/웨이브/지속 — 모두 트롯에 어울리는 흐름
+  if (Math.random() < 0.5) {                              // 관악 교체 (피리/대금/단소)
+    const wi = STATE.instrList.findIndex(x => x.cat === 'wind');
+    if (wi >= 0) STATE.instrList[wi] = { cat: 'wind', idx: _rp([0, 1, 2]) };
+  }
+  if (Math.random() < 0.3 && !STATE.instrList.some(x => x.cat === 'percussion' && x.idx === 2)) {
+    STATE.instrList.push({ cat: 'percussion', idx: 2 });  // 북 액센트
+  }
+  if (Math.random() < 0.4 && Array.isArray(STATE.vocalTones)) {
+    const extraTone = _rp([1, 8, 9, 11]);                 // 소울풀/애절/감성/거친벨트 — 트롯 정서 내
+    if (!STATE.vocalTones.includes(extraTone)) STATE.vocalTones = [...STATE.vocalTones, extraTone].slice(0, 3);
+  }
+  STATE.gugakVocalStyle = _rp([STATE.gugakVocalStyle, 0, 1, 4]); // 창법도 한 계열 내 변주
+  STATE.dnaSeed = Math.random(); STATE.negativeSeed = Math.random();
+
   _finalizePreset(toast);
 }
 
@@ -6565,7 +6626,7 @@ async function genShortsLyrics(lang) {
     ? `\n★ 가사 주제 (반드시 이 이야기로) ★\n"""\n${lyricStory}\n"""\n`
     : '';
   const gugakBlock = _div
-    ? `\n★ 국악 트롯트 정서 ★\n- 깊고 서글픈 한(恨), 문어체 시적 문장 (문체 예: "${_div.sampleA}" — 그대로 베끼지 말 것)\n- 종결어미: ${_div.ending} (모든 줄 "~다" 금지)\n- 참고 어휘(일부만 자연스럽게, 그대로 나열 금지): ${_div.literary}\n- 어휘 다양성: 흔한 상투어(달빛·강가·풍진·님 등) 반복 금지, 신선한 단어로\n- 후렴 앵커구: "${_div.anchor}"\n- 추임새 ${_div.chuimsaeA}/${_div.chuimsaeB}는 드롭 끝줄에만\n`
+    ? `\n★ 국악 트롯트 정서 ★\n- 깊고 서글픈 한(恨), 문어체 시적 문장 (문체 예: "${_div.sampleA}" — 그대로 베끼지 말 것)\n- 이번 곡의 감정 색: 「${_div.subEmotion}」 — 슬픔 안에서 이 결로 일관되게\n- 종결어미: ${_div.ending} (모든 줄 "~다" 금지)\n- 참고 어휘(일부만 자연스럽게, 그대로 나열 금지): ${_div.literary}\n- 어휘 다양성: 흔한 상투어(달빛·강가·풍진·님 등) 반복 금지, 신선한 단어로\n- 후렴 앵커구: "${_div.anchor}"\n- 추임새 ${_div.chuimsaeA}/${_div.chuimsaeB}는 드롭 끝줄에만\n`
     : '';
 
   const lyricPrompt = `${totalSec}초짜리 ${subMode==='edit'?'편집용 풀버전':'유튜브 쇼츠 직접 완성용'} 임팩트 가사를 작성합니다.
