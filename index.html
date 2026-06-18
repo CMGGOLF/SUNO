@@ -681,7 +681,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="sec-title">장르 선택 <span id="genreIcon" style="font-size:14px">▲</span></div>
     <div class="sec-sub">하나 선택 (클릭하여 펼치기/접기)</div>
   </div>
-  <div class="section-body" id="genreBody">
+  <div class="section-body" id="genreBody" style="display:none">
     <div class="card-grid col3" id="genreGrid"></div>
   </div>
 </div>
@@ -692,7 +692,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="sec-title">분위기 선택 <span id="moodIcon" style="font-size:14px">▲</span></div>
     <div class="sec-sub">복수 선택 가능 (클릭하여 펼치기/접기)</div>
   </div>
-  <div class="section-body" id="moodBody">
+  <div class="section-body" id="moodBody" style="display:none">
     <div class="chip-wrap" id="moodGrid"></div>
   </div>
 </div>
@@ -739,10 +739,10 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 <div class="section" style="border-color:rgba(160,90,58,.5);background:rgba(160,90,58,.04)">
   <div class="section-head" onclick="toggleSection('gugakVocalBody','gugakVocalIcon')" style="cursor:pointer;background:rgba(160,90,58,.12)">
     <div class="sec-num korean">05B</div>
-    <div class="sec-title">🎙️ 국악 창법 — 스마트 자동 조합 <span id="gugakVocalIcon" style="font-size:14px">▲</span></div>
+    <div class="sec-title">🎙️ 국악 창법 — 스마트 자동 조합 <span id="gugakVocalIcon" style="font-size:14px">▼</span></div>
     <div class="sec-sub">스마트 버튼으로 알아서 · 또는 창법 직접 선택 (클릭하여 펼치기/접기)</div>
   </div>
-  <div class="section-body" id="gugakVocalBody">
+  <div class="section-body" id="gugakVocalBody" style="display:none">
     <div style="margin-bottom:14px;padding:12px;border:1px solid var(--korean2);border-radius:10px;background:rgba(160,90,58,.1)">
       <button class="btn btn-korean" style="width:100%;font-size:14px;padding:12px" onclick="applyGugakAutoSmart()">🎯 스마트 자동 조합 <span style="font-size:11px;opacity:.8">(알아서 골라서 조합)</span></button>
       <div style="font-size:10px;color:var(--muted);margin-top:6px;text-align:center;line-height:1.4">장르·무드를 골라뒀으면 거기에 맞는 창법을, 아무것도 안 골랐으면 랜덤으로 선택해 전체를 조합합니다</div>
@@ -5378,6 +5378,7 @@ function _collapseAndRevealFilled() {
     ['conceptBody','conceptIcon',        A.concept !== null],          // 04 컨셉
     ['vocalStyleBody','vocalStyleIcon',  A.vocalStyle !== null],       // 05 보컬 스타일
     ['toneBody','toneIcon',              len(A.vocalTones)],           // 06 보컬 톤
+    ['gugakVocalBody','gugakVocalIcon',  A.gugakVocalStyle !== null],  // 05B 국악 창법
     ['advancedSettingsBody','advancedToggleIcon', advFilled],          // 07 고급 사운드
   ];
   secs.forEach(([bodyId, iconId, filled]) => {
