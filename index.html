@@ -3962,7 +3962,7 @@ function _parseDelimitedVariations(text) {
   for (const b of blocks) {
     const title   = field(b, 'TITLE', '제목');
     let prompt    = field(b, 'PROMPT', '프롬프트');
-    if (!title && !prompt) continue;
+    if (!prompt) continue;  // 프롬프트가 비면(잘린 블록) 건너뜀 — 빈 카드 방지
     // 폭주(무한 형용사 반복) 방지 — 프롬프트가 너무 길면 단어 경계에서 자름 (Suno 1000자 한도 + 안정성)
     if (prompt.length > 900) {
       prompt = prompt.slice(0, 900);
@@ -5238,7 +5238,7 @@ BPM: ${bpm} | 국악:정통 비율: ${ratio}%:${100-ratio}%
 6. 아쟁 딥 소울 (아쟁 저음의 딥 소울)
 7. 국악 트롯트 (해금·피리의 트롯)
 
-★ 반드시 정확히 7개를 출력하세요 (위 7개 장르 각각 하나씩, 무조건 7개). 7개 모두 700~800자 프롬프트로 충실하게 — 빠짐없이 7개를 다 채우세요.
+★ 반드시 정확히 7개를 출력하세요 (위 7개 장르 각각 하나씩, 무조건 7개). 7개 모두 약 550자(최대 650자)로 충실하되 간결하게 — 빠짐없이 7개를 다 채우세요. 길이보다 7개 완성이 우선입니다.
 아래 형식으로 정확히 7개를 출력하세요. JSON 쓰지 말고, 이 구분자 형식 그대로:
 
 === 변형 1 ===
@@ -5246,7 +5246,7 @@ TITLE: 변형 제목 (한글)
 TITLE_EN: Variation Title (English)
 GENRE: 장르 태그 (한글)
 TAGS: 태그1, 태그2, 태그3
-PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 700~800자로 풍부하게, 현재 곡과 같은 분위기·에너지로. 구조: ①국악기로 시작하는 SONIC 묘사 → ②각 국악기의 음색·역할을 구체적으로 (gayageum plucked zither crystalline slides NOT harp / haegeum bowed crying scrape microtonal NOT violin / ajaeng bowed bass drone / daegeum breathy bamboo flute / piri reedy double-reed / janggu hourglass-drum jangdan rhythm NOT generic drums) → ③해당 장르 그루브는 30% 양념으로 → ④감정·분위기. 국악기 3~4개를 LEAD로 명시하고 각각 한 구절씩 음색 설명. 서양악기 이름으로 치환 금지. ★800자를 절대 넘기지 말 것. 같은 단어·형용사를 반복하거나 끝없이 나열하지 말고, 완결된 묘사로 끝낼 것)
+PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 550자, 최대 650자 절대 초과 금지, 현재 곡과 같은 분위기·에너지로. 구조: ①국악기로 시작하는 SONIC 묘사 → ②각 국악기의 음색·역할을 구체적으로 (gayageum plucked zither crystalline slides NOT harp / haegeum bowed crying scrape microtonal NOT violin / ajaeng bowed bass drone / daegeum breathy bamboo flute / piri reedy double-reed / janggu hourglass-drum jangdan rhythm NOT generic drums) → ③해당 장르 그루브는 30% 양념으로 → ④감정·분위기. 국악기 3~4개를 LEAD로 명시하고 각각 한 구절씩 음색 설명. 서양악기 이름으로 치환 금지. ★800자를 절대 넘기지 말 것. 같은 단어·형용사를 반복하거나 끝없이 나열하지 말고, 완결된 묘사로 끝낼 것)
 === 변형 2 ===
 === 변형 3 ===
 === 변형 4 ===
@@ -5269,7 +5269,7 @@ PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 700~800자로 풍부하게,
       const list = avoid.slice(-20).join(', ');
       aiPromptFinal += `\n\n★ 이미 만든 변형들이니 절대 겹치지 말고 완전히 다른 제목·분위기·접근으로 만드세요 (제목 재사용 금지): ${list}`;
     }
-    const text = await callClaude(aiPromptFinal, sysP, 0.8, 8000);
+    const text = await callClaude(aiPromptFinal, sysP, 0.7, 12000);
     const items = _parseDelimitedVariations(text);
     if (!Array.isArray(items) || items.length === 0) throw new Error('변형 목록을 만들지 못했습니다. 다시 시도해주세요.');
     const _expected = (type === 'genre') ? 7 : 5;
