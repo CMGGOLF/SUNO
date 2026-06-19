@@ -1336,7 +1336,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       </div>
       <div class="var-tab-row" id="varTabRow">
         <div class="var-tab active" id="varTab_mood" onclick="switchVarTab('mood')">🎭 같은 장르 · 다른 템포/리듬 5개</div>
-        <div class="var-tab" id="varTab_genre" onclick="switchVarTab('genre')">🎸 같은 분위기 · 다른 장르 7개</div>
+        <div class="var-tab" id="varTab_genre" onclick="switchVarTab('genre')">🎸 같은 느낌(템포·리듬) · 다른 장르 7개</div>
       </div>
       <div class="var-box">
         <div class="var-panel active" id="varPanel_mood">
@@ -1354,9 +1354,9 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <div class="var-panel" id="varPanel_genre">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
             <button class="btn btn-teal" onclick="generateVariations('genre')" style="font-size:12px;padding:8px 18px">
-              🎸 같은 분위기 · 다른 장르 7개 생성
+              🎸 같은 느낌(템포·리듬) · 다른 장르 7개 생성
             </button>
-            <span style="font-size:11px;color:var(--muted)">현재 분위기를 유지하면서 장르만 완전히 다른 5가지 프롬프트</span>
+            <span style="font-size:11px;color:var(--muted)">현재 곡의 느낌(템포·리듬·정서)을 유지하면서 장르만 완전히 다른 7가지 프롬프트</span>
           </div>
           <div class="var-loading" id="varLoading_genre">
             <div class="dot-anim"><span></span><span></span><span></span></div>장르 변형 생성 중...
