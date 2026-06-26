@@ -5735,10 +5735,10 @@ function applyGugakTrotPreset(style) {
   if (style === 'ballad') {
     // 트롯 발라드 — 더 느리고 애절, 슬픔 극대화
     STATE.moods = [7, 8, 10];
-    STATE.vocalStyle = 4;          // 절절한 발라드 보컬
-    STATE.gugakVocalStyle = [1, 4][Math.floor(Math.random() * 2)]; // 남도민요·수심가
-    STATE.vocalTones = [1, 9, 8];  // 소울풀 여성 + 감성 표현 + 애절
-    STATE.energyArc = 0;           // 슬로우 번
+    STATE.vocalStyle = 4;          // 절절한 발라드/트롯 보컬
+    STATE.gugakVocalStyle = null;  // 수심가 등 전통 lament 창법 제거 (정가처럼 들리던 원인)
+    STATE.vocalTones = [13, 1, 9];  // 트로트 꺾기 비브라토 + 소울풀 + 감성 표현
+    STATE.energyArc = 0;           // 슬로우 번 (발라드라 느린 건 유지)
     STATE.bpm = 66 + Math.floor(Math.random() * 7); // 66~72 (느림)
     STATE.intensity = 6;
     STATE.textures = [5, 6];
@@ -5752,8 +5752,8 @@ function applyGugakTrotPreset(style) {
     // 트롯 구음 강조 — 판소리 득음·추임새·구음 전면, 전 구간 최대 강도
     STATE.moods = [7, 8];
     STATE.vocalStyle = 1;          // 판소리 창법 전면
-    STATE.gugakVocalStyle = 0;     // 판소리
-    STATE.vocalTones = [11, 1, 9]; // 거친 소울풀 벨트 + 소울풀 + 감성
+    STATE.gugakVocalStyle = 0;     // 판소리 (구음 강조 변형이라 의도적 유지)
+    STATE.vocalTones = [13, 11, 1]; // 트로트 꺾기 + 거친 소울 벨트 + 소울풀
     STATE.energyArc = 0;
     STATE.bpm = 82 + Math.floor(Math.random() * 8); // 82~89
     STATE.intensity = 9;           // 가장 파워풀
@@ -5765,13 +5765,13 @@ function applyGugakTrotPreset(style) {
     STATE.gueumStrength = 'maximum';
     toast = '🌹 국악 트롯트 — 구음 강조 (판소리 득음·추임새 전면)';
   } else {
-    // 정통 (classic) — 기존 기본값
+    // 정통 (classic) — 트로트 꺾기 비브라토 전면
     STATE.moods = [7, 8];
-    STATE.vocalStyle = 7;          // Cinematic Soul Fusion
-    STATE.gugakVocalStyle = [0, 1, 4][Math.floor(Math.random() * 3)];
-    STATE.vocalTones = [11, 1, 9];
-    STATE.energyArc = 0;
-    STATE.bpm = 86 + Math.floor(Math.random() * 6); // 86~91
+    STATE.vocalStyle = 4;          // 절절한 발라드/트롯 보컬
+    STATE.gugakVocalStyle = null;  // 전통 정가/판소리 창법 강제 제거 (정가처럼 들리던 원인)
+    STATE.vocalTones = [13, 11, 9]; // 트로트 꺾기 비브라토 + 거친 소울 벨트 + 감성
+    STATE.energyArc = 2;           // 슬로우번 대신 흐름 있는 아크 (정적 lament 방지)
+    STATE.bpm = 96 + Math.floor(Math.random() * 9); // 96~104 (트롯 미들 템포)
     STATE.intensity = 8;
     STATE.textures = [5, 6];
     STATE.gueumPositions = ['start','mid','end'];
@@ -5779,7 +5779,7 @@ function applyGugakTrotPreset(style) {
     STATE.gueumGender = 'female';
     STATE.gueumStyle = 0;
     STATE.gueumStrength = 'maximum';
-    toast = '🌹 국악 트롯트 — 정통 (판소리 득음 · 깊은 한 · 허스키 여성 벨팅)';
+    toast = '🌹 국악 트롯트 — 정통 (트로트 꺾기 비브라토 · 미들 템포)';
   }
   const _tb = document.getElementById('gugakTrotBaseToggle'); if (_tb) _tb.checked = true;
 
@@ -6829,7 +6829,9 @@ ${storyBlock}${gugakBlock}
 (정확히 2줄 — 짧게 여운을 남기며 사라짐)
 
 음악 분위기 참고 (가사에 언급 금지):
-${lyricMoodSeed}`;
+${lyricMoodSeed}
+
+★ 금칙어 (절대 사용 금지): ${getLyricClicheWords().join(', ')} — 이 단어들과 악기 이름을 가사에 절대 쓰지 마세요.`;
 
   const sysP = _div
     ? `당신은 한국 국악 트롯트 전문 쇼츠 작사가입니다. 반드시 [훅] 같은 [섹션] 태그로 시작 — 제목·번호·설명·수치(긴장+7 등) 금지. 문어체 시적 문장, 종결어미를 "~다"로만 끝내지 말 것. 짧지만 강렬하게.`
