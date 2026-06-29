@@ -4981,7 +4981,8 @@ async function genLyrics(lang) {
 
   // 장르별 인트로 스타일 — 트롯트 구조면 선택 장르의 introStyle 우선, 없으면 트롯트 기본
   const _introSec = Math.round(totalSec * 0.07);
-  const _introSrc = form.introStyle || (isTrot ? _trotForm.introStyle : null);
+  const _pickForm = (v) => Array.isArray(v) ? (v[Math.floor(Math.random()*v.length)] || '') : (v || '');  // 풀(배열) 지원
+  const _introSrc = _pickForm(form.introStyle) || (isTrot ? _pickForm(_trotForm.introStyle) : null);
   const _introStyle = _introSrc
     ? _introSrc.replace('{sec}', _introSec).replace('{초}', _introSec)
     : `(기악 — ${_introSec}초)`;
@@ -5005,7 +5006,7 @@ async function genLyrics(lang) {
     }
     structureKr +=
       `[훅 - 마지막] 긴장 +10\n[Big Finish]\n(강도 10/10 — 동일한 훅 — 더 크고, 더 필연적으로)\n\n` +
-      `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지 소멸)\n${form.outroStyle || '[fade out]\n[end]'}`;
+      `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지 소멸)\n${_pickForm(form.outroStyle) || '[fade out]\n[end]'}`;
   } else if (isTrot) {
     /* 국악 트롯트 폼: 제약된 랜덤 구조 — 곡마다 절·후렴·프리·구음·브릿지 순서 변경
        인트로(이미 위에서 추가됨) → [셔플된 미들블록들] → 빅피니시 → 애드립 → 아웃트로 */
@@ -5057,7 +5058,7 @@ async function genLyrics(lang) {
       ` 3줄: 앵커를 짧게 끊어 절규하듯 변형 (예: 앞부분만 떼어 "${(_trotDiv.anchor.split(' ')[0]||_trotDiv.anchor)}…")\n` +
       ` 4줄: 마지막 한 마디 — 가장 짧고 사무치게, 끝에 추임새 ${_trotDiv.chuimsaeA})\n\n` +
       `[Ad-lib]\n(non-lexical vocal ad-lib — NOT lyrics: extended melisma on a single syllable like "하~~~" or "흐어~~~", wordless. Do not sing direction words)\n\n` +
-      `[아웃트로] 이완 ${_trTrot.outro}\n(정확히 ${_oLines}줄 — 감정이 서서히 가라앉음, 종결어미 ${_trotDiv.ending})\n${(form.outroStyle||_trotForm.outroStyle)||'[fade out]\n[end]'}`;
+      `[아웃트로] 이완 ${_trTrot.outro}\n(정확히 ${_oLines}줄 — 감정이 서서히 가라앉음, 종결어미 ${_trotDiv.ending})\n${_pickForm(form.outroStyle)||_pickForm(_trotForm.outroStyle)||'[fade out]\n[end]'}`;
   } else {
     /* 일반 폼: 제약된 랜덤 구조 — 절·후렴·(프리)·(구음)·(브릿지) 순서/개수 곡마다 변경 */
     const _genSeq = _getMidSeq('general', totalSec >= 270, _useGugakBase);
@@ -5084,7 +5085,7 @@ async function genLyrics(lang) {
     structureKr +=
       `[후렴 - 마지막] 긴장 ${tr.finalchorus}\n[Big Finish]\n(정확히 ${choLines}줄 — 앵커 라인으로 시작하되 같은 줄 복붙 금지: 1줄 앵커 그대로, 중간 줄은 감정 응축한 변형, 마지막 줄은 가장 짧고 강하게 끊어 절정${(_useGugakBase&&_trotDiv) ? `, 마지막 줄 끝에만 추임새 ${_trotDiv.chuimsaeA}` : ''})\n\n` +
       ((_useGugakBase&&_trotDiv) ? `[Ad-lib]\n(non-lexical vocal ad-lib — NOT lyrics: wordless extended melisma like "하~~~" or "흐어~~~". Do not sing direction words)\n\n` : '') +
-      `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내림)\n${form.outroStyle||'[fade out]\n[end]'}`;
+      `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내림)\n${_pickForm(form.outroStyle)||'[fade out]\n[end]'}`;
   }
 
   /* 🔀 잠긴 구조는 1회 소비 후 해제 (다음 생성은 새 랜덤, 또는 다시 섞기로 재잠금) */
