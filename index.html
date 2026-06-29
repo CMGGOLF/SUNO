@@ -3778,8 +3778,10 @@ function _doBuildPrompt() {
     /* ── ⑮ 장르별 시작·끝 구조 힌트 — 모든 곡이 fade out으로 끝나는 레퍼토리화 방지 ── */
     const _sform = (STATE.genre !== null && GENRE_SONGFORM[STATE.genre]) ? GENRE_SONGFORM[STATE.genre] : null;
     if (_sform && (_sform.introStyle || _sform.outroStyle)) {
-      const _intro = (_sform.introStyle || '').replace('{sec}', '8').replace('{초}', '8');
-      const _outro = (_sform.outroStyle || '').replace(/\n/g, ' ');
+      // introStyle/outroStyle이 배열(풀)이면 랜덤으로 하나 뽑아 같은 장르도 매번 다르게
+      const _pick = (v) => Array.isArray(v) ? (v[Math.floor(Math.random() * v.length)] || '') : (v || '');
+      const _intro = _pick(_sform.introStyle).replace('{sec}', '8').replace('{초}', '8');
+      const _outro = _pick(_sform.outroStyle).replace(/\n/g, ' ');
       const _hint = [];
       if (_intro) _hint.push(`INTRO: ${_intro}`);
       if (_outro) _hint.push(`OUTRO: ${_outro}`);
@@ -4296,8 +4298,18 @@ const GENRE_SONGFORM = {
     trLabel: { verse:'+6', prechorus:'-4', chorus:'T+5↔R-5', bridge:'+9', finalchorus:'+10', outro:'-8' },
     secPerLine: 7, maxScale: 1.1,
     verseLines: 3, preLines: 2, choLines: 4, bridgeLines: 3, outroLines: 2,
-    introStyle: '(single gayageum note fades in slowly — {sec}s, no percussion, no voice)',
-    outroStyle: '[voice alone — last phrase without instruments, then silence]\n[fade out]\n[end]',
+    introStyle: [
+      '(single gayageum note fades in slowly — {sec}s, no percussion, no voice)',
+      '(a low ajaeng bow swells from silence — {sec}s, dark and trembling, then space)',
+      '(distant daegeum breath alone — {sec}s, airy and lonely, no rhythm yet)',
+      '(one struck janggu beat, then long silence, then gayageum enters — {sec}s)',
+    ],
+    outroStyle: [
+      '[voice alone — last phrase without instruments, then silence]\n[fade out]\n[end]',
+      '[a single gayageum note rings out and is left to decay into nothing]\n[end]',
+      '[ajaeng bow drawn slow on the final note, fading under its own weight]\n[end]',
+      '[everything drops out except one daegeum breath, then silence]\n[end]',
+    ],
   },
   // 1: 산조 재즈 격상
   1: {
@@ -4309,8 +4321,18 @@ const GENRE_SONGFORM = {
     trLabel: { verse:'+5', chorus:'T+4↔R-4', bridge:'+8', finalchorus:'+9', outro:'-7' },
     secPerLine: 6, maxScale: 1.2,
     verseLines: 4, preLines: 0, choLines: 4, bridgeLines: 3, outroLines: 2,
-    introStyle: '(upright bass walks alone — {sec}s, single note, no chord, just the intention)',
-    outroStyle: '[last chord held — instrument sustains until it disappears on its own]\n[no fade, just silence]\n[end]',
+    introStyle: [
+      '(upright bass walks alone — {sec}s, single note, no chord, just the intention)',
+      '(brushed drums whisper a loose swing — {sec}s, then haegeum slides in late)',
+      '(gayageum plucks a few scattered blue notes — {sec}s, sparse, off-the-beat)',
+      '(piano comps one lonely chord, lets it hang — {sec}s, then bass answers)',
+    ],
+    outroStyle: [
+      '[last chord held — instrument sustains until it disappears on its own]\n[no fade, just silence]\n[end]',
+      '[bass plays one final walking phrase alone, then stops mid-step]\n[end]',
+      '[haegeum bends the last note down and lets it die]\n[end]',
+      '[brushes slow to a stop, a single cymbal shimmer, then silence]\n[end]',
+    ],
   },
   // 2: 판소리 소울
   2: {
@@ -4322,8 +4344,18 @@ const GENRE_SONGFORM = {
     trLabel: { verse:'+7', prechorus:'-3', chorus:'T+6↔R-6', bridge:'+10', finalchorus:'+10', outro:'-8' },
     secPerLine: 5, maxScale: 1.2,
     verseLines: 4, preLines: 2, choLines: 4, bridgeLines: 3, outroLines: 2,
-    introStyle: '(a cappella — single voice enters cold, no instrument, raw pansori breath)',
-    outroStyle: '[voice alone — unaccompanied final cry, then silence]\n[end]',
+    introStyle: [
+      '(a cappella — single voice enters cold, no instrument, raw pansori breath)',
+      '(one soribuk drum strike, then a held breath, then the voice cries out)',
+      '(haegeum wails a lone phrase — {sec}s, then the voice answers it)',
+      '(distant humming gueum builds from silence — {sec}s, then full voice enters)',
+    ],
+    outroStyle: [
+      '[voice alone — unaccompanied final cry, then silence]\n[end]',
+      '[a single soribuk beat closes it, then nothing]\n[end]',
+      '[the voice breaks on the last word and trails into a whisper]\n[end]',
+      '[haegeum and voice fade together on one long held note]\n[end]',
+    ],
   },
   // 3: 민요 블루스
   3: {
@@ -4335,8 +4367,18 @@ const GENRE_SONGFORM = {
     trLabel: { verse:'+6', chorus:'T+5↔R-5', bridge:'+9', finalchorus:'+10', outro:'-7' },
     secPerLine: 6, maxScale: 1.2,
     verseLines: 4, preLines: 0, choLines: 4, bridgeLines: 3, outroLines: 2,
-    introStyle: '(single slide haegeum note bends slowly — {sec}s, 12-bar groove starts underneath)',
-    outroStyle: '[repeat last line spoken, not sung — voice alone]\n[fade out]\n[end]',
+    introStyle: [
+      '(single slide haegeum note bends slowly — {sec}s, 12-bar groove starts underneath)',
+      '(gayageum picks a lonely blues riff — {sec}s, then a shuffle groove joins)',
+      '(piri wails one long bent note like a harmonica — {sec}s, sparse and aching)',
+      '(a slow finger-snap and low humming, then haegeum slides in — {sec}s)',
+    ],
+    outroStyle: [
+      '[repeat last line spoken, not sung — voice alone]\n[fade out]\n[end]',
+      '[haegeum bends one last blue note, then the groove stops dead]\n[end]',
+      '[everything drops to a single gayageum string, fading slow]\n[fade out]\n[end]',
+      '[the voice hums the melody once more, unaccompanied, then silence]\n[end]',
+    ],
   },
   // 4: 국악 궁중 힙합
   4: {
@@ -4348,8 +4390,18 @@ const GENRE_SONGFORM = {
     trLabel: { hook:'T+6↔R-5', verse:'+7', bridge:'+9', outro:'-6' },
     secPerLine: 3, maxScale: 1.6,
     verseLines: 6, preLines: 0, choLines: 4, bridgeLines: 4, outroLines: 2,
-    introStyle: '(cold open — hook drops from beat 1, no build, no intro, 808 hits immediately)',
-    outroStyle: '[hard stop — music cuts, one bar of silence, then single janggu hit]\n[end]',
+    introStyle: [
+      '(cold open — hook drops from beat 1, no build, 808 and janggu hit immediately)',
+      '(gayageum sample loop alone — {sec}s, then the 808 and beat drop in)',
+      '(a chopped haegeum vocal-like phrase loops — {sec}s, then trap hats roll in)',
+      '(janggu jangdan beaten raw — {sec}s, then bass and hook enter together)',
+    ],
+    outroStyle: [
+      '[hard stop — music cuts, one bar of silence, then single janggu hit]\n[end]',
+      '[beat drops out leaving the gayageum loop alone, then it cuts]\n[end]',
+      '[808 decays long, a haegeum phrase echoes once over it, then silence]\n[end]',
+      '[the hook repeats half-time, filtered, fading into nothing]\n[fade out]\n[end]',
+    ],
   },
   // 5: 대금 앰비언트
   5: {
@@ -4361,8 +4413,18 @@ const GENRE_SONGFORM = {
     trLabel: { verse:'+4', chorus:'T+3↔R-5', bridge:'+7', finalchorus:'+8', outro:'-9' },
     secPerLine: 9, maxScale: 1.1,
     verseLines: 3, preLines: 0, choLines: 3, bridgeLines: 2, outroLines: 2,
-    introStyle: '(single daegeum breath only — {sec}s+ of silence first, then one note, nothing else)',
-    outroStyle: '[infinite fade — last note dissolves into reverb tail, no defined ending]\n[end]',
+    introStyle: [
+      '(single daegeum breath only — {sec}s+ of silence first, then one note, nothing else)',
+      '(a low ajaeng drone swells under reverb — {sec}s, no rhythm, vast space)',
+      '(distant gayageum harmonics shimmer in — {sec}s, formless and floating)',
+      '(wind-like piri tone fades up from silence — {sec}s, lonely and wide)',
+    ],
+    outroStyle: [
+      '[infinite fade — last note dissolves into reverb tail, no defined ending]\n[end]',
+      '[daegeum breath thins out until only reverb remains, then silence]\n[end]',
+      '[the drone slowly loses its pitch and dissolves into air]\n[fade out]\n[end]',
+      '[one final gayageum harmonic rings in the empty space, fading on]\n[end]',
+    ],
   },
   // 6: 아쟁 딥 소울
   6: {
@@ -4374,8 +4436,18 @@ const GENRE_SONGFORM = {
     trLabel: { verse:'+6', prechorus:'-3', chorus:'T+5↔R-6', bridge:'+9', finalchorus:'+10', outro:'-9' },
     secPerLine: 8, maxScale: 1.1,
     verseLines: 3, preLines: 2, choLines: 3, bridgeLines: 3, outroLines: 2,
-    introStyle: '(ajaeng bow drawn across lowest string once — {sec}s, one long note, nothing more)',
-    outroStyle: '[ajaeng sustains alone — voice gone, one bowed note slowly decays]\n[fade out]\n[end]',
+    introStyle: [
+      '(ajaeng bow drawn across lowest string once — {sec}s, one long note, nothing more)',
+      '(a deep Rhodes-like chord with ajaeng underneath — {sec}s, warm and heavy)',
+      '(haegeum hums a soulful phrase over a slow bass pulse — {sec}s)',
+      '(finger-snap groove and ajaeng drone set the mood — {sec}s, then voice)',
+    ],
+    outroStyle: [
+      '[ajaeng sustains alone — voice gone, one bowed note slowly decays]\n[fade out]\n[end]',
+      '[the groove drops, ajaeng holds the last low note until it dies]\n[end]',
+      '[voice and haegeum land on one final chord, then sudden quiet]\n[end]',
+      '[bass and ajaeng fade together, the last warmth leaving the room]\n[fade out]\n[end]',
+    ],
   },
   // 7: 네오조선 퓨전
   7: {
@@ -4387,8 +4459,18 @@ const GENRE_SONGFORM = {
     trLabel: { verse:'+6', prechorus:'-4', chorus:'T+5↔R-5', bridge:'+8', finalchorus:'+10', outro:'-8' },
     secPerLine: 5, maxScale: 1.2,
     verseLines: 4, preLines: 2, choLines: 4, bridgeLines: 3, outroLines: 2,
-    introStyle: '(Rhodes chord left to breathe — {sec}s, gayageum enters on top after 2 bars)',
-    outroStyle: '[groove fades — bass note last to leave]\n[fade out]\n[end]',
+    introStyle: [
+      '(Rhodes chord left to breathe — {sec}s, gayageum enters on top after 2 bars)',
+      '(gayageum arpeggio alone — {sec}s, then a modern beat slides under it)',
+      '(haegeum and a synth pad blend in from silence — {sec}s, then groove)',
+      '(a single janggu hit and reverb, then gayageum and bass build — {sec}s)',
+    ],
+    outroStyle: [
+      '[groove fades — bass note last to leave]\n[fade out]\n[end]',
+      '[gayageum plays a final figure as the beat strips away, then silence]\n[end]',
+      '[haegeum holds a long note over a dissolving synth pad]\n[fade out]\n[end]',
+      '[everything cuts but one gayageum string still ringing, then quiet]\n[end]',
+    ],
   },
   // 8: 국악 트롯트 — 풍부한 구조 (Pre-Chorus·구음·브릿지·애드립 포함)
   8: {
@@ -4400,8 +4482,18 @@ const GENRE_SONGFORM = {
     trLabel: { verse:'+7', prechorus:'-3', chorus:'T+4↔R-8', bridge:'+9', finalchorus:'+10', outro:'-7' },
     secPerLine: 5, maxScale: 1.2,
     verseLines: 4, preLines: 2, choLines: 4, bridgeLines: 4, outroLines: 2,
-    introStyle: '(장구 장단 혼자 시작 — {sec}초, 해금 한 음 뒤따라옴, 보컬 없음)',
-    outroStyle: '[추임새 한 번 — 악기 모두 멈추고 목소리만]\n[fade out]\n[end]',
+    introStyle: [
+      '(장구 장단 혼자 시작 — {sec}초, 해금 한 음 뒤따라옴, 보컬 없음)',
+      '(해금이 애절한 한 소절을 먼저 흐느낌 — {sec}초, 그 뒤 장단 들어옴)',
+      '(피리가 구슬픈 선율 한 줄 — {sec}초, 아쟁 저음이 받쳐줌, 보컬 없음)',
+      '(아쟁 저음 한 음이 길게 깔리고 — {sec}초, 장구가 천천히 들어옴)',
+    ],
+    outroStyle: [
+      '[추임새 한 번 — 악기 모두 멈추고 목소리만]\n[fade out]\n[end]',
+      '[해금이 마지막 음을 길게 꺾으며 사라짐]\n[end]',
+      '[장단이 뚝 멈추고 보컬 한 소절만 남았다가 침묵]\n[end]',
+      '[아쟁 저음만 남아 천천히 사그라듦]\n[fade out]\n[end]',
+    ],
   },
 };
 /* 장르 미선택 시 기본값 */
@@ -5730,6 +5822,7 @@ function applyGugakTrotPreset(style) {
   STATE.koreanFeelings = [4, 5];
   STATE.blackSoulElements = [2];
   STATE.humanFeelElements = [1, 6];
+  STATE.koreanRatio = [80, 85, 90][Math.floor(Math.random() * 3)];  // 국악 베이스 유지(80~90), 버튼 누를 때마다 비율 변동 (슬라이더 step5)
 
   let toast;
   if (style === 'ballad') {
