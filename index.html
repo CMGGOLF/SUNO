@@ -7016,7 +7016,7 @@ function buildCompactSunoPrompt() {
   let sonic    = pick('SONIC IDENTITY');
   const genre  = pick('Genre/Mood');
   let timbre   = pick('TIMBRE') || pick('Instruments');
-  const vocal  = pick('Vocal');
+  let vocal    = pick('Vocal');
   const key    = pick('Key');
   const bpmM   = full.match(/BPM \d+[^\n]*/);
   const bpm    = bpmM ? bpmM[0].split('·')[0].trim() : '';
@@ -7044,7 +7044,18 @@ function buildCompactSunoPrompt() {
   out = assemble(sonicShort, timbre);
   if (out.length <= LIMIT) return out;
 
-  // 3) 그래도 길면 TIMBRE를 악기 경계(" | " / " || ")에서 잘라 온전한 악기 단위만 유지 (절대 단어 중간 X)
+  // 2.5) 국악 베이스 보존 — 길면 긴 [Vocal] 설명을 먼저 줄여 국악기(TIMBRE)를 지킨다
+  //      (국악기가 채널 정체성이므로 절대 먼저 희생하지 않음)
+  if (vocal.length > 140) {
+    let v = vocal.slice(0, 160);
+    const vsep = Math.max(v.lastIndexOf('·'), v.lastIndexOf(' — '));
+    if (vsep > 40) v = vocal.slice(0, vsep).trim();
+    vocal = v;
+    out = assemble(sonicShort, timbre);
+    if (out.length <= LIMIT) return out;
+  }
+
+  // 3) 그래도 길면 TIMBRE를 악기 경계(" | " / " || ")에서 잘라 온전한 악기 단위만 유지 (절대 단어 중간 X) — 최후의 수단
   const fixedLen = assemble(sonicShort, '').length;     // TIMBRE 뺀 필수부 길이
   let budget = LIMIT - fixedLen - 2;
   if (timbre.length > budget) {
