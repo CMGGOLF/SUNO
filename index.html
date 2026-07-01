@@ -1199,7 +1199,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="sec-sub">7:3 정통화 · 국악기 강도 조절 가능 · Suno 5.5 (1000자)</div>
   </div>
   <div class="section-body">
-    <div class="prompt-box" id="promptBox" contenteditable="true" spellcheck="false">← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다. (여기에 직접 붙여넣기도 가능 — 원하는 프롬프트를 넣고 아래 변형 버튼을 누르면 그 느낌으로 변형됩니다)</div>
+    <div class="prompt-box" id="promptBox" contenteditable="true" spellcheck="false" oninput="if(!window._promptLocked){window._promptLocked=true;if(window.showToast)showToast('✏️ 직접 편집 모드 — 선택해도 덮어쓰지 않습니다. 프리셋/🎯을 누르면 자동생성으로 복귀');}">← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다. (여기에 직접 붙여넣기도 가능 — 원하는 프롬프트를 넣고 아래 변형 버튼을 누르면 그 느낌으로 변형됩니다)</div>
     <div class="prompt-actions">
       <button class="btn btn-gold" onclick="copyPrompt()">📋 복사</button>
       <button class="btn btn-teal" onclick="aiExpandPrompt()">✦ Suno 프롬프트 생성</button>
@@ -3792,7 +3792,7 @@ function _doBuildPrompt() {
 
     const box=document.getElementById('promptBox');
     const hasUserSelection = STATE.genre!==null || STATE.moods.length>0 || STATE.instrList.length>0 || STATE.concept!==null || STATE.vocalStyle!==null || STATE.gugakVocalStyle!==null || STATE.hanSoulStyle!==null;
-    box.textContent=hasUserSelection?scrubArtistNames(parts.join('\n')):'← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
+    if (!window._promptLocked) box.textContent=hasUserSelection?scrubArtistNames(parts.join('\n')):'← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다. (여기에 직접 붙여넣기 가능)';  // 사용자가 직접 편집하면 잠겨 덮어쓰지 않음
     /* UPG-1: 빌드 완료 후 히스토리 저장 */
     if (typeof _saveHistoryAfterBuild === 'function') _saveHistoryAfterBuild();
   } catch(e) {
@@ -5582,6 +5582,7 @@ function _collapseAndRevealFilled() {
 ═══════════════════════════════════════════ */
 /* 프리셋 공통 마무리 — 모든 프리셋 함수 마지막에 호출 */
 function _finalizePreset(toastMsg) {
+  window._promptLocked = false;  // 프리셋 적용 시 자동생성 복귀
   STATE.dnaSeed = Math.random();
   STATE.negativeSeed = Math.random();
   syncSliders(); renderAll(); syncGueumUI(); buildPrompt(true);
@@ -5719,6 +5720,7 @@ function applyPresetRandomness(isStrong) {
 }
 function apply73Preset(type) {
   resetAll(false);
+  window._promptLocked = false;  // 프리셋 적용 시 자동생성 복귀
   if (type==='joseon') {
     STATE.genre=0;STATE.moods=[0,3];STATE.concept=0;STATE.vocalStyle=0;STATE.vocalTones=[0,5];
     STATE.textures=[0,6];STATE.grooves=[3,6];STATE.spaces=[0];STATE.koreanGrooves=[0,4,9,10];
@@ -7068,6 +7070,7 @@ function buildCompactSunoPrompt() {
   return out.slice(0, LIMIT);
 }
 function genCompactSuno() {
+  window._promptLocked = false;  // 🎯 누르면 자동생성 복귀
   STATE.dnaSeed = Math.random(); STATE.negativeSeed = Math.random();  // 누를 때마다 SONIC/DNA 도입부 변주 (같은 장르 인트로 반복 방지)
   const p = buildCompactSunoPrompt();
   const box = document.getElementById('compactSunoText');
