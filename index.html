@@ -2415,23 +2415,64 @@ function getSelectedInstrObjects(){ return (STATE.instrList||[]).map(x => getCat
 /* 장르별 기본 국악기 조합 — 음역대 균형(멜로디 + 저음/베이스 + 리듬)으로 구성해
    소리가 한 음역에 뭉치지 않고 위·중간·아래가 다 채워져 풍성하게 들리도록 함.
    string: 0가야금 1해금 2아쟁(저음) 3거문고(저음) | wind: 0대금 1피리 2단소 | perc: 0장구 1꽹과리 2북 3징808 */
+/* 장르마다 3개 조합(리드 악기 회전) — 곡마다 주선율 악기가 달라져 다양성 ↑.
+   모두 국악기 베이스 + 음역 균형(멜로디+저음+리듬) + 장르 색 유지. autoSeedInstruments가 랜덤 선택. */
 const GENRE_DEFAULT_INSTR = {
-  0: [['string',0],['wind',0],['string',2],['percussion',0]], // 조선 궁중 소울: 가야금+대금 / 아쟁(저음) / 장구
-  1: [['string',0],['string',1],['string',2],['percussion',0]],// 산조 재즈: 가야금+해금 / 아쟁 / 장구
-  2: [['string',1],['wind',1],['string',2],['percussion',0]], // 판소리 소울: 해금+피리 / 아쟁 / 장구
-  3: [['wind',1],['string',1],['string',2],['percussion',0]], // 민요 블루스: 피리+해금 / 아쟁 / 장구
-  4: [['string',0],['wind',1],['string',3],['percussion',3]], // 국악 궁중 힙합: 가야금+피리 / 거문고(저음) / 징808
-  5: [['wind',0],['wind',2],['string',3],['percussion',0]],   // 대금 앰비언트: 대금+단소 / 거문고(저음 드론) / 장구
-  6: [['string',2],['string',1],['string',3],['percussion',0]],// 아쟁 딥 소울: 아쟁(리드 저음)+해금 / 거문고 / 장구
-  7: [['string',0],['wind',1],['string',2],['percussion',0]], // 네오조선 퓨전: 가야금+피리 / 아쟁 / 장구
-  8: [['string',1],['wind',1],['string',2],['percussion',0]], // 국악 트롯트: 해금+피리 / 아쟁 / 장구
+  0: [ // 조선 궁중 소울 (우아·정악)
+    [['string',0],['wind',0],['string',2],['percussion',0]],  // 가야금 리드
+    [['string',1],['string',0],['string',2],['percussion',0]],// 해금 리드
+    [['wind',0],['string',0],['string',3],['percussion',0]],  // 대금 리드
+  ],
+  1: [ // 산조 재즈 (즉흥)
+    [['string',0],['string',1],['string',2],['percussion',0]],// 가야금 리드
+    [['string',1],['string',0],['string',2],['percussion',0]],// 해금 리드
+    [['wind',0],['string',0],['string',2],['percussion',0]],  // 대금 리드
+  ],
+  2: [ // 판소리 소울
+    [['string',1],['wind',1],['string',2],['percussion',0]],  // 해금 리드
+    [['string',2],['string',1],['string',3],['percussion',0]],// 아쟁 리드(깊음)
+    [['wind',1],['string',1],['string',2],['percussion',0]],  // 피리 리드
+  ],
+  3: [ // 민요 블루스
+    [['wind',1],['string',1],['string',2],['percussion',0]],  // 피리 리드
+    [['string',1],['wind',1],['string',2],['percussion',0]],  // 해금 리드
+    [['wind',0],['string',1],['string',2],['percussion',0]],  // 대금 리드
+  ],
+  4: [ // 국악 궁중 힙합
+    [['string',0],['wind',1],['string',3],['percussion',3]],  // 가야금 리드
+    [['string',1],['string',0],['string',3],['percussion',3]],// 해금 리드
+    [['string',3],['string',0],['string',2],['percussion',3]],// 거문고 리드(어둠)
+  ],
+  5: [ // 대금 앰비언트
+    [['wind',0],['wind',2],['string',3],['percussion',0]],    // 대금 리드
+    [['wind',0],['string',0],['string',3],['percussion',0]],  // 대금+가야금 텍스처
+    [['wind',2],['wind',0],['string',3],['percussion',0]],    // 단소 리드
+  ],
+  6: [ // 아쟁 딥 소울
+    [['string',2],['string',1],['string',3],['percussion',0]],// 아쟁 리드
+    [['string',2],['wind',0],['string',3],['percussion',0]],  // 아쟁+대금
+    [['string',1],['string',2],['string',3],['percussion',0]],// 해금 리드 위 아쟁
+  ],
+  7: [ // 네오조선 퓨전
+    [['string',0],['wind',1],['string',2],['percussion',0]],  // 가야금 리드
+    [['string',1],['string',0],['string',2],['percussion',0]],// 해금 리드
+    [['wind',0],['string',0],['string',2],['percussion',0]],  // 대금 리드
+  ],
+  8: [ // 국악 트롯트
+    [['string',1],['wind',1],['string',2],['percussion',0]],  // 해금 리드
+    [['string',2],['string',1],['string',3],['percussion',0]],// 아쟁 리드(깊은 트롯)
+    [['wind',1],['string',1],['string',2],['percussion',0]],  // 피리 리드
+  ],
 };
 /* 현재 컨텍스트(장르)에 맞는 기본 국악기 조합을 비어 있을 때만 채움 (스마트 자동조합·허스키용) */
 function autoSeedInstruments(){
   if (STATE.instrList && STATE.instrList.length) return false;   // 비파괴
   let combo;
   if (STATE.genre !== null && GENRE_DEFAULT_INSTR[STATE.genre]) {
-    combo = GENRE_DEFAULT_INSTR[STATE.genre].map(([cat, idx]) => ({cat, idx}));
+    const _opts = GENRE_DEFAULT_INSTR[STATE.genre];
+    // 새 구조(조합 배열)면 랜덤으로 하나 뽑아 리드 악기 회전, 구 구조(단일 조합)면 그대로
+    const _sel = Array.isArray(_opts[0] && _opts[0][0]) ? _opts[Math.floor(Math.random() * _opts.length)] : _opts;
+    combo = _sel.map(([cat, idx]) => ({cat, idx}));
   } else {
     combo = [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'string',idx:2},{cat:'percussion',idx:0}]; // 기본: 가야금+해금 / 아쟁(저음) / 장구 (음역 균형)
   }
@@ -2778,16 +2819,18 @@ function _autoSetKeyScale(keyIdx, scaleIdx) {
 /* 장르별 조성·음계 자동 매핑 테이블
    musicKeys:    0=Am 1=Dm 2=Em 3=Gm 4=Cm 5=F 6=G 7=Bb
    koreanScales: 0=계면조 1=평조 2=우조 3=경토리 4=메나리토리 */
+/* 장르별 조성 풀 — 각 3개(전부 슬픔 계열 단조). 곡마다 랜덤으로 뽑아 음 높이가 달라져 다양성 ↑.
+   키: 0Am 1Dm 2Em 3Gm 4Cm (단조) / 음계: 0계면조 4메나리토리 (둘 다 한·슬픔). 장조·밝은 선법 배제. */
 const _GENRE_KEY_MAP = [
-  [0, 0], // 0 조선궁중소울  → Am + 계면조 (애절·한)
-  [2, 0], // 1 산조재즈      → Em + 계면조 (즉흥성·재즈)
-  [1, 0], // 2 판소리소울    → Dm + 계면조 (서사적·깊은 한)
-  [0, 4], // 3 민요블루스    → Am + 메나리토리 (처연·구슬픔)
-  [1, 0], // 4 국악궁중힙합  → Dm + 계면조 (묵직·힙합)
-  [5, 3], // 5 대금앰비언트  → F  + 경토리 (서정적·신명)
-  [1, 4], // 6 아쟁딥소울    → Dm + 메나리토리 (깊은 슬픔·처연)
-  [4, 1], // 7 네오조선퓨전  → Cm + 평조 (장엄·웅장·기품)
-  [0, 4], // 8 국악트롯트    → Am + 메나리토리 (흥겨움·구슬픔)
+  [[0,0],[1,0],[2,0]], // 0 조선궁중소울  → Am/Dm/Em + 계면조 (애절·한)
+  [[2,0],[0,0],[1,0]], // 1 산조재즈      → Em/Am/Dm + 계면조 (즉흥·재즈)
+  [[1,0],[2,0],[3,0]], // 2 판소리소울    → Dm/Em/Gm + 계면조 (서사적·깊은 한)
+  [[0,4],[1,4],[2,4]], // 3 민요블루스    → Am/Dm/Em + 메나리토리 (처연·구슬픔)
+  [[1,0],[0,0],[3,0]], // 4 국악궁중힙합  → Dm/Am/Gm + 계면조 (묵직·힙합)
+  [[0,4],[1,4],[3,0]], // 5 대금앰비언트  → Am/Dm 메나리토리, Gm 계면조 (서정·처연)
+  [[1,4],[3,0],[4,0]], // 6 아쟁딥소울    → Dm 메나리토리, Gm/Cm 계면조 (깊은 슬픔)
+  [[4,1],[1,0],[0,0]], // 7 네오조선퓨전  → Cm 평조(장엄), Dm/Am 계면조
+  [[0,4],[1,4],[1,0]], // 8 국악트롯트    → Am/Dm 메나리토리, Dm 계면조 (한+흥)
 ];
 
 /* 한소울스타일별 조성·음계 자동 매핑 */
@@ -2803,11 +2846,11 @@ const _HANSOUL_KEY_MAP = [
 /* 장르별 어울리는 국악 창법 후보 (0판소리 1남도민요 2경기민요 3정악 4수심가 5가사시창)
    장르 선택 시 이 후보 중 무작위로 하나가 자동으로 켜짐 → 곡마다 창법이 달라져 다양 */
 const GENRE_CHANGSIK_CANDIDATES = {
-  0: [3, 5],        // 조선 궁중 소울 → 정악·가사시창 (정제·기품)
+  0: [3, 5, 4],     // 조선 궁중 소울 → 정악·가사시창·수심가 (정제·기품 + 애절)
   1: [0, 4, 1],     // 산조 재즈 → 판소리·수심가·남도민요 (즉흥·블루지)
   2: [0, 4, 1],     // 판소리 소울 → 판소리·수심가·남도민요 (깊은 한)
   3: [1, 4, 0],     // 민요 블루스 → 남도민요·수심가·판소리
-  4: [2, 0],        // 국악 궁중 힙합 → 경기민요·판소리 (경쾌·리듬)
+  4: [2, 0, 1],     // 국악 궁중 힙합 → 경기민요·판소리·남도민요 (경쾌·리듬 + 꺾음)
   5: [5, 3, 4],     // 대금 앰비언트 → 가사시창·정악·수심가 (여백·서정)
   6: [4, 0, 1],     // 아쟁 딥 소울 → 수심가·판소리·남도민요 (처연·깊음)
   7: [0, 2, 1],     // 네오조선 퓨전 → 판소리·경기민요·남도민요 (다양)
@@ -2818,7 +2861,8 @@ function selectGenre(i) {
   STATE.genre = (STATE.genre === i) ? null : i;
   if (STATE.genre !== null) {
     document.getElementById('genre_' + i)?.classList.add('active');
-    const map = _GENRE_KEY_MAP[i];
+    let map = _GENRE_KEY_MAP[i];
+    if (map && Array.isArray(map[0])) map = map[Math.floor(Math.random() * map.length)]; // 풀이면 랜덤 조성
     if (map) _autoSetKeyScale(map[0], map[1]);
     /* 장르 선택 시, 아직 창법 미선택이면 어울리는 창법 중 무작위로 하나 자동 활성화 */
     const cand = GENRE_CHANGSIK_CANDIDATES[i];
@@ -4087,7 +4131,8 @@ function randomizeCombination() {
 
   // ⑥ 조성·음계 자동 적용 (기존 매핑 유지)
   if (STATE.genre !== null && _GENRE_KEY_MAP[STATE.genre]) {
-    const map = _GENRE_KEY_MAP[STATE.genre];
+    let map = _GENRE_KEY_MAP[STATE.genre];
+    if (map && Array.isArray(map[0])) map = map[Math.floor(Math.random() * map.length)]; // 풀이면 랜덤 조성
     _autoSetKeyScale(map[0], map[1]);
   }
 
