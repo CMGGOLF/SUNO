@@ -579,6 +579,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <button class="btn btn-soul" onclick="applyGugakTrotPreset('classic')" style="border-color:#d4845a">🌹 국악 트롯트 · 정통 <span style="font-size:10px;opacity:0.75">(판소리 · 깊은 한)</span></button>
         <button class="btn btn-soul" onclick="applyGugakTrotPreset('ballad')" style="border-color:#d4845a">🌹 국악 트롯트 · 발라드 <span style="font-size:10px;opacity:0.75">(느리고 절절)</span></button>
         <button class="btn btn-soul" onclick="applyGugakTrotPreset('gueum')" style="border-color:#d4845a">🌹 국악 트롯트 · 구음 강조 <span style="font-size:10px;opacity:0.75">(판소리 득음·추임새)</span></button>
+        <button class="btn btn-soul" onclick="applyGugakTrotPreset('festive')" style="border-color:#d4845a">🌹 국악 트롯트 · 흥과 한 <span style="font-size:10px;opacity:0.75">(빠른 트롯 · 겉흥속한)</span></button>
       </div>
     </div>
     <div style="border-top:1px solid rgba(201,168,76,.2)"></div>
@@ -1558,6 +1559,10 @@ const DATA = {
     {en:'Chill Drive',kr:'편안한 드라이브',desc:'여유롭고 감성적인 드라이브 분위기'},
     {en:'Aggressive Hip-hop',kr:'공격적인 힙합',desc:'강렬하고 파워풀한 힙합 에너지'},
     {en:'Uplifting & Positive',kr:'밝고 긍정적인',desc:'기분을 좋게 만들어주는 상쾌한 분위기'},
+    {en:'Trot Melancholy (Aesu)',kr:'트로트 애수',desc:'정통 트로트의 구성지고 애달픈 삶의 애환 — 뽕끼 없는 깊은 한(恨)'},
+    {en:'Han-laden Passionate Cry',kr:'한 서린 절창',desc:'억누르다 후렴에서 터뜨리는 격정적 슬픔 — 초혼처럼 벨트로 폭발하는 절창'},
+    {en:'Bittersweet Festivity',kr:'겉흥속한 (흥과 한)',desc:'경쾌한 트로트 리듬 속에 감춰진 이별의 슬픔 — 웃으며 우는 정서'},
+    {en:'Fleeting Life Sorrow',kr:'인생무상 트로트',desc:'세월·회한·덧없음을 노래하는 중년의 애상, 지나간 날의 그리움'},
   ],
   instrumentsString: [
     {en:'Gayageum Main + Subtle Rhodes + Warm Bass',kr:'가야금 주인공 + 은은한 로즈 + 웜 베이스',desc:'가야금 멜로디·리프·아르페지오(70%) + 현대 로즈·베이스 승화(30%)',ratio:'7:3'},
@@ -5894,7 +5899,7 @@ function applyGugakTrotPreset(style) {
   let toast;
   if (style === 'ballad') {
     // 트롯 발라드 — 더 느리고 애절, 슬픔 극대화
-    STATE.moods = [7, 8, 10];
+    STATE.moods = [17, 20, 8];   // 트로트 애수 + 인생무상 + 애절한 블루스
     STATE.vocalStyle = 4;          // 절절한 발라드/트롯 보컬
     STATE.gugakVocalStyle = null;  // 수심가 등 전통 lament 창법 제거 (정가처럼 들리던 원인)
     STATE.vocalTones = [13, 1, 9];  // 트로트 꺾기 비브라토 + 소울풀 + 감성 표현
@@ -5910,7 +5915,7 @@ function applyGugakTrotPreset(style) {
     toast = '🌹 국악 트롯트 — 발라드 (느리고 절절한 한)';
   } else if (style === 'gueum') {
     // 트롯 구음 강조 — 판소리 득음·추임새·구음 전면, 전 구간 최대 강도
-    STATE.moods = [7, 8];
+    STATE.moods = [18, 17];      // 한 서린 절창 + 트로트 애수 (구음: 가장 격정적 한)
     STATE.vocalStyle = 1;          // 판소리 창법 전면
     STATE.gugakVocalStyle = 0;     // 판소리 (구음 강조 변형이라 의도적 유지)
     STATE.vocalTones = [13, 11, 1]; // 트로트 꺾기 + 거친 소울 벨트 + 소울풀
@@ -5924,9 +5929,24 @@ function applyGugakTrotPreset(style) {
     STATE.gueumStyle = 0;          // 판소리 딥 블루스 구음
     STATE.gueumStrength = 'maximum';
     toast = '🌹 국악 트롯트 — 구음 강조 (판소리 득음·추임새 전면)';
+  } else if (style === 'festive') {
+    // 빠른 흥과 한 — 경쾌한 트로트 리듬 속 감춰진 이별의 슬픔 (술 맹세 스타일, 겉흥속한)
+    STATE.moods = [19, 17];        // 겉흥속한 (흥과 한) + 트로트 애수
+    STATE.vocalStyle = 4;          // 트롯 보컬
+    STATE.gugakVocalStyle = null;  // 전통 정가/판소리 창법 제거 (경쾌한 트롯)
+    STATE.vocalTones = [13, 1, 9]; // 트로트 꺾기 비브라토 + 소울풀 + 감성
+    STATE.energyArc = 2;           // 흐름 있는 아크 (경쾌하되 뽕짝 아님)
+    STATE.bpm = 118 + Math.floor(Math.random() * 16); // 118~133 (빠른 트롯)
+    STATE.intensity = 7;
+    STATE.textures = [5, 6];
+    STATE.gueumPositions = ['start','end'];
+    STATE.gueumPitch = 'mid';
+    STATE.gueumGender = 'female';
+    STATE.gueumStyle = 0;
+    STATE.gueumStrength = 'medium';
+    toast = '🌹 국악 트롯트 — 흥과 한 (빠른 트롯 · 겉은 흥 속은 한)';
   } else {
-    // 정통 (classic) — 트로트 꺾기 비브라토 전면
-    STATE.moods = [7, 8];
+    STATE.moods = [17, 7];       // 트로트 애수 + 현대적 애절함 (정통)
     STATE.vocalStyle = 4;          // 절절한 발라드/트롯 보컬
     STATE.gugakVocalStyle = null;  // 전통 정가/판소리 창법 강제 제거 (정가처럼 들리던 원인)
     STATE.vocalTones = [13, 11, 9]; // 트로트 꺾기 비브라토 + 거친 소울 벨트 + 감성
