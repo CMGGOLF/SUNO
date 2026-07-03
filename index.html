@@ -4863,7 +4863,7 @@ function buildConstrainedStructure(seed, opts) {
   const o = opts || {};
   const longSong = o.long;            // 4분 이상이면 블록 수 증가
   const mode = o.mode || 'trot';       // 'trot' | 'general' | 'hiphop'
-  const allowGuum = (o.allowGuum !== false) && (mode === 'trot' || o.gugakBase);
+  const allowGuum = (o.allowGuum !== false) && (mode === 'trot' || o.gugakBase || o.gueumExplicit);
   // 시드 기반 의사난수
   let _s = Math.floor(seed * 1000000) || 1;
   const rnd = () => { _s = (_s * 1103515245 + 12345) & 0x7fffffff; return _s / 0x7fffffff; };
@@ -4894,7 +4894,7 @@ function buildConstrainedStructure(seed, opts) {
   /* ── 트롯/일반: 항상 절로 시작 ── */
   const verseCount = ri(2, longSong ? 4 : 3);          // 과감: 절 2~3 (롱이면 2~4)
   const choCount   = ri(2, 3);                          // 후렴 2~3
-  let guumBudget   = allowGuum ? ri(0, 2) : 0;           // 구음 0~2
+  let guumBudget   = allowGuum ? (o.gueumCount ? Math.min(o.gueumCount, 4) : ri(0, 2)) : 0;  // 구음: 위치 선택 개수만큼(최대 4), 미설정 시 0~2
   seq.push('verse');
   let placedV = 1;
   for (let i = 0; i < choCount; i++) {
@@ -4908,7 +4908,13 @@ function buildConstrainedStructure(seed, opts) {
     }
   }
   while (placedV < verseCount) { seq.push('verse'); placedV++; }      // 남은 절 소진
-  while (guumBudget > 0 && rnd() > 0.5) { seq.push('guum'); guumBudget--; } // 남은 구음
+  // 남은 구음: 후렴 뒤에 분산 삽입 (끝에 몰리지 않게, 구음 연속 방지)
+  while (guumBudget > 0) {
+    const choIdxs = seq.map((b, i) => (b === 'chorus' && seq[i + 1] !== 'guum') ? i : -1).filter(i => i >= 0);
+    if (choIdxs.length === 0) break;
+    const at = choIdxs[Math.floor(rnd() * choIdxs.length)];
+    seq.splice(at + 1, 0, 'guum'); guumBudget--;
+  }
   if (rnd() > 0.25) seq.push('bridge');                 // 브릿지 75% (finalchorus 직전)
   return seq; // intro/finalchorus/adlib/outro는 렌더러에서 앞뒤로 고정 배치
 }
@@ -4918,9 +4924,9 @@ let _lyricStructOverride = null;   // 잠긴 미들 시퀀스
 let _lyricStructMode = null;       // 잠긴 시퀀스의 모드
 /* genLyrics·미리보기가 공통으로 미들 시퀀스를 얻는 헬퍼.
    🔀로 잠긴 구조가 있고 모드가 맞으면 그걸 쓰고, 없으면 새로 뽑는다. */
-function _getMidSeq(mode, longSong, gugakBase) {
+function _getMidSeq(mode, longSong, gugakBase, gueumExplicit, gueumCount) {
   if (_lyricStructOverride && _lyricStructMode === mode) return _lyricStructOverride.slice();
-  return buildConstrainedStructure(Math.random(), { long: longSong, mode, gugakBase });
+  return buildConstrainedStructure(Math.random(), { long: longSong, mode, gugakBase, gueumExplicit, gueumCount });
 }
 
 /* ── ⑥ 가사용 무드 시드 추출 — 음악 기술 설명 제거 ────────────────
@@ -4949,6 +4955,8 @@ function reshuffleLyricStructure() {
   const form = (STATE.genre !== null && typeof GENRE_SONGFORM !== 'undefined' && GENRE_SONGFORM[STATE.genre]) ? GENRE_SONGFORM[STATE.genre] : SONGFORM_DEFAULT;
   const isHiphop = (form.id === 'gugak_hiphop');
   const useGugakBase = (form.id === 'gugak_trot') || STATE.gugakTrotBase;
+  const _gueumExplicit = Array.isArray(STATE.gueumPositions) && STATE.gueumPositions.length > 0;  // 구음 위치를 직접 설정하면 토글과 무관하게 구음 포함
+  const _wantGueum = useGugakBase || _gueumExplicit;
   const isTrot = (form.id === 'gugak_trot') || (STATE.gugakTrotBase && !isHiphop);
   const mode = isHiphop ? 'hiphop' : isTrot ? 'trot' : 'general';
 
@@ -4958,7 +4966,7 @@ function reshuffleLyricStructure() {
   const totalSec = (parseInt(pp[0]) || 3) * 60 + (parseInt(pp[1]) || 0);
   const longSong = totalSec >= (mode === 'general' ? 270 : 240);
 
-  const seq = buildConstrainedStructure(Math.random(), { long: longSong, mode, gugakBase: useGugakBase });
+  const seq = buildConstrainedStructure(Math.random(), { long: longSong, mode, gugakBase: useGugakBase, gueumExplicit: _gueumExplicit, gueumCount: (STATE.gueumPositions||[]).length });
   _lyricStructOverride = seq.slice();
   _lyricStructMode = mode;
 
@@ -4969,7 +4977,7 @@ function reshuffleLyricStructure() {
     if (blk === 'verse') tags.push((mode === 'trot' ? '[전절 ' : '[절 ') + (++v) + ']');
     else if (blk === 'prechorus') tags.push(isHiphop ? '[프리훅]' : '[프리코러스]');
     else if (blk === 'chorus') tags.push((isHiphop ? '[훅 ' : '[후렴 ') + (++c) + ']');
-    else if (blk === 'guum' && useGugakBase) tags.push('[Gugak Guum]');
+    else if (blk === 'guum' && _wantGueum) tags.push('[Gugak Guum]');
     else if (blk === 'bridge') tags.push('[브릿지]');
   }
   tags.push(isHiphop ? '[훅 - 마지막]' : '[후렴 - 마지막]');
@@ -5006,7 +5014,9 @@ async function genLyrics(lang) {
   /* ── 트롯트 다양성: 매 생성마다 새 시드로 소재·후렴구·어미 회전 ──
      트롯트 장르이거나, gugakTrotBase가 켜져 있으면 애절한 정서 시드 생성 ── */
   const _useGugakBase = (form.id === 'gugak_trot') || STATE.gugakTrotBase;
-  const _trotDiv = _useGugakBase ? pickTrotDiversity(Math.random()) : null;
+  const _gueumExplicit = Array.isArray(STATE.gueumPositions) && STATE.gueumPositions.length > 0;  // 구음 위치 직접 설정 시 토글과 무관하게 구음 포함
+  const _wantGueum = _useGugakBase || _gueumExplicit;
+  const _trotDiv = pickTrotDiversity(Math.random());  // 항상 계산 — 가사 품질(감정색·어휘·감정하이라이트)은 토글과 무관하게 적용. 트롯 전용(추임새·구음)은 아래에서 별도 게이트.
 
   /* ── ③ 장르별 secPerLine → 줄 수 결정 ──
      총 가사 가용 시간 = totalSec × 0.85 (Intro·기악 구간 제외)
@@ -5062,7 +5072,7 @@ async function genLyrics(lang) {
         _hIdx++;
         structureKr += `[훅] 긴장 ${tr.hook}\n(${_hIdx === 1 ? `정확히 ${choLines}줄 — 중독성, 임팩트, 줄당 최대 6단어, 즉각 귀에 꽂히는` : '앞 훅과 동일한 줄 반복'})\n\n`;
       } else if (blk === 'bridge') {
-        structureKr += `[브릿지] 긴장 ${tr.bridge}\n(정확히 ${bridgeLines}줄 — 최대 긴장, 마지막 드롭 전 수축)\n\n`;
+        structureKr += `[브릿지] 긴장 ${tr.bridge}\n(정확히 ${bridgeLines}줄 — ★감정 하이라이트: 참았던 진심을 터뜨리는 가장 사무치는 구간. 담담하던 흐름을 깨고 여기서 울컥하게, 구체적이고 취약한 한 마디로 급소를 찌를 것. 마지막 드롭 전 최대 긴장)\n\n`;
       }
     }
     structureKr +=
@@ -5122,7 +5132,7 @@ async function genLyrics(lang) {
       `[아웃트로] 이완 ${_trTrot.outro}\n(정확히 ${_oLines}줄 — 감정이 서서히 가라앉음, 종결어미 ${_trotDiv.ending})\n${_pickForm(form.outroStyle)||_pickForm(_trotForm.outroStyle)||'[fade out]\n[end]'}`;
   } else {
     /* 일반 폼: 제약된 랜덤 구조 — 절·후렴·(프리)·(구음)·(브릿지) 순서/개수 곡마다 변경 */
-    const _genSeq = _getMidSeq('general', totalSec >= 270, _useGugakBase);
+    const _genSeq = _getMidSeq('general', totalSec >= 270, _useGugakBase, _gueumExplicit, (STATE.gueumPositions||[]).length);
     let _vIdx = 0, _cIdx = 0;
     for (const blk of _genSeq) {
       if (blk === 'verse') {
@@ -5136,10 +5146,10 @@ async function genLyrics(lang) {
           ? `긴장 T+5 ↔ 이완 R-5 — 훅을 명확히 확립`
           : `긴장 T+${Math.min(8, 5+_cIdx)} ↔ 이완 R-${Math.min(8, 5+_cIdx)} — 앞 후렴보다 더 크게`;
         structureKr += `[후렴 ${_cIdx}] ${choIntKr}\n(정확히 ${choLines}줄 — 앵커 라인 먼저, 1회 반복, 줄당 최대 6단어, 따라부를 수 있는 훅${(_useGugakBase&&_trotDiv) ? `. 추임새는 ${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만, 1·3번째 줄 끝에만 — 줄마다 반복 금지` : ''})\n\n`;
-      } else if (blk === 'guum' && _useGugakBase && _trotDiv) {
+      } else if (blk === 'guum' && _wantGueum && _trotDiv) {
         structureKr += `[Gugak Guum]\n${_trotDiv.guumHigh} [고음]\n${_trotDiv.guumLow} [저음]\n(위 두 줄을 그대로 출력 — 가사가 아닌 무의미 구음 멜리스마. [고음]/[저음]은 음역 표시이며 단어로 부르지 말 것)\n\n`;
       } else if (blk === 'bridge') {
-        structureKr += `[브릿지] 긴장 ${tr.bridge}\n(정확히 ${bridgeLines}줄 — 최대 대비, 마지막 폭발 전 수축)\n\n`;
+        structureKr += `[브릿지] 긴장 ${tr.bridge}\n(정확히 ${bridgeLines}줄 — ★감정 하이라이트: 억눌렀던 진심을 왈칵 터뜨려 듣는 사람 가슴이 무너지는 한 마디. 추상적 슬픔 말고 구체적 디테일로. 최대 대비, 마지막 폭발 전 수축)\n\n`;
       }
     }
 
@@ -5212,6 +5222,7 @@ ${clicheRuleKr}
 ⑧ 문학적 표현: 직설 금지, 은유·상징으로. 참고 어휘(이 중 일부만 골라 자연스럽게 녹일 것, 그대로 나열·매 곡 반복 금지): ${_trotDiv.literary}
    → "${_trotDiv.sampleA}" / "${_trotDiv.sampleB}" 같은 문어체 시적 문장 지향 (예시는 문체 참고일 뿐 — 그 문장·단어를 그대로 베끼지 말 것)
 ⑨ 어휘 다양성: 매 곡 신선한 단어·이미지를 쓰고, 흔한 상투어(달빛·강가·풍진·님)와 감정 상투어(그리움·설움·눈물·한숨·애끓는·서러워·사무치는)를 후렴 앵커구 외에는 한 곡에 한두 번 넘게 반복하지 말 것 — 같은 슬픔도 구체적 장면·동작·감각으로 새롭게 표현
+⑩ 감정 하이라이트 (가장 중요 — 곡의 승부처): 이 곡에 반드시 1~2군데 '감정이 확 차오르는 순간'(가슴 뭉클·눈물 찔끔·소름)을 심을 것. 주로 [브릿지]와 [후렴-마지막]에 — 그동안 담담히·절제하며 부르다가, 바로 이 지점에서 억눌렀던 진심을 왈칵 터뜨리는 가장 사무치는 한 마디(못 한 고백·뒤늦은 후회·차마 못 보낸 마음)를 넣어 듣는 사람의 가슴이 무너지게. 일반적 슬픔 서술이 아니라, 이 화자만 할 수 있는 구체적이고 취약한 진심으로 급소를 찌를 것 — 예: 추상적인 '그리워' 대신 '아직도 네 밥그릇을 못 치웠어' 같은 구체적 디테일 한 방.
 
 ★ 긴장/이완 수치 ★
 - 전절 T 수치 높음(+7~+9) = 체념·압축·절박한 언어, 짧은 호흡
@@ -5225,8 +5236,8 @@ ${structureKr}`;
     } else {
       lyricPrompt = `${duration} 길이(${totalSec}초)의 가사를 작성합니다.
 송폼: ${form.nameKr}
-${storyBlockKr}${(_useGugakBase && _trotDiv) ? `
-★★ 정서 테두리 (필수) — 장르 불문 국악 트롯트의 깊은 애절함 ★★
+${storyBlockKr}${_trotDiv ? `
+★★ 정서 테두리 (필수) — 장르 불문 국악 베이스의 깊은 애절함 ★★
 - 어떤 장르든 깊고 서글프고 애절한 한(恨)의 정서를 바탕에 깔 것
 - 이번 곡의 감정 색: 「${_trotDiv.subEmotion}」 — 슬픔 안에서 이 결로 일관되게
 - 문어체 시적 문장 지향 (예: "${_trotDiv.sampleA}" — 문체 참고일 뿐, 예시 문장·단어를 그대로 베끼지 말 것)
@@ -5235,9 +5246,10 @@ ${storyBlockKr}${(_useGugakBase && _trotDiv) ? `
 - 종결어미 계열: ${_trotDiv.ending} (모든 줄 "~다" 금지)
 - 중심 정서 소재: ${_trotDiv.motif}
 - 직설적 감정어 금지, 은유·상징·구체 장면으로 표현
-- 추임새는 ${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만 사용 — 후렴에서 모든 줄이 아니라 1·3번째 줄 끝에만, 같은 추임새를 줄마다 반복하지 말 것
+- ★감정 하이라이트 (가장 중요): 이 곡에 1~2군데 '감정이 확 차오르는 순간'(가슴 뭉클·눈물 찔끔·소름)을 심을 것 — 주로 [브릿지]와 [후렴-마지막]에, 담담하다가 억눌렀던 진심을 왈칵 터뜨리는 사무치는 한 마디. 추상적 '그리워' 대신 '아직도 네 밥그릇을 못 치웠어' 같은 구체적 디테일 한 방으로 급소를 찌를 것${_useGugakBase ? `
+- 추임새는 ${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만 사용 — 후렴에서 모든 줄이 아니라 1·3번째 줄 끝에만, 같은 추임새를 줄마다 반복하지 말 것` : ''}${_wantGueum ? `
 - [Gugak Guum] 섹션은 두 줄로 출력: 첫 줄 "${_trotDiv.guumHigh} [고음]", 둘째 줄 "${_trotDiv.guumLow} [저음]" — 가사가 아닌 무의미 구음 멜리스마. [고음]/[저음]은 음역 표시일 뿐 단어로 부르지 말 것
-- [Ad-lib] 섹션도 무의미 구음: "하~~~" / "흐어~~~" 같은 멜리스마 — 지시어 단어 부르지 말 것
+- [Ad-lib] 섹션도 무의미 구음: "하~~~" / "흐어~~~" 같은 멜리스마 — 지시어 단어 부르지 말 것` : ''}
 ` : ''}
 ${rhymeRuleKr}
 
