@@ -1475,9 +1475,9 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         </div>
       </div>
       <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--korean2);margin-bottom:8px;cursor:pointer">
-        <input type="checkbox" id="gugakTrotBaseToggle" checked onchange="STATE.gugakTrotBase=this.checked; buildPrompt(true); showToast(this.checked?'🎵 국악 트롯트 정서 베이스 ON — 모든 장르에 한(恨)의 애절함':'국악 트롯트 정서 베이스 OFF');">
+        <input type="checkbox" id="gugakTrotBaseToggle" checked onchange="STATE.gugakTrotBase=this.checked; buildPrompt(true); showToast(this.checked?'🎵 국악 트롯트 정서 베이스 ON — 라임·음수율 등 트롯트 형식까지 적용':'국악 트롯트 정서 베이스 OFF — 장르 고유 형식 유지 (국악 정서·어휘는 항상 유지)');">
         <b>🎵 국악 트롯트 정서 베이스</b>
-        <span style="font-size:10px;color:var(--muted)">— 어떤 장르를 골라도 깊고 서글픈 국악 트롯트 느낌으로 (가사+음악)</span>
+        <span style="font-size:10px;color:var(--muted)">— ON: 트롯트 특유의 라임·음수율·추임새 형식까지 다른 장르에 적용 / OFF: 선택 장르 고유 형식 유지 (국악의 애절한 정서·어휘는 토글과 무관하게 항상 유지됩니다)</span>
       </label>
       <div style="margin-bottom:8px">
         <div style="font-size:12px;color:var(--korean2);margin-bottom:4px"><b>📖 가사 스토리/상황 (선택)</b> <span style="font-size:10px;color:var(--muted)">— 키워드·인물·장면·대사를 넣으면 그 이야기로 가사를 만듭니다</span></div>
