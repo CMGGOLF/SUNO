@@ -4203,12 +4203,16 @@ async function runAI() {
   const _optTextures = DATA.textures.map(t=>t.en).join(', ');
   const _optKGrooves = DATA.koreanGrooves.map(k=>k.en).join(', ');
   const _optKFeelings= DATA.koreanFeelings.map(k=>k.en).join(', ');
-  const sysPrompt=`당신은 7:3 Joseon Core 전문가입니다. 반드시 다음 JSON 형식만 응답: {"genre":"","moods":[],"instruments":"","concept":"","vocalStyle":"","bpm":85,"textures":[],"koreanGrooves":[],"koreanFeelings":[],"summary":""}
-※ 매우 중요: genre, moods, concept, vocalStyle, textures, koreanGrooves, koreanFeelings 값은 절대 새로 지어내지 말고, 아래 목록에 있는 표현을 철자·괄호까지 정확히 그대로 복사해서 사용하세요. 목록에 완벽히 맞는 게 없으면 가장 비슷한 것을 그대로 골라 복사하세요(설명하지 말고 그대로 복사).
+  const _optGugakVocal = DATA.gugakVocalStyles.map(g=>g.en).join(', ');
+  const _optHanSoul    = DATA.hanSoulStyles.map(h=>h.en).join(', ');
+  const sysPrompt=`당신은 7:3 Joseon Core 전문가입니다. 반드시 다음 JSON 형식만 응답: {"genre":"","moods":[],"instruments":"","concept":"","vocalStyle":"","gugakVocalStyle":"","hanSoulStyle":"","bpm":85,"textures":[],"koreanGrooves":[],"koreanFeelings":[],"summary":""}
+※ 매우 중요: genre, moods, concept, vocalStyle, gugakVocalStyle, hanSoulStyle, textures, koreanGrooves, koreanFeelings 값은 절대 새로 지어내지 말고, 아래 목록에 있는 표현을 철자·괄호까지 정확히 그대로 복사해서 사용하세요. 목록에 완벽히 맞는 게 없으면 가장 비슷한 것을 그대로 골라 복사하세요(설명하지 말고 그대로 복사).
 - genre (이 중 정확히 1개, en 값 그대로): ${_optGenres}
 - moods (이 중 1~3개, en 값 그대로 배열): ${_optMoods}
 - concept (이 중 정확히 1개, 이름 전체 그대로 복사): ${_optConcepts}
 - vocalStyle (이 중 정확히 1개, en 값 그대로): ${_optVocal}
+- gugakVocalStyle (국악 창법, 이 중 정확히 1개, en 값 그대로 — 곡의 한(恨) 정서·창법과 가장 잘 맞는 것): ${_optGugakVocal}
+- hanSoulStyle (한(恨)소울 스타일, 이 중 정확히 1개, en 값 그대로): ${_optHanSoul}
 - textures (이 중 0~2개, en 값 그대로 배열, 없으면 빈 배열): ${_optTextures}
 - koreanGrooves (이 중 0~2개, en 값 그대로 배열): ${_optKGrooves}
 - koreanFeelings (이 중 0~2개, en 값 그대로 배열): ${_optKFeelings}
@@ -4294,6 +4298,20 @@ function applyAnalysisToUI(analysis) {
   }
   // ── 한국적 그루브 매핑 ──
   if (analysis.koreanGrooves&&Array.isArray(analysis.koreanGrooves)) { analysis.koreanGrooves.forEach(n=>{const idx=DATA.koreanGrooves.findIndex(k=>k.en.toLowerCase().includes((n||'').toLowerCase())||k.kr.includes(n||''));if(idx!==-1&&!STATE.koreanGrooves.includes(idx))STATE.koreanGrooves.push(idx);}); }
+  // ── [수정2] 국악창법(05B) 매핑 → 기존 스마트 자동조합 로직 재사용 → 구음(06B)·보컬톤(06)까지 연쇄 자동 적용 ──
+  if (analysis.gugakVocalStyle) {
+    const gvi=DATA.gugakVocalStyles.findIndex(d=>(d.en||'').toLowerCase()===(analysis.gugakVocalStyle||'').toLowerCase()||(d.en||'').toLowerCase().includes((analysis.gugakVocalStyle||'').toLowerCase()));
+    if (gvi!==-1) {
+      STATE.gugakVocalStyle = gvi;
+      const _gvd = DATA.gugakVocalStyles[gvi];
+      if (_gvd?.autoCombo) _applyGugakVocalCombo(_gvd.autoCombo, _gvd.kr, document.getElementById('gugakVocalComboStatus'));
+    }
+  }
+  // ── [수정2] 한(恨)소울 스타일(06C) 매핑 ──
+  if (analysis.hanSoulStyle) {
+    const hsi=DATA.hanSoulStyles.findIndex(d=>(d.en||'').toLowerCase()===(analysis.hanSoulStyle||'').toLowerCase()||(d.en||'').toLowerCase().includes((analysis.hanSoulStyle||'').toLowerCase()));
+    if (hsi!==-1) STATE.hanSoulStyle = hsi;
+  }
   // ── 분위기/장르 기반 조성·음계 자동 매핑 ──
   const analysisGenre=(analysis.genre||'').toLowerCase();
   const analysisMoods=(analysis.moods||[]).join(' ').toLowerCase();
@@ -5724,6 +5742,8 @@ function _collapseAndRevealFilled() {
     ['vocalStyleBody','vocalStyleIcon',  A.vocalStyle !== null],       // 05 보컬 스타일
     ['toneBody','toneIcon',              len(A.vocalTones)],           // 06 보컬 톤
     ['gugakVocalBody','gugakVocalIcon',  A.gugakVocalStyle !== null],  // 05B 국악 창법
+    ['gueumBody','gueumIcon',            A.gueumStyle !== null || len(A.gueumPositions)], // 06B 구음 설정
+    ['hanSoulBody','hanSoulIcon',        A.hanSoulStyle !== null],     // 06C 한(恨)소울 스타일
     ['advancedSettingsBody','advancedToggleIcon', advFilled],          // 07 고급 사운드
   ];
   secs.forEach(([bodyId, iconId, filled]) => {
