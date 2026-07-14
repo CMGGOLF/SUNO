@@ -7416,7 +7416,22 @@ function buildCompactSunoPrompt() {
     timbre = t;
   }
   out = assemble(sonicShort, timbre);
-  return out.slice(0, LIMIT);
+  if (out.length <= LIMIT) return out;
+  // 최후의 안전장치 — 단순 글자수 자르기는 단어/태그 중간을 끊어 Suno가 못 읽는 프롬프트를 만들 수 있음
+  // → 마지막 완전한 줄바꿈(\n) 또는 공백 지점까지만 유지하고, 뒤에 남은 조각(반쯤 잘린 태그·단어)은 통째로 버림
+  let safe = out.slice(0, LIMIT);
+  const lastNL = safe.lastIndexOf('\n');
+  const lastSp = safe.lastIndexOf(' ');
+  const cut = lastNL > LIMIT * 0.7 ? lastNL : (lastSp > LIMIT * 0.7 ? lastSp : safe.length);
+  safe = safe.slice(0, cut).trim();
+  // 대괄호가 홀수 개로 남으면(예: '[TIMBRE'처럼 열렸다가 안 닫힘) 그 마지막 미완성 태그까지 통째로 제거
+  const openCount = (safe.match(/\[/g) || []).length;
+  const closeCount = (safe.match(/\]/g) || []).length;
+  if (openCount > closeCount) {
+    const lastOpen = safe.lastIndexOf('[');
+    if (lastOpen > 0) safe = safe.slice(0, lastOpen).trim();
+  }
+  return safe;
 }
 function genCompactSuno() {
   window._promptLocked = false;  // 🎯 누르면 자동생성 복귀
@@ -7515,10 +7530,19 @@ Return ONLY the JSON object.`;
     const vars   = parsed.variations;
     if (!Array.isArray(vars) || vars.length < 3) throw new Error('변형 3개가 생성되지 않았습니다');
 
-    _superVariations = vars.map(v => ({
+    _superVariations = vars.map(v => {
+      let p = (v.prompt || '').trim();
+      if (p.length > 1000) {
+        p = p.slice(0, 1000);
+        const lastSp = p.lastIndexOf(' ');
+        if (lastSp > 400) p = p.slice(0, lastSp);
+        p = p.replace(/[,;:\-\s]+$/, '') + '.';
+      }
+      return {
       label:  v.label  || '',
-      prompt: (v.prompt || '').trim().slice(0, 1000),
-    }));
+      prompt: p,
+      };
+    });
 
     const ids = [
       ['superVar1Label','superVar1Text','superVar1Chars'],
