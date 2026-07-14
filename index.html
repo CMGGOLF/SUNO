@@ -5706,7 +5706,7 @@ TITLE: 변형 제목 (한글)
 TITLE_EN: Variation Title (English)
 MOOD: 템포·리듬 특징 (예: 아주 느린 발라드 BPM 65 / 빠른 업텐포 BPM 110)
 TAGS: 태그1, 태그2, 태그3
-PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 550자(최대 650자 초과 금지), 슬픔·한 정서로. 맨 앞에 템포/BPM과 리듬 느낌을 명시. 구조: ①국악기로 시작하는 SONIC 묘사 → ②각 국악기의 음색·역할을 구체적으로 (gayageum plucked zither crystalline slides NOT harp / haegeum bowed crying scrape microtonal NOT violin / ajaeng bowed bass drone / daegeum breathy bamboo flute / piri reedy double-reed / janggu hourglass-drum jangdan rhythm NOT generic drums) → ③장르 그루브는 30% 양념으로 → ④감정·분위기. 국악기 3~4개를 LEAD로 명시하고 각각 한 구절씩 음색 설명. 서양악기 이름으로 치환 금지. ★800자를 절대 넘기지 말 것. 같은 단어·형용사를 반복하거나 끝없이 나열하지 말고, 완결된 묘사로 끝낼 것)
+PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 550자(최대 650자 초과 금지), 슬픔·한 정서로. 맨 앞에 템포/BPM과 리듬 느낌을 명시. 구조: ①국악기로 시작하는 SONIC 묘사 → ②각 국악기의 음색·역할을 구체적으로 (gayageum plucked zither crystalline slides NOT harp / haegeum bowed crying scrape microtonal NOT violin / ajaeng bowed bass drone / daegeum breathy bamboo flute / piri reedy double-reed / janggu hourglass-drum jangdan rhythm NOT generic drums) → ③장르 그루브는 30% 양념으로 → ④감정·분위기. 국악기 3~4개를 LEAD로 명시하고 각각 한 구절씩 음색 설명. 서양악기 이름으로 치환 금지. ★800자를 절대 넘기지 말 것. 같은 단어·형용사를 반복하거나 끝없이 나열하지 말고, 완결된 묘사로 끝낼 것. ★문장 형식 필수: 마침표·파이프(|) 없이 "~하며 ~하고 ~해서"처럼 분사·접속어로 한없이 이어붙이는 run-on 문장 절대 금지. 15단어 넘지 않는 짧은 구·절 단위로 마침표나 | 로 끊어서 나열할 것 (이 프로그램이 실제 만드는 프롬프트처럼: "Haegeum bends the opening phrase. Gayageum answers with crystalline slides. || [Backing] ..." 형식). "quintessentially", "forevermore", "altogether" 같은 의미 없이 글자수만 채우는 허풍 단어·부사 남발 금지)
 === 변형 2 ===
 (같은 형식)
 === 변형 3 ===
@@ -5734,7 +5734,7 @@ BPM: ${bpm} | 국악:정통 비율: ${ratio}%:${100-ratio}%
 4. 민요 블루스 (민요 가락의 블루스)
 5. 대금 앰비언트 (대금·여백 중심의 앰비언트)
 6. 아쟁 딥 소울 (아쟁 저음의 딥 소울)
-7. 국악 트롯트 (해금·피리의 트롯 — 단, 촌스러운 뽕짝/옛날 트로트 비트 금지. 현대적이고 어둡고 한 서린 트롯으로)
+7. 국악 트롯트 (해금·피리의 트롯 — 반드시 트롯 특유의 또렷한 2박/4박 그루브와 장구 장단의 통통 튀는 리듬감을 유지할 것(BPM 90~110대의 명확한 펄스, 정가·발라드처럼 느리고 여백만 있는 루바토로 도망가면 안 됨), 그 위에 어둡고 현대적인 마이너 톤·해금의 흐느끼는 꺾기(kkeokki)를 얹어 "느리고 슬픈 발라드"가 아니라 "리듬은 살아있는데 정서는 한(恨)에 잠긴 트롯"으로 — 단, 촌스러운 뽕짝/옛날 트로트 비트(사탕발림식 폴카 바운스)는 금지, 리듬감은 유지하되 세련되고 어둡게)
 
 ★ 반드시 정확히 7개를 출력하세요 (위 7개 장르 각각 하나씩, 무조건 7개). 7개 모두 약 550자(최대 650자)로 충실하되 간결하게 — 빠짐없이 7개를 다 채우세요. 길이보다 7개 완성이 우선입니다.
 아래 형식으로 정확히 7개를 출력하세요. JSON 쓰지 말고, 이 구분자 형식 그대로:
@@ -5744,7 +5744,7 @@ TITLE: 변형 제목 (한글)
 TITLE_EN: Variation Title (English)
 GENRE: 장르 태그 (한글)
 TAGS: 태그1, 태그2, 태그3
-PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 550자, 최대 650자 절대 초과 금지, 현재 곡과 같은 분위기·에너지로. 구조: ①국악기로 시작하는 SONIC 묘사 → ②각 국악기의 음색·역할을 구체적으로 (gayageum plucked zither crystalline slides NOT harp / haegeum bowed crying scrape microtonal NOT violin / ajaeng bowed bass drone / daegeum breathy bamboo flute / piri reedy double-reed / janggu hourglass-drum jangdan rhythm NOT generic drums) → ③해당 장르 그루브는 30% 양념으로 → ④장르에 맞는 [Vocal] 한 구절 (7곡 서로 다른 창법·음색·성별, 단 한·꺾기·시김새 유지) → ⑤감정·분위기. 국악기 3~4개를 LEAD로 명시하고 각각 한 구절씩 음색 설명. 서양악기 이름으로 치환 금지. ★800자를 절대 넘기지 말 것. 같은 단어·형용사를 반복하거나 끝없이 나열하지 말고, 완결된 묘사로 끝낼 것)
+PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 550자, 최대 650자 절대 초과 금지, 현재 곡과 같은 분위기·에너지로. 구조: ①국악기로 시작하는 SONIC 묘사 → ②각 국악기의 음색·역할을 구체적으로 (gayageum plucked zither crystalline slides NOT harp / haegeum bowed crying scrape microtonal NOT violin / ajaeng bowed bass drone / daegeum breathy bamboo flute / piri reedy double-reed / janggu hourglass-drum jangdan rhythm NOT generic drums) → ③해당 장르 그루브는 30% 양념으로 → ④장르에 맞는 [Vocal] 한 구절 (7곡 서로 다른 창법·음색·성별, 단 한·꺾기·시김새 유지) → ⑤감정·분위기. 국악기 3~4개를 LEAD로 명시하고 각각 한 구절씩 음색 설명. 서양악기 이름으로 치환 금지. ★800자를 절대 넘기지 말 것. 같은 단어·형용사를 반복하거나 끝없이 나열하지 말고, 완결된 묘사로 끝낼 것. ★문장 형식 필수: 마침표·파이프(|) 없이 "~하며 ~하고 ~해서"처럼 분사·접속어로 한없이 이어붙이는 run-on 문장 절대 금지. 15단어 넘지 않는 짧은 구·절 단위로 마침표나 | 로 끊어서 나열할 것 (이 프로그램이 실제 만드는 프롬프트처럼: "Haegeum bends the opening phrase. Gayageum answers with crystalline slides. || [Backing] ..." 형식). "quintessentially", "forevermore", "altogether" 같은 의미 없이 글자수만 채우는 허풍 단어·부사 남발 금지)
 === 변형 2 ===
 === 변형 3 ===
 === 변형 4 ===
