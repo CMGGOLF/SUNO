@@ -4472,7 +4472,7 @@ async function aiExpandPrompt() {
       `Create ONE Suno AI style prompt from 7:3 Joseon Core settings below.\nRules:\n- English only, up to 950 characters, keep Korean instrument timbre+role detail (gayageum NOT harp / haegeum NOT violin etc.)\n- Korean traditional music carries 70% melodic & emotional core\n- Modern jazz/blues/soul elements serve as elegant elevation (30%)\n- Include Korean instrument name, traditional phrasing, BPM, emotional tone\n- MANDATORY: begin the prompt with this sonic DNA to differentiate from other genres: "${_dnaHint}"\nSettings:\n${current}`,
       `You are a Suno AI music prompt expert. Output only one English prompt under 950 characters that keeps the per-instrument timbre and role detail.${_writingGuide}`
     );
-    box.textContent = sanitizeSunoPrompt(text, 230);
+    box.textContent = sanitizeSunoPrompt(text, 980);
     showToast('✅ Suno 프롬프트 생성 완료!');
   } catch(e) {
     // 오류 시 STATE 기반 프롬프트는 유지하고 토스트로만 알림
@@ -8122,7 +8122,7 @@ async function runQualityEngine() {
       buildPrompt(true);
       await sleep(80);
       const rawP = (document.getElementById('promptBox')||{}).textContent||'';
-      const p = sanitizeSunoPrompt(rawP, 230);
+      const p = sanitizeSunoPrompt(rawP, 980);
       if (p.length > bestLen) { bestLen = p.length; bestPrompt = p; }
     }
     // 최적 DNA seed를 적용된 상태로 유지
@@ -8189,7 +8189,7 @@ async function runQualityEngine() {
     ].reduce((a,b)=>a+b, 0);
     document.getElementById('qeScoreBadge').textContent = `완성도 ${_qScore}점 / 100`;
     document.getElementById('qeDnaBadge').textContent   = 'DNA 재탐색 완료';
-    const _safeFinal = sanitizeSunoPrompt(_qeFinalPrompt, 230);
+    const _safeFinal = sanitizeSunoPrompt(_qeFinalPrompt, 980);
     _qeFinalPrompt = _safeFinal;
     document.getElementById('qeFinalPrompt').textContent = _safeFinal;
     let _charBadge = document.getElementById('qeCharBadge');
@@ -8229,7 +8229,7 @@ async function genSuperPromptSilent() {
 // ── 결과창 버튼 핸들러 ──────────────────────────────
 function qeCopyFinal() {
   if (!_qeFinalPrompt) return;
-  const safe = sanitizeSunoPrompt(_qeFinalPrompt, 230);
+  const safe = sanitizeSunoPrompt(_qeFinalPrompt, 980);
   doCopy(safe);
   showToast(`📋 복사 완료! (${safe.length}자 — Suno 바로 붙여넣기 가능)`);
 }
@@ -8243,7 +8243,7 @@ async function qeRerunDNA() {
     buildPrompt(true);
     await sleep(80);
     const rawP=(document.getElementById('promptBox')||{}).textContent||'';
-    const p=sanitizeSunoPrompt(rawP,230);
+    const p=sanitizeSunoPrompt(rawP,980);
     if (p.length>bestLen){bestLen=p.length;bestPrompt=p;}
   }
   _qeFinalPrompt = bestPrompt;
