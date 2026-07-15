@@ -6281,7 +6281,7 @@ function applyGugakTrotPreset(style) {
     STATE.gugakVocalStyle = null;  // 수심가 등 전통 lament 창법 제거 (정가처럼 들리던 원인)
     STATE.vocalTones = [13, 1, 9];  // 트로트 꺾기 비브라토 + 소울풀 + 감성 표현
     STATE.energyArc = 0;           // 슬로우 번 (발라드라 느린 건 유지)
-    STATE.bpm = 66 + Math.floor(Math.random() * 7); // 66~72 (느림)
+    STATE.bpm = 62 + Math.floor(Math.random() * 14); // 62~75 (느림, 범위 확장)
     STATE.intensity = 6;
     STATE.textures = [5, 6];
     STATE.gueumPositions = ['start','end'];
@@ -6297,7 +6297,7 @@ function applyGugakTrotPreset(style) {
     STATE.gugakVocalStyle = 0;     // 판소리 (구음 강조 변형이라 의도적 유지)
     STATE.vocalTones = [13, 11, 1]; // 트로트 꺾기 + 거친 소울 벨트 + 소울풀
     STATE.energyArc = 0;
-    STATE.bpm = 82 + Math.floor(Math.random() * 8); // 82~89
+    STATE.bpm = 78 + Math.floor(Math.random() * 15); // 78~92 (범위 확장)
     STATE.intensity = 9;           // 가장 파워풀
     STATE.textures = [5, 6];
     STATE.gueumPositions = ['start','mid','end'];
@@ -6313,7 +6313,7 @@ function applyGugakTrotPreset(style) {
     STATE.gugakVocalStyle = null;  // 전통 정가/판소리 창법 제거 (경쾌한 트롯)
     STATE.vocalTones = [13, 1, 9]; // 트로트 꺾기 비브라토 + 소울풀 + 감성
     STATE.energyArc = 2;           // 흐름 있는 아크 (경쾌하되 뽕짝 아님)
-    STATE.bpm = 118 + Math.floor(Math.random() * 16); // 118~133 (빠른 트롯)
+    STATE.bpm = 112 + Math.floor(Math.random() * 24); // 112~135 (빠른 트롯, 범위 확장)
     STATE.intensity = 7;
     STATE.textures = [5, 6];
     STATE.gueumPositions = ['start','end'];
@@ -6330,7 +6330,7 @@ function applyGugakTrotPreset(style) {
     STATE.gugakVocalStyle = null;
     STATE.vocalTones = [13, 5, 16]; // 트로트 꺾기 비브라토 + 깊은 소울 남성 보컬 + 떨리며 울부짖는 창법
     STATE.energyArc = 2;
-    STATE.bpm = 88 + Math.floor(Math.random() * 9); // 88~96 (위엄있는 미들 템포)
+    STATE.bpm = 84 + Math.floor(Math.random() * 16); // 84~99 (위엄있는 미들 템포, 범위 확장)
     STATE.intensity = 8;
     STATE.textures = [5, 6];
     STATE.gueumPositions = ['start','end'];
@@ -6347,7 +6347,7 @@ function applyGugakTrotPreset(style) {
     STATE.gugakVocalStyle = null;
     STATE.vocalTones = [15, 13, 16]; // 허스키한 세월의 남성 보컬 + 트로트 꺾기 + 떨리며 울부짖는 창법
     STATE.energyArc = 0;           // 슬로우 번 — 절제되다 터지는 구조
-    STATE.bpm = 74 + Math.floor(Math.random() * 7); // 74~80 (느리고 깊은)
+    STATE.bpm = 70 + Math.floor(Math.random() * 13); // 70~82 (느리고 깊은, 범위 확장)
     STATE.intensity = 7;
     STATE.textures = [5, 6];
     STATE.gueumPositions = ['start','mid','end'];
@@ -6362,7 +6362,7 @@ function applyGugakTrotPreset(style) {
     STATE.gugakVocalStyle = null;  // 전통 정가/판소리 창법 강제 제거 (정가처럼 들리던 원인)
     STATE.vocalTones = [13, 11, 9]; // 트로트 꺾기 비브라토 + 거친 소울 벨트 + 감성
     STATE.energyArc = 2;           // 슬로우번 대신 흐름 있는 아크 (정적 lament 방지)
-    STATE.bpm = 96 + Math.floor(Math.random() * 9); // 96~104 (트롯 미들 템포)
+    STATE.bpm = 92 + Math.floor(Math.random() * 16); // 92~107 (트롯 미들 템포, 범위 확장)
     STATE.intensity = 8;
     STATE.textures = [5, 6];
     STATE.gueumPositions = ['start','mid','end'];
@@ -6377,7 +6377,28 @@ function applyGugakTrotPreset(style) {
   // (C) 트롯트 곡마다 변주 — 장르(8)는 고정, 키·음계도 "슬픔 계열" 안에서 매번 랜덤으로 (음정이 매번 똑같아지는 것 방지)
   STATE.musicKey = _rp([0, 1, 2, 3, 4]);                  // Am/Dm/Em/Gm/Cm — 전부 단조, 밝은 장조(F/G/Bb) 제외
   STATE.koreanScale = _rp([0, 4]);                        // 계면조/메나리토리 — 둘 다 슬픔·애절 정서 전용 음계만
-  STATE.energyArc = _rp([0, 1, 5]);                       // 슬로우번/웨이브/지속 — 모두 트롯에 어울리는 흐름
+  // 에너지 흐름: 스타일이 이미 골라둔 값(의도 있음)을 존중하되, 35% 확률로 호환되는 근처 흐름으로만 살짝 변주 — 전체 무작위 덮어쓰기 금지
+  if (Math.random() < 0.35) {
+    const _arcAlt = { 0:[0,1], 2:[1,2,3] }[STATE.energyArc] || [STATE.energyArc];
+    STATE.energyArc = _rp(_arcAlt);
+  }
+  // 구음 음역·세기도 스타일 고유값에서 살짝 변주 (매번 똑같은 세기·음역으로 고정되는 것 방지)
+  if (Math.random() < 0.4) {
+    const _pitchAlt = { 'mid':['mid','midhigh'], 'midhigh':['midhigh','mid'], 'low':['low','midlow'] }[STATE.gueumPitch] || [STATE.gueumPitch];
+    STATE.gueumPitch = _rp(_pitchAlt);
+  }
+  if (Math.random() < 0.35) {
+    const _strengthAlt = { 'medium':['medium','strong'], 'maximum':['maximum','strong'] }[STATE.gueumStrength] || [STATE.gueumStrength];
+    STATE.gueumStrength = _rp(_strengthAlt);
+  }
+  if (Math.random() < 0.3 && Array.isArray(STATE.textures) && STATE.textures.length) {
+    const _texPool = DATA.textures.map((_, i) => i).filter(i => !STATE.textures.includes(i));
+    if (_texPool.length) {
+      const ri = Math.floor(Math.random() * STATE.textures.length);
+      STATE.textures = [...STATE.textures];
+      STATE.textures[ri] = _rp(_texPool);
+    }
+  }
   if (Math.random() < 0.5) {                              // 관악 교체 (피리/대금/단소)
     const wi = STATE.instrList.findIndex(x => x.cat === 'wind');
     if (wi >= 0) STATE.instrList[wi] = { cat: 'wind', idx: _rp([0, 1, 2]) };
@@ -8071,11 +8092,15 @@ async function runQualityEngine() {
     apply73Preset(c.preset73);
     await sleep(80);
 
-    // BPM: 범위 중간값
-    STATE.bpm = Math.round((c.bpmRange[0]+c.bpmRange[1])/2);
+    // BPM: 범위 안에서 매번 랜덤 (항상 중간값 고정이던 것 수정)
+    STATE.bpm = c.bpmRange[0] + Math.floor(Math.random() * (c.bpmRange[1] - c.bpmRange[0] + 1));
     STATE.intensity = c.intensity;
     STATE.koreanRatio = c.koreanRatio;
-    if (c.musicKey !== undefined)   STATE.musicKey = c.musicKey;
+    // 조성: 음계(계면조 등)는 콤보 고유 색깔이라 유지, 키(음)는 60% 확률로 유지·40%는 같은 계열 내 변주 (완전 고정 방지)
+    if (c.musicKey !== undefined) {
+      const _qeKeyPool = [0, 1, 2, 3, 4]; // Am/Dm/Em/Gm/Cm
+      STATE.musicKey = Math.random() < 0.6 ? c.musicKey : _qeKeyPool[Math.floor(Math.random() * _qeKeyPool.length)];
+    }
     if (c.koreanScale !== undefined) STATE.koreanScale = c.koreanScale;
     if (c.energyArc !== undefined)  STATE.energyArc = c.energyArc;
     syncSliders();
