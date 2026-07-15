@@ -5742,6 +5742,20 @@ function applyRecCard(idx) {
   const nameEn=(item.nameEn||'').toLowerCase(); const nameKr=item.name||'';
   let gi=DATA.genres.findIndex(g=>g.en.toLowerCase().split(' ').some(w=>w.length>3&&nameEn.includes(w))||nameKr.includes(g.kr.substring(0,3)));
   STATE.genre=(gi!==-1)?gi:0;
+  // ★버그 수정: 이 함수가 국악기(instrList)를 전혀 설정하지 않아서, resetAll()로 비워진 채 그대로 남아있었음
+  // → TIMBRE 섹션에 국악기가 하나도 안 들어가 "국악 베이스가 아닌 음악"이 나오던 원인. 장르별 기본 국악기 조합 지정.
+  const _recInstrByGenre = [
+    [{cat:'string',idx:0},{cat:'wind',idx:0},{cat:'percussion',idx:0}],           // 0 Joseon Court Soul: 가야금+대금+장구
+    [{cat:'string',idx:1},{cat:'string',idx:0},{cat:'percussion',idx:0}],         // 1 Sanjo Jazz: 해금+가야금+장구
+    [{cat:'string',idx:1},{cat:'percussion',idx:2}],                             // 2 Pansori Soul: 해금+북
+    [{cat:'string',idx:1},{cat:'wind',idx:1},{cat:'percussion',idx:0}],          // 3 Minyo Blues: 해금+피리+장구
+    [{cat:'string',idx:0},{cat:'percussion',idx:0},{cat:'percussion',idx:1}],    // 4 Gugak Hiphop: 가야금+장구+꽹과리
+    [{cat:'wind',idx:0},{cat:'string',idx:2}],                                   // 5 Daegeum Ambient: 대금+아쟁
+    [{cat:'string',idx:2},{cat:'string',idx:1},{cat:'percussion',idx:0}],        // 6 Ajaeng Deep Soul: 아쟁+해금+장구
+    [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'percussion',idx:0}],        // 7 NeoJoseon Fusion: 가야금+해금+장구
+    [{cat:'string',idx:1},{cat:'wind',idx:1},{cat:'string',idx:2},{cat:'percussion',idx:0}], // 8 Gugak Trot: 해금+피리+아쟁+장구
+  ];
+  STATE.instrList = (_recInstrByGenre[STATE.genre] || _recInstrByGenre[0]).map(x => ({...x}));
   const instrLow=(item.instruments||'').toLowerCase();
   DATA.koreanGrooves.forEach((kg,i)=>{const kw=kg.en.split(' ')[0].toLowerCase();if(instrLow.includes(kw))if(!STATE.koreanGrooves.includes(i))STATE.koreanGrooves.push(i);});
   if (STATE.koreanGrooves.length===0) STATE.koreanGrooves=[0,4];
