@@ -3851,7 +3851,9 @@ function _doBuildPrompt() {
     const _breathAvoid = 'audible breathing, breath sounds, gasping, panting, heavy breathing, inhale/exhale noise, hakhak, heokheok';
     // 웃음·딸꾹질·전자음 등 엉뚱한 보컬 효과음 억제 — 항상 포함
     const _weirdVocalAvoid = 'giggling, laughing, laughter, giggles, hiccups, burping, coughing sound, sneezing, ringtone sound, phone ringtone, electronic beep, notification sound, spoken interjections, comedic vocal sounds, cartoonish vocal effects, baby talk, gibberish chatter unrelated to melody';
-    parts.push(`[AVOID] ${_negWords.join(', ')}, ${_breathAvoid}, ${_weirdVocalAvoid}`);
+    // 글리치·에러음처럼 들리는 디지털 아티팩트 억제 — 항상 포함
+    const _glitchAvoid = 'digital glitch, audio glitch, stutter effect, broken audio, corrupted sound, harsh digital distortion, skipping sound, buffering sound, error sound, malfunction sound';
+    parts.push(`[AVOID] ${_negWords.join(', ')}, ${_breathAvoid}, ${_weirdVocalAvoid}, ${_glitchAvoid}`);
 
     /* ── ⑮ 장르별 시작·끝 구조 힌트 — 모든 곡이 fade out으로 끝나는 레퍼토리화 방지 ── */
     const _sform = (STATE.genre !== null && GENRE_SONGFORM[STATE.genre]) ? GENRE_SONGFORM[STATE.genre] : null;
@@ -4516,7 +4518,7 @@ const GENRE_SONGFORM = {
       '(the voice sings the first line unaccompanied, cold and exposed — {sec}s, then gayageum and daegeum enter beneath it)',
       '(distant courtyard ambience — wind through palace eaves, a far-off wind chime — {sec}s, then gayageum enters)',
       '(gayageum opens the melody alone — {sec}s, then a cello enters low underneath, warm and noble)',
-      '(EXCEPTION — strings-led intro: a cello opens with a solemn low phrase — {sec}s, then gayageum answers, delicate and refined)',
+      '(a cello opens with a solemn low phrase — {sec}s, then gayageum answers, delicate and refined)',
     ],
     outroStyle: [
       '[voice alone as one last gayageum note lingers beneath it, then silence]\n[fade out]\n[end]',
@@ -4524,7 +4526,7 @@ const GENRE_SONGFORM = {
       '[ajaeng bow drawn slow on the final note, fading under its own weight]\n[end]',
       '[everything drops out except one daegeum breath, then silence]\n[end]',
       '[gayageum plays the final phrase alone, then a cello sustains beneath it as it fades]\n[end]',
-      '[EXCEPTION — strings-led: a cello holds the final chord, then gayageum answers with one last delicate note before silence]\n[end]',
+      '[a cello holds the final chord, then gayageum answers with one last delicate note before silence]\n[end]',
     ],
   },
   // 1: 산조 재즈 격상
@@ -4550,7 +4552,7 @@ const GENRE_SONGFORM = {
       '(the voice scats the melody alone, unaccompanied and cold — {sec}s, then haegeum answers first, the band falling in behind it)',
       '(rain on a jazz-club window and murmuring room-tone open the space — {sec}s, then gayageum enters first, piano answering after)',
       '(haegeum bends the first phrase — {sec}s, then a violin answers softly in harmony behind it)',
-      '(EXCEPTION — strings-led intro: a violin opens with an improvisational phrase — {sec}s, then haegeum answers, bending into the same line)',
+      '(a violin opens with an improvisational phrase — {sec}s, then haegeum answers, bending into the same line)',
     ],
     outroStyle: [
       '[haegeum holds the last chord — sustaining until it disappears on its own]\n[no fade, just silence]\n[end]',
@@ -4558,7 +4560,7 @@ const GENRE_SONGFORM = {
       '[haegeum bends the last note down and lets it die]\n[end]',
       '[gayageum plays one last note as the brushes slow to a stop, then silence]\n[end]',
       '[haegeum bends the last note, then a violin echoes the same phrase once, fading]\n[end]',
-      '[EXCEPTION — strings-led: a violin holds the final note, then haegeum answers once, bending it down into silence]\n[end]',
+      '[a violin holds the final note, then haegeum answers once, bending it down into silence]\n[end]',
     ],
   },
   // 2: 판소리 소울
@@ -4584,7 +4586,7 @@ const GENRE_SONGFORM = {
       '(a spoken 아니리-style narration opens cold, half-spoken half-sung — {sec}s, then the full cry begins)',
       '(a distant marketplace or riverside field ambience murmurs underneath — {sec}s, then haegeum wails first as the voice cries out over it)',
       '(soribuk strikes once — {sec}s, then a cello holds a low sustained drone beneath the silence)',
-      '(EXCEPTION — strings-led intro: a cello opens with one mournful sustained note — {sec}s, then soribuk strikes in response)',
+      '(a cello opens with one mournful sustained note — {sec}s, then soribuk strikes in response)',
     ],
     outroStyle: [
       '[voice alone as one last haegeum wail lingers beneath the final cry, then silence]\n[end]',
@@ -4592,7 +4594,7 @@ const GENRE_SONGFORM = {
       '[haegeum trails off as the voice breaks on the last word into a whisper]\n[end]',
       '[haegeum and voice fade together on one long held note]\n[end]',
       '[soribuk strikes once more, then a cello sustains a low mournful note into silence]\n[end]',
-      '[EXCEPTION — strings-led: a cello fades on one long low note, then the voice cries out once more before silence]\n[end]',
+      '[a cello fades on one long low note, then the voice cries out once more before silence]\n[end]',
     ],
   },
   // 3: 민요 블루스
@@ -4618,7 +4620,7 @@ const GENRE_SONGFORM = {
       '(the voice sings the first blues line alone, dry and unaccompanied — {sec}s, then haegeum answers first, the band falling in behind it)',
       '(rain and distant thunder over a country field open the space — {sec}s, then the haegeum bends its first note)',
       '(haegeum slides into the first blue note — {sec}s, then a violin answers with a matching bent phrase)',
-      '(EXCEPTION — strings-led intro: a violin opens bending into a blue note — {sec}s, then haegeum answers with the same aching bend)',
+      '(a violin opens bending into a blue note — {sec}s, then haegeum answers with the same aching bend)',
     ],
     outroStyle: [
       '[haegeum hums one last note as the last line is repeated spoken, not sung]\n[fade out]\n[end]',
@@ -4626,7 +4628,7 @@ const GENRE_SONGFORM = {
       '[everything drops to a single gayageum string, fading slow]\n[fade out]\n[end]',
       '[gayageum answers once as the voice hums the melody one last time, then silence]\n[end]',
       '[haegeum bends the last blue note, then a violin answers with the same ache, fading]\n[end]',
-      '[EXCEPTION — strings-led: a violin holds the last bent note, then haegeum echoes it once, fading into nothing]\n[end]',
+      '[a violin holds the last bent note, then haegeum echoes it once, fading into nothing]\n[end]',
     ],
   },
   // 4: 국악 궁중 힙합
@@ -4642,25 +4644,25 @@ const GENRE_SONGFORM = {
     introStyle: [
       '(cold open — hook drops from beat 1, no build, 808 and janggu hit immediately)',
       '(gayageum sample loop alone — {sec}s, then the 808 and beat drop in)',
-      '(a chopped haegeum vocal-like phrase loops — {sec}s, then trap hats roll in)',
+      '(a short haegeum phrase repeats as a clean rhythmic loop — {sec}s, then trap hats roll in)',
       '(janggu jangdan beaten raw — {sec}s, then bass and hook enter together)',
-      '(vinyl crackle and dust texture fade in — {sec}s, then the gayageum sample loop starts)',
-      '(a chopped gayageum sample cries out like a vocal ad-lib shout — {sec}s, then the beat drops immediately after)',
-      '(a muffled lo-fi haegeum sample plays as if underwater — {sec}s, then it opens up full-fidelity as the beat drops)',
+      '(a warm analog haze fades in gently — {sec}s, then the gayageum sample loop starts, clean and clear)',
+      '(a short gayageum phrase cries out like a vocal ad-lib shout, looped cleanly — {sec}s, then the beat drops immediately after)',
+      '(a soft, warm haegeum sample plays distantly — {sec}s, then it opens up full-fidelity and clear as the beat drops)',
       '(gayageum sample and 808 hit together on beat 1 — {sec}s, no build, hook and beat simultaneous from note one)',
-      '(the rapper spits the first bar completely a cappella — {sec}s, dry vocal, no beat, then a chopped gayageum sample and the 808 slam in together)',
-      '(city street ambience — traffic, distant sirens, murmuring crowd — {sec}s, then the chopped gayageum sample loop cuts in)',
-      '(rain on a car windshield and a muffled radio fade in — {sec}s, then the gayageum sample and beat drop full and clear together)',
-      '(a chopped gayageum sample loops — {sec}s, then a muted cello sample layers in low, filtered and distant)',
-      '(EXCEPTION — strings-led intro: a filtered cello sample loops open, distant and muffled — {sec}s, then a chopped gayageum sample answers)',
+      '(the rapper spits the first bar completely a cappella — {sec}s, dry vocal, no beat, then a clean looped gayageum phrase and the 808 slam in together)',
+      '(city street ambience — traffic, distant sirens, murmuring crowd — {sec}s, then a clean looped gayageum sample cuts in)',
+      '(rain on a car windshield and a soft distant radio fade in — {sec}s, then the gayageum sample and beat drop full and clear together)',
+      '(a short gayageum phrase repeats as a clean loop — {sec}s, then a soft cello layers in low, quiet and distant)',
+      '(a soft, distant cello loop opens quietly — {sec}s, then a clean looped gayageum phrase answers)',
     ],
     outroStyle: [
       '[hard stop — music cuts, one bar of silence, then single janggu hit]\n[end]',
       '[beat drops out leaving the gayageum loop alone, then it cuts]\n[end]',
       '[808 decays long, a haegeum phrase echoes once over it, then silence]\n[end]',
-      '[the gayageum sample loop repeats half-time, filtered, fading into nothing]\n[fade out]\n[end]',
-      '[the gayageum sample loops once more, then a filtered cello note lingers as the beat cuts]\n[end]',
-      '[EXCEPTION — strings-led: a muffled cello sample fades out, then one last chopped gayageum hit lands before silence]\n[end]',
+      '[the gayageum sample loop repeats half-time, soft and clean, fading into nothing]\n[fade out]\n[end]',
+      '[the gayageum sample loops once more, then a soft distant cello note lingers as the beat cuts]\n[end]',
+      '[a soft distant cello sample fades out, then one last clean gayageum hit lands before silence]\n[end]',
     ],
   },
   // 5: 대금 앰비언트
@@ -4686,7 +4688,7 @@ const GENRE_SONGFORM = {
       '(the voice hums a single unaccompanied phrase into the void — {sec}s, then the drone rises beneath it)',
       '(rain falling on a quiet mountain temple roof opens the space — {sec}s, then daegeum breath enters)',
       '(a single daegeum breath floats in — {sec}s, then a cello sustains one long note beneath it, barely audible)',
-      '(EXCEPTION — strings-led intro: a cello opens with one long floating note — {sec}s, then daegeum breath answers, barely audible)',
+      '(a cello opens with one long floating note — {sec}s, then daegeum breath answers, barely audible)',
     ],
     outroStyle: [
       '[daegeum breath dissolves into an infinite reverb tail, no defined ending]\n[end]',
@@ -4694,7 +4696,7 @@ const GENRE_SONGFORM = {
       '[the ajaeng drone slowly loses its pitch and dissolves into air]\n[fade out]\n[end]',
       '[one final gayageum harmonic rings in the empty space, fading on]\n[end]',
       '[daegeum breath thins to nothing, then a cello holds one faint note into the silence]\n[end]',
-      '[EXCEPTION — strings-led: a cello note dissolves into reverb, then one last daegeum breath is heard before quiet]\n[end]',
+      '[a cello note dissolves into reverb, then one last daegeum breath is heard before quiet]\n[end]',
     ],
   },
   // 6: 아쟁 딥 소울
@@ -4714,13 +4716,13 @@ const GENRE_SONGFORM = {
       '(finger-snap groove and ajaeng drone set the mood — {sec}s, then voice)',
       '(complete silence — {sec}s, then the voice hums a soulful phrase unaccompanied)',
       '(Rhodes, ajaeng, and haegeum swell together softly as one warm chord — {sec}s)',
-      '(a single vinyl-crackle texture fades in — {sec}s, then ajaeng bow enters slow)',
+      '(a single warm analog haze fades in gently — {sec}s, then ajaeng bow enters slow)',
       '(ajaeng bows a low note like rain on the room — {sec}s, then a deep Rhodes chord answers)',
       '(ajaeng is already bowing low and slow over a soul groove rolling from bar one — {sec}s, bass and brushed drums locked in underneath, no build)',
       '(the voice sings the opening line alone, raw and unaccompanied — {sec}s, then ajaeng answers first, the band falling in behind it)',
       '(late-night rain against a window and distant traffic hum open the space — {sec}s, then ajaeng bows its first note)',
       '(ajaeng bows a low note — {sec}s, then a cello doubles it an octave below, deepening the ache)',
-      '(EXCEPTION — strings-led intro: a cello opens low and slow — {sec}s, then ajaeng answers, doubling the ache an octave below)',
+      '(a cello opens low and slow — {sec}s, then ajaeng answers, doubling the ache an octave below)',
     ],
     outroStyle: [
       '[ajaeng sustains alone — voice gone, one bowed note slowly decays]\n[fade out]\n[end]',
@@ -4728,7 +4730,7 @@ const GENRE_SONGFORM = {
       '[voice and haegeum land on one final chord, then sudden quiet]\n[end]',
       '[bass and ajaeng fade together, the last warmth leaving the room]\n[fade out]\n[end]',
       '[ajaeng holds the last low note, then a cello doubles it an octave below, fading together]\n[end]',
-      '[EXCEPTION — strings-led: a cello fades on a low sustained note, then ajaeng answers once, bowing it into silence]\n[end]',
+      '[a cello fades on a low sustained note, then ajaeng answers once, bowing it into silence]\n[end]',
     ],
   },
   // 7: 네오조선 퓨전
@@ -4754,7 +4756,7 @@ const GENRE_SONGFORM = {
       '(the voice enters cold with the opening line, unaccompanied — {sec}s, then synth pad and gayageum bloom underneath)',
       '(a rainy Seoul night ambience — traffic hum, distant neon buzz — {sec}s, then gayageum enters first, Rhodes chord answering after)',
       '(gayageum arpeggio opens — {sec}s, then strings swell in softly behind it, modern and warm)',
-      '(EXCEPTION — strings-led intro: strings swell open softly first — {sec}s, then gayageum arpeggio answers on top, modern and warm)',
+      '(strings swell open softly first — {sec}s, then gayageum arpeggio answers on top, modern and warm)',
     ],
     outroStyle: [
       '[groove fades — gayageum note last to leave]\n[fade out]\n[end]',
@@ -4762,7 +4764,7 @@ const GENRE_SONGFORM = {
       '[haegeum holds a long note over a dissolving synth pad]\n[fade out]\n[end]',
       '[everything cuts but one gayageum string still ringing, then quiet]\n[end]',
       '[gayageum plays a final figure as strings swell softly beneath it, then fade together]\n[end]',
-      '[EXCEPTION — strings-led: strings hold a soft final chord, then one gayageum note rings out on top before silence]\n[end]',
+      '[strings hold a soft final chord, then one gayageum note rings out on top before silence]\n[end]',
     ],
   },
   // 8: 국악 트롯트 — 풍부한 구조 (Pre-Chorus·구음·브릿지·애드립 포함)
@@ -4789,7 +4791,7 @@ const GENRE_SONGFORM = {
       '(장구 장단이 이미 흥(興)겨운 리듬으로 돌아가는 채로 곡이 시작 — {sec}초, 그러나 보컬에는 흥 속에 감춰진 한(恨)이 배어있음, 빌드업 없이 바로 리듬 위에서 출발)',
       '(시골 논밭·개울가의 바람과 새소리 같은 야외 앰비언스 — {sec}초, 그 뒤 해금이 첫 음을 흐느낌)',
       '(해금이 첫 음을 흐느끼듯 시작 — {sec}초, 그 뒤 바이올린이 은은하게 화음으로 받쳐줌)',
-      '(EXCEPTION — 현악 리드 인트로: 바이올린이 먼저 애절한 선율로 시작 — {sec}초, 그 뒤 해금이 이어받아 흐느낌)',
+      '(바이올린이 먼저 애절한 선율로 시작 — {sec}초, 그 뒤 해금이 이어받아 흐느낌)',
     ],
     outroStyle: [
       '[추임새 한 번 — 다른 악기 멈추고 해금 여운만 목소리와 함께 남음]\n[fade out]\n[end]',
@@ -4797,7 +4799,7 @@ const GENRE_SONGFORM = {
       '[장단이 뚝 멈추고 해금 여운과 보컬 한 소절만 남았다가 침묵]\n[end]',
       '[아쟁 저음만 남아 천천히 사그라듦]\n[fade out]\n[end]',
       '[해금이 마지막 음을 길게 꺾으며 사라지고, 그 아래 바이올린이 여운을 받쳐줌]\n[end]',
-      '[EXCEPTION — 현악 리드: 바이올린이 마지막 화음을 붙잡고 있다가, 해금이 한 번 더 흐느끼며 침묵 속으로]\n[end]',
+      '[바이올린이 마지막 화음을 붙잡고 있다가, 해금이 한 번 더 흐느끼며 침묵 속으로]\n[end]',
     ],
   },
 };
