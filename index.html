@@ -4469,7 +4469,7 @@ async function aiExpandPrompt() {
   try {
     const _writingGuide = _activeGuide ? `\nWRITING STYLE GUIDE: ${_activeGuide}` : '';
     const text = await callClaude(
-      `Create ONE Suno AI style prompt from 7:3 Joseon Core settings below.\nRules:\n- English only, up to 950 characters, keep Korean instrument timbre+role detail (gayageum NOT harp / haegeum NOT violin etc.)\n- Korean traditional music carries 70% melodic & emotional core\n- Modern jazz/blues/soul elements serve as elegant elevation (30%)\n- Include Korean instrument name, traditional phrasing, BPM, emotional tone\n- MANDATORY: begin the prompt with this sonic DNA to differentiate from other genres: "${_dnaHint}"\nSettings:\n${current}`,
+      `Create ONE Suno AI style prompt from 7:3 Joseon Core settings below.\nRules:\n- English only, up to 950 characters, keep Korean instrument timbre+role detail (gayageum NOT harp / haegeum NOT violin etc.)\n- Korean traditional music carries 70% melodic & emotional core\n- Modern jazz/blues/soul elements serve as elegant elevation (30%)\n- Include Korean instrument name, traditional phrasing, BPM, emotional tone\n- MANDATORY: begin the prompt with this sonic DNA to differentiate from other genres: "${_dnaHint}"\n- Do NOT reuse generic stock phrasing for instrument timbre (e.g. always describing ajaeng as "gravelly cello-deep, raw bow friction") — write a fresh, specific description each time so different genre prompts don't end up sounding identical\n- Any tempo/speed wording (Tempo tag, SONIC IDENTITY, genre description) must be internally consistent — never say FAST/uptempo in one place and "slow ballad" in another\nSettings:\n${current}`,
       `You are a Suno AI music prompt expert. Output only one English prompt under 950 characters that keeps the per-instrument timbre and role detail.${_writingGuide}`
     );
     box.textContent = sanitizeSunoPrompt(text, 980);
@@ -5841,7 +5841,7 @@ TITLE: 변형 제목 (한글)
 TITLE_EN: Variation Title (English)
 MOOD: 템포·리듬 특징 (예: 아주 느린 발라드 BPM 65 / 빠른 업텐포 BPM 110)
 TAGS: 태그1, 태그2, 태그3
-PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 550자(최대 650자 초과 금지), 슬픔·한 정서로. 맨 앞에 템포/BPM과 리듬 느낌을 명시. 구조: ①국악기로 시작하는 SONIC 묘사 → ②각 국악기의 음색·역할을 구체적으로 (gayageum plucked zither crystalline slides NOT harp / haegeum bowed crying scrape microtonal NOT violin / ajaeng bowed bass drone / daegeum breathy bamboo flute / piri reedy double-reed / janggu hourglass-drum jangdan rhythm NOT generic drums) → ③장르 그루브는 30% 양념으로 → ④감정·분위기. 국악기 3~4개를 LEAD로 명시하고 각각 한 구절씩 음색 설명. 서양악기 이름으로 치환 금지. ★800자를 절대 넘기지 말 것. 같은 단어·형용사를 반복하거나 끝없이 나열하지 말고, 완결된 묘사로 끝낼 것. ★문장 형식 필수: 마침표·파이프(|) 없이 "~하며 ~하고 ~해서"처럼 분사·접속어로 한없이 이어붙이는 run-on 문장 절대 금지. 15단어 넘지 않는 짧은 구·절 단위로 마침표나 | 로 끊어서 나열할 것 (이 프로그램이 실제 만드는 프롬프트처럼: "Haegeum bends the opening phrase. Gayageum answers with crystalline slides. || [Backing] ..." 형식). "quintessentially", "forevermore", "altogether" 같은 의미 없이 글자수만 채우는 허풍 단어·부사 남발 금지)
+PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 550자(최대 650자 초과 금지), 슬픔·한 정서로. 맨 앞에 템포/BPM과 리듬 느낌을 명시. 구조: ①국악기로 시작하는 SONIC 묘사 → ②각 국악기의 음색·역할을 구체적으로 (gayageum plucked zither crystalline slides NOT harp / haegeum bowed crying scrape microtonal NOT violin / ajaeng bowed bass drone / daegeum breathy bamboo flute / piri reedy double-reed / janggu hourglass-drum jangdan rhythm NOT generic drums) → ③장르 그루브는 30% 양념으로 → ④감정·분위기. 국악기 3~4개를 LEAD로 명시하고 각각 한 구절씩 음색 설명. 서양악기 이름으로 치환 금지. ★800자를 절대 넘기지 말 것. 같은 단어·형용사를 반복하거나 끝없이 나열하지 말고, 완결된 묘사로 끝낼 것. ★문장 형식 필수: 마침표·파이프(|) 없이 "~하며 ~하고 ~해서"처럼 분사·접속어로 한없이 이어붙이는 run-on 문장 절대 금지. 15단어 넘지 않는 짧은 구·절 단위로 마침표나 | 로 끊어서 나열할 것 (이 프로그램이 실제 만드는 프롬프트처럼: "Haegeum bends the opening phrase. Gayageum answers with crystalline slides. || [Backing] ..." 형식). "quintessentially", "forevermore", "altogether" 같은 의미 없이 글자수만 채우는 허풍 단어·부사 남발 금지. ★같은 악기가 여러 변형에 등장해도 음색 설명 문구를 토씨까지 똑같이 베끼지 말고, 그 장르의 색깔에 맞게 표현을 조금씩 다르게 바꿔 쓸 것(예: 아쟁 설명도 트롯에선 이렇게, 재즈퓨전에선 다르게). ★SONIC IDENTITY·장르명이 맨 앞 [Tempo](속도) 지시와 절대 모순되지 않게 할 것 — 예: 빠른 BPM으로 지시해놓고 뒤에서 "slow ballad"라고 쓰는 등 자기모순 금지, 속도감을 나타내는 모든 표현은 서로 일치해야 함)
 === 변형 2 ===
 (같은 형식)
 === 변형 3 ===
@@ -5879,7 +5879,7 @@ TITLE: 변형 제목 (한글)
 TITLE_EN: Variation Title (English)
 GENRE: 장르 태그 (한글)
 TAGS: 태그1, 태그2, 태그3
-PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 550자, 최대 650자 절대 초과 금지, 현재 곡과 같은 분위기·에너지로. 구조: ①국악기로 시작하는 SONIC 묘사 → ②각 국악기의 음색·역할을 구체적으로 (gayageum plucked zither crystalline slides NOT harp / haegeum bowed crying scrape microtonal NOT violin / ajaeng bowed bass drone / daegeum breathy bamboo flute / piri reedy double-reed / janggu hourglass-drum jangdan rhythm NOT generic drums) → ③해당 장르 그루브는 30% 양념으로 → ④장르에 맞는 [Vocal] 한 구절 (7곡 서로 다른 창법·음색·성별, 단 한·꺾기·시김새 유지) → ⑤감정·분위기. 국악기 3~4개를 LEAD로 명시하고 각각 한 구절씩 음색 설명. 서양악기 이름으로 치환 금지. ★800자를 절대 넘기지 말 것. 같은 단어·형용사를 반복하거나 끝없이 나열하지 말고, 완결된 묘사로 끝낼 것. ★문장 형식 필수: 마침표·파이프(|) 없이 "~하며 ~하고 ~해서"처럼 분사·접속어로 한없이 이어붙이는 run-on 문장 절대 금지. 15단어 넘지 않는 짧은 구·절 단위로 마침표나 | 로 끊어서 나열할 것 (이 프로그램이 실제 만드는 프롬프트처럼: "Haegeum bends the opening phrase. Gayageum answers with crystalline slides. || [Backing] ..." 형식). "quintessentially", "forevermore", "altogether" 같은 의미 없이 글자수만 채우는 허풍 단어·부사 남발 금지)
+PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 550자, 최대 650자 절대 초과 금지, 현재 곡과 같은 분위기·에너지로. 구조: ①국악기로 시작하는 SONIC 묘사 → ②각 국악기의 음색·역할을 구체적으로 (gayageum plucked zither crystalline slides NOT harp / haegeum bowed crying scrape microtonal NOT violin / ajaeng bowed bass drone / daegeum breathy bamboo flute / piri reedy double-reed / janggu hourglass-drum jangdan rhythm NOT generic drums) → ③해당 장르 그루브는 30% 양념으로 → ④장르에 맞는 [Vocal] 한 구절 (7곡 서로 다른 창법·음색·성별, 단 한·꺾기·시김새 유지) → ⑤감정·분위기. 국악기 3~4개를 LEAD로 명시하고 각각 한 구절씩 음색 설명. 서양악기 이름으로 치환 금지. ★800자를 절대 넘기지 말 것. 같은 단어·형용사를 반복하거나 끝없이 나열하지 말고, 완결된 묘사로 끝낼 것. ★문장 형식 필수: 마침표·파이프(|) 없이 "~하며 ~하고 ~해서"처럼 분사·접속어로 한없이 이어붙이는 run-on 문장 절대 금지. 15단어 넘지 않는 짧은 구·절 단위로 마침표나 | 로 끊어서 나열할 것 (이 프로그램이 실제 만드는 프롬프트처럼: "Haegeum bends the opening phrase. Gayageum answers with crystalline slides. || [Backing] ..." 형식). "quintessentially", "forevermore", "altogether" 같은 의미 없이 글자수만 채우는 허풍 단어·부사 남발 금지. ★같은 악기가 여러 변형에 등장해도 음색 설명 문구를 토씨까지 똑같이 베끼지 말고, 그 장르의 색깔에 맞게 표현을 조금씩 다르게 바꿔 쓸 것(예: 아쟁 설명도 트롯에선 이렇게, 재즈퓨전에선 다르게). ★SONIC IDENTITY·장르명이 맨 앞 [Tempo](속도) 지시와 절대 모순되지 않게 할 것 — 예: 빠른 BPM으로 지시해놓고 뒤에서 "slow ballad"라고 쓰는 등 자기모순 금지, 속도감을 나타내는 모든 표현은 서로 일치해야 함)
 === 변형 2 ===
 === 변형 3 ===
 === 변형 4 ===
@@ -7544,7 +7544,14 @@ function buildCompactSunoPrompt() {
   try {
     const sanjoUptempo = (typeof STATE !== 'undefined' && STATE.genre === 1 && !STATE.sanjoBallad);
     if (sanjoUptempo || (typeof STATE !== 'undefined' && STATE.bpm >= 95)) {
-      tempoTag = `[Tempo] FAST ${STATE.bpm} BPM — uptempo, driving rhythm, steady swing groove, keep the tempo and energy UP throughout. NOT slow, NOT a ballad, do not drag or slow down.`;
+      // ★수정: 항상 똑같은 문장이 아니라, 매번 다른 표현 중 랜덤으로 — 서로 다른 장르 프롬프트가 첫 문장부터 100% 동일해지는 것 방지
+      const _tempoPhrasings = [
+        `[Tempo] FAST ${STATE.bpm} BPM — uptempo, driving rhythm, steady swing groove, keep the tempo and energy UP throughout. NOT slow, NOT a ballad, do not drag or slow down.`,
+        `[Tempo] ${STATE.bpm} BPM, brisk and forward-moving — the pulse stays locked in and lively from start to finish, never sagging into a slow ballad feel.`,
+        `[Tempo] Keep it at ${STATE.bpm} BPM, energetic and propulsive throughout — this is an uptempo piece, not a drifting slow ballad.`,
+        `[Tempo] ${STATE.bpm} BPM with a driving, forward pulse — maintain momentum and energy all the way through, resist any pull toward a slow ballad feel.`,
+      ];
+      tempoTag = _tempoPhrasings[Math.floor(Math.random() * _tempoPhrasings.length)];
     }
   } catch (e) {}
 
