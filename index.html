@@ -3820,7 +3820,7 @@ function _doBuildPrompt() {
 
     /* ── ⑫ Duration ── */
     if (STATE.songDuration && !STATE.shortsMode) {
-      parts.push(`[Duration] ${STATE.songDuration}, full structure, fade out`);
+      parts.push(`[Duration] ${STATE.songDuration}, full structure, fade out. CRITICAL: end the song completely at [end] exactly as written — do NOT loop back to an earlier verse/chorus or generate additional sections to stretch toward this duration. If the written structure finishes shorter than ${STATE.songDuration}, end there with the fade-out; a slightly shorter song is correct, repeating earlier sections is NOT`);
     }
 
     /* ── ⑬ 🎬 쇼츠 전용 모드 ── */
