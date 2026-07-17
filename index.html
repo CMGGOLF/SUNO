@@ -5472,7 +5472,7 @@ async function genLyrics(lang) {
       ` 2줄: 앞 절·후렴에서 쌓인 핵심 감정을 응축한 새 구절 (소재: ${_trotDiv.motif})\n` +
       ` 3줄: 앵커를 짧게 끊어 절규하듯 변형 (예: 앞부분만 떼어 "${(_trotDiv.anchor.split(' ')[0]||_trotDiv.anchor)}…")\n` +
       ` 4줄: 마지막 한 마디 — 가장 짧고 사무치게, 끝에 ${_useMeaningfulTag ? _tagModeInstr : `추임새 ${_trotDiv.chuimsaeA}`})\n\n` +
-      `[Ad-lib]\n(non-lexical vocal ad-lib — NOT lyrics: extended melisma on a single syllable like "하~~~" or "흐어~~~", wordless. Do not sing direction words. No giggling, laughing, or hiccup-like sounds)\n\n` +
+      `[Ad-lib]\n(non-lexical vocal ad-lib — NOT lyrics: BRIEF melisma on a single syllable like "하~~~" or "흐어~~~", only 2-4 bars long, wordless. This must NOT extend to fill the rest of the song — it hands off immediately to the Outro fade-out that follows. Do not sing direction words. No giggling, laughing, or hiccup-like sounds)\n\n` +
       `[아웃트로] 이완 ${_trTrot.outro}\n(정확히 ${_oLines}줄 — 감정이 서서히 가라앉음, 종결어미 ${_trotDiv.ending})\n${_pickForm(form.outroStyle)||_pickForm(_trotForm.outroStyle)||'[fade out]\n[end]'}`;
   } else {
     /* 일반 폼: 제약된 랜덤 구조 — 절·후렴·(프리)·(구음)·(브릿지) 순서/개수 곡마다 변경 */
@@ -5501,7 +5501,7 @@ async function genLyrics(lang) {
 
     structureKr +=
       `[후렴 - 마지막] 긴장 ${tr.finalchorus}\n[Big Finish]\n(정확히 ${choLines}줄 — 앵커 라인으로 시작하되 같은 줄 복붙 금지: 1줄 앵커 그대로, 중간 줄은 감정 응축한 변형, 마지막 줄은 가장 짧고 강하게 끊어 절정${(_useGugakBase&&_trotDiv) ? `, 마지막 줄 끝에만 ${_useMeaningfulTag ? _tagModeInstr : `추임새 ${_trotDiv.chuimsaeA}`}` : ''})\n\n` +
-      ((_useGugakBase&&_trotDiv) ? `[Ad-lib]\n(non-lexical vocal ad-lib — NOT lyrics: wordless extended melisma like "하~~~" or "흐어~~~". Do not sing direction words. No giggling, laughing, or hiccup-like sounds)\n\n` : '') +
+      ((_useGugakBase&&_trotDiv) ? `[Ad-lib]\n(non-lexical vocal ad-lib — NOT lyrics: wordless BRIEF melisma like "하~~~" or "흐어~~~", only 2-4 bars long. This must NOT extend to fill the rest of the song — it hands off immediately to the Outro fade-out that follows. Do not sing direction words. No giggling, laughing, or hiccup-like sounds)\n\n` : '') +
       `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내림)\n${_pickForm(form.outroStyle)||'[fade out]\n[end]'}`;
   }
 
@@ -5608,7 +5608,7 @@ ${storyBlockKr}${_trotDiv ? `
 - ★감정 하이라이트 (가장 중요): 이 곡에 1~2군데 '감정이 확 차오르는 순간'(가슴 뭉클·눈물 찔끔·소름)을 심을 것 — 주로 [브릿지]와 [후렴-마지막]에, 담담하다가 억눌렀던 진심을 왈칵 터뜨리는 사무치는 한 마디. 추상적 '그리워' 대신 '아직도 네 자리엔 온기가 식지 않았어' 같은 구체적이되 격조 있는 디테일 한 방으로 급소를 찌를 것. 신체 부위·일상 사물은 날것 그대로 쓰지 말고 문어체 비유로 순화(예: '목구멍'→'목이 메어라'). 생리적·의학적·육체적 묘사(헐떡거리다·곪다·고름·신음·체액 등) 절대 금지 — 성적 뉘앙스로 오독될 수 있는 표현 배제, 정제된 문어체로만${_useGugakBase ? `
 - ${_useMeaningfulTag ? _tagModeInstr : `추임새는 ${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만`} 사용 — 후렴에서 모든 줄이 아니라 1·3번째 줄 끝에만, 같은 표현을 줄마다 반복하지 말 것` : ''}${_wantGueum ? `
 - [Gugak Guum] 섹션은 두 줄로 출력: 첫 줄 "${_trotDiv.guumHigh} [고음]", 둘째 줄 "${_trotDiv.guumLow} [저음]" — 가사가 아닌 무의미 구음 멜리스마. [고음]/[저음]은 음역 표시일 뿐 단어로 부르지 말 것
-- [Ad-lib] 섹션도 무의미 구음: "하~~~" / "흐어~~~" 같은 멜리스마 — 지시어 단어 부르지 말 것. 웃음소리·딸꾹질·전자음 같은 엉뚱한 효과음 절대 금지` : ''}
+- [Ad-lib] 섹션도 무의미 구음: "하~~~" / "흐어~~~" 같은 멜리스마 — 지시어 단어 부르지 말 것. 짧게 2~4마디만, 절대 곡 끝까지 길게 늘어지면 안 되고 곧바로 아웃트로 페이드아웃으로 넘어갈 것. 웃음소리·딸꾹질·전자음 같은 엉뚱한 효과음 절대 금지` : ''}
 ` : ''}
 ${rhymeRuleKr}
 
