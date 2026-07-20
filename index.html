@@ -3847,8 +3847,8 @@ function _doBuildPrompt() {
     for (let i = 0; i < 6; i++) {
       _negWords.push(OVERUSED_SUNO_WORDS[(_negStart + i) % OVERUSED_SUNO_WORDS.length]);
     }
-    // 숨소리 억제 — 항상 포함
-    const _breathAvoid = 'audible breathing, breath sounds, gasping, panting, heavy breathing, inhale/exhale noise, hakhak, heokheok';
+    // 숨소리 억제 — 항상 포함 (★대금의 의도된 숨결 음색과 모순 안 나게 '보컬'로 명확히 한정)
+    const _breathAvoid = 'audible vocal breathing between sung lines, vocalist gasping for air, panting vocal delivery, heavy human breathing sounds in the vocal performance, hakhak, heokheok (this does NOT apply to intentional instrumental breath-tone timbre like daegeum\'s breathy quality, which should remain as described)';
     // 웃음·딸꾹질·전자음 등 엉뚱한 보컬 효과음 억제 — 항상 포함
     const _weirdVocalAvoid = 'giggling, laughing, laughter, giggles, hiccups, burping, coughing sound, sneezing, ringtone sound, phone ringtone, electronic beep, notification sound, spoken interjections, comedic vocal sounds, cartoonish vocal effects, baby talk, gibberish chatter unrelated to melody';
     // 글리치·에러음처럼 들리는 디지털 아티팩트 억제 — 항상 포함
