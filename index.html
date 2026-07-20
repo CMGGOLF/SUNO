@@ -4082,6 +4082,11 @@ function _parseDelimitedVariations(text) {
       prompt = prompt.replace(/[,;:\-\s]+$/, '') + '.';
     }
     const tagsRaw = field(b, 'TAGS', '태그');
+    // ★안전장치: AI가 BPM/템포 언급을 빼먹으면 Suno가 임의로 자유리듬(정가 등)으로 해석할 위험 → 없으면 자동으로 채워넣음
+    if (prompt && !/\bBPM\b/i.test(prompt) && !/\[Tempo\]/i.test(prompt)) {
+      const _fallbackBpm = (typeof STATE !== 'undefined' && STATE.bpm) ? STATE.bpm : 85;
+      prompt = `[Tempo] ${_fallbackBpm} BPM, steady rhythmic pulse throughout — NOT free-tempo, NOT rubato, maintain a consistent beat. ${prompt}`;
+    }
     items.push({
       num: items.length + 1,
       title,
@@ -5864,7 +5869,7 @@ BPM: ${bpm} | 국악:정통 비율: ${ratio}%:${100-ratio}%
 [참고 — 현재 곡의 분위기/에너지]: ${_cleanPrompt.slice(0,300)}
 각 변형은 7:3 Joseon Core 철학을 유지하되 (국악기가 주도), 아래 7개 장르를 각각 하나씩(총 7개) 시도하세요:
 ★★ 국악 베이스 필수 규칙 (가장 중요): 국악기를 앞쪽(첫 1~2문장 안)에 두고 장르 이름을 맨 앞 주어로 쓰지 마세요. 단, 7개 변형의 첫 문장을 서로 다른 방식으로 여세요(악기 음색 / 분위기·장면 먼저 후 국악기 / 연주 기법 / 공간·여백 등) — 7곡 도입부가 똑같이 시작하면 안 됩니다. 국악기(gayageum/haegeum/ajaeng/daegeum/piri/janggu)가 LEAD(중심)이고 현대 장르는 30% 양념일 뿐입니다. 음색을 구체적으로: gayageum=plucked zither crystalline slides (NOT harp) / haegeum=bowed crying scrape, microtonal (NOT violin) / ajaeng=bowed bass drone / janggu=hourglass drum jangdan (NOT generic drums). 국악기를 현대 악기처럼 뭉개지 말 것.
-★ 보컬 다양화 (매우 중요 — 7곡이 같은 목소리로 들리면 절대 안 됨): 각 변형의 보컬을 장르에 맞게 서로 다르게 지정하세요. 창법·음색·성별·기법을 곡마다 다르게 — 예: 궁중소울=정제된 여성 소울, 산조재즈=스모키한 재즈 크루닝, 판소리소울=득음의 거친 판소리 그릿, 민요블루스=허스키한 남도 블루스 창법, 대금앰비언트=여백 많은 아련한 가성/무언(wordless) 허밍, 아쟁딥소울=깊고 낮은 저음 소울, 트롯=트로트 꺾기 비브라토. 단 모든 보컬은 슬픔·한(恨) 정서와 한국적 창법(꺾기·시김새·미분음 bends)은 공통 유지. 각 PROMPT에 [Vocal] 묘사를 반드시 한 구절 넣되 7곡 모두 다르게.
+★ 보컬 다양화 (매우 중요 — 7곡이 같은 목소리로 들리면 절대 안 됨): 각 변형의 보컬을 장르에 맞게 서로 다르게 지정하세요. 창법·음색·성별·기법을 곡마다 다르게 — 예: 궁중소울=정제된 여성 소울, 산조재즈=스모키한 재즈 크루닝, 판소리소울=득음의 거친 판소리 그릿, 민요블루스=허스키한 남도 블루스 창법, 대금앰비언트=여백 많은 아련한 가성/무언(wordless) 허밍, 아쟁딥소울=깊고 낮은 저음 소울, 트롯=트로트 꺾기 비브라토. 단 모든 보컬은 슬픔·한(恨) 정서와 한국적 창법(꺾기·시김새·미분음 bends)은 공통 유지. 각 PROMPT에 [Vocal] 묘사를 반드시 한 구절 넣되 7곡 모두 다르게. ★주의: 이 7개는 전부 "같은 템포·리듬"을 공유해야 하므로, 정가(正歌)·수심가처럼 원래 박자 없이 아주 느리고 자유로운 리듬(rubato)으로 부르는 실제 전통 창법은 절대 지정하지 말 것 — 이런 창법은 고정된 템포와 근본적으로 모순됩니다. 대신 예시로 준 "정제된 여성 소울"처럼, 창법의 색깔(음색·기법)만 빌려오되 리듬은 자유롭지 않고 지정된 템포를 그대로 따르는 스타일로 표현하세요.
 1. 조선 궁중 소울 (가야금·해금 중심의 궁중 소울 발라드)
 2. 산조 재즈 (가야금·해금의 재즈 퓨전)
 3. 판소리 소울 (득음 창법의 소울)
