@@ -3761,7 +3761,7 @@ function _doBuildPrompt() {
     }
     if (STATE.gugakVocalStyle!==null&&DATA.gugakVocalStyles[STATE.gugakVocalStyle]) {
       const gvs=DATA.gugakVocalStyles[STATE.gugakVocalStyle];
-      _vsLine.push(`GUGAK CHANGSIK: ${gvs.suno}`);
+      _vsLine.push(gvs.suno);
     }
     if (STATE.gender === 'male') _vsLine.push('STRICTLY male voice');
     else if (STATE.gender === 'female') _vsLine.push('STRICTLY female voice');
