@@ -2351,7 +2351,23 @@ function _applyPools(type) {
   if (p.blackSoulElements && p.blackSoulElements.length) STATE.blackSoulElements = [..._rp(p.blackSoulElements)];
   if (p.humanFeelElements && p.humanFeelElements.length) STATE.humanFeelElements = [..._rp(p.humanFeelElements)];
   if (p.gueumPositions    && p.gueumPositions.length)    STATE.gueumPositions    = [..._rp(p.gueumPositions)];
-  if (p.instr && p.instr.length) STATE.instrList = p.instr.map(x => ({cat:x.cat, idx:x.idx}));
+  if (p.instr && p.instr.length) {
+    let _instrList = p.instr.map(x => ({cat:x.cat, idx:x.idx}));
+    // ★수정: 항상 똑같은 악기 조합으로 고정되지 않도록, 50% 확률로 그중 하나를 같은 계열의 다른 악기로 교체
+    if (Math.random() < 0.5 && _instrList.length > 1) {
+      const ri = Math.floor(Math.random() * _instrList.length);
+      const cat = _instrList[ri].cat;
+      const catData = getCatData(cat);
+      if (catData && catData.length > 1) {
+        let newIdx;
+        let tries = 0;
+        do { newIdx = Math.floor(Math.random() * catData.length); tries++; }
+        while (newIdx === _instrList[ri].idx && tries < 5);
+        _instrList[ri] = {cat, idx:newIdx};
+      }
+    }
+    STATE.instrList = _instrList;
+  }
   /* ── v27 추가: 장르 권장 BPM 범위로 BPM 설정 (GENRE_BPM_RANGE 연동) ── */
   const _bpmR = (STATE.genre !== null && GENRE_BPM_RANGE[STATE.genre])
     ? GENRE_BPM_RANGE[STATE.genre]
@@ -4085,7 +4101,12 @@ function _parseDelimitedVariations(text) {
     // ★안전장치: AI가 BPM/템포 언급을 빼먹으면 Suno가 임의로 자유리듬(정가 등)으로 해석할 위험 → 없으면 자동으로 채워넣음
     if (prompt && !/\bBPM\b/i.test(prompt) && !/\[Tempo\]/i.test(prompt)) {
       const _fallbackBpm = (typeof STATE !== 'undefined' && STATE.bpm) ? STATE.bpm : 85;
-      prompt = `[Tempo] ${_fallbackBpm} BPM, steady rhythmic pulse throughout — NOT free-tempo, NOT rubato, maintain a consistent beat. ${prompt}`;
+      const _fallbackTempoPhrasings = [
+        `[Tempo] ${_fallbackBpm} BPM, steady rhythmic pulse throughout — NOT free-tempo, NOT rubato, maintain a consistent beat.`,
+        `[Tempo] Locked at ${_fallbackBpm} BPM, a firm and even pulse from start to finish — no rubato, no free-tempo drifting.`,
+        `[Tempo] ${_fallbackBpm} BPM with a steady, metered beat throughout — this stays rhythmically fixed, never loosening into free rhythm.`,
+      ];
+      prompt = _fallbackTempoPhrasings[Math.floor(Math.random() * _fallbackTempoPhrasings.length)] + ' ' + prompt;
     }
     items.push({
       num: items.length + 1,
@@ -5848,7 +5869,7 @@ TITLE: 변형 제목 (한글)
 TITLE_EN: Variation Title (English)
 MOOD: 템포·리듬 특징 (예: 아주 느린 발라드 BPM 65 / 빠른 업텐포 BPM 110)
 TAGS: 태그1, 태그2, 태그3
-PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 550자(최대 650자 초과 금지), 슬픔·한 정서로. 맨 앞에 템포/BPM과 리듬 느낌을 명시. 구조: ①국악기로 시작하는 SONIC 묘사 → ②각 국악기의 음색·역할을 구체적으로 (gayageum plucked zither crystalline slides NOT harp / haegeum bowed crying scrape microtonal NOT violin / ajaeng bowed bass drone / daegeum breathy bamboo flute / piri reedy double-reed / janggu hourglass-drum jangdan rhythm NOT generic drums) → ③장르 그루브는 30% 양념으로 → ④감정·분위기. 국악기 3~4개를 LEAD로 명시하고 각각 한 구절씩 음색 설명. 서양악기 이름으로 치환 금지. ★800자를 절대 넘기지 말 것. 같은 단어·형용사를 반복하거나 끝없이 나열하지 말고, 완결된 묘사로 끝낼 것. ★문장 형식 필수: 마침표·파이프(|) 없이 "~하며 ~하고 ~해서"처럼 분사·접속어로 한없이 이어붙이는 run-on 문장 절대 금지. 15단어 넘지 않는 짧은 구·절 단위로 마침표나 | 로 끊어서 나열할 것 (이 프로그램이 실제 만드는 프롬프트처럼: "Haegeum bends the opening phrase. Gayageum answers with crystalline slides. || [Backing] ..." 형식). "quintessentially", "forevermore", "altogether" 같은 의미 없이 글자수만 채우는 허풍 단어·부사 남발 금지. ★같은 악기가 여러 변형에 등장해도 음색 설명 문구를 토씨까지 똑같이 베끼지 말고, 그 장르의 색깔에 맞게 표현을 조금씩 다르게 바꿔 쓸 것(예: 아쟁 설명도 트롯에선 이렇게, 재즈퓨전에선 다르게). ★SONIC IDENTITY·장르명이 맨 앞 [Tempo](속도) 지시와 절대 모순되지 않게 할 것 — 예: 빠른 BPM으로 지시해놓고 뒤에서 "slow ballad"라고 쓰는 등 자기모순 금지, 속도감을 나타내는 모든 표현은 서로 일치해야 함)
+PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 550자(최대 650자 초과 금지), 슬픔·한 정서로. 맨 앞에 템포/BPM과 리듬 느낌을 명시. 구조: ①국악기로 시작하는 SONIC 묘사 → ②각 국악기의 음색·역할을 구체적으로 (gayageum plucked zither crystalline slides NOT harp / haegeum bowed crying scrape microtonal NOT violin / ajaeng bowed bass drone / daegeum breathy bamboo flute / piri reedy double-reed / janggu hourglass-drum jangdan rhythm NOT generic drums) → ③장르 그루브는 30% 양념으로 → ④감정·분위기. 국악기 3~4개를 LEAD로 명시하고 각각 한 구절씩 음색 설명. 서양악기 이름으로 치환 금지. ★800자를 절대 넘기지 말 것. 같은 단어·형용사를 반복하거나 끝없이 나열하지 말고, 완결된 묘사로 끝낼 것. ★문장 형식 필수: 마침표·파이프(|) 없이 "~하며 ~하고 ~해서"처럼 분사·접속어로 한없이 이어붙이는 run-on 문장 절대 금지. 15단어 넘지 않는 짧은 구·절 단위로 마침표나 | 로 끊어서 나열할 것 (이 프로그램이 실제 만드는 프롬프트처럼: "Haegeum bends the opening phrase. Gayageum answers with crystalline slides. || [Backing] ..." 형식). "quintessentially", "forevermore", "altogether" 같은 의미 없이 글자수만 채우는 허풍 단어·부사 남발 금지. ★같은 악기가 여러 변형에 등장해도 음색 설명 문구를 토씨까지 똑같이 베끼지 말고, 그 장르의 색깔에 맞게 표현을 조금씩 다르게 바꿔 쓸 것(예: 아쟁 설명도 트롯에선 이렇게, 재즈퓨전에선 다르게). ★SONIC IDENTITY·장르명이 맨 앞 [Tempo](속도) 지시와 절대 모순되지 않게 할 것 — 예: 빠른 BPM으로 지시해놓고 뒤에서 "slow ballad"라고 쓰는 등 자기모순 금지, 속도감을 나타내는 모든 표현은 서로 일치해야 함. ★★7개 변형 전체가 항상 해금+가야금 조합으로만 시작하지 말 것 — 아쟁·대금·피리·거문고·꽹과리 등도 돌아가며 리드로 등장시켜, 7개의 실제 악기 구성 자체가 서로 뚜렷하게 다르게 겹치지 않을 것. 장르명만 다르고 악기 조합은 거의 같은 상태로 나오면 안 됨)
 === 변형 2 ===
 (같은 형식)
 === 변형 3 ===
@@ -5886,7 +5907,7 @@ TITLE: 변형 제목 (한글)
 TITLE_EN: Variation Title (English)
 GENRE: 장르 태그 (한글)
 TAGS: 태그1, 태그2, 태그3
-PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 550자, 최대 650자 절대 초과 금지, 현재 곡과 같은 분위기·에너지로. 구조: ①국악기로 시작하는 SONIC 묘사 → ②각 국악기의 음색·역할을 구체적으로 (gayageum plucked zither crystalline slides NOT harp / haegeum bowed crying scrape microtonal NOT violin / ajaeng bowed bass drone / daegeum breathy bamboo flute / piri reedy double-reed / janggu hourglass-drum jangdan rhythm NOT generic drums) → ③해당 장르 그루브는 30% 양념으로 → ④장르에 맞는 [Vocal] 한 구절 (7곡 서로 다른 창법·음색·성별, 단 한·꺾기·시김새 유지) → ⑤감정·분위기. 국악기 3~4개를 LEAD로 명시하고 각각 한 구절씩 음색 설명. 서양악기 이름으로 치환 금지. ★800자를 절대 넘기지 말 것. 같은 단어·형용사를 반복하거나 끝없이 나열하지 말고, 완결된 묘사로 끝낼 것. ★문장 형식 필수: 마침표·파이프(|) 없이 "~하며 ~하고 ~해서"처럼 분사·접속어로 한없이 이어붙이는 run-on 문장 절대 금지. 15단어 넘지 않는 짧은 구·절 단위로 마침표나 | 로 끊어서 나열할 것 (이 프로그램이 실제 만드는 프롬프트처럼: "Haegeum bends the opening phrase. Gayageum answers with crystalline slides. || [Backing] ..." 형식). "quintessentially", "forevermore", "altogether" 같은 의미 없이 글자수만 채우는 허풍 단어·부사 남발 금지. ★같은 악기가 여러 변형에 등장해도 음색 설명 문구를 토씨까지 똑같이 베끼지 말고, 그 장르의 색깔에 맞게 표현을 조금씩 다르게 바꿔 쓸 것(예: 아쟁 설명도 트롯에선 이렇게, 재즈퓨전에선 다르게). ★SONIC IDENTITY·장르명이 맨 앞 [Tempo](속도) 지시와 절대 모순되지 않게 할 것 — 예: 빠른 BPM으로 지시해놓고 뒤에서 "slow ballad"라고 쓰는 등 자기모순 금지, 속도감을 나타내는 모든 표현은 서로 일치해야 함)
+PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 550자, 최대 650자 절대 초과 금지, 현재 곡과 같은 분위기·에너지로. 구조: ①국악기로 시작하는 SONIC 묘사 → ②각 국악기의 음색·역할을 구체적으로 (gayageum plucked zither crystalline slides NOT harp / haegeum bowed crying scrape microtonal NOT violin / ajaeng bowed bass drone / daegeum breathy bamboo flute / piri reedy double-reed / janggu hourglass-drum jangdan rhythm NOT generic drums) → ③해당 장르 그루브는 30% 양념으로 → ④장르에 맞는 [Vocal] 한 구절 (7곡 서로 다른 창법·음색·성별, 단 한·꺾기·시김새 유지) → ⑤감정·분위기. 국악기 3~4개를 LEAD로 명시하고 각각 한 구절씩 음색 설명. 서양악기 이름으로 치환 금지. ★800자를 절대 넘기지 말 것. 같은 단어·형용사를 반복하거나 끝없이 나열하지 말고, 완결된 묘사로 끝낼 것. ★문장 형식 필수: 마침표·파이프(|) 없이 "~하며 ~하고 ~해서"처럼 분사·접속어로 한없이 이어붙이는 run-on 문장 절대 금지. 15단어 넘지 않는 짧은 구·절 단위로 마침표나 | 로 끊어서 나열할 것 (이 프로그램이 실제 만드는 프롬프트처럼: "Haegeum bends the opening phrase. Gayageum answers with crystalline slides. || [Backing] ..." 형식). "quintessentially", "forevermore", "altogether" 같은 의미 없이 글자수만 채우는 허풍 단어·부사 남발 금지. ★같은 악기가 여러 변형에 등장해도 음색 설명 문구를 토씨까지 똑같이 베끼지 말고, 그 장르의 색깔에 맞게 표현을 조금씩 다르게 바꿔 쓸 것(예: 아쟁 설명도 트롯에선 이렇게, 재즈퓨전에선 다르게). ★SONIC IDENTITY·장르명이 맨 앞 [Tempo](속도) 지시와 절대 모순되지 않게 할 것 — 예: 빠른 BPM으로 지시해놓고 뒤에서 "slow ballad"라고 쓰는 등 자기모순 금지, 속도감을 나타내는 모든 표현은 서로 일치해야 함. ★★7개 변형 전체가 항상 해금+가야금 조합으로만 시작하지 말 것 — 아쟁·대금·피리·거문고·꽹과리 등도 돌아가며 리드로 등장시켜, 7개의 실제 악기 구성 자체가 서로 뚜렷하게 다르게 겹치지 않을 것. 장르명만 다르고 악기 조합은 거의 같은 상태로 나오면 안 됨)
 === 변형 2 ===
 === 변형 3 ===
 === 변형 4 ===
@@ -6288,6 +6309,7 @@ function applyGugakTrotPreset(style) {
   STATE.hanSoulStyle = 4;          // 한(恨) 소울 발라드
   // 공통 악기: 해금 + 피리 + 아쟁(저음) + 장구 (멜로디+베이스+리듬)
   STATE.instrList = [{cat:'string',idx:1},{cat:'wind',idx:1},{cat:'string',idx:2},{cat:'percussion',idx:0}];
+  // ★수정: 트롯 6스타일 전부 항상 이 악기 조합 고정이던 것 → 50% 확률로 하나 교체 (섹션 C에서 최종 적용됨, 여기선 기본값만 세팅)
   STATE.koreanGrooves = [2, 3];
   STATE.koreanFeelings = [4, 5];
   STATE.blackSoulElements = [2];
@@ -6430,6 +6452,18 @@ function applyGugakTrotPreset(style) {
   if (Math.random() < 0.4 && Array.isArray(STATE.vocalTones)) {
     const extraTone = _rp([1, 8, 9, 11]);                 // 소울풀/애절/감성/거친벨트 — 트롯 정서 내
     if (!STATE.vocalTones.includes(extraTone)) STATE.vocalTones = [...STATE.vocalTones, extraTone].slice(0, 3);
+  }
+  if (Math.random() < 0.5 && Array.isArray(STATE.instrList) && STATE.instrList.length > 1) {
+    const _ii = Math.floor(Math.random() * STATE.instrList.length);
+    const _cat = STATE.instrList[_ii].cat;
+    const _catData = getCatData(_cat);
+    if (_catData && _catData.length > 1) {
+      let _newIdx, _tries = 0;
+      do { _newIdx = Math.floor(Math.random() * _catData.length); _tries++; }
+      while (_newIdx === STATE.instrList[_ii].idx && _tries < 5);
+      STATE.instrList = [...STATE.instrList];
+      STATE.instrList[_ii] = {cat:_cat, idx:_newIdx};
+    }
   }
   STATE.gugakVocalStyle = _rp([STATE.gugakVocalStyle, 0, 1, 4]); // 창법도 한 계열 내 변주
   if (Math.random() < 0.4 && Array.isArray(STATE.moods) && STATE.moods.length) {  // 무드도 40% 확률로 1개 교체 — 스타일별 고정 반복 방지
