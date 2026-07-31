@@ -5440,9 +5440,14 @@ async function genRec() {
       sysP = '글로벌 채널 3:7 국악 퓨전 전략가. JSON만 출력.';
     }
     const text=await callClaude(aiPrompt, sysP, 0.4);
-    const match=cleanModelText(text).match(/\[[\s\S]*\]/);
-    if (!match) throw new Error('JSON 배열 응답 형식 오류');
-    const items=JSON.parse(match[0]); recItems=items;
+    let items;
+    try {
+      items = _parseJsonLoose(text);
+    } catch (e) {
+      throw new Error('JSON 배열 응답 형식 오류 (복구 실패): ' + e.message);
+    }
+    if (!Array.isArray(items) || items.length === 0) throw new Error('JSON 배열 응답 형식 오류');
+    recItems=items;
     grid.innerHTML=items.map((item,i)=>`
       <div class="rec-card" onclick="applyRecCard(${i})">
         <div class="rec-rank">#${item.rank} 추천</div>
