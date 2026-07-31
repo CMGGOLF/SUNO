@@ -593,7 +593,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       <div style="display:flex;flex-wrap:wrap;gap:8px">
         <button class="btn btn-gold" onclick="applyQuickStart('drive')">🚗 드라이브</button>
         <button class="btn btn-gold" onclick="applyQuickStart('workout')">🏃 운동 / 조깅</button>
-        <button class="btn btn-gold" onclick="applyQuickStart('hiphop')">🎤 힙합</button>
+        <button class="btn btn-gold" onclick="applyQuickStart('trot')">🥁 트롯 한(恨)</button>
         <button class="btn btn-gold" onclick="applyQuickStart('labor')">🔨 노동가 / 작업</button>
         <button class="btn btn-gold" onclick="applyQuickStart('night')">🌙 늦은 밤 감성</button>
         <button class="btn btn-teal" onclick="applyRandomPreset()">✨ 랜덤 추천</button>
@@ -1038,7 +1038,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       <button class="shorts-preset-btn" id="sp_0" onclick="applyShortsPreset(0)">
         <span class="sp-emoji">🔥</span>
         <span class="sp-name">폭발 드롭</span>
-        <span class="sp-desc">BPM 128 · 에너지 10 · 국악 궁중 힙합</span>
+        <span class="sp-desc">BPM 128 · 에너지 10 · 국악 트롯</span>
       </button>
       <button class="shorts-preset-btn" id="sp_1" onclick="applyShortsPreset(1)">
         <span class="sp-emoji">💔</span>
@@ -1062,8 +1062,8 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       </button>
       <button class="shorts-preset-btn" id="sp_5" onclick="applyShortsPreset(5)">
         <span class="sp-emoji">⚡</span>
-        <span class="sp-name">힙합 드롭</span>
-        <span class="sp-desc">BPM 140 · 에너지 10 · 국악 궁중 힙합</span>
+        <span class="sp-name">휘몰이 절창</span>
+        <span class="sp-desc">BPM 140 · 에너지 10 · 민요 블루스</span>
       </button>
     </div>
 
@@ -1553,7 +1553,7 @@ const DATA = {
     {en:'Gugak Court HipHop',kr:'국악 궁중 힙합',desc:'정간보 리듬 + 가야금·피리(70%) + Boom Bap·808(30%) — 조선 힙합의 탄생'},
     {en:'Daegeum Ambient Elevation',kr:'대금 앰비언트 격상',desc:'대금 호흡·여백·시김새(70%) + 몽환적 Ambient Pad·리버브(30%) — 전통의 현대적 확장'},
     {en:'Ajaeng Deep Soul',kr:'아쟁 딥 소울',desc:'아쟁 찰현 저음·농현(70%) + 소울·블루스 그루브(30%) — 첼로를 넘어선 깊이'},
-    {en:'NeoJoseon Fusion',kr:'네오조선 퓨전',desc:'조선 궁중 + 민속 리듬(70%) + 현대 재즈·소울·힙합 승화(30%) — 글로벌 채널 최적화'},
+    {en:'NeoJoseon Fusion',kr:'네오조선 퓨전',desc:'조선 궁중 + 민속 리듬(70%) + 현대 재즈·소울 승화(30%) — 글로벌 채널 최적화'},
     {en:'Gugak Trot',kr:'국악 트롯트',desc:'5음계 단조 민요 선율(70%) + 전통 장단·추임새(30%) — 한(恨)과 흥(興)이 공존하는 전·후절 맺풀기',ratio:'7:3'},
   ],
   moods: [
@@ -1612,7 +1612,7 @@ const DATA = {
     {num:'05',name:'국악 궁중 힙합 (Gugak Court HipHop)',core:['Rhythmic','Noble','Modern'],sub:['Groovy','Powerful'],desc:'정간보 리듬 + 가야금·피리(70%) + Boom Bap·808(30%)',genres:['Court HipHop','Joseon Boom Bap'],inst:['가야금','피리','장구','808 Bass','Boom Bap Drums','Vinyl Noise']},
     {num:'06',name:'대금 앰비언트 격상 (Daegeum Ambient Elevation)',core:['Breathy','Mysterious','Calm'],sub:['Ethereal','Nostalgic'],desc:'대금 호흡·여백·시김새(70%) + 몽환적 Ambient Pad·리버브(30%)',genres:['Daegeum Ambient','Korean Ethereal'],inst:['대금','생황','Ambient Pad','Soft Reverb','Light Texture']},
     {num:'07',name:'아쟁 딥 소울 (Ajaeng Deep Soul)',core:['Deep','Emotional','Gritty'],sub:['Raw','Powerful'],desc:'아쟁 찰현 저음·농현(70%) + 소울·블루스 그루브(30%)',genres:['Ajaeng Soul','Korean Deep Blues'],inst:['아쟁','해금','Hammond Organ','Warm Bass','Brush Drums']},
-    {num:'08',name:'네오조선 퓨전 (NeoJoseon Fusion)',core:['Noble','Groovy','Emotional'],sub:['Modern','Traditional'],desc:'조선 궁중 + 민속 리듬(70%) + 현대 재즈·소울·힙합 승화(30%)',genres:['NeoJoseon','Elevated Gugak'],inst:['가야금','대금','장구','Warm Rhodes','Upright Bass','Light Drums']},
+    {num:'08',name:'네오조선 퓨전 (NeoJoseon Fusion)',core:['Noble','Groovy','Emotional'],sub:['Modern','Traditional'],desc:'조선 궁중 + 민속 리듬(70%) + 현대 재즈·소울 승화(30%)',genres:['NeoJoseon','Elevated Gugak'],inst:['가야금','대금','장구','Warm Rhodes','Upright Bass','Light Drums']},
     {num:'09',name:'국악 트롯트 (Gugak Trot)',core:['Han','Heung','Melancholic'],sub:['Traditional','Emotional'],desc:'5음계 단조 민요 선율(70%) + 전통 장단·추임새(30%) — 체념과 카타르시스가 공존',genres:['Gugak Trot','Korean Folk Trot'],inst:['해금','가야금','장구','단소','Warm Bass','Light Brush Drums']},
   ],
   vocalStyles: [
@@ -1933,7 +1933,7 @@ const DATA = {
   ],
   hanSoulStyles: [
     {en:'Mississippi Han Blues',kr:'미시시피 한(恨) 블루스',desc:'미시시피 델타 블루스 + 남도 육자배기. 슬라이드 기타 대신 해금이, 하모니카 대신 피리가 운다.',style:'Korean Gugak 70% main + Delta Blues 30% undertone'},
-    {en:'Joseon Court HipHop',kr:'조선 힙합',desc:'장구 + Boom Bap 808 베이스 + 가야금·피리 리프(70%) + 힙합 랩·플로우(30%). 조선 궁중 리듬이 현대 힙합 그루브로 부활.',style:'Janggu + BoomBap + Gayageum riff + Joseon flow'},
+    {en:'Gugak Trot Han',kr:'국악 트롯 한(恨)',desc:'장구·해금 장단 위에 트롯 특유의 꺾기와 추임새. 흥과 한이 한 곡 안에서 교차한다.',style:'Janggu + Haegeum riff + Trot kkeokki flow'},
     {en:'Seoul Midnight Jazz',kr:'서울 심야 재즈',desc:'새벽 3시 재즈바 + 해금 우는 소리. 마일스 데이비스가 서울에 있었다면',style:'Haegeum lead jazz + late night atmosphere'},
     {en:'Sanjo Blue Notes',kr:'산조 블루 노트',desc:'산조의 즉흥 프레이즈 = 재즈 임프로바이제이션. 5음계와 블루스 펜타토닉이 완벽히 겹침',style:'Sanjo improvisation + jazz blue notes'},
     {en:'Han Soul Ballad',kr:'한(恨) 소울 발라드',desc:'한국 한(恨)의 정서를 소울 발라드 형식으로. 오티스 레딩이 아쟁 소리를 들었다면.',style:'Ajaeng deep lead + soul ballad structure'},
@@ -5966,6 +5966,21 @@ function apply73Preset(type) {
     // 06C 한(恨) 소울 스타일 자동 조합 — 궁중 웅장 소울
     STATE.hanSoulStyle=2;
     selectInstrByCategory('wind',0, true);
+  } else if (type==='trot') {
+    STATE.genre=8;STATE.moods=[17,19];STATE.concept=8;STATE.vocalStyle=0;STATE.vocalTones=[13,17];
+    STATE.textures=[0,3];STATE.grooves=[6,7];STATE.spaces=[0,1];STATE.koreanGrooves=[2,3,9];
+    STATE.bassStyles=[0,2];STATE.koreanFeelings=[1,4];
+    STATE.blackSoulElements=[0,4];
+    STATE.humanFeelElements=[0,3];
+    STATE.energyArc=1;
+    STATE.bpm=90;STATE.intensity=6;STATE.koreanRatio=80;
+    STATE.musicKey=1;STATE.koreanScale=0;
+    // 06B 구음 자동 조합 — 국악 트롯: 중간+끝 포인트, 중저음, 남녀 혼성, 추임새 스타일
+    STATE.gueumPositions=['mid','end'];STATE.gueumPitch='midlow';STATE.gueumGender='both';
+    STATE.gueumStyle=1;STATE.gueumStrength='strong';
+    // 06C 한(恨) 소울 스타일 자동 조합 — 국악 트롯 한(恨)과 흥
+    STATE.hanSoulStyle=4;
+    selectInstrByCategory('string',0, true);
   }
   const isStrong73 = STRONG_RANDOM_PRESETS.includes(type);
   _applyPools(type);
@@ -6179,19 +6194,19 @@ function applyQuickStart(type) {
     STATE.hanSoulStyle=1;
     selectInstrByCategory('percussion',1, true);
 
-  } else if (type==='hiphop') {
-    STATE.genre=4;STATE.moods=[0,15];STATE.concept=4;STATE.vocalStyle=5;STATE.vocalTones=[4,9];
-    STATE.textures=[0,5];STATE.grooves=[2,6];STATE.spaces=[0];
-    STATE.koreanGrooves=[1,13];STATE.bassStyles=[3,0];STATE.koreanFeelings=[0,5];
-    STATE.blackSoulElements=[2,5];STATE.humanFeelElements=[0,6];STATE.energyArc=4; // Twin Peaks — 두 번의 폭발
-    STATE.bpm=92;STATE.intensity=7;
+  } else if (type==='trot') {
+    STATE.genre=8;STATE.moods=[17,19];STATE.concept=8;STATE.vocalStyle=0;STATE.vocalTones=[13,17];
+    STATE.textures=[0,3];STATE.grooves=[6,7];STATE.spaces=[0,1];
+    STATE.koreanGrooves=[2,3,9];STATE.bassStyles=[0,2];STATE.koreanFeelings=[1,4];
+    STATE.blackSoulElements=[0,4];STATE.humanFeelElements=[0,3];STATE.energyArc=1;
+    STATE.bpm=90;STATE.intensity=6;
     STATE.musicKey=1;STATE.koreanScale=0;
-    // 06B 구음 자동 조합 — 힙합: 시작+중간+끝 포인트, 중고음, 남녀 혼성, 즉흥 스캣 스타일
-    STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
-    STATE.gueumStyle=5;STATE.gueumStrength='strong';
-    // 06C 한(恨) 소울 스타일 자동 조합 — 조선 힙합 스웩
-    STATE.hanSoulStyle=1;
-    selectInstrByCategory('percussion',0, true);
+    // 06B 구음 자동 조합 — 트롯: 중간+끝 포인트, 중저음, 남녀 혼성, 추임새 스타일
+    STATE.gueumPositions=['mid','end'];STATE.gueumPitch='midlow';STATE.gueumGender='both';
+    STATE.gueumStyle=1;STATE.gueumStrength='strong';
+    // 06C 한(恨) 소울 스타일 자동 조합 — 국악 트롯 한(恨)과 흥
+    STATE.hanSoulStyle=4;
+    selectInstrByCategory('string',0, true);
 
   } else if (type==='labor') {
     STATE.genre=7;STATE.moods=[13];STATE.concept=7;STATE.vocalStyle=7;STATE.vocalTones=[7,10];
@@ -6210,7 +6225,7 @@ function applyQuickStart(type) {
   const isStrongQuick = STRONG_RANDOM_PRESETS.includes(type);
   _applyPools(type);
   applyPresetRandomness(isStrongQuick);
-  const msg={joseon:'✅ Joseon Court',sanjo:'✅ Sanjo Jazz',pansori:'✅ Pansori Soul',minyo:'✅ Minyo Blues',court:'✅ Court Elevation',drive:'✅ 드라이브',night:'✅ 늦은 밤',workout:'✅ 운동',hiphop:'✅ 힙합',labor:'✅ 노동가'};
+  const msg={joseon:'✅ Joseon Court',sanjo:'✅ Sanjo Jazz',pansori:'✅ Pansori Soul',minyo:'✅ Minyo Blues',court:'✅ Court Elevation',drive:'✅ 드라이브',night:'✅ 늦은 밤',workout:'✅ 운동',trot:'✅ 트롯 한(恨)',labor:'✅ 노동가'};
   syncGueumUI();
   _finalizePreset((msg[type]||'✅')+" 세팅 전체 자동 적용 완료! (구음+한소울 자동 조합)");
 }
@@ -6853,16 +6868,16 @@ const SHORTS_PRESETS = [
     moods: [0, 11, 3],           // Head-Nodding · Energetic · Funky
     gueumPitch: 'high', gueumGender: 'both', koreanDominance: 85,
     // ── 자동조합 추가 필드 ──
-    genre: 4,                    // Gugak Court HipHop
-    concept: 4,
-    vocalStyle: 5,               // Oriental Jazz Hip-hop
-    vocalTones: [4, 9],          // smooth male + emotional delivery
+    genre: 8,                    // Gugak Trot
+    concept: 8,
+    vocalStyle: 0,               // Korean Soul Fusion
+    vocalTones: [13, 18],        // 트롯 꺾기 비브라토 + 애절한 가성 꺾기
     gueumStyle: 6,               // 휘모리 소울 샤우트 구음
-    koreanRatio: 80,
+    koreanRatio: 85,
     musicKey: 0, koreanScale: 2,
-    hanSoulStyle: 1,             // 조선 힙합
-    instrCat: 'percussion', instrIdx: 0,  // 장구 코어
-    hookPrompt: 'STOP-SCROLL HOOK: Explosive percussion hit on beat 1 — zero silence, zero intro. Korean instruments detonate at full power. Janggu and 808 collide simultaneously. Goosebumps guaranteed within 2 seconds. Pure kinetic energy from first millisecond.',
+    hanSoulStyle: 4,             // 국악 트롯 한(恨)
+    instrCat: 'percussion', instrIdx: 1,  // 꽹과리 악센트 + 장구 그루브
+    hookPrompt: 'STOP-SCROLL HOOK: Explosive percussion hit on beat 1 — zero silence, zero intro. Kkwaenggwari and janggu detonate together at full power. Goosebumps guaranteed within 2 seconds. Pure kinetic energy from first millisecond.',
     dropPrompt: 'DROP: Maximum volume, maximum aggression. Every Korean instrument at peak. Rhythm relentless. No breathing room. Viewer physically cannot stop listening.',
   },
   {
@@ -6909,7 +6924,7 @@ const SHORTS_PRESETS = [
     // ── 자동조합 추가 필드 ──
     genre: 7,                    // NeoJoseon Fusion
     concept: 7,
-    vocalStyle: 5,               // Oriental Jazz Hip-hop
+    vocalStyle: 9,               // Korean Neo Soul (female, 세련된 R&B)
     vocalTones: [4, 9],          // smooth male + emotional delivery
     gueumStyle: 4,               // 장단 그루브 구음
     koreanRatio: 75,
@@ -6938,22 +6953,22 @@ const SHORTS_PRESETS = [
     dropPrompt: 'DROP: 한(恨) at absolute maximum. Korean instrument screams and breaks. Centuries of suppressed sorrow exploding in one moment. Devastating and unforgettable.',
   },
   {
-    name: '힙합 드롭', emoji: '⚡',
+    name: '휘몰이 절창', emoji: '⚡',
     bpm: 140, intensity: 10, arc: 0,
-    moods: [15, 0, 11],          // Aggressive HipHop · Head-Nodding · Energetic
-    gueumPitch: 'midlow', gueumGender: 'male', koreanDominance: 80,
+    moods: [18, 0, 11],          // Han-laden Passionate Cry · Head-Nodding · Energetic
+    gueumPitch: 'midlow', gueumGender: 'male', koreanDominance: 90,
     // ── 자동조합 추가 필드 ──
-    genre: 4,                    // Gugak Court HipHop
-    concept: 4,
-    vocalStyle: 5,               // Oriental Jazz Hip-hop
-    vocalTones: [4, 7],          // smooth male + warm raspy (랩 플로우)
+    genre: 3,                    // Minyo Blues
+    concept: 3,
+    vocalStyle: 7,               // Cinematic Soul Fusion
+    vocalTones: [16, 18],        // trembling wailing delivery + falsetto break
     gueumStyle: 6,               // 휘모리 소울 샤우트 구음
-    koreanRatio: 70,
+    koreanRatio: 85,
     musicKey: 0, koreanScale: 2,
-    hanSoulStyle: 1,             // 조선 힙합
-    instrCat: 'percussion', instrIdx: 1,  // 꽹과리 악센트 + 장구
-    hookPrompt: 'STOP-SCROLL HOOK: 808 sub-bass drop hits simultaneously with janggu on beat 1 — chest-rattling impact. Trap hi-hats and Korean percussion fuse into unstoppable trap groove. Viewer feels the bass physically before they process what they heard.',
-    dropPrompt: 'DROP: 808 and Korean percussion at absolute maximum impact. Relentless trap energy fused with Korean rhythm. Cannot be ignored. Cannot be skipped.',
+    hanSoulStyle: 0,             // 미시시피 한(恨) 블루스
+    instrCat: 'percussion', instrIdx: 1,  // 꽹과리 악센트 + 장구 그루브
+    hookPrompt: 'STOP-SCROLL HOOK: Sudden explosive vocal cry hits simultaneously with janggu on beat 1 — chest-rattling impact. Kkwaenggwari and driving percussion fuse into an unstoppable whirlwind groove. Viewer feels the han physically before they process what they heard.',
+    dropPrompt: 'DROP: Vocal cry and Korean percussion at absolute maximum impact. Relentless whirlwind energy fused with centuries of han. Cannot be ignored. Cannot be skipped.',
   },
 ];
 
@@ -7560,67 +7575,63 @@ const QE_COMBOS = [
     name:'깊은 한(恨) 소울',
     tags:['판소리','Mississippi Han','Dm계면조'],
     desc:'가장 깊고 무거운 한국적 감정선. 미시시피 블루스×판소리.',
-    // 프리셋 적용
     preset73:'pansori',
-    // BPM 범위 [min,max]
     bpmRange:[70,82],
-    // 조성
-    musicKey:3,        // Dm
-    koreanScale:0,     // 계면조
-    // 에너지 아크
+    musicKey:3, koreanScale:0,
     energyArc:0,       // Slow Burn Rise
-    // 강도/비율
     intensity:7, koreanRatio:75,
-    // 구음 위치 (배열)
+    concept:2, vocalStyle:1,                 // Pansori Soul / Oriental Blues(남성 저음 블루스)
+    textures:[3,6], grooves:[1,3], spaces:[0,1],
+    moods:[8,18],                             // Late Night Melancholic Blues + Han-laden Passionate Cry
     gueumPos:['add1','mid'],
     gueumPitch:'low', gueumGender:'male', gueumStrength:'strong',
-    // 구음 스타일 인덱스 (DATA.gueumStyles)
     gueumStyleIdx:2,
-    // koreanGrooves 인덱스
     koreanGrooves:[1,4,7],
-    // koreanFeelings
     koreanFeelings:[1,6],
-    // blackSoul
     blackSoulElements:[0,2,4],
-    // humanFeel
     humanFeelElements:[0,3,5],
-    // bassStyle
     bassStyles:[1],
-    // hanSoulStyle
     hanSoulStyle:0,
     emoji:'😔'
   },
   {
-    id:'club_groove',
-    name:'클럽 그루브',
-    tags:['궁중 힙합','조선 힙합','Twin Peaks'],
-    desc:'궁중 힙합 기반 클럽 에너지. 강한 구음 + 폭발적 아크.',
-    preset73:'joseon',
-    bpmRange:[92,108],
-    musicKey:3, koreanScale:0,
-    energyArc:4,       // Twin Peaks (idx 4) — 두 번의 절정으로 클럽 에너지 극대화
-    intensity:9, koreanRatio:70,
-    gueumPos:['add1','mid','add2'],
-    gueumPitch:'midhigh', gueumGender:'male', gueumStrength:'maximum',
-    gueumStyleIdx:6,
-    koreanGrooves:[0,5,9],
-    koreanFeelings:[0,5],
-    blackSoulElements:[1,3,6],
-    humanFeelElements:[1,4],
-    bassStyles:[3,4],
-    hanSoulStyle:2,
-    emoji:'🔥'
+    id:'trot_han',
+    name:'한(恨) 서린 트롯',
+    tags:['국악 트롯트','한과 흥','계면조'],
+    desc:'채널에서 가장 반응 좋은 계열. 해금·가야금 위 절절한 트롯 창법.',
+    preset73:'trot',
+    bpmRange:[85,95],
+    musicKey:1, koreanScale:0,
+    energyArc:1,
+    intensity:6, koreanRatio:80,
+    concept:8, vocalStyle:0,                  // Gugak Trot / Korean Soul Fusion
+    vocalTones:[13,17],                       // 꺾기 비브라토 + 애절한 가성 꺾기
+    textures:[0,3], grooves:[6,7], spaces:[0,1],
+    moods:[17,19],                            // Trot Melancholy(Aesu) + Bittersweet Festivity
+    gueumPos:['mid','end'],
+    gueumPitch:'midlow', gueumGender:'both', gueumStrength:'strong',
+    gueumStyleIdx:1,
+    koreanGrooves:[2,3,9],
+    koreanFeelings:[1,4],
+    blackSoulElements:[0,4],
+    humanFeelElements:[0,3],
+    bassStyles:[0,2],
+    hanSoulStyle:4,
+    emoji:'🥁'
   },
   {
     id:'midnight_jazz',
     name:'심야 재즈 감성',
-    tags:['산조 재즈','서울 심야','Wave Form'],
-    desc:'심야 재즈바. 해금+가야금+피아노 레이어. 여성 구음.',
+    tags:['산조 재즈','위스키 바','Wave Form'],
+    desc:'늦은 밤 재즈바. 해금 리드+재즈 피아노. 여성 구음, 스윙 그루브.',
     preset73:'sanjo',
     bpmRange:[78,90],
     musicKey:4, koreanScale:0,
-    energyArc:1,       // Wave Form (idx 1) — 심야 재즈: 감정이 파도처럼 밀려왔다 빠짐
+    energyArc:1,       // Wave Form — 감정이 파도처럼 밀려왔다 빠짐
     intensity:5, koreanRatio:65,
+    concept:1, vocalStyle:2,                  // Sanjo Jazz / Oriental Jazz(여성, 부드러운 재즈 보컬)
+    textures:[6,7], grooves:[0,3], spaces:[0,1],
+    moods:[4,9],                               // Emotional Seoul Jazz + Whiskey Bar Atmosphere
     gueumPos:['mid','add2'],
     gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong',
     gueumStyleIdx:4,
@@ -7636,12 +7647,15 @@ const QE_COMBOS = [
     id:'arirang_epic',
     name:'아리랑 에픽',
     tags:['민요 블루스','Dm계면조','Big Finish'],
-    desc:'민요 선율 기반 에픽 사운드. 클라이맥스에서 폭발.',
+    desc:'민요 선율 기반 에픽 사운드. 시네마틱 보컬로 클라이맥스 폭발.',
     preset73:'minyo',
     bpmRange:[84,96],
     musicKey:3, koreanScale:0,
     energyArc:1,       // Explosive Climax
     intensity:8, koreanRatio:80,
+    concept:3, vocalStyle:7,                  // Minyo Blues / Cinematic Soul Fusion(웅장한 드라마틱 톤)
+    textures:[5,3], grooves:[6,7], spaces:[2,1],
+    moods:[18,20],                             // Han-laden Passionate Cry + Fleeting Life Sorrow
     gueumPos:['mid','add3'],
     gueumPitch:'high', gueumGender:'both', gueumStrength:'maximum',
     gueumStyleIdx:1,
@@ -7656,13 +7670,16 @@ const QE_COMBOS = [
   {
     id:'morning_calm',
     name:'고요한 새벽',
-    tags:['궁중 앰비언트','여백감','Fade Out'],
-    desc:'전통 여백감. 아쟁+대금+피리 레이어. 잔잔한 감동.',
-    preset73:'court',
+    tags:['대금 앰비언트','여백감','Fade Out'],
+    desc:'전통 여백감. 대금 리드+앰비언트 패드. 잔잔하고 몽환적인 감동.',
+    preset73:'court',   // 대금 리드 악기 세팅만 재사용 (concept/vocalStyle 등은 아래서 앰비언트로 덮어씀)
     bpmRange:[60,75],
     musicKey:1, koreanScale:3,   // Am + 우조
     energyArc:5,       // Fade Out
     intensity:4, koreanRatio:85,
+    concept:5, vocalStyle:6,                  // Daegeum Ambient Elevation / Lo-fi Jazz Gugak(여성, 나른한 로파이)
+    textures:[4,7], grooves:[1,4], spaces:[1,2],
+    moods:[2,10],                              // Dreamy Korean Soul + Lonely Midnight Reflection
     gueumPos:['mid'],
     gueumPitch:'midlow', gueumGender:'female', gueumStrength:'normal',
     gueumStyleIdx:3,
@@ -7677,13 +7694,16 @@ const QE_COMBOS = [
   {
     id:'seoul_night_drive',
     name:'서울 야간 드라이브',
-    tags:['도시 감성','R&B','Twin Peaks'],
-    desc:'도시적 세련미. 국악기+신스 혼합. 스피드 있는 그루브.',
-    preset73:'sanjo',
+    tags:['네오조선 퓨전','도시 감성','Chill Drive'],
+    desc:'가야금+로즈 기반 도시 세련미. 네오소울 여성 보컬, 심야재즈와 확실히 다른 결.',
+    preset73:'joseon',  // 가야금+로즈+베이스 세팅 재사용 (심야재즈=해금 기반과 악기부터 다름)
     bpmRange:[95,110],
     musicKey:0, koreanScale:4,   // Am + 평조
     energyArc:2,
     intensity:7, koreanRatio:60,
+    concept:7, vocalStyle:9,                  // NeoJoseon Fusion / Korean Neo Soul(여성, 세련된 R&B)
+    textures:[0,4], grooves:[4,7], spaces:[2,1],
+    moods:[14,1],                               // Chill Drive + Seoul Night Atmosphere
     gueumPos:['add1','mid'],
     gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong',
     gueumStyleIdx:5,
@@ -7796,6 +7816,14 @@ async function runQualityEngine() {
     if (c.musicKey !== undefined)   STATE.musicKey = c.musicKey;
     if (c.koreanScale !== undefined) STATE.koreanScale = c.koreanScale;
     if (c.energyArc !== undefined)  STATE.energyArc = c.energyArc;
+    // ── 카드별 고유 정체성 오버라이드 (같은 preset73을 쓰더라도 카드마다 확실히 다르게) ──
+    if (c.concept !== undefined)    STATE.concept = c.concept;
+    if (c.vocalStyle !== undefined) STATE.vocalStyle = c.vocalStyle;
+    if (c.vocalTones !== undefined) STATE.vocalTones = [...c.vocalTones];
+    if (c.textures !== undefined)   STATE.textures = [...c.textures];
+    if (c.grooves !== undefined)    STATE.grooves = [...c.grooves];
+    if (c.spaces !== undefined)     STATE.spaces = [...c.spaces];
+    if (c.moods !== undefined)      STATE.moods = [...c.moods];
     syncSliders();
     qeSetStep(1, `BPM ${STATE.bpm} · 강도 ${c.intensity} · 비율 ${c.koreanRatio}% · 에너지 아크 세팅 완료`);
     await sleep(150);
