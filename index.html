@@ -7714,6 +7714,81 @@ const QE_COMBOS = [
     bassStyles:[3],
     hanSoulStyle:4,
     emoji:'🚗'
+  },
+  {
+    id:'haegeum_blues',
+    name:'여백의 블루스',
+    tags:['해금 블루스','미니멀 발라드','Slow Burn'],
+    desc:'B.B.King류 여백형 블루스. 해금 벤딩과 목소리만 남는 미니멀 편곡.',
+    preset73:'sanjo',   // 해금 리드 악기 세팅 재사용 (기타 벤딩 = 해금 미분음 벤딩)
+    bpmRange:[65,74],
+    musicKey:1, koreanScale:0,
+    energyArc:0,        // Slow Burn Rise — 아주 서서히, 여백 많게
+    intensity:4, koreanRatio:70,
+    concept:6, vocalStyle:1,                   // Ajaeng Deep Soul(질감) / Oriental Blues(남성, 허스키 블루스 톤)
+    vocalTones:[6,15],                          // Smoky blues baritone + Husky weathered male
+    textures:[7,3], grooves:[1,3], spaces:[3,0],
+    moods:[8,10],                                // Late Night Melancholic Blues + Lonely Midnight Reflection
+    gueumPos:['mid'],                            // 구음 최소화 — 위치 하나만
+    gueumPitch:'low', gueumGender:'male', gueumStrength:'normal',
+    gueumStyleIdx:3,
+    koreanGrooves:[2,7],
+    koreanFeelings:[6,7],
+    blackSoulElements:[0,4],
+    humanFeelElements:[0,1],
+    bassStyles:[1],
+    hanSoulStyle:0,                              // Mississippi Han Blues
+    emoji:'🥃'
+  },
+  {
+    id:'trot_life_sorrow',
+    name:'국악 트롯 · 인생무상',
+    tags:['국악 트롯트','인생무상','느리고 절절'],
+    desc:'세월·회한을 곱씹는 중년의 애상. 느긋하게 흘러가는 트롯 발라드.',
+    preset73:'trot',
+    bpmRange:[76,86],
+    musicKey:1, koreanScale:0,
+    energyArc:5,         // Fade Out — 여운으로 잦아드는 마무리
+    intensity:5, koreanRatio:82,
+    concept:8, vocalStyle:0,                     // Gugak Trot / Korean Soul Fusion
+    vocalTones:[14,17],                          // Low crooning + Melismatic ornamentation
+    textures:[3,6], grooves:[1,4], spaces:[1,3],
+    moods:[20,17],                                // Fleeting Life Sorrow + Trot Melancholy(Aesu)
+    gueumPos:['mid','end'],
+    gueumPitch:'midlow', gueumGender:'male', gueumStrength:'normal',
+    gueumStyleIdx:1,
+    koreanGrooves:[3,7,9],
+    koreanFeelings:[4,6],
+    blackSoulElements:[0,4],
+    humanFeelElements:[2,5],
+    bassStyles:[0],
+    hanSoulStyle:4,
+    emoji:'🍂'
+  },
+  {
+    id:'trot_night_muse',
+    name:'국악 트롯 · 늦은 밤 사색',
+    tags:['국악 트롯트','고독한 밤','Wave Form'],
+    desc:'하루를 마친 저녁, 홀로 곱씹는 애상. 잔잔하게 밀려왔다 빠지는 트롯 발라드.',
+    preset73:'trot',
+    bpmRange:[80,90],
+    musicKey:1, koreanScale:0,
+    energyArc:1,          // Wave Form — 감정이 파도처럼 밀려왔다 빠짐
+    intensity:6, koreanRatio:80,
+    concept:8, vocalStyle:0,                      // Gugak Trot / Korean Soul Fusion
+    vocalTones:[14,18],                           // Low crooning + Falsetto break(sorrowful)
+    textures:[6,7], grooves:[1,4], spaces:[1,3],
+    moods:[10,17],                                 // Lonely Midnight Reflection + Trot Melancholy(Aesu)
+    gueumPos:['mid','end'],
+    gueumPitch:'midlow', gueumGender:'female', gueumStrength:'strong',
+    gueumStyleIdx:1,
+    koreanGrooves:[2,3,9],
+    koreanFeelings:[3,6],
+    blackSoulElements:[0,5],
+    humanFeelElements:[0,2],
+    bassStyles:[0],
+    hanSoulStyle:2,
+    emoji:'🌆'
   }
 ];
 
