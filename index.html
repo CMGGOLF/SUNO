@@ -763,6 +763,21 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
 </div>
 
 <div class="section">
+  <div class="section-head" onclick="toggleSection('backingVocalBody','backingVocalIcon')" style="cursor:pointer">
+    <div class="sec-num">05C</div>
+    <div class="sec-title">백킹보컬 <span id="backingVocalIcon" style="font-size:14px">▼</span></div>
+    <div class="sec-sub">선택 사항 — 사운드를 두껍게 (클릭하여 펼치기/접기)</div>
+  </div>
+  <div class="section-body" id="backingVocalBody" style="display:none">
+    <div class="info-bar" style="margin-bottom:12px">
+      ✦ 판소리·아쟁 딥소울처럼 "홀로 부르는" 무게감이 핵심인 곡엔 안 넣는 걸 추천해요. 국악 트롯·민요·네오조선 퓨전처럼 흥이 살아있는 곡엔 잘 어울려요.
+    </div>
+    <div class="card-grid col2" id="backingVocalGrid"></div>
+    <button class="btn btn-outline" style="margin-top:10px" onclick="STATE.backingVocal=null;renderBackingVocalGrid();buildPrompt(true);showToast('🗑️ 백킹보컬 해제됨')">해제 (없음으로)</button>
+  </div>
+</div>
+
+<div class="section">
   <div class="section-head" onclick="toggleSection('toneBody','toneIcon')" style="cursor:pointer">
     <div class="sec-num">06</div>
     <div class="sec-title">보컬 톤 스타일 <span id="toneIcon" style="font-size:14px">▼</span></div>
@@ -1732,6 +1747,20 @@ const DATA = {
     {en:'Warm whiskey bar texture',kr:'따뜻한 위스키 바 질감',desc:'늦은 밤 바의 부드럽고 빈티지한 느낌'},
     {en:'Intimate close-mic atmosphere',kr:'친밀한 클로즈 마이크',desc:'보컬과 악기가 가까이 느껴지는 사적인 공간감'},
   ],
+  backingVocals: [
+    {en:'Harmony backing vocals stacking additional notes above and below the lead melody',kr:'화성 보컬',
+     desc:'리드 보컬의 멜로디에 다른 음을 쌓아 화음을 만듦. 분위기를 풍성하게, 감성을 극대화'},
+    {en:'Unison chorus vocals — multiple voices singing the same melody as the lead',kr:'코러스 보컬',
+     desc:'리드와 같은 멜로디를 여러 명이 함께 부름. 곡의 힘과 웅장함을 더함'},
+    {en:'Counterpoint backing vocals singing an independent melody line distinct from the lead',kr:'대위 보컬',
+     desc:'리드와 다른 독립적인 멜로디. 곡의 다양성을 높이고 지루함 해소'},
+    {en:'Improvisational ad-lib backing vocals embellishing and varying the lead melody',kr:'애드립 보컬',
+     desc:'리드 멜로디를 즉흥적으로 변형·추가. 완성도와 신선함을 더함'},
+    {en:'Wordless vocalise backing — non-lyrical vocal sounds shaping the atmosphere',kr:'효과음 보컬',
+     desc:'가사 없는 소리·효과음으로 분위기 조성. 독창성과 특별한 경험 제공'},
+    {en:'Call-and-response backing vocals answering each line the lead sings',kr:'콜앤리스폰스 보컬',
+     desc:'리드가 한 줄 부르면 뒤에서 짧게 받아치는 주고받기 구조. 소울·가스펠 특유의 대화감'},
+  ],
   grooves: [
     {en:'Swing groove',kr:'스윙 그루브',desc:'재즈 특유의 흔들리는 리듬감'},
     {en:'Laid-back groove',kr:'여유로운 그루브',desc:'Neo Soul·Lo-fi 스타일의 느긋한 흐름'},
@@ -1979,7 +2008,7 @@ let recItems = null;
 const STATE = {
   genre:null, moods:[], instrList:[],
   concept:null, vocalStyle:null, gugakVocalStyle:null, vocalTones:[],
-  textures:[], grooves:[], spaces:[], koreanGrooves:[],
+  textures:[], grooves:[], spaces:[], koreanGrooves:[], backingVocal:null,
   bassStyles:[], koreanFeelings:[], blackSoulElements:[], humanFeelElements:[],
   bpm:95, intensity:5, gender:'all',
   koreanDominance:80,
@@ -2535,6 +2564,7 @@ function renderVocalStyles() {
       <div style="display:flex;flex-wrap:wrap;gap:4px">${d.tags.map(t=>`<span class="ctag">${t}</span>`).join('')}</div>
     </div>`).join('');
   renderGugakVocalStyles();
+  renderBackingVocalGrid();
 }
 function renderGugakVocalStyles() {
   const g = document.getElementById('gugakVocalGrid');
@@ -2661,7 +2691,20 @@ function createSelectOne(stateKey, selector, idPrefix) {
     buildPrompt();
   };
 }
-const selectConcept     = createSelectOne('concept',     '.concept-card',          'concept_');
+function renderBackingVocalGrid() {
+  const g = document.getElementById('backingVocalGrid');
+  if (!g) return;
+  g.innerHTML = DATA.backingVocals.map((d,i) => {
+    const isActive = STATE.backingVocal === i;
+    return `<div class="selcard ${isActive?'active':''}" id="bv_${i}" onclick="selectBackingVocal(${i})">
+      <div class="check-dot"></div>
+      <div class="card-en">${d.kr}</div>
+      <div class="card-desc" style="margin-bottom:6px">${d.desc}</div>
+    </div>`;
+  }).join('');
+}
+const selectBackingVocal = createSelectOne('backingVocal', '#backingVocalGrid .selcard', 'bv_');
+
 const selectVocalStyle  = createSelectOne('vocalStyle',  '#vocalStyleGrid .selcard','vs_');
 const selectGueumStyle  = createSelectOne('gueumStyle',  '[id^="gueum_"]',         'gueum_');
 
@@ -3739,6 +3782,12 @@ function _doBuildPrompt() {
     else if (STATE.gender === 'female') _vsLine.push('STRICTLY female voice');
     if(STATE.vocalTones.length){const vts=getEnList(STATE.vocalTones,DATA.vocalTones);if(vts)_vsLine.push(vts);}
     if (_vsLine.length) parts.push(`[Vocal] ${_vsLine.join(' · ')}`);
+
+    /* ── ⑤B 백킹보컬 (선택 시에만) ── */
+    if (STATE.backingVocal !== null && DATA.backingVocals[STATE.backingVocal]) {
+      const bv = DATA.backingVocals[STATE.backingVocal];
+      parts.push(`[Backing Vocals] ${bv.en}`);
+    }
 
     /* ── ⑥ 고급 사운드 설정 ── */
     const _advParts = [];
