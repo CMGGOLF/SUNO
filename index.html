@@ -5256,14 +5256,14 @@ async function genLyrics(lang) {
         structureKr +=
           `[프리코러스] 이완 ${_trTrot.prechorus}\n` +
           `(정확히 ${_pLines}줄 — 후렴 직전 긴장 응축, "떠나라 떠나라 못 떠나오" 같은 반어적 호소 — 예시는 어조 참고일 뿐 그대로 쓰지 말 것)\n` +
-          `(끝줄에만 추임새 ${_trotDiv.chuimsaeA})\n\n`;
+          `(끝줄에만 ${STATE.backingVocal !== null ? '위에서 지정한 백킹보컬 큐 사용 (일반 추임새 금지)' : `추임새 ${_trotDiv.chuimsaeA}`})\n\n`;
       } else if (blk === 'chorus') {
         const lbl = _choTLabels[Math.min(_cIdx, _choTLabels.length - 1)];
         _cIdx++;
         structureKr +=
           `[후렴 ${_cIdx}] ${lbl}\n` +
           `(정확히 ${_cLines}줄 — 첫 줄 앵커: "${_trotDiv.anchor}")\n` +
-          `(추임새는 ${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만 사용 — 모든 줄이 아니라 1·3번째 줄 끝에만, 줄마다 같은 추임새 반복 금지)\n\n`;
+          `(${STATE.backingVocal !== null ? '위에서 지정한 백킹보컬 큐만 사용 — 일반 추임새(아아~/에헤~ 등) 금지, 모든 줄이 아니라 1·3번째 줄 끝에만' : `추임새는 ${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만 사용 — 모든 줄이 아니라 1·3번째 줄 끝에만, 줄마다 같은 추임새 반복 금지`})\n\n`;
       } else if (blk === 'guum') {
         _gIdx++;
         structureKr +=
@@ -5284,7 +5284,7 @@ async function genLyrics(lang) {
       `(1줄: 앵커 "${_trotDiv.anchor}" 그대로\n` +
       ` 2줄: 앞 절·후렴에서 쌓인 핵심 감정을 응축한 새 구절 (소재: ${_trotDiv.motif})\n` +
       ` 3줄: 앵커를 짧게 끊어 절규하듯 변형 (예: 앞부분만 떼어 "${(_trotDiv.anchor.split(' ')[0]||_trotDiv.anchor)}…")\n` +
-      ` 4줄: 마지막 한 마디 — 가장 짧고 사무치게, 끝에 추임새 ${_trotDiv.chuimsaeA})\n\n` +
+      ` 4줄: 마지막 한 마디 — 가장 짧고 사무치게, 끝에 ${STATE.backingVocal !== null ? '위에서 지정한 백킹보컬 큐' : `추임새 ${_trotDiv.chuimsaeA}`})\n\n` +
       `[Ad-lib]\n(non-lexical vocal ad-lib — NOT lyrics: extended melisma on a single syllable like "하~~~" or "흐어~~~", wordless. Do not sing direction words)\n\n` +
       `[아웃트로] 이완 ${_trTrot.outro}\n(정확히 ${_oLines}줄 — 감정이 서서히 가라앉음, 종결어미 ${_trotDiv.ending})\n${_pickForm(form.outroStyle)||_pickForm(_trotForm.outroStyle)||'[fade out]\n[end]'}`;
   } else {
@@ -5296,13 +5296,13 @@ async function genLyrics(lang) {
         _vIdx++;
         structureKr += `[절 ${_vIdx}] 긴장 ${tr.verse}\n(정확히 ${verseLines}줄 — 감정 긴장 쌓기, 라임 체계: ${form.rhyme}, 줄당 최대 8단어)\n\n`;
       } else if (blk === 'prechorus') {
-        structureKr += `[프리코러스] 이완 ${tr.prechorus}\n(정확히 ${preLines || 2}줄 — 에너지 잠시 수축, 후렴 기대감 조성)${(_useGugakBase&&_trotDiv) ? `, 끝줄에만 추임새 ${_trotDiv.chuimsaeA}` : ''}\n\n`;
+        structureKr += `[프리코러스] 이완 ${tr.prechorus}\n(정확히 ${preLines || 2}줄 — 에너지 잠시 수축, 후렴 기대감 조성)${STATE.backingVocal !== null ? ', 끝줄에만 위에서 지정한 백킹보컬 큐 사용' : (_useGugakBase&&_trotDiv) ? `, 끝줄에만 추임새 ${_trotDiv.chuimsaeA}` : ''}\n\n`;
       } else if (blk === 'chorus') {
         _cIdx++;
         const choIntKr = _cIdx === 1
           ? `긴장 T+5 ↔ 이완 R-5 — 훅을 명확히 확립`
           : `긴장 T+${Math.min(8, 5+_cIdx)} ↔ 이완 R-${Math.min(8, 5+_cIdx)} — 앞 후렴보다 더 크게`;
-        structureKr += `[후렴 ${_cIdx}] ${choIntKr}\n(정확히 ${choLines}줄 — 앵커 라인 먼저, 1회 반복, 줄당 최대 6단어, 따라부를 수 있는 훅${(_useGugakBase&&_trotDiv) ? `. 추임새는 ${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만, 1·3번째 줄 끝에만 — 줄마다 반복 금지` : ''})\n\n`;
+        structureKr += `[후렴 ${_cIdx}] ${choIntKr}\n(정확히 ${choLines}줄 — 앵커 라인 먼저, 1회 반복, 줄당 최대 6단어, 따라부를 수 있는 훅${STATE.backingVocal !== null ? '. 위에서 지정한 백킹보컬 큐만 사용 — 일반 추임새 금지' : (_useGugakBase&&_trotDiv) ? `. 추임새는 ${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만, 1·3번째 줄 끝에만 — 줄마다 반복 금지` : ''})\n\n`;
       } else if (blk === 'guum' && _wantGueum && _trotDiv) {
         structureKr += `[Gugak Guum]\n${_trotDiv.guumHigh} [고음]\n${_trotDiv.guumLow} [저음]\n(위 두 줄을 그대로 출력 — 가사가 아닌 무의미 구음 멜리스마. [고음]/[저음]은 음역 표시이며 단어로 부르지 말 것)\n\n`;
       } else if (blk === 'bridge') {
@@ -5311,7 +5311,7 @@ async function genLyrics(lang) {
     }
 
     structureKr +=
-      `[후렴 - 마지막] 긴장 ${tr.finalchorus}\n[Big Finish]\n(정확히 ${choLines}줄 — 앵커 라인으로 시작하되 같은 줄 복붙 금지: 1줄 앵커 그대로, 중간 줄은 감정 응축한 변형, 마지막 줄은 가장 짧고 강하게 끊어 절정${(_useGugakBase&&_trotDiv) ? `, 마지막 줄 끝에만 추임새 ${_trotDiv.chuimsaeA}` : ''})\n\n` +
+      `[후렴 - 마지막] 긴장 ${tr.finalchorus}\n[Big Finish]\n(정확히 ${choLines}줄 — 앵커 라인으로 시작하되 같은 줄 복붙 금지: 1줄 앵커 그대로, 중간 줄은 감정 응축한 변형, 마지막 줄은 가장 짧고 강하게 끊어 절정${STATE.backingVocal !== null ? ', 마지막 줄 끝에만 위에서 지정한 백킹보컬 큐 사용' : (_useGugakBase&&_trotDiv) ? `, 마지막 줄 끝에만 추임새 ${_trotDiv.chuimsaeA}` : ''})\n\n` +
       ((_useGugakBase&&_trotDiv) ? `[Ad-lib]\n(non-lexical vocal ad-lib — NOT lyrics: wordless extended melisma like "하~~~" or "흐어~~~". Do not sing direction words)\n\n` : '') +
       `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내림)\n${_pickForm(form.outroStyle)||'[fade out]\n[end]'}`;
   }
@@ -5337,7 +5337,7 @@ ${lyricStory}
   /* ── 백킹보컬(05C)이 선택된 경우, 스타일 태그만으론 약해서 가사 자체에 실제 큐를 심음 ── */
   const _bvExamples = [
     { label:'화성 보컬', guide:'후렴 각 줄 끝에, 방금 부른 가사의 핵심 단어나 어미를 괄호 안에 그대로 반복해 화음처럼 겹치게 할 것', example:'그리워라 내 사랑아 (내 사랑아~)' },
-    { label:'코러스 보컬', guide:'후렴 줄마다 끝에 짧은 추임새 코러스를 괄호로 넣어 여러 목소리가 함께 부르는 느낌을 줄 것', example:'그리워라 그리워라 (오예~ 오예~)' },
+    { label:'코러스 보컬', guide:'후렴 줄마다 끝에 짧은 애상적 추임새 코러스를 괄호로 넣어 여러 목소리가 함께 우는 듯한 느낌을 줄 것 — 밝거나 경쾌한 감탄사("오예~", "예~" 등 팝·R&B풍) 절대 금지, 반드시 한(恨) 정서에 맞는 애절한 톤(예: 아이고~, 어이야~, 에헤~ 계열)으로만', example:'그리워라 그리워라 (아이고~ 아이고~)' },
     { label:'대위 보컬', guide:'후렴 한 줄이 끝날 때마다, 리드와는 다른 짧은 구절을 괄호 안에 넣어 두 멜로디가 엇갈리게 할 것 — 단, 반드시 이 곡에서 이미 나온 단어·이미지만 재조합해서 쓸 것. 이 곡에 없던 새로운 소재·단어·이름을 절대 만들어내지 말 것 (문맥과 안 맞는 뜬금없는 말 방지)', example:'그리워라 (아직 못 잊었네)' },
     { label:'애드립 보컬', guide:'후렴 끝이나 브릿지에 즉흥적인 감탄사·멜리스마를 괄호로 넣을 것 (가사 아닌 순수 감정 표현)', example:'그리워라 내 사랑아 (아~~~ 으흐~~~)' },
     { label:'효과음 보컬', guide:'후렴 사이사이 가사 없는 순수 소리(허밍·멜리스마)를 괄호로 넣어 분위기를 만들 것', example:'그리워라 내 사랑아 (음~~~ 흐음~~~)' },
@@ -5394,7 +5394,7 @@ ${clicheRuleKr}
 ③ 종결어미 (이번 곡 권장 계열): ${_trotDiv.ending}
 ④ 향토 소재 ${lyricStory ? '— 위 스토리를 우선하되, 배경으로 활용 가능한 소재' : '— 이번 곡 중심 장면'}: ${_trotDiv.motif}
    → ${lyricStory ? '스토리의 장면을' : '이 장면을'} 중심으로 오감 구체 묘사, 절마다 다른 각도로 전개
-⑤ 추임새: 후렴 끝 또는 절 끝에 (아아~) (에헤~) (어허~) 중 하나 배치
+⑤ 추임새: ${STATE.backingVocal !== null ? '이 곡은 아래 "백킹보컬 실제 반영" 규칙에서 지정한 큐를 후렴·절 끝에 사용할 것 — (아아~)(에헤~)(어허~) 같은 일반 추임새는 절대 쓰지 말고, 반드시 아래 지정된 유형의 큐로만 대체할 것' : '후렴 끝 또는 절 끝에 (아아~) (에헤~) (어허~) 중 하나 배치'}
 ⑥ 맺고 풀기: 전절에서 체념·한(恨) 압축(긴장), 후렴에서 감정 폭발·카타르시스(이완)
 ⑦ 후렴 핵심 앵커구: "${_trotDiv.anchor}" ${lyricStory ? '(스토리에 더 맞는 구절이 있으면 그것으로 대체 가능)' : '— 후렴마다 이 구절을 첫 줄에 반복'}
 ⑧ 문학적 표현: 직설 금지, 은유·상징으로. 참고 어휘(이 중 일부만 골라 자연스럽게 녹일 것, 그대로 나열·매 곡 반복 금지): ${_trotDiv.literary}
@@ -5425,7 +5425,7 @@ ${storyBlockKr}${backingVocalCueBlock}${_trotDiv ? `
 - 중심 정서 소재: ${_trotDiv.motif}
 - 직설적 감정어 금지, 은유·상징·구체 장면으로 표현
 - ★감정 하이라이트 (가장 중요): 이 곡에 1~2군데 '감정이 확 차오르는 순간'(가슴 뭉클·눈물 찔끔·소름)을 심을 것 — 주로 [브릿지]와 [후렴-마지막]에, 담담하다가 억눌렀던 진심을 왈칵 터뜨리는 사무치는 한 마디. 추상적 '그리워' 대신 '아직도 네 밥그릇을 못 치웠어' 같은 구체적 디테일 한 방으로 급소를 찌를 것${_useGugakBase ? `
-- 추임새는 ${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만 사용 — 후렴에서 모든 줄이 아니라 1·3번째 줄 끝에만, 같은 추임새를 줄마다 반복하지 말 것` : ''}${_wantGueum ? `
+- 추임새는 ${STATE.backingVocal !== null ? '위에서 지정한 백킹보컬 큐만 사용 — 일반 추임새 금지' : `${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만 사용 — 후렴에서 모든 줄이 아니라 1·3번째 줄 끝에만, 같은 추임새를 줄마다 반복하지 말 것`}` : ''}${_wantGueum ? `
 - [Gugak Guum] 섹션은 두 줄로 출력: 첫 줄 "${_trotDiv.guumHigh} [고음]", 둘째 줄 "${_trotDiv.guumLow} [저음]" — 가사가 아닌 무의미 구음 멜리스마. [고음]/[저음]은 음역 표시일 뿐 단어로 부르지 말 것
 - [Ad-lib] 섹션도 무의미 구음: "하~~~" / "흐어~~~" 같은 멜리스마 — 지시어 단어 부르지 말 것` : ''}
 ` : ''}
@@ -7246,7 +7246,7 @@ async function genShortsLyrics(lang) {
     ? `\n★ 가사 주제 (반드시 이 이야기로) ★\n"""\n${lyricStory}\n"""\n`
     : '';
   const gugakBlock = _div
-    ? `\n★ 국악 트롯트 정서 ★\n- 깊고 서글픈 한(恨), 문어체 시적 문장 (문체 예: "${_div.sampleA}" — 그대로 베끼지 말 것)\n- 이번 곡의 감정 색: 「${_div.subEmotion}」 — 슬픔 안에서 이 결로 일관되게\n- 종결어미: ${_div.ending} (모든 줄 "~다" 금지)\n- 참고 어휘(일부만 자연스럽게, 그대로 나열 금지): ${_div.literary}\n- 어휘 다양성: 흔한 상투어(달빛·강가·풍진·님)+감정 상투어(그리움·설움·눈물·한숨·애끓는·서러워) 후렴 외 반복 금지, 구체적 장면·동작·감각의 신선한 단어로\n- 후렴 앵커구: "${_div.anchor}"\n- 추임새 ${_div.chuimsaeA}/${_div.chuimsaeB}는 드롭 끝줄에만\n`
+    ? `\n★ 국악 트롯트 정서 ★\n- 깊고 서글픈 한(恨), 문어체 시적 문장 (문체 예: "${_div.sampleA}" — 그대로 베끼지 말 것)\n- 이번 곡의 감정 색: 「${_div.subEmotion}」 — 슬픔 안에서 이 결로 일관되게\n- 종결어미: ${_div.ending} (모든 줄 "~다" 금지)\n- 참고 어휘(일부만 자연스럽게, 그대로 나열 금지): ${_div.literary}\n- 어휘 다양성: 흔한 상투어(달빛·강가·풍진·님)+감정 상투어(그리움·설움·눈물·한숨·애끓는·서러워) 후렴 외 반복 금지, 구체적 장면·동작·감각의 신선한 단어로\n- 후렴 앵커구: "${_div.anchor}"\n- 추임새 ${STATE.backingVocal !== null ? '대신 위에서 지정한 백킹보컬 큐를' : `${_div.chuimsaeA}/${_div.chuimsaeB}는`} 드롭 끝줄에만\n`
     : '';
 
   const lyricPrompt = `${totalSec}초짜리 ${subMode==='edit'?'편집용 풀버전':'유튜브 쇼츠 직접 완성용'} 임팩트 가사를 작성합니다.
