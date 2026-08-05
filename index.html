@@ -710,6 +710,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <button class="btn btn-outline" onclick="trackStep(1)">다음 곡 ▶</button>
       </div>
       <button class="btn btn-gold" onclick="applyCurrentTrack()">▶ 이 곡 세팅 적용</button>
+      <button class="btn btn-outline" onclick="reshuffleMoodSet()" id="reshuffleBtn" style="display:none">🔄 다시 섞기 (무드·용도 전용)</button>
       <span style="font-size:11px;color:var(--muted);margin-left:8px">적용하면 장르(preset73)·BPM·조성·구음·그루브·한소울스타일까지 전부 세팅되고, ⑤ 가사 스토리 칸에도 소재가 채워집니다.</span>
     </div>
   </div>
@@ -7645,6 +7646,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('kwInput').addEventListener('keydown',e=>{if(e.key==='Enter')runAI();});
   qeRenderComboGrid();
   renderTrackCategorySel();
+  restoreTrackSetProgress();
 });
 
 /* ════════════════════════════════════════════════
@@ -7935,26 +7937,26 @@ const STORY_SETS = {
       {chapter:'생의 끝자락에서', story:['산소 가는 길에 되뇌는 이름','다 내어주고 남은 것 하나 없는 마음']},
     ]),
   },
-  story_boatman: {
-    title: '뱃사공의 한평생',
+  story_love: {
+    title: '평범한 사랑의 기억',
     tracks: buildStoryTracks([
-      {chapter:'첫 노를 잡던 날', story:['아버지 따라 처음 배에 오른 새벽','서툰 노질에 뒤집힐 뻔한 강물']},
-      {chapter:'강 위에서 맺은 인연', story:['나루터에서 매일 마주친 그 얼굴','손 흔들며 건너간 뒤 안 돌아온 사람']},
-      {chapter:'거친 물살을 넘으며', story:['홍수에 배를 잃을 뻔한 밤','거친 뱃길에서 되새긴 삶의 무게']},
-      {chapter:'생계의 노를 젓다', story:['식솔들 먹여 살리려 저은 노','삯을 떼먹고 사라진 손님 생각']},
-      {chapter:'세월에 삭은 뱃머리', story:['낡아가는 배와 함께 늙은 몸','더는 태울 손님 없는 나루터','옛 뱃노래를 홀로 흥얼거리는 저녁']},
-      {chapter:'마지막 나루에서', story:['더 이상 저을 힘 없는 노를 놓으며','강물만은 여전히 그대로임을 보며']},
+      {chapter:'우연한 시작', story:['우연히 마주친 첫 만남의 떨림','말 한마디 못 걸고 돌아선 뒷모습','처음으로 건넨 서툰 고백']},
+      {chapter:'함께한 일상', story:['손을 잡고 걷던 평범한 골목길','별거 아닌 다툼 뒤에 웃어버린 저녁']},
+      {chapter:'서로 다른 길 앞에서', story:['서로 다른 길 앞에서 망설이던 순간','괜찮은 척 감춘 서운한 마음']},
+      {chapter:'갈라선 날', story:['이유도 제대로 말 못하고 갈라선 날','각자의 삶으로 돌아가던 그 밤']},
+      {chapter:'스쳐가는 기억', story:['우연히 스친 옛 노래에 떠오른 얼굴','다른 사람과 함께한 세월 속에도 남은 기억','동창회에서 마주친 낯익은 얼굴']},
+      {chapter:'담담히 남은 마음', story:['다 늙어 돌아보니 가장 선명한 그 시절','이제는 그리움만 남은 담담한 마음']},
     ]),
   },
-  story_wanderer: {
-    title: '떠돌이 소리꾼의 여정',
+  story_time: {
+    title: '그저 흘러가는 세월',
     tracks: buildStoryTracks([
-      {chapter:'소리를 배우던 시절', story:['스승 문전에서 쫓겨나던 밤','목에서 피가 나도록 지르던 득음']},
-      {chapter:'장터를 떠돌며', story:['장마당에서 처음 받은 동전 한 닢','비웃음 속에 목청을 가다듬던 날']},
-      {chapter:'명창으로 이름을 얻다', story:['큰 무대에서 처음 받은 갈채','이름이 알려지며 낯설어진 고향길']},
-      {chapter:'인연과 이별들', story:['소리판에서 만난 짧은 사랑','다시 길 떠나며 두고 온 얼굴']},
-      {chapter:'변해가는 세상 속에서', story:['찾는 이 줄어든 소리판','자식뻘 후배에게 밀려나는 무대','낡은 북 하나 들고 떠나는 밤길']},
-      {chapter:'마지막 소리 한 자락', story:['다 늙어 부르는 마지막 한 소절','아무도 없는 빈 마당에서 부르는 소리']},
+      {chapter:'아무 일 없던 시절', story:['마당에서 놀던 어린 시절의 하루','아무 일 없던 평범한 오후의 기억','그때는 몰랐던 시간의 소중함']},
+      {chapter:'반복되던 하루하루', story:['매일 같은 길을 걷던 출근길','별다를 것 없던 하루하루의 반복']},
+      {chapter:'혼자 보내는 시간', story:['혼자 마시던 차 한 잔의 여유','창밖을 보며 흘려보낸 오후']},
+      {chapter:'조용히 지나간 가족의 시간', story:['아이들 자라는 걸 지켜보던 나날','특별할 것 없던 저녁 식탁']},
+      {chapter:'어느새 흐른 세월', story:['어느새 희끗해진 머리카락을 보며','달력을 넘기다 문득 느낀 세월','그저 그렇게 지나온 하루하루를 세어보며']},
+      {chapter:'담담한 인생의 끝자락', story:['이렇다 할 사건 없이 흘러온 인생을 돌아보며','그래도 나쁘지 않았던 하루하루였음을']},
     ]),
   },
 };
@@ -7990,16 +7992,17 @@ const MOOD_PROFILES = {
     koreanGrooves:[11,12], koreanFeelings:[4,6], blackSoulElements:[0], humanFeelElements:[2,5], bassStyles:[0], hanSoulStyle:5, moods:[10,4] },
 };
 // 프로필 하나로 14곡 생성 — BPM·구음스타일만 곡마다 살짝 회전(단조로움 방지), 나머지는 일정하게 유지
-function buildMoodTracks(profileKey) {
+function buildMoodTracks(profileKey, seedOffset) {
   const p = MOOD_PROFILES[profileKey];
+  const off = seedOffset !== undefined ? seedOffset : Math.floor(Math.random() * 100);
   const tracks = [];
   for (let i = 0; i < 14; i++) {
     const span = p.bpmRange[1] - p.bpmRange[0];
-    const shift = Math.round(span * ((i % 4) / 4));
+    const shift = Math.round(span * (((i + off) % 4) / 4));
     tracks.push({
       ...p, num: i+1, chapter: p.title, story: `${p.title} — ${i+1}번째 곡`,
       bpmRange: [p.bpmRange[0]+shift, Math.min(p.bpmRange[1], p.bpmRange[0]+shift+6)],
-      gueumStyleIdx: (p.gueumStyleIdx + (i%3)) % 14,
+      gueumStyleIdx: (p.gueumStyleIdx + ((i+off)%3)) % 14,
     });
   }
   return tracks;
@@ -8021,6 +8024,55 @@ STATE.trackCategory = null;
 STATE.trackSetKey = null;
 STATE.trackIndex = 0;
 
+const TRACKSET_STORAGE_KEY = 'v48_trackSetProgress';
+
+function saveTrackSetProgress() {
+  const payload = {
+    trackCategory: STATE.trackCategory,
+    trackSetKey: STATE.trackSetKey,
+    trackIndex: STATE.trackIndex,
+  };
+  // 무드/용도는 랜덤 섞기 결과라, 이어서 작업하려면 그 시점의 실제 14곡 데이터도 같이 저장
+  if (STATE.trackCategory === 'category_mood' && STATE.trackSetKey) {
+    payload.moodTracksSnapshot = TRACK_SETS.category_mood.sets[STATE.trackSetKey].tracks;
+  }
+  try { localStorage.setItem(TRACKSET_STORAGE_KEY, JSON.stringify(payload)); } catch(e) {}
+}
+
+function restoreTrackSetProgress() {
+  let saved;
+  try { saved = JSON.parse(localStorage.getItem(TRACKSET_STORAGE_KEY) || 'null'); } catch(e) { saved = null; }
+  if (!saved || !saved.trackCategory) return;
+
+  const catSel = document.getElementById('trackSetCategorySel');
+  const keySel = document.getElementById('trackSetKeySel');
+  const stepperWrap = document.getElementById('trackSetStepperWrap');
+  const reshuffleBtn = document.getElementById('reshuffleBtn');
+  if (!catSel || !TRACK_SETS[saved.trackCategory]) return;
+
+  STATE.trackCategory = saved.trackCategory;
+  catSel.value = saved.trackCategory;
+
+  const sets = TRACK_SETS[saved.trackCategory].sets;
+  keySel.innerHTML = '<option value="">— 세트 선택 —</option>' +
+    Object.entries(sets).map(([k,v]) => `<option value="${k}">${v.title}</option>`).join('');
+  keySel.disabled = false;
+
+  if (saved.trackSetKey && sets[saved.trackSetKey]) {
+    STATE.trackSetKey = saved.trackSetKey;
+    keySel.value = saved.trackSetKey;
+    // 무드 세트는 저장해둔 실제 곡 구성을 그대로 복원 (재섞임 없이 이어서)
+    if (saved.trackCategory === 'category_mood' && Array.isArray(saved.moodTracksSnapshot)) {
+      TRACK_SETS.category_mood.sets[saved.trackSetKey].tracks = saved.moodTracksSnapshot;
+    }
+    STATE.trackIndex = saved.trackIndex || 0;
+    if (reshuffleBtn) reshuffleBtn.style.display = (saved.trackCategory === 'category_mood') ? 'inline-block' : 'none';
+    stepperWrap.style.display = 'block';
+    renderTrackDisplay();
+    showToast('↩️ 이전 작업 이어서 불러왔습니다.');
+  }
+}
+
 function renderTrackCategorySel() {
   const sel = document.getElementById('trackSetCategorySel');
   if (!sel) return;
@@ -8037,6 +8089,7 @@ function onTrackCategoryChange(catKey) {
     keySel.innerHTML = '<option value="">먼저 카테고리를 선택하세요</option>';
     keySel.disabled = true;
     stepperWrap.style.display = 'none';
+    saveTrackSetProgress();
     return;
   }
   const sets = TRACK_SETS[catKey].sets;
@@ -8044,14 +8097,33 @@ function onTrackCategoryChange(catKey) {
     Object.entries(sets).map(([k,v]) => `<option value="${k}">${v.title}</option>`).join('');
   keySel.disabled = false;
   stepperWrap.style.display = 'none';
+  saveTrackSetProgress();
 }
 function onTrackSetChange(setKey) {
   STATE.trackSetKey = setKey || null;
   STATE.trackIndex = 0;
   const stepperWrap = document.getElementById('trackSetStepperWrap');
-  if (!setKey) { stepperWrap.style.display = 'none'; return; }
+  if (!setKey) { stepperWrap.style.display = 'none'; saveTrackSetProgress(); return; }
+  // 무드/용도 세트는 선택할 때마다 새 랜덤 시드로 다시 섞음 (같은 세트를 나중에 또 골라도 매번 새 구성)
+  if (STATE.trackCategory === 'category_mood') {
+    TRACK_SETS.category_mood.sets[setKey].tracks = buildMoodTracks(setKey);
+  }
+  const reshuffleBtn = document.getElementById('reshuffleBtn');
+  if (reshuffleBtn) reshuffleBtn.style.display = (STATE.trackCategory === 'category_mood') ? 'inline-block' : 'none';
   stepperWrap.style.display = 'block';
   renderTrackDisplay();
+  saveTrackSetProgress();
+}
+function reshuffleMoodSet() {
+  if (STATE.trackCategory !== 'category_mood' || !STATE.trackSetKey) {
+    showToast('⚠️ 무드/용도 세트를 먼저 선택해주세요.');
+    return;
+  }
+  TRACK_SETS.category_mood.sets[STATE.trackSetKey].tracks = buildMoodTracks(STATE.trackSetKey);
+  STATE.trackIndex = 0;
+  renderTrackDisplay();
+  saveTrackSetProgress();
+  showToast('🔄 다시 섞었습니다 — 새 구성으로 14곡이 준비됐어요.');
 }
 function currentTrackList() {
   if (!STATE.trackCategory || !STATE.trackSetKey) return null;
@@ -8069,6 +8141,7 @@ function trackStep(delta) {
   if (!tracks) return;
   STATE.trackIndex = Math.max(0, Math.min(tracks.length - 1, STATE.trackIndex + delta));
   renderTrackDisplay();
+  saveTrackSetProgress();
 }
 function applyCurrentTrack() {
   const tracks = currentTrackList();
