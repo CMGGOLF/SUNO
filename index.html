@@ -682,6 +682,39 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
 </div>
 
+<div class="section" style="border-color:var(--gold)">
+  <div class="section-head" onclick="toggleSection('trackSetBody','trackSetIcon')" style="cursor:pointer">
+    <div class="sec-num">00</div>
+    <div class="sec-title">14곡 세트 — 스토리 · 무드용도 <span id="trackSetIcon" style="font-size:14px">▼</span></div>
+    <div class="sec-sub">선택 시 펼쳐서 곡별로 세팅 적용 (클릭하여 펼치기/접기)</div>
+  </div>
+  <div class="section-body" id="trackSetBody" style="display:none">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+      <div>
+        <div style="font-size:12px;color:var(--korean2);margin-bottom:4px">카테고리</div>
+        <select id="trackSetCategorySel" onchange="onTrackCategoryChange(this.value)" style="min-width:220px">
+          <option value="">— 선택 —</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--korean2);margin-bottom:4px">세트</div>
+        <select id="trackSetKeySel" onchange="onTrackSetChange(this.value)" style="min-width:220px" disabled>
+          <option value="">먼저 카테고리를 선택하세요</option>
+        </select>
+      </div>
+    </div>
+    <div id="trackSetStepperWrap" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <button class="btn btn-outline" onclick="trackStep(-1)">◀ 이전 곡</button>
+        <div id="trackSetDisplay" style="font-size:14px;color:var(--gold);min-width:280px"></div>
+        <button class="btn btn-outline" onclick="trackStep(1)">다음 곡 ▶</button>
+      </div>
+      <button class="btn btn-gold" onclick="applyCurrentTrack()">▶ 이 곡 세팅 적용</button>
+      <span style="font-size:11px;color:var(--muted);margin-left:8px">적용하면 장르(preset73)·BPM·조성·구음·그루브·한소울스타일까지 전부 세팅되고, ⑤ 가사 스토리 칸에도 소재가 채워집니다.</span>
+    </div>
+  </div>
+</div>
+
 <div class="section">
   <div class="section-head" onclick="toggleSection('genreBody','genreIcon')" style="cursor:pointer">
     <div class="sec-num">01</div>
@@ -7611,6 +7644,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   }
   document.getElementById('kwInput').addEventListener('keydown',e=>{if(e.key==='Enter')runAI();});
   qeRenderComboGrid();
+  renderTrackCategorySel();
 });
 
 /* ════════════════════════════════════════════════
@@ -7840,6 +7874,238 @@ const QE_COMBOS = [
     emoji:'🌆'
   }
 ];
+
+/* ================== 14곡 세트 (스토리 / 무드용도) ==================
+   preset73 6종(joseon/sanjo/pansori/minyo/court/trot)을 인생 챕터·무드 프로필로 재사용.
+   각 필드는 09B 퀄리티 엔진(runQualityEngine)과 완전히 동일한 스키마를 씀. */
+
+// ── 인생 서사용 챕터 템플릿 6개 (스토리 3종이 공유, 곡 수 배분: 3+2+2+2+3+2=14) ──
+const CHAPTER_TEMPLATE = [
+  {count:3, preset73:'pansori', bpmRange:[68,78], musicKey:3, koreanScale:0, energyArc:0, intensity:7, koreanRatio:80,
+   gueumPos:['add1','mid'], gueumPitch:'low', gueumGender:'male', gueumStrength:'strong', gueumStyleIdx:2,
+   koreanGrooves:[1,4], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[1], hanSoulStyle:0, moods:[8,18]},
+  {count:2, preset73:'minyo', bpmRange:[82,92], musicKey:1, koreanScale:0, energyArc:1, intensity:6, koreanRatio:78,
+   gueumPos:['mid'], gueumPitch:'midlow', gueumGender:'both', gueumStrength:'normal', gueumStyleIdx:1,
+   koreanGrooves:[0,7], koreanFeelings:[2,4], blackSoulElements:[1,3], humanFeelElements:[1,4], bassStyles:[0], hanSoulStyle:1, moods:[13,19]},
+  {count:2, preset73:'sanjo', bpmRange:[76,86], musicKey:4, koreanScale:0, energyArc:1, intensity:5, koreanRatio:65,
+   gueumPos:['mid','add2'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:4,
+   koreanGrooves:[2,6], koreanFeelings:[3,7], blackSoulElements:[0,5], humanFeelElements:[0,2], bassStyles:[0], hanSoulStyle:3, moods:[4,10]},
+  {count:2, preset73:'joseon', bpmRange:[70,80], musicKey:1, koreanScale:0, energyArc:3, intensity:7, koreanRatio:75,
+   gueumPos:['add1','mid'], gueumPitch:'midlow', gueumGender:'male', gueumStrength:'normal', gueumStyleIdx:0,
+   koreanGrooves:[3,8], koreanFeelings:[4,6], blackSoulElements:[2,4], humanFeelElements:[2,5], bassStyles:[2], hanSoulStyle:2, moods:[2,7]},
+  {count:3, preset73:'trot', bpmRange:[85,95], musicKey:1, koreanScale:0, energyArc:1, intensity:6, koreanRatio:82,
+   gueumPos:['mid','end'], gueumPitch:'midlow', gueumGender:'both', gueumStrength:'strong', gueumStyleIdx:1,
+   koreanGrooves:[9,10], koreanFeelings:[1,4], blackSoulElements:[0,4], humanFeelElements:[0,3], bassStyles:[0,2], hanSoulStyle:4, moods:[17,20]},
+  {count:2, preset73:'court', bpmRange:[60,72], musicKey:1, koreanScale:3, energyArc:5, intensity:4, koreanRatio:85,
+   gueumPos:['mid'], gueumPitch:'midlow', gueumGender:'female', gueumStrength:'normal', gueumStyleIdx:3,
+   koreanGrooves:[11,12], koreanFeelings:[4,6], blackSoulElements:[0], humanFeelElements:[2,5], bassStyles:[0], hanSoulStyle:5, moods:[2,10]},
+];
+
+// 챕터 템플릿 + 스토리별 챕터 이름·소재 라벨을 합쳐 14곡 트랙 배열을 만듦
+function buildStoryTracks(storyChapters) {
+  const tracks = [];
+  let num = 1;
+  CHAPTER_TEMPLATE.forEach((ch, ci) => {
+    const label = storyChapters[ci];
+    for (let i = 0; i < ch.count; i++) {
+      const { count, ...base } = ch;
+      // 곡마다 BPM·구음 스타일을 살짝 회전 — 같은 챕터 안에서도 완전히 똑같이 안 들리도록
+      const bpmShift = Math.round((ch.bpmRange[1]-ch.bpmRange[0]) * (i/(ch.count)));
+      tracks.push({
+        ...base,
+        num, chapter: label.chapter, story: label.story[i] || label.story[0],
+        bpmRange: [ch.bpmRange[0]+bpmShift, Math.min(ch.bpmRange[1], ch.bpmRange[0]+bpmShift+8)],
+        gueumStyleIdx: (ch.gueumStyleIdx + i) % 14,
+      });
+      num++;
+    }
+  });
+  return tracks;
+}
+
+const STORY_SETS = {
+  story_mother: {
+    title: '어머니의 일생',
+    tracks: buildStoryTracks([
+      {chapter:'가난한 시집살이', story:['갓 시집온 어린 며느리의 설움','밤새 삯바느질하던 손끝','시어머니 눈치 보며 삼킨 울음']},
+      {chapter:'자식을 품에 안고', story:['첫 아이를 업고 밭을 매던 날','굶는 자식 먹이려 저 굶던 밤']},
+      {chapter:'생계를 짊어진 세월', story:['장터에서 좌판을 펴던 새벽','자식 학비 벌러 나선 낯선 길']},
+      {chapter:'자식을 떠나보내며', story:['시집·장가보내던 날의 눈물','빈 방에 남겨진 자식의 온기']},
+      {chapter:'홀로 남겨진 노년', story:['영감 먼저 보내고 홀로 지새는 밤','자식들 걸음 뜸해진 명절날','전화 한 통에 목이 메는 저녁']},
+      {chapter:'생의 끝자락에서', story:['산소 가는 길에 되뇌는 이름','다 내어주고 남은 것 하나 없는 마음']},
+    ]),
+  },
+  story_boatman: {
+    title: '뱃사공의 한평생',
+    tracks: buildStoryTracks([
+      {chapter:'첫 노를 잡던 날', story:['아버지 따라 처음 배에 오른 새벽','서툰 노질에 뒤집힐 뻔한 강물']},
+      {chapter:'강 위에서 맺은 인연', story:['나루터에서 매일 마주친 그 얼굴','손 흔들며 건너간 뒤 안 돌아온 사람']},
+      {chapter:'거친 물살을 넘으며', story:['홍수에 배를 잃을 뻔한 밤','거친 뱃길에서 되새긴 삶의 무게']},
+      {chapter:'생계의 노를 젓다', story:['식솔들 먹여 살리려 저은 노','삯을 떼먹고 사라진 손님 생각']},
+      {chapter:'세월에 삭은 뱃머리', story:['낡아가는 배와 함께 늙은 몸','더는 태울 손님 없는 나루터','옛 뱃노래를 홀로 흥얼거리는 저녁']},
+      {chapter:'마지막 나루에서', story:['더 이상 저을 힘 없는 노를 놓으며','강물만은 여전히 그대로임을 보며']},
+    ]),
+  },
+  story_wanderer: {
+    title: '떠돌이 소리꾼의 여정',
+    tracks: buildStoryTracks([
+      {chapter:'소리를 배우던 시절', story:['스승 문전에서 쫓겨나던 밤','목에서 피가 나도록 지르던 득음']},
+      {chapter:'장터를 떠돌며', story:['장마당에서 처음 받은 동전 한 닢','비웃음 속에 목청을 가다듬던 날']},
+      {chapter:'명창으로 이름을 얻다', story:['큰 무대에서 처음 받은 갈채','이름이 알려지며 낯설어진 고향길']},
+      {chapter:'인연과 이별들', story:['소리판에서 만난 짧은 사랑','다시 길 떠나며 두고 온 얼굴']},
+      {chapter:'변해가는 세상 속에서', story:['찾는 이 줄어든 소리판','자식뻘 후배에게 밀려나는 무대','낡은 북 하나 들고 떠나는 밤길']},
+      {chapter:'마지막 소리 한 자락', story:['다 늙어 부르는 마지막 한 소절','아무도 없는 빈 마당에서 부르는 소리']},
+    ]),
+  },
+};
+
+// ── 무드/용도용 프로필 9개 (스토리와 달리 14곡 내내 일정한 톤 유지, 변화 최소화) ──
+const MOOD_PROFILES = {
+  mood_sleep: { title:'🌙 잠잘 때', preset73:'court', bpmRange:[60,68], musicKey:1, koreanScale:3, energyArc:5, intensity:3, koreanRatio:88,
+    gueumPos:['mid'], gueumPitch:'midlow', gueumGender:'female', gueumStrength:'normal', gueumStyleIdx:3,
+    koreanGrooves:[11,12], koreanFeelings:[4,6], blackSoulElements:[0], humanFeelElements:[2,5], bassStyles:[0], hanSoulStyle:5, moods:[2,10] },
+  mood_alone: { title:'🍵 혼자 조용히', preset73:'pansori', bpmRange:[65,74], musicKey:3, koreanScale:0, energyArc:0, intensity:5, koreanRatio:80,
+    gueumPos:['mid'], gueumPitch:'low', gueumGender:'male', gueumStrength:'normal', gueumStyleIdx:2,
+    koreanGrooves:[1,4], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[1], hanSoulStyle:0, moods:[8,10] },
+  mood_think: { title:'🌌 사색하며', preset73:'sanjo', bpmRange:[62,72], musicKey:4, koreanScale:0, energyArc:1, intensity:4, koreanRatio:70,
+    gueumPos:['mid'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'normal', gueumStyleIdx:4,
+    koreanGrooves:[2,6], koreanFeelings:[3,7], blackSoulElements:[0,5], humanFeelElements:[0,2], bassStyles:[0], hanSoulStyle:3, moods:[4,10] },
+  mood_dawn: { title:'☕ 새벽 감성', preset73:'court', bpmRange:[64,72], musicKey:1, koreanScale:0, energyArc:1, intensity:4, koreanRatio:80,
+    gueumPos:['mid'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'normal', gueumStyleIdx:3,
+    koreanGrooves:[11,2], koreanFeelings:[3,6], blackSoulElements:[0], humanFeelElements:[0,2], bassStyles:[0], hanSoulStyle:5, moods:[2,4] },
+  mood_drive: { title:'🚗 운전할 때', preset73:'sanjo', bpmRange:[76,86], musicKey:4, koreanScale:0, energyArc:1, intensity:6, koreanRatio:65,
+    gueumPos:['mid','add2'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:4,
+    koreanGrooves:[2,6], koreanFeelings:[3,7], blackSoulElements:[0,5], humanFeelElements:[0,2], bassStyles:[0], hanSoulStyle:3, moods:[14,4] },
+  mood_study: { title:'📖 책읽을 때·공부할 때', preset73:'joseon', bpmRange:[68,76], musicKey:1, koreanScale:0, energyArc:5, intensity:3, koreanRatio:75,
+    gueumPos:['mid'], gueumPitch:'midlow', gueumGender:'male', gueumStrength:'normal', gueumStyleIdx:0,
+    koreanGrooves:[3,8], koreanFeelings:[4,6], blackSoulElements:[2], humanFeelElements:[2,5], bassStyles:[2], hanSoulStyle:2, moods:[13,2] },
+  mood_drink: { title:'🍶 혼술·야식', preset73:'pansori', bpmRange:[66,74], musicKey:3, koreanScale:0, energyArc:0, intensity:6, koreanRatio:82,
+    gueumPos:['mid'], gueumPitch:'low', gueumGender:'male', gueumStrength:'strong', gueumStyleIdx:2,
+    koreanGrooves:[1,4], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[1], hanSoulStyle:0, moods:[8,9] },
+  mood_house: { title:'🧹 집안일 하면서', preset73:'trot', bpmRange:[88,98], musicKey:1, koreanScale:0, energyArc:1, intensity:6, koreanRatio:82,
+    gueumPos:['mid','end'], gueumPitch:'midlow', gueumGender:'both', gueumStrength:'strong', gueumStyleIdx:1,
+    koreanGrooves:[9,10], koreanFeelings:[1,4], blackSoulElements:[0,4], humanFeelElements:[0,3], bassStyles:[0,2], hanSoulStyle:4, moods:[19,3] },
+  mood_rain: { title:'🌧️ 비 오는 날', preset73:'court', bpmRange:[62,70], musicKey:1, koreanScale:3, energyArc:5, intensity:4, koreanRatio:85,
+    gueumPos:['mid'], gueumPitch:'midlow', gueumGender:'female', gueumStrength:'normal', gueumStyleIdx:3,
+    koreanGrooves:[11,12], koreanFeelings:[4,6], blackSoulElements:[0], humanFeelElements:[2,5], bassStyles:[0], hanSoulStyle:5, moods:[10,4] },
+};
+// 프로필 하나로 14곡 생성 — BPM·구음스타일만 곡마다 살짝 회전(단조로움 방지), 나머지는 일정하게 유지
+function buildMoodTracks(profileKey) {
+  const p = MOOD_PROFILES[profileKey];
+  const tracks = [];
+  for (let i = 0; i < 14; i++) {
+    const span = p.bpmRange[1] - p.bpmRange[0];
+    const shift = Math.round(span * ((i % 4) / 4));
+    tracks.push({
+      ...p, num: i+1, chapter: p.title, story: `${p.title} — ${i+1}번째 곡`,
+      bpmRange: [p.bpmRange[0]+shift, Math.min(p.bpmRange[1], p.bpmRange[0]+shift+6)],
+      gueumStyleIdx: (p.gueumStyleIdx + (i%3)) % 14,
+    });
+  }
+  return tracks;
+}
+
+const TRACK_SETS = {
+  category_story: {
+    label: '📖 스토리 (인생 서사)',
+    sets: Object.fromEntries(Object.entries(STORY_SETS).map(([k,v])=>[k,{title:v.title, tracks:v.tracks}])),
+  },
+  category_mood: {
+    label: '🎧 무드 · 용도 (일정한 배경음)',
+    sets: Object.fromEntries(Object.keys(MOOD_PROFILES).map(k=>[k,{title:MOOD_PROFILES[k].title, tracks:buildMoodTracks(k)}])),
+  },
+};
+
+/* ================== 00번 섹션: 스토리·무드용도 14곡 세트 스테퍼 ================== */
+STATE.trackCategory = null;
+STATE.trackSetKey = null;
+STATE.trackIndex = 0;
+
+function renderTrackCategorySel() {
+  const sel = document.getElementById('trackSetCategorySel');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— 선택 —</option>' +
+    Object.entries(TRACK_SETS).map(([k,v]) => `<option value="${k}">${v.label}</option>`).join('');
+}
+function onTrackCategoryChange(catKey) {
+  STATE.trackCategory = catKey || null;
+  STATE.trackSetKey = null;
+  STATE.trackIndex = 0;
+  const keySel = document.getElementById('trackSetKeySel');
+  const stepperWrap = document.getElementById('trackSetStepperWrap');
+  if (!catKey) {
+    keySel.innerHTML = '<option value="">먼저 카테고리를 선택하세요</option>';
+    keySel.disabled = true;
+    stepperWrap.style.display = 'none';
+    return;
+  }
+  const sets = TRACK_SETS[catKey].sets;
+  keySel.innerHTML = '<option value="">— 세트 선택 —</option>' +
+    Object.entries(sets).map(([k,v]) => `<option value="${k}">${v.title}</option>`).join('');
+  keySel.disabled = false;
+  stepperWrap.style.display = 'none';
+}
+function onTrackSetChange(setKey) {
+  STATE.trackSetKey = setKey || null;
+  STATE.trackIndex = 0;
+  const stepperWrap = document.getElementById('trackSetStepperWrap');
+  if (!setKey) { stepperWrap.style.display = 'none'; return; }
+  stepperWrap.style.display = 'block';
+  renderTrackDisplay();
+}
+function currentTrackList() {
+  if (!STATE.trackCategory || !STATE.trackSetKey) return null;
+  return TRACK_SETS[STATE.trackCategory].sets[STATE.trackSetKey].tracks;
+}
+function renderTrackDisplay() {
+  const tracks = currentTrackList();
+  if (!tracks) return;
+  const t = tracks[STATE.trackIndex];
+  document.getElementById('trackSetDisplay').textContent =
+    `${t.num}/${tracks.length} — ${t.chapter} — ${t.story}`;
+}
+function trackStep(delta) {
+  const tracks = currentTrackList();
+  if (!tracks) return;
+  STATE.trackIndex = Math.max(0, Math.min(tracks.length - 1, STATE.trackIndex + delta));
+  renderTrackDisplay();
+}
+function applyCurrentTrack() {
+  const tracks = currentTrackList();
+  if (!tracks) { showToast('⚠️ 먼저 카테고리·세트를 선택해주세요.'); return; }
+  const t = tracks[STATE.trackIndex];
+
+  apply73Preset(t.preset73);
+  STATE.bpm = Math.round((t.bpmRange[0]+t.bpmRange[1])/2);
+  STATE.intensity = t.intensity;
+  STATE.koreanRatio = t.koreanRatio;
+  if (t.musicKey !== undefined)    STATE.musicKey = t.musicKey;
+  if (t.koreanScale !== undefined) STATE.koreanScale = t.koreanScale;
+  if (t.energyArc !== undefined)   STATE.energyArc = t.energyArc;
+  if (t.moods !== undefined)       STATE.moods = [...t.moods];
+  syncSliders();
+
+  STATE.gueumPositions = [...t.gueumPos];
+  selectGueumPitch(t.gueumPitch);
+  selectGueumGender(t.gueumGender);
+  selectGueumStrength(t.gueumStrength);
+  STATE.gueumStyle = t.gueumStyleIdx;
+  syncGueumUI();
+
+  STATE.humanFeelElements = [...t.humanFeelElements];
+  STATE.blackSoulElements = [...t.blackSoulElements];
+  STATE.bassStyles        = [...t.bassStyles];
+  STATE.koreanGrooves      = [...t.koreanGrooves];
+  STATE.koreanFeelings     = [...t.koreanFeelings];
+  STATE.hanSoulStyle       = t.hanSoulStyle;
+  renderAll();
+
+  const storyEl = document.getElementById('lyricsStoryKr');
+  if (storyEl) storyEl.value = t.story;
+
+  buildPrompt(true);
+  showToast(`✅ ${t.num}번곡 "${t.chapter}" 세팅 적용 완료`);
+}
 
 let _qeSelectedCombo = null;
 let _qeRunning = false;
