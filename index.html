@@ -5334,6 +5334,27 @@ ${lyricStory}
 `
     : '';
 
+  /* ── 백킹보컬(05C)이 선택된 경우, 스타일 태그만으론 약해서 가사 자체에 실제 큐를 심음 ── */
+  const _bvExamples = [
+    { label:'화성 보컬', guide:'후렴 각 줄 끝에, 방금 부른 가사의 핵심 단어나 어미를 괄호 안에 그대로 반복해 화음처럼 겹치게 할 것', example:'그리워라 내 사랑아 (내 사랑아~)' },
+    { label:'코러스 보컬', guide:'후렴 줄마다 끝에 짧은 추임새 코러스를 괄호로 넣어 여러 목소리가 함께 부르는 느낌을 줄 것', example:'그리워라 그리워라 (오예~ 오예~)' },
+    { label:'대위 보컬', guide:'후렴 한 줄이 끝날 때마다, 리드와는 다른 짧은 구절을 괄호 안에 넣어 두 멜로디가 엇갈리게 할 것 — 단, 반드시 이 곡에서 이미 나온 단어·이미지만 재조합해서 쓸 것. 이 곡에 없던 새로운 소재·단어·이름을 절대 만들어내지 말 것 (문맥과 안 맞는 뜬금없는 말 방지)', example:'그리워라 (아직 못 잊었네)' },
+    { label:'애드립 보컬', guide:'후렴 끝이나 브릿지에 즉흥적인 감탄사·멜리스마를 괄호로 넣을 것 (가사 아닌 순수 감정 표현)', example:'그리워라 내 사랑아 (아~~~ 으흐~~~)' },
+    { label:'효과음 보컬', guide:'후렴 사이사이 가사 없는 순수 소리(허밍·멜리스마)를 괄호로 넣어 분위기를 만들 것', example:'그리워라 내 사랑아 (음~~~ 흐음~~~)' },
+    { label:'콜앤리스폰스 보컬', guide:'후렴에서 리드가 한 줄 부르면, 바로 다음 줄에 괄호로 짧게 받아치는 응답구를 넣을 것 (질문-대답 구조). 단, 반드시 이 곡에서 이미 나온 단어·감정만 사용해 응답할 것 — 이 곡에 없던 새로운 소재·인물·장소를 절대 지어내지 말 것', example:'그리워라 그리워라\n(그래 나도 그립다오)' },
+  ];
+  const backingVocalCueBlock = (STATE.backingVocal !== null && DATA.backingVocals[STATE.backingVocal])
+    ? (() => {
+        const bv = _bvExamples[STATE.backingVocal];
+        return `\n★★ 백킹보컬 실제 반영 (필수) — "${bv.label}" ★★
+- 스타일 지시만으론 Suno가 놓치기 쉬우니, 가사 자체에 백킹보컬이 실제로 들어갈 자리를 괄호로 명시할 것
+- 규칙: ${bv.guide}
+- 예시(그대로 베끼지 말고 이 형식만 참고): "${bv.example}"
+- 후렴이 나올 때마다 최소 1회 이상 이 괄호 큐를 넣을 것 (매 줄마다 넣어서 과하게 반복하지는 말 것)
+`;
+      })()
+    : '';
+
   let rhymeRuleKr;
   if (isTrot) {
     rhymeRuleKr = `★★ 국악 트롯트 라임 규칙 (필수) ★★
@@ -5361,7 +5382,7 @@ ${lyricStory}
     if (isTrot) {
       lyricPrompt = `${duration} 길이(${totalSec}초)의 국악 트롯트 가사를 작성합니다.
 송폼: ${form.nameKr}
-${storyBlockKr}
+${storyBlockKr}${backingVocalCueBlock}
 ${rhymeRuleKr}
 
 ${clicheRuleKr}
@@ -5393,7 +5414,7 @@ ${structureKr}`;
     } else {
       lyricPrompt = `${duration} 길이(${totalSec}초)의 가사를 작성합니다.
 송폼: ${form.nameKr}
-${storyBlockKr}${_trotDiv ? `
+${storyBlockKr}${backingVocalCueBlock}${_trotDiv ? `
 ★★ 정서 테두리 (필수) — 장르 불문 국악 베이스의 깊은 애절함 ★★
 - 어떤 장르든 깊고 서글프고 애절한 한(恨)의 정서를 바탕에 깔 것
 - 이번 곡의 감정 색: 「${_trotDiv.subEmotion}」 — 슬픔 안에서 이 결로 일관되게
