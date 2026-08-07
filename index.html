@@ -1681,11 +1681,11 @@ const DATA = {
   vocalStyles: [
     {en:'Korean Soul Fusion',kr:'코리안 소울 퓨전',gender:'both',tone:'감성적이고 따뜻한 Soul 톤, 깊은 호흡감',tags:['Soul','R&B','Korean Soul','Emotional']},
     {en:'Oriental Blues',kr:'오리엔탈 블루스',gender:'male',tone:'거칠고 허스키한 저음, 애절한 블루스 톤',tags:['Blues','Dark Blues','Melancholic']},
-    {en:'Oriental Jazz',kr:'오리엔탈 재즈',gender:'female',tone:'부드럽고 공기감 있는 재즈 보컬',tags:['Jazz','Chill Jazz','Romantic','Groovy']},
-    {en:'Neo Soul + Gayageum',kr:'네오소울 + 가야금',gender:'female',tone:'매끄럽고 속삭이듯 부드러운 Neo Soul 톤',tags:['Neo Soul','R&B','Chill','Dreamy']},
+    {en:'Oriental Jazz',kr:'오리엔탈 재즈',gender:'female',tone:'부드럽고 나긋한 재즈 보컬',tags:['Jazz','Chill Jazz','Romantic','Groovy']},
+    {en:'Neo Soul + Gayageum',kr:'네오소울 + 가야금',gender:'female',tone:'매끄럽고 부드러운 Neo Soul 톤',tags:['Neo Soul','R&B','Chill','Dreamy']},
     {en:'Haegeum Blues',kr:'해금 블루스',gender:'male',tone:'거친 감정 표현과 낮은 Soul 톤',tags:['Blues','Soul Blues','Emotional']},
     {en:'Oriental Jazz Hip-hop',kr:'오리엔탈 재즈 힙합',gender:'both',tone:'힘 빼고 자연스럽게 흐르는 Chill 톤',tags:['Jazz Hip-hop','Lo-fi','Groovy']},
-    {en:'Lo-fi Jazz Gugak',kr:'로파이 재즈 국악',gender:'female',tone:'나른하고 속삭이는 로파이 톤',tags:['Lo-fi','Chill','Ambient']},
+    {en:'Lo-fi Jazz Gugak',kr:'로파이 재즈 국악',gender:'female',tone:'나른하고 잔잔한 로파이 톤',tags:['Lo-fi','Chill','Ambient']},
     {en:'Cinematic Soul Fusion',kr:'시네마틱 소울 퓨전',gender:'both',tone:'웅장하고 감정 고조가 가능한 드라마틱 톤',tags:['Cinematic','Soul','Epic']},
     {en:'Ajaeng Soul',kr:'아쟁 소울',gender:'male',tone:'아쟁처럼 묵직하고 찰현적인 깊은 저음 소울 톤',tags:['Soul Blues','Deep','Gritty','Raw']},
     {en:'Korean Neo Soul',kr:'코리안 네오소울',gender:'female',tone:'부드럽고 세련된 R&B 스타일 톤',tags:['Neo Soul','R&B','Emotional','Smooth']},
@@ -1767,8 +1767,8 @@ const DATA = {
   vocalTones: [
     {en:'Smooth female vocals',kr:'매끄러운 여성 보컬',gender:'female',desc:'서울 밤 감성·Neo Soul·Jazz 계열에 적합'},
     {en:'Soulful female vocals',kr:'소울풀한 여성 보컬',gender:'female',desc:'감정선과 Groove를 동시에 살리는 스타일'},
-    {en:'Breathy female vocals',kr:'숨 섞인 여성 보컬',gender:'female',desc:'늦은 밤 재즈바 같은 부드러운 분위기 강화'},
-    {en:'Airy female harmonies',kr:'공기감 있는 여성 화음',gender:'female',desc:'세련된 글로벌 감성 강화'},
+    {en:'Soulful female vocals with warm depth',kr:'깊이감 있는 여성 보컬',gender:'female',desc:'늦은 밤 재즈바 같은 부드러운 분위기 강화'},
+    {en:'Rich female harmonies',kr:'풍성한 여성 화음',gender:'female',desc:'세련된 글로벌 감성 강화'},
     {en:'Smooth male vocals',kr:'매끄러운 남성 보컬',gender:'male',desc:'부드러운 Soul·Jazz 감성에 적합'},
     {en:'Deep soulful male vocals',kr:'깊은 소울 남성 보컬',gender:'male',desc:'몸을 울리는 저음 Soul/Blues 감성'},
     {en:'Smoky blues baritone',kr:'스모키 블루스 바리톤',gender:'male',desc:'묵직한 재즈·블루스 저음 스타일'},
@@ -3789,8 +3789,10 @@ function _doBuildPrompt() {
     }
 
     /* ── 전 장르 공통 정서 테두리 — 어떤 장르든 국악 베이스 + 한(恨)의 애절함 ──
-       재즈·블루스·소울·힙합 무엇을 골라도 이 정서가 깔리게 함 (기본 ON) ── */
-    if (STATE.gugakTrotBase && STATE.genre !== 8) {
+       재즈·블루스·소울·힙합·트롯 무엇을 골라도 예외 없이 이 정서가 깔리게 함 (기본 ON) ──
+       ★ 트롯(genre 8)만 빼는 예외가 있었는데, "모든 장르 모든 음악에 한이 느껴져야 한다"는
+       채널 대원칙에 어긋나서 제거함 — 트롯도 동일하게 이 문구를 받음 */
+    if (STATE.gugakTrotBase) {
       parts.push(`[Emotional Foundation] ALL genre choices filtered through Korean gugak-trot sensibility — deep, sorrowful, aching (Han/Heung). Korean traditional instrument (haegeum/ajaeng/gayageum) carries the emotional core underneath the chosen genre. Pentatonic minor (Gyemyeonjo) coloring, vocal sob and bends (kkeokki), the restrained grief of trot ballads. Include Korean vocal chuimsae (ah-ah~, woo-woo~, a-i-ya~) in choruses and gugak guum (gueum) vocal interludes. The genre is the surface; gugak melancholy is the soul.`);
     }
 
@@ -3977,12 +3979,12 @@ function _doBuildPrompt() {
        (스타일 프롬프트는 곡 전체에 균일하게 걸림) — 세부 섹션별 강약은 가사창(genLyrics)의
        energyArcSectionBlockKr에서 담당. 여기선 곡 전체에 걸쳐도 무리 없는 짧은 특성만 남김 ── */
     const _ENERGY_ARC_STYLE_BRIEF = [
-      'wide dynamic range from whisper-quiet to explosive climax',
-      'alternates between intimate quiet and full explosive energy',
-      'escalates to a sustained full-force peak before gradually descending',
-      'wide dynamic range from explosive opening to intimate bare ending',
-      'wide dynamic range with two distinct emotional peaks',
-      'consistent hypnotic groove with subtle micro-dynamics, never flat',
+      'aching whisper-quiet sorrow that slowly builds into an overwhelming, gut-wrenching climax of grief — the deeper the silence at the start, the more devastating the cry at the peak',
+      'grief that recedes into aching quiet then crashes back as raw, sobbing catharsis — each wave of sorrow heavier than the last',
+      'mounting heartbreak that rises fast and holds at a devastating, tear-choked peak before slowly grieving its way back down',
+      'the song opens already in the depths of anguish, then grief slowly bares itself down to a fragile, broken whisper by the end',
+      'sorrow builds to one gutting peak, pulls back into aching stillness, then rises again to an even more devastating second peak',
+      'a steady ache that never fully rests — grief simmering under the surface throughout, breathing and trembling but never numb',
     ];
     if (STATE.energyArc !== null && DATA.energyArcs[STATE.energyArc]) {
       const arc = DATA.energyArcs[STATE.energyArc];
@@ -4009,7 +4011,7 @@ function _doBuildPrompt() {
       const _dTotalSec = _dm * 60 + _ds;
       const _dMaxSec = _dTotalSec + 20; // 20초 여유만 허용
       const _dMaxStr = `${Math.floor(_dMaxSec/60)}:${String(_dMaxSec%60).padStart(2,'0')}`;
-      parts.push(`[Duration] EXACTLY ${STATE.songDuration} — do NOT exceed ${_dMaxStr}. Keep the structure compact and concise; do not add extra instrumental sections, extended intros/outros, or repeated choruses beyond what the lyrics specify. End with a clean fade out at the target length.`);
+      parts.push(`[Duration] EXACTLY ${STATE.songDuration} — do NOT exceed ${_dMaxStr}. Achieve this ONLY by using fewer sections (as written in the lyrics) — NEVER by rushing the tempo, cutting emotional pauses, or singing faster. The Han (한) sorrow must stay just as deep, aching, and unhurried as a full-length version — this is a short song, not a rushed one. End with a clean fade out at the target length.`);
     }
 
     /* ── ⑬ 🎬 쇼츠 전용 모드 ── */
@@ -4036,8 +4038,8 @@ function _doBuildPrompt() {
     for (let i = 0; i < 6; i++) {
       _negWords.push(OVERUSED_SUNO_WORDS[(_negStart + i) % OVERUSED_SUNO_WORDS.length]);
     }
-    // 숨소리 억제 — 항상 포함
-    const _breathAvoid = 'audible breathing, breath sounds, gasping, panting, heavy breathing, inhale/exhale noise, hakhak, heokheok';
+    // 숨소리 억제 — 항상 포함 (숨소리 노이즈뿐 아니라 "숨결 섞인" 보컬 질감 자체도 금지 — 관능적으로 들리는 것 방지)
+    const _breathAvoid = 'audible breathing, breath sounds, gasping, panting, heavy breathing, inhale/exhale noise, hakhak, heokheok, breathy vocal texture, whispery/sultry vocal delivery, sensual or intimate-sounding vocal breathiness, rapid tremolo-like string plucking or strumming bursts especially in intro/outro (sounds like a glitch or error), a single wind instrument (piri/daegeum/danso) holding one unbroken sustained tone for many seconds especially in intro/outro (sounds like a stuck note or error)';
     parts.push(`[AVOID] ${_negWords.join(', ')}, ${_breathAvoid}`);
 
     /* ── ⑮ 장르별 시작·끝 구조 힌트 — 모든 곡이 fade out으로 끝나는 레퍼토리화 방지 ── */
@@ -4677,7 +4679,7 @@ const GENRE_SONGFORM = {
     introStyle: [
       '[single slide haegeum note bends slowly — {sec}s, 12-bar groove starts underneath]',
       '[gayageum picks a lonely blues riff — {sec}s, then a shuffle groove joins]',
-      '[piri wails one long bent note like a harmonica — {sec}s, sparse and aching]',
+      '[piri bends a short aching phrase, two or three notes only — {sec}s, sparse]',
       '[a slow finger-snap and low humming, then haegeum slides in — {sec}s]',
       '[complete silence, then a single voice hums the blues melody unaccompanied — {sec}s]',
       '[the full groove hits together softly from the first beat — {sec}s, a unified shuffle bloom]',
@@ -4739,7 +4741,7 @@ const GENRE_SONGFORM = {
       '[a single temple-bell tone rings and its reverb tail fills the space — {sec}s, then silence again]',
     ],
     outroStyle: [
-      '[final daegeum breath held long, its pitch slowly dissolving into pure reverb tail until inaudible]\n[end]',
+      '[final daegeum note, brief and clear, dissolving quickly into a short reverb tail]\n[end]',
       '[daegeum breath thins out until only reverb remains, then silence]\n[end]',
       '[the drone slowly loses its pitch and dissolves into air]\n[end]',
       '[one final gayageum harmonic rings in the empty space, fading on]\n[end]',
@@ -4784,18 +4786,18 @@ const GENRE_SONGFORM = {
     verseLines: 4, preLines: 2, choLines: 4, bridgeLines: 3, outroLines: 2,
     introStyle: [
       '[Rhodes chord left to breathe — {sec}s, gayageum enters on top after 2 bars]',
-      '[gayageum arpeggio alone — {sec}s, then a modern beat slides under it]',
+      '[gayageum plucks two or three slow single notes alone — {sec}s, then a modern beat slides under it]',
       '[haegeum and a synth pad blend in from silence — {sec}s, then groove]',
       '[a single janggu hit and reverb, then gayageum and bass build — {sec}s]',
       '[complete silence, then a single vocal ad-lib floats in unaccompanied — {sec}s]',
       '[all modern and traditional elements swell together in one soft bloom — {sec}s, no single lead]',
-      '[a synth pad shimmers alone in the dark — {sec}s, then gayageum answers with an arpeggio]',
+      '[a synth pad shimmers alone in the dark — {sec}s, then gayageum answers with a few slow single notes]',
       '[a single gayageum note rings like a reversed-cymbal swell — {sec}s, then the groove locks in]',
     ],
     outroStyle: [
       '[groove fades — bass note last to leave]\n[end]',
       '[gayageum plays a final figure as the beat strips away, then silence]\n[end]',
-      '[haegeum holds a long note over a dissolving synth pad]\n[end]',
+      '[haegeum plays a brief aching phrase over a dissolving synth pad]\n[end]',
       '[everything cuts but one gayageum string still ringing, then quiet]\n[end]',
     ],
   },
