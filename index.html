@@ -3879,6 +3879,10 @@ function _doBuildPrompt() {
     }
     if (STATE.gender === 'male') _vsLine.push('STRICTLY male voice');
     else if (STATE.gender === 'female') _vsLine.push('STRICTLY female voice');
+    // 🔒 최종 보컬 고정이 '혼성'이면, 성별 태그(both)만으로는 실제 남녀 보컬이 명시되지 않으므로 직접 명문화
+    if (STATE.vocalGenderLock === 'both') _vsLine.push('male and female vocals together — mixed-gender duet, alternating or overlapping lead lines, both voices clearly present');
+    else if (STATE.vocalGenderLock === 'male') _vsLine.push('STRICTLY male voice only, no female vocals');
+    else if (STATE.vocalGenderLock === 'female') _vsLine.push('STRICTLY female voice only, no male vocals');
     if(STATE.vocalTones.length){const vts=getEnList(STATE.vocalTones,DATA.vocalTones);if(vts)_vsLine.push(vts);}
     if (_vsLine.length) parts.push(`[Vocal] ${_vsLine.join(' · ')}`);
 
