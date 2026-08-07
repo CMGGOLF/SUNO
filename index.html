@@ -4219,7 +4219,14 @@ function _parseJsonLoose(text) {
 function escapeHtml(s) { return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function sanitizeSunoPrompt(text,maxLen=750) {
   let t=cleanModelText(text).replace(/^[-•\s]*(Suno prompt|Prompt|프롬프트)\s*[:：-]\s*/i,'').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim();
-  if (t.length>maxLen) t=t.slice(0,maxLen).replace(/[,;:\-\s]+$/,'').trim();
+  if (t.length>maxLen) {
+    t=t.slice(0,maxLen);
+    // 단어/구간 중간에서 잘리지 않도록, 가장 가까운 " | " 구분자 또는 공백까지만 남김
+    const lastPipe = t.lastIndexOf(' | ');
+    const lastSpace = t.lastIndexOf(' ');
+    const cutAt = lastPipe > maxLen*0.6 ? lastPipe : (lastSpace > maxLen*0.6 ? lastSpace : t.length);
+    t = t.slice(0, cutAt).replace(/[,;:\-|\s]+$/,'').trim();
+  }
   return t;
 }
 
