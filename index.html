@@ -5216,10 +5216,12 @@ function buildConstrainedStructure(seed, opts) {
 /* ── 🔀 구조 잠금(다시 섞기 미리보기용) ── */
 let _lyricStructOverride = null;   // 잠긴 미들 시퀀스
 let _lyricStructMode = null;       // 잠긴 시퀀스의 모드
+let _lyricStructLong = null;       // 🔒 잠긴 시퀀스가 만들어질 당시의 곡 길이(long/short) 조건
 /* genLyrics·미리보기가 공통으로 미들 시퀀스를 얻는 헬퍼.
-   🔀로 잠긴 구조가 있고 모드가 맞으면 그걸 쓰고, 없으면 새로 뽑는다. */
+   🔀로 잠긴 구조가 있고 모드"와" 곡 길이 조건(길다/짧다)까지 같을 때만 재사용 —
+   그 사이 곡 길이를 바꿨으면 잠긴 구조가 안 맞을 수 있어 새로 뽑는다. */
 function _getMidSeq(mode, longSong, gugakBase, gueumExplicit, gueumCount) {
-  if (_lyricStructOverride && _lyricStructMode === mode) return _lyricStructOverride.slice();
+  if (_lyricStructOverride && _lyricStructMode === mode && _lyricStructLong === longSong) return _lyricStructOverride.slice();
   return buildConstrainedStructure(Math.random(), { long: longSong, mode, gugakBase, gueumExplicit, gueumCount });
 }
 
@@ -5263,6 +5265,7 @@ function reshuffleLyricStructure() {
   const seq = buildConstrainedStructure(Math.random(), { long: longSong, mode, gugakBase: useGugakBase, gueumExplicit: _gueumExplicit, gueumCount: (STATE.gueumPositions||[]).length });
   _lyricStructOverride = seq.slice();
   _lyricStructMode = mode;
+  _lyricStructLong = longSong;
 
   /* 미리보기용 태그 라벨링 (생성될 실제 순서와 동일) */
   const tags = ['[인트로]'];
@@ -5454,7 +5457,7 @@ async function genLyrics(lang) {
   }
 
   /* 🔀 잠긴 구조는 1회 소비 후 해제 (다음 생성은 새 랜덤, 또는 다시 섞기로 재잠금) */
-  _lyricStructOverride = null; _lyricStructMode = null;
+  _lyricStructOverride = null; _lyricStructMode = null; _lyricStructLong = null;
 
   /* ── ④ 라이밍 지시 + ⑤ 금칙어 (트롯트 모드 분기) ── */
   const activeClicheWords = getLyricClicheWords();
