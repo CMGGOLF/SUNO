@@ -5177,20 +5177,24 @@ function buildConstrainedStructure(seed, opts) {
     return seq;
   }
 
-  /* ── 트롯/일반: 항상 절로 시작 ── */
-  const verseCount = ri(2, longSong ? 4 : 3);          // 과감: 절 2~3 (롱이면 2~4)
-  const choCount   = ri(2, 3);                          // 후렴 2~3
-  let guumBudget   = allowGuum ? (o.gueumCount ? Math.min(o.gueumCount, 4) : ri(0, 2)) : 0;  // 구음: 위치 선택 개수만큼(최대 4), 미설정 시 0~2
+  /* ── 트롯/일반: 항상 절로 시작 ──
+     🎯 짧은 곡(longSong=false)일 땐 확률적 "여분"(더블후렴·프리코러스 과다·구음 과다)이
+     쌓여서 3:30 설정에도 4~5분짜리 구조가 나올 수 있었음 — 짧은 곡은 상한을 확실히 낮춤 */
+  const verseCount = longSong ? ri(2, 4) : ri(2, 2);          // 짧은 곡: 절 정확히 2개 고정
+  const choCount   = longSong ? ri(2, 3) : ri(2, 2);          // 짧은 곡: 후렴 정확히 2개 고정
+  let guumBudget   = allowGuum ? (o.gueumCount ? Math.min(o.gueumCount, longSong ? 4 : 1) : ri(0, longSong ? 2 : 1)) : 0;  // 짧은 곡: 구음 최대 1개
+  const prechorusChance = longSong ? 0.5 : 0.25;              // 짧은 곡: 프리코러스 확률 낮춤
+  const doubleChorusChance = longSong ? 0.82 : 1.0;           // 짧은 곡: 더블 후렴 완전 비활성화
   seq.push('verse');
   let placedV = 1;
   for (let i = 0; i < choCount; i++) {
-    if (rnd() > 0.5) seq.push('prechorus');             // 프리코러스 50%
+    if (rnd() > prechorusChance) seq.push('prechorus');
     seq.push('chorus');
-    if (rnd() > 0.82 && i < choCount - 1) seq.push('chorus'); // 더블 후렴 가끔
+    if (rnd() > doubleChorusChance && i < choCount - 1) seq.push('chorus'); // 더블 후렴 가끔 (짧은 곡은 사실상 안 나옴)
     if (guumBudget > 0 && rnd() > 0.45) { seq.push('guum'); guumBudget--; } // 후렴 뒤 구음
     if (placedV < verseCount && i < choCount - 1) {
       seq.push('verse'); placedV++;
-      if (placedV < verseCount && rnd() > 0.7) { seq.push('verse'); placedV++; } // 절 연속 가끔
+      if (longSong && placedV < verseCount && rnd() > 0.7) { seq.push('verse'); placedV++; } // 절 연속 가끔 (짧은 곡은 비활성화)
     }
   }
   while (placedV < verseCount) { seq.push('verse'); placedV++; }      // 남은 절 소진
@@ -6003,6 +6007,13 @@ function enforceDuration(input) {
   const totalSec=mins*60+secs;
   if (totalSec<210) { input.value='3:30'; input.style.borderColor='var(--red)'; setTimeout(()=>input.style.borderColor='',1500); showToast('⚠️ 최소 길이는 3:30 입니다!'); }
   else { input.style.borderColor='var(--teal)'; setTimeout(()=>input.style.borderColor='',1200); }
+  // 🔗 09번 목표 곡 길이도 함께 동기화
+  STATE.songDuration = input.value;
+  document.querySelectorAll('.dur-btn').forEach(b => b.classList.toggle('active', b.textContent.startsWith(input.value)));
+  const custom = document.getElementById('songDurationCustom');
+  if (custom) custom.value = input.value;
+  const disp = document.getElementById('durationDisplay');
+  if (disp) disp.textContent = '현재: ' + input.value;
 }
 function softCheckDuration(input) {
   const val=(input.value||'').trim(); const match=val.match(/^(\d+):(\d{1,2})$/);
@@ -6866,6 +6877,9 @@ function setSongDuration(val) {
   const custom = document.getElementById('songDurationCustom');
   if (custom) custom.value = val;
   document.getElementById('durationDisplay').textContent = '현재: ' + val;
+  // 🔗 11번 가사창 곡 길이도 함께 동기화 (실제 가사 줄 수·구조가 여기 값을 읽음)
+  const lyricsDur = document.getElementById('lyricsDurationKr');
+  if (lyricsDur) lyricsDur.value = val;
   buildPrompt(true);
 }
 function setSongDurationCustom(val) {
@@ -6879,6 +6893,9 @@ function setSongDurationCustom(val) {
   STATE.songDuration = val.trim();
   document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('durationDisplay').textContent = '현재: ' + STATE.songDuration + (STATE.shortsMode ? ' 🎬' : '');
+  // 🔗 11번 가사창 곡 길이도 함께 동기화
+  const lyricsDur = document.getElementById('lyricsDurationKr');
+  if (lyricsDur) lyricsDur.value = STATE.songDuration;
   buildPrompt();
 }
 
