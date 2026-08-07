@@ -4005,7 +4005,11 @@ function _doBuildPrompt() {
 
     /* ── ⑫ Duration ── */
     if (STATE.songDuration && !STATE.shortsMode) {
-      parts.push(`[Duration] ${STATE.songDuration}, full structure, fade out`);
+      const [_dm, _ds] = STATE.songDuration.split(':').map(n => parseInt(n) || 0);
+      const _dTotalSec = _dm * 60 + _ds;
+      const _dMaxSec = _dTotalSec + 20; // 20초 여유만 허용
+      const _dMaxStr = `${Math.floor(_dMaxSec/60)}:${String(_dMaxSec%60).padStart(2,'0')}`;
+      parts.push(`[Duration] EXACTLY ${STATE.songDuration} — do NOT exceed ${_dMaxStr}. Keep the structure compact and concise; do not add extra instrumental sections, extended intros/outros, or repeated choruses beyond what the lyrics specify. End with a clean fade out at the target length.`);
     }
 
     /* ── ⑬ 🎬 쇼츠 전용 모드 ── */
