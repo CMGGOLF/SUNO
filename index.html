@@ -3142,6 +3142,38 @@ function enforceVocalGenderLock() {
   if (typeof renderTones === 'function') renderTones(STATE.gender || 'all');
 }
 
+/* ── 🔒 미리 써둔 DNA/템플릿 문구 안에 하드코딩된 성별 단어를
+   현재 최종 보컬 고정(vocalGenderLock) 설정에 맞게 보정 ── */
+function _applyVocalGenderLockToText(text) {
+  const g = STATE.vocalGenderLock;
+  if (!g || !text) return text;
+  if (g === 'male') {
+    return text
+      .replace(/\bfemale voice\b/gi, 'male voice')
+      .replace(/\bher voice\b/gi, 'his voice')
+      .replace(/\ba woman'?s voice\b/gi, "a man's voice")
+      .replace(/\bwoman\b/gi, 'man')
+      .replace(/\bshe\b/gi, 'he')
+      .replace(/\bher\b/gi, 'his');
+  }
+  if (g === 'female') {
+    return text
+      .replace(/\bmale voice\b/gi, 'female voice')
+      .replace(/\bhis voice\b/gi, 'her voice')
+      .replace(/\ba man'?s voice\b/gi, "a woman's voice")
+      .replace(/\bman\b/gi, 'woman')
+      .replace(/\bhe\b/gi, 'she')
+      .replace(/\bhis\b/gi, 'her');
+  }
+  if (g === 'both') {
+    return text
+      .replace(/\b(female|male) voice\b/gi, 'voices — both male and female together')
+      .replace(/\bher voice\b/gi, 'their voices')
+      .replace(/\bhis voice\b/gi, 'their voices');
+  }
+  return text;
+}
+
 function setGender(g, btn) {
   STATE.gender=g;
   document.querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('active'));
@@ -3750,7 +3782,9 @@ function _doBuildPrompt() {
       const _dnaIdx = Math.floor((STATE.dnaSeed || 0) * _dnaPool.length) % _dnaPool.length;
       // 선택된 DNA 1개만 사용 — secondary 혼합 제거로 장르 정체성 분리
       // 아티스트 실명은 사운드 특성으로 치환 (Suno가 실명을 차단/대체하는 문제 방지)
-      const _primary = scrubArtistNames(_dnaPool[_dnaIdx]);
+      // 🔒 이 DNA 문구는 미리 써둔 고정 템플릿이라, 성별 고정(vocalGenderLock)과 무관하게
+      // "female voice" 같은 문구가 하드코딩되어 있을 수 있음 — 고정 설정과 충돌하지 않도록 보정
+      const _primary = _applyVocalGenderLockToText(scrubArtistNames(_dnaPool[_dnaIdx]));
       parts.push(`[SONIC IDENTITY] ${_primary}`);
     }
 
