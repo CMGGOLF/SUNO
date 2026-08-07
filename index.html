@@ -5187,7 +5187,7 @@ function buildConstrainedStructure(seed, opts) {
   const verseCount = longSong ? ri(2, 4) : ri(2, 2);          // 짧은 곡: 절 정확히 2개 고정
   const choCount   = longSong ? ri(2, 3) : ri(2, 2);          // 짧은 곡: 후렴 정확히 2개 고정
   let guumBudget   = allowGuum ? (o.gueumCount ? Math.min(o.gueumCount, longSong ? 4 : 1) : ri(0, longSong ? 2 : 1)) : 0;  // 짧은 곡: 구음 최대 1개
-  const prechorusChance = longSong ? 0.5 : 0.25;              // 짧은 곡: 프리코러스 확률 낮춤
+  const prechorusChance = longSong ? 0.5 : 0.85;               // 짧은 곡: 임계값을 높여 실제 발동확률을 낮춤 (rnd()>임계값 조건이라 반대로 작동함에 주의)
   const doubleChorusChance = longSong ? 0.82 : 1.0;           // 짧은 곡: 더블 후렴 완전 비활성화
   seq.push('verse');
   let placedV = 1;
