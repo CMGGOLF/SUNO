@@ -3793,7 +3793,12 @@ function _doBuildPrompt() {
        ★ 트롯(genre 8)만 빼는 예외가 있었는데, "모든 장르 모든 음악에 한이 느껴져야 한다"는
        채널 대원칙에 어긋나서 제거함 — 트롯도 동일하게 이 문구를 받음 */
     if (STATE.gugakTrotBase) {
-      parts.push(`[Emotional Foundation] ALL genre choices filtered through Korean gugak-trot sensibility — deep, sorrowful, aching (Han/Heung). Korean traditional instrument (haegeum/ajaeng/gayageum) carries the emotional core underneath the chosen genre. Pentatonic minor (Gyemyeonjo) coloring, vocal sob and bends (kkeokki), the restrained grief of trot ballads. Include Korean vocal chuimsae (ah-ah~, woo-woo~, a-i-ya~) in choruses and gugak guum (gueum) vocal interludes. The genre is the surface; gugak melancholy is the soul. Vocal delivery: a throat-tightening, choked-up quality as if holding back tears (NOT crying, just restrained emotion catching in the throat), especially on emotionally heavy words. Phrasing sits slightly behind the beat, unhurried and lingering — like someone reluctant to let the feeling go, never rigidly on-time.`);
+      parts.push(`[Emotional Foundation] ALL genre choices filtered through Korean gugak-trot sensibility — deep, sorrowful, aching (Han/Heung). Korean traditional instrument (haegeum/ajaeng/gayageum) carries the emotional core underneath the chosen genre. Pentatonic minor (Gyemyeonjo) coloring, vocal sob and bends (kkeokki), the restrained grief of trot ballads. Include Korean vocal chuimsae (ah-ah~, woo-woo~, a-i-ya~) in choruses and gugak guum (gueum) vocal interludes. The genre is the surface; gugak melancholy is the soul. Vocal delivery: a throat-tightening, choked-up quality as if holding back tears (NOT crying, just restrained emotion catching in the throat), especially on emotionally heavy words.`);
+      // ★ 루바토(박자를 살짝 미는 창법)는 힙합(genre 4, 붐뱁·808 기반 타이트한 그루브가 생명)과
+      // 충돌하므로 제외 — 장르 고유의 리듬 정체성이 한(恨) 연출보다 우선함
+      if (STATE.genre !== 4) {
+        parts.push(`[Vocal Phrasing] sits slightly behind the beat, unhurried and lingering — like someone reluctant to let the feeling go, never rigidly on-time.`);
+      }
     }
 
     /* ── 국악기 음색 매핑: 악기명 + 연주 행동 묘사 ── */
@@ -3977,8 +3982,10 @@ function _doBuildPrompt() {
 
     /* ── ⑨-2 [음악적 한(恨) 강화] 진양조 성향 + 저음 드론 + 미해결 종지 —
        지루해지지 않도록: 진양조는 느린곡에만 편향, 드론은 "밑에 깔리는 층"일 뿐 다른 악기의
-       다이내믹은 그대로 유지, 미해결 종지는 후렴 끝에만 살짝 ── */
-    if (STATE.bpm && STATE.bpm <= 85) {
+       다이내믹은 그대로 유지, 미해결 종지는 후렴 끝에만 살짝
+       ★ 트롯(genre 8)은 제외 — 진양조는 판소리·정악 장단이라 트롯 특유의 박자감(뽕짝)과
+       충돌해서 "트롯트 분위기가 안 난다"는 문제를 유발함. 트롯은 트롯 고유 리듬 유지 ── */
+    if (STATE.bpm && STATE.bpm <= 85 && STATE.genre !== 8) {
       parts.push(`[Rhythmic Foundation] leaning toward jinyangjo-style — the slowest, most mournful traditional Korean rhythmic feel, spacious and unhurried, each beat weighted with grief. This sets the FOUNDATION only — instruments and vocal still have full dynamic movement and variation on top of it, never static or monotonous.`);
     }
     parts.push(`[Underlying Tension] a low ajaeng drone or sustained low string tone runs quietly underneath the ENTIRE song as a subtle foundation layer of unease — NOT dominant, barely noticeable consciously, just enough to keep an undercurrent of ache present even in quieter or busier moments. All other instruments and dynamics remain fully active and varied above it.`);
