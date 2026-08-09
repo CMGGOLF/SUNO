@@ -3988,6 +3988,12 @@ function _doBuildPrompt() {
     if (STATE.bpm && STATE.bpm <= 85 && STATE.genre !== 8) {
       parts.push(`[Rhythmic Foundation] leaning toward jinyangjo-style — the slowest, most mournful traditional Korean rhythmic feel, spacious and unhurried, each beat weighted with grief. This sets the FOUNDATION only — instruments and vocal still have full dynamic movement and variation on top of it, never static or monotonous.`);
     }
+    // ★ 트롯(genre 8) 전용 — "뽕짝" 금지는 이전엔 09B 변형·AI 슈퍼프롬프트 등 일부 경로에만
+    // 있었고, 이 공통 buildPrompt엔 없었음 → 평소 생성 흐름에서 뽕끼가 다시 새어 들어온 원인.
+    // 여기 공통 함수에 넣어서 모든 생성 경로에 항상 적용되게 함
+    if (STATE.genre === 8) {
+      parts.push(`[Trot Character — CRITICAL] This is a modern, dark, han-driven trot ballad — absolutely NOT the cheesy, bouncy, old-fashioned "ppongjjak" oldies-trot sound (no corny polka-like oom-pah bounce, no bright dance-trot energy like commercial pop-trot). Sorrowful, aching, restrained — never festive, never comedic, never novelty-sounding.`);
+    }
     parts.push(`[Underlying Tension] a low ajaeng drone or sustained low string tone runs quietly underneath the ENTIRE song as a subtle foundation layer of unease — NOT dominant, barely noticeable consciously, just enough to keep an undercurrent of ache present even in quieter or busier moments. All other instruments and dynamics remain fully active and varied above it.`);
     parts.push(`[Harmonic Ache] chorus lines occasionally end on a harmonically unresolved note (not fully landing "home") — leaving a lingering, unsettled longing rather than a neat resolution. Use sparingly, only where it heightens the ache, not on every line.`);
 
