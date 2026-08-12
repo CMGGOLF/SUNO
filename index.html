@@ -3768,7 +3768,7 @@ function _doBuildPrompt() {
       // ★ 멜로디 피치 컨투어 — 음정이 밋밋하게 몇 개 음만 오가지 않고, 각 줄마다
       // 풍부하게 오르내리며 그 줄의 감정선을 그리도록. 힙합(타이트한 랩 흐름 필요)은 제외
       if (STATE.genre !== 4) {
-        parts.push(`[Melodic Contour] the melody line itself should rise and fall richly within each phrase — wide, expressive pitch movement that traces the emotional shape of the words, not a flat or chant-like delivery confined to just two or three notes. Each line should feel like it has its own melodic arc, going up on the ache and settling down on the release.`);
+        parts.push(`[Melodic Contour — CRITICAL] The melody must NOT hover on just two or three notes in a flat, chant-like, recitative pattern — this is a common AI-generated-music flaw and must be avoided entirely. Each phrase should span a genuinely wide pitch range (leaps of a 5th or more, not just small steps), actively climbing and falling within the line itself, not only at the very end. Trace the emotional shape of the words with real melodic movement: rising into the ache, leaping on the most painful word, then descending and settling as the feeling releases. Every line should feel like its own distinct melodic phrase, never a repeated or interchangeable shape — this expressive, unpredictable pitch movement is essential to how the han (한) is felt, not decorative.`);
       }
     }
 
@@ -3967,6 +3967,7 @@ function _doBuildPrompt() {
     }
     parts.push(`[Underlying Tension] a low ajaeng drone or sustained low string tone runs quietly underneath the ENTIRE song as a subtle foundation layer of unease — NOT dominant, barely noticeable consciously, just enough to keep an undercurrent of ache present even in quieter or busier moments. All other instruments and dynamics remain fully active and varied above it.`);
     parts.push(`[Harmonic Ache] chorus lines occasionally end on a harmonically unresolved note (not fully landing "home") — leaving a lingering, unsettled longing rather than a neat resolution. Use sparingly, only where it heightens the ache, not on every line.`);
+    parts.push(`[Mix & Mastering] clean, well-controlled dynamics with no clipping or distortion at any point — especially in the transition from the final chorus/Big Finish into the outro: the loud climax must genuinely decay and taper down in volume (not stay hot or cut abruptly), leaving clear headroom so the ending is quiet, clear, and undistorted, never a loud or crushed wall of sound at the very end.`);
 
     /* ── ⑩ 에너지 아크: [작곡가 자료 반영] 시간대별 타임스탬프 지시는 스타일 박스에서 잘 안 먹힘
        (스타일 프롬프트는 곡 전체에 균일하게 걸림) — 세부 섹션별 강약은 가사창(genLyrics)의
