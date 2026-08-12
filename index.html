@@ -4040,9 +4040,15 @@ function _doBuildPrompt() {
     const _sform = (STATE.genre !== null && GENRE_SONGFORM[STATE.genre]) ? GENRE_SONGFORM[STATE.genre] : null;
     if (_sform && (_sform.introStyle || _sform.outroStyle)) {
       // introStyle/outroStyle이 배열(풀)이면 랜덤으로 하나 뽑아 같은 장르도 매번 다르게
-      const _pick = (v) => Array.isArray(v) ? (v[Math.floor(Math.random() * v.length)] || '') : (v || '');
-      const _intro = _pick(_sform.introStyle).replace('{sec}', '8').replace('{초}', '8');
-      const _outro = _pick(_sform.outroStyle).replace(/\n/g, ' ');
+      // introStyle/outroStyle이 배열(풀)이면 반복방지 로직으로 하나 뽑아 같은 장르도 매번 다르게, 최근 쓴 건 회피
+      const _pick = (v, kindKey) => {
+        if (!Array.isArray(v)) return v || '';
+        if (!v.length) return '';
+        const storageKey = `gugak_recent_${kindKey}_g${STATE.genre}`;
+        return pickUnusedFromPool(v, storageKey, Math.min(3, v.length - 1) || 1, Math.random());
+      };
+      const _intro = _pick(_sform.introStyle, 'intro').replace('{sec}', '8').replace('{초}', '8');
+      const _outro = _pick(_sform.outroStyle, 'outro').replace(/\n/g, ' ');
       const _hint = [];
       if (_intro) _hint.push(`INTRO: ${_intro}`);
       if (_outro) _hint.push(`OUTRO: ${_outro}`);
@@ -4598,6 +4604,9 @@ const GENRE_SONGFORM = {
       '[all instruments swell together softly from near-silence — {sec}s, no single lead, a hushed ensemble bloom]',
       '[a court bell-like single chime rings once — {sec}s, formal and solemn, then gayageum follows]',
       '[a cold reverb tail opens the space — {sec}s, distant and hollow, before daegeum breath enters]',
+      '[janggu drives in immediately at full tempo, no silence, no build-up — the rhythmic pulse is there from the very first second]',
+      '[gayageum and daegeum trade short phrases back and forth immediately, a musical conversation before the beat settles in]',
+      '[vocal enters first with the opening line completely dry, no instruments yet — {sec}s before the instruments join]',
     ],
     outroStyle: [
       '[voice alone — last phrase without instruments, then silence]\n[end]',
@@ -4625,6 +4634,9 @@ const GENRE_SONGFORM = {
       '[haegeum bends one low note as the full band answers together then drops to near-silence — {sec}s, then bass walks alone]',
       '[haegeum slides in low like rain on a window — {sec}s, then brushed drums whisper underneath]',
       '[a single haegeum bends a blue note like a muted trumpet — {sec}s, then rhythm section enters]',
+      '[brush drums swing in immediately at tempo, no silence, no build-up — the groove is live from the first second]',
+      '[haegeum and upright bass trade short phrases back and forth immediately, a musical conversation before the groove settles in]',
+      '[vocal enters first with the opening line completely dry, no instruments yet — {sec}s before the instruments join]',
     ],
     outroStyle: [
       '[last chord held — instrument sustains until it disappears on its own]\n[no fade, just silence]\n[end]',
@@ -4652,6 +4664,9 @@ const GENRE_SONGFORM = {
       '[all instruments and voice swell together from a hush — {sec}s, a single unified breath]',
       '[a distant temple-bell-like tone rings once — {sec}s, solemn, then the voice enters]',
       '[wind and empty air open the space — {sec}s, then haegeum wails alone]',
+      '[soribuk strikes in immediately at full intensity, no silence — the pansori pulse drives from the first second]',
+      '[haegeum and soribuk trade short phrases back and forth immediately, call and response before the vocal enters]',
+      '[vocal enters first with the opening line completely dry, no instruments yet — {sec}s before the instruments join]',
     ],
     outroStyle: [
       '[voice alone — unaccompanied final cry, then silence]\n[end]',
@@ -4679,6 +4694,9 @@ const GENRE_SONGFORM = {
       '[the full groove hits together softly from the first beat — {sec}s, a unified shuffle bloom]',
       '[a lone harmonica-like piri cry answered by silence — {sec}s, then the groove enters]',
       '[a field-recording-like ambience of creaking wood and wind opens — {sec}s, then gayageum riff enters]',
+      '[janggu drives in immediately at full tempo, no silence — the folk rhythm pulse is there from the first second]',
+      '[haegeum and gayageum trade short phrases back and forth immediately, a musical conversation before the beat settles in]',
+      '[vocal enters first with the opening line completely dry, no instruments yet — {sec}s before the instruments join]',
     ],
     outroStyle: [
       '[repeat last line spoken, not sung — voice alone]\n[end]',
@@ -4706,6 +4724,9 @@ const GENRE_SONGFORM = {
       '[a chopped gayageum sample cries out like a vocal ad-lib shout — {sec}s, then the beat drops immediately after]',
       '[a muffled lo-fi haegeum sample plays as if underwater — {sec}s, then it opens up full-fidelity as the beat drops]',
       '[gayageum sample and 808 hit together on beat 1 — {sec}s, no build, hook and beat simultaneous from note one]',
+      '[janggu and the rhythm section drive in immediately at full tempo, no silence, no build-up]',
+      '[gayageum and the rhythm section trade short phrases back and forth immediately]',
+      '[vocal enters first with the opening line completely dry, no instruments yet — {sec}s before the instruments join]',
     ],
     outroStyle: [
       '[hard stop — music cuts, one bar of silence, then single janggu hit]\n[end]',
@@ -4733,6 +4754,9 @@ const GENRE_SONGFORM = {
       '[field-recording-like night ambience of wind and distant crickets opens the space — {sec}s, then daegeum breath]',
       '[all textures swell together as one soft cloud of sound — {sec}s, no distinct lead instrument]',
       '[a single temple-bell tone rings and its reverb tail fills the space — {sec}s, then silence again]',
+      '[a soft but steady percussive pulse enters immediately, no silence, setting a gentle ambient rhythm from the first second]',
+      '[daegeum and gayageum trade slow overlapping phrases immediately, a quiet musical conversation with no rhythm yet]',
+      '[vocal enters first with the opening line completely dry, no instruments yet — {sec}s before the instruments join]',
     ],
     outroStyle: [
       '[final daegeum note, brief and clear, dissolving quickly into a short reverb tail]\n[end]',
@@ -4760,6 +4784,9 @@ const GENRE_SONGFORM = {
       '[Rhodes, ajaeng, and haegeum swell together softly as one warm chord — {sec}s]',
       '[a single vinyl-crackle texture fades in — {sec}s, then ajaeng bow enters slow]',
       '[ajaeng bows a low note like rain on the room — {sec}s, then a deep Rhodes chord answers]',
+      '[a slow deep pulse drives in immediately, no silence — the rhythm is grounded and heavy from the very first second]',
+      '[ajaeng and haegeum trade short aching phrases back and forth immediately, a musical conversation before the beat settles in]',
+      '[vocal enters first with the opening line completely dry, no instruments yet — {sec}s before the instruments join]',
     ],
     outroStyle: [
       '[ajaeng sustains alone — voice gone, one bowed note slowly decays]\n[end]',
@@ -4787,6 +4814,9 @@ const GENRE_SONGFORM = {
       '[all modern and traditional elements swell together in one soft bloom — {sec}s, no single lead]',
       '[a synth pad shimmers alone in the dark — {sec}s, then gayageum answers with a few slow single notes]',
       '[a single gayageum note rings like a reversed-cymbal swell — {sec}s, then the groove locks in]',
+      '[janggu and a modern rhythm layer drive in immediately at full tempo, no silence, no build-up]',
+      '[gayageum and haegeum trade short phrases back and forth immediately, a musical conversation before the modern elements enter]',
+      '[vocal enters first with the opening line completely dry, no instruments yet — {sec}s before the instruments join]',
     ],
     outroStyle: [
       '[groove fades — bass note last to leave]\n[end]',
@@ -4816,6 +4846,9 @@ const GENRE_SONGFORM = {
       '[바람 소리 같은 여백 위로 가야금 아르페지오가 스며듦 — {sec}초, 보컬 없음]',
       '[장구 장단이 경쾌하게 먼저 치고 들어오나 — {sec}초, 해금이 슬쩍 슬픈 음을 끼워넣음]',
       '[완전 침묵 뒤 보컬이 무반주로 한 소절 먼저 부름 — {sec}초, 그 뒤 악기 들어옴]',
+      '[janggu drives in immediately at full trot tempo, no silence, no build-up — the beat is there from the very first second]',
+      '[haegeum and gayageum trade short phrases back and forth immediately, a musical conversation before the beat settles in]',
+      '[vocal enters first with the opening line completely dry, no instruments yet — {sec}s before the instruments join]',
     ],
     outroStyle: [
       '[모든 악기가 멈추고 목소리만 홀로 남아 여운을 남김]\n[end]',
@@ -5108,6 +5141,29 @@ const TROT_DIVERSITY = {
   ],
 };
 // 시드(0~1)로 풀에서 항목 회전 선택
+/* ── 🔁 소재·앵커구 반복 방지 — 최근 쓴 것들을 localStorage에 기억해두고 자동으로 피함
+   (레트로 툴의 pickUnusedMotifs와 같은 원리를 v48 트롯 다양성 시스템에 이식) ── */
+function _getRecentlyUsed(storageKey) {
+  try { return JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch(e) { return []; }
+}
+function _logRecentlyUsed(storageKey, value, historySize) {
+  let arr = _getRecentlyUsed(storageKey);
+  arr = arr.filter(v => v !== value);
+  arr.push(value);
+  if (arr.length > historySize) arr = arr.slice(arr.length - historySize);
+  try { localStorage.setItem(storageKey, JSON.stringify(arr)); } catch(e) {}
+}
+function pickUnusedFromPool(pool, storageKey, historySize, seed) {
+  const recent = _getRecentlyUsed(storageKey);
+  const available = pool.filter(item => !recent.includes(item));
+  // 풀 전체가 이미 다 최근에 쓰였으면(=너무 많이 돌았으면), 그냥 전체 풀에서 다시 뽑음(초기화 효과)
+  const usePool = available.length > 0 ? available : pool;
+  const idx = Math.floor((seed * 997) % usePool.length);
+  const chosen = usePool[idx];
+  _logRecentlyUsed(storageKey, chosen, historySize);
+  return chosen;
+}
+
 function pickTrotDiversity(seed) {
   const s = (typeof seed === 'number' && seed >= 0) ? seed : Math.random();
   const pick = (arr, offset) => arr[Math.floor((s * 997 + offset * 131) % arr.length)];
@@ -5120,8 +5176,8 @@ function pickTrotDiversity(seed) {
   let sampleB = pick(TROT_DIVERSITY.sampleLines, 11);
   if (sampleB === sampleA) sampleB = TROT_DIVERSITY.sampleLines[(TROT_DIVERSITY.sampleLines.indexOf(sampleA) + 1) % TROT_DIVERSITY.sampleLines.length];
   return {
-    motif:   pick(TROT_DIVERSITY.motifs, 1),
-    anchor:  pick(TROT_DIVERSITY.refrainAnchors, 2),
+    motif:   pickUnusedFromPool(TROT_DIVERSITY.motifs, 'gugak_recent_motifs', 15, s),
+    anchor:  pickUnusedFromPool(TROT_DIVERSITY.refrainAnchors, 'gugak_recent_anchors', 12, s),
     ending:  pick(TROT_DIVERSITY.endingSets, 3),
     literary: [...new Set(lw)].join(', '),
     chuimsaeA: chuimsae[0],   // 후렴 추임새 1
@@ -5345,8 +5401,13 @@ async function genLyrics(lang) {
 
   // 장르별 인트로 스타일 — 트롯트 구조면 선택 장르의 introStyle 우선, 없으면 트롯트 기본
   const _introSec = Math.round(totalSec * 0.07);
-  const _pickForm = (v) => Array.isArray(v) ? (v[Math.floor(Math.random()*v.length)] || '') : (v || '');  // 풀(배열) 지원
-  const _introSrc = _pickForm(form.introStyle) || (isTrot ? _pickForm(_trotForm.introStyle) : null);
+  const _pickForm = (v, kindKey) => {
+    if (!Array.isArray(v)) return v || '';
+    if (!v.length) return '';
+    const storageKey = `gugak_recent_${kindKey || 'form'}_g${STATE.genre}`;
+    return pickUnusedFromPool(v, storageKey, Math.min(3, v.length - 1) || 1, Math.random());
+  };  // 풀(배열) 지원 + 최근 사용분 회피
+  const _introSrc = _pickForm(form.introStyle, 'intro') || (isTrot ? _pickForm(_trotForm.introStyle, 'intro') : null);
   const _introStyle = _introSrc
     ? _introSrc.replace('{sec}', _introSec).replace('{초}', _introSec)
     : `(기악 — ${_introSec}초)`;
@@ -5370,7 +5431,7 @@ async function genLyrics(lang) {
     }
     structureKr +=
       `[훅 - 마지막] 긴장 +10\n[Big Finish]\n(강도 10/10 — 동일한 훅 — 더 크고, 더 필연적으로)\n\n` +
-      `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지 소멸)\n${_pickForm(form.outroStyle) || '[fade out]\n[end]'}`;
+      `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지 소멸)\n${_pickForm(form.outroStyle, 'outro') || '[fade out]\n[end]'}`;
   } else if (isTrot) {
     /* 국악 트롯트 폼: 제약된 랜덤 구조 — 곡마다 절·후렴·프리·구음·브릿지 순서 변경
        인트로(이미 위에서 추가됨) → [셔플된 미들블록들] → 빅피니시 → 애드립 → 아웃트로 */
@@ -5422,7 +5483,7 @@ async function genLyrics(lang) {
       ` 3줄: 앵커를 짧게 끊어 절규하듯 변형 (예: 앞부분만 떼어 "${(_trotDiv.anchor.split(' ')[0]||_trotDiv.anchor)}…")\n` +
       ` 4줄: 마지막 한 마디 — 가장 짧고 사무치게, 끝에 ${STATE.backingVocal !== null ? '위에서 지정한 백킹보컬 큐' : `추임새 ${_trotDiv.chuimsaeA}`})\n\n` +
       `[Ad-lib] 가사 없이 짧은 멜리스마 한 마디만 쓸 것 (예: "하~~~")\n\n` +
-      `[아웃트로] 이완 ${_trTrot.outro}\n(정확히 ${_oLines}줄 — 감정이 서서히 가라앉음, 종결어미 ${_trotDiv.ending})\n${_pickForm(form.outroStyle)||_pickForm(_trotForm.outroStyle)||'[fade out]\n[end]'}`;
+      `[아웃트로] 이완 ${_trTrot.outro}\n(정확히 ${_oLines}줄 — 감정이 서서히 가라앉음, 종결어미 ${_trotDiv.ending})\n${_pickForm(form.outroStyle, 'outro')||_pickForm(_trotForm.outroStyle, 'outro')||'[fade out]\n[end]'}`;
   } else {
     /* 일반 폼: 제약된 랜덤 구조 — 절·후렴·(프리)·(구음)·(브릿지) 순서/개수 곡마다 변경 */
     const _genSeq = _getMidSeq('general', totalSec >= 270, _useGugakBase, _gueumExplicit, (STATE.gueumPositions||[]).length);
@@ -5449,7 +5510,7 @@ async function genLyrics(lang) {
     structureKr +=
       `[후렴 - 마지막] 긴장 ${tr.finalchorus}\n[Big Finish]\n(정확히 ${choLines}줄 — 앵커 라인으로 시작하되 같은 줄 복붙 금지: 1줄 앵커 그대로, 중간 줄은 감정 응축한 변형, 마지막 줄은 가장 짧고 강하게 끊어 절정${STATE.backingVocal !== null ? ', 마지막 줄 끝에만 위에서 지정한 백킹보컬 큐 사용' : (_useGugakBase&&_trotDiv) ? `, 마지막 줄 끝에만 추임새 ${_trotDiv.chuimsaeA}` : ''})\n\n` +
       ((_useGugakBase&&_trotDiv) ? `[Ad-lib] 가사 없이 짧은 멜리스마 한 마디만 쓸 것 (예: "하~~~")\n\n` : '') +
-      `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내림)\n${_pickForm(form.outroStyle)||'[fade out]\n[end]'}`;
+      `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내림)\n${_pickForm(form.outroStyle, 'outro')||'[fade out]\n[end]'}`;
   }
 
   /* 🔀 잠긴 구조는 1회 소비 후 해제 (다음 생성은 새 랜덤, 또는 다시 섞기로 재잠금) */
@@ -5575,7 +5636,8 @@ ${_DUET_PATTERNS[Math.floor(Math.random()*_DUET_PATTERNS.length)]}
   }
 
   const clicheRuleKr = `★ 금칙어 (절대 사용 금지) ★
-- 사용 불가: ${activeClicheWords.join(', ')}
+- 아래 목록의 단어·표현은 형태를 바꿔서도(다른 조사·어미 붙여서도) 절대 쓰지 말 것: ${activeClicheWords.join(', ')}
+- 가사를 다 쓴 뒤, 위 목록과 겹치는 단어가 있는지 스스로 다시 확인하고 있으면 다른 단어로 바꿀 것
 - 가사에 악기명, 음악 이론 용어, 장르명 언급 절대 금지
 - 진부한 표현 금지: 눈물이 흘러, 심장이 부서져, 세상이 돌아가
 - 추상적 감정 레이블 대신 구체적이고 감각적인 이미지로 표현`;
