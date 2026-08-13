@@ -954,6 +954,100 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   </div>
 </div>
 
+<div class="section">
+  <div class="section-head">
+    <div class="sec-num">08</div>
+    <div class="sec-title">BPM 설정</div>
+    <div class="sec-sub">65 – 145 BPM</div>
+  </div>
+  <div class="section-body">
+    <div class="bpm-wrap">
+      <div class="bpm-display">
+        <div class="bpm-num" id="bpmVal">95</div>
+        <div class="bpm-unit">BPM</div>
+      </div>
+      <input type="range" id="bpmSlider" min="65" max="145" value="95" oninput="updateBpm(this.value)">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;margin-top:4px">
+        <span>65</span><span>85</span><span>105</span><span>125</span><span>145</span>
+      </div>
+      <div class="bpm-guide-card" id="bpmGuide">
+        <div class="bpm-guide-range" id="bgRange">95–115 BPM</div>
+        <div class="bpm-guide-name" id="bgName">Korean Soul Fusion</div>
+        <div class="bpm-guide-mood" id="bgMood">Emotional · Hopeful · Warm</div>
+        <div class="bpm-guide-desc" id="bgDesc">감성과 대중성을 동시에 살리기 좋은 범용 BPM</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head">
+    <div class="sec-num">08A</div>
+    <div class="sec-title">감정 강도 (Emotional Intensity)</div>
+    <div class="sec-sub">1 = Chill ~ 10 = Explosive Soul</div>
+  </div>
+  <div class="section-body">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <input type="range" id="intensitySlider" min="1" max="10" value="5" step="1" style="flex:1" oninput="updateIntensity(this.value)">
+        <div style="min-width:120px;text-align:center">
+          <div id="intensityValue" style="font-size:28px;font-weight:700;color:var(--gold);font-family:'Space Mono',monospace">5</div>
+          <div id="intensityLabel" style="font-size:12px;color:var(--muted)">Emotional</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:'Space Mono',monospace">
+        <span>1 Chill</span><span>5 Emotional</span><span>10 Explosive</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="border-color:rgba(160,90,58,.5);background:rgba(160,90,58,.05)">
+  <div class="section-head" style="background:rgba(160,90,58,.12)">
+    <div class="sec-num" style="background:var(--korean2)">08B</div>
+    <div class="sec-title">국악기 강조 강도 <span style="color:var(--korean2)">(가장 중요!)</span></div>
+    <div class="sec-sub">60 = 보통 ~ 95 = 국악기 완전 주도</div>
+  </div>
+  <div class="section-body">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <input type="range" id="koreanDomSlider" min="60" max="95" value="80" step="5" style="flex:1" oninput="updateKoreanDominance(this.value)">
+        <div style="min-width:120px;text-align:center">
+          <div id="koreanDomValue" style="font-size:28px;font-weight:700;color:var(--korean2);font-family:'Space Mono',monospace">80</div>
+          <div id="koreanDomLabel" style="font-size:12px;color:var(--muted)">강한 국악기 주도</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:'Space Mono',monospace">
+        <span>60 보통</span><span>80 강한 주도</span><span>95 압도적</span>
+      </div>
+      <div style="font-size:11px;color:#d4845a">💡 이 값을 높일수록 가야금·대금·해금·피리 소리가 훨씬 더 크게, 명확하게 나옵니다.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="border-color:rgba(58,143,160,.4);background:rgba(58,143,160,.03)">
+  <div class="section-head" onclick="toggleSection('scaleBody','scaleIcon')" style="cursor:pointer;background:rgba(58,143,160,.08)">
+    <div class="sec-num" style="background:var(--teal)">09A</div>
+    <div class="sec-title">조성 &amp; 국악 음계 <span style="color:var(--teal);font-size:12px">Key · Scale</span> <span id="scaleIcon" style="font-size:14px">▼</span></div>
+    <div class="sec-sub">음악의 감정 색채를 결정하는 핵심 설정 (클릭하여 펼치기/접기)</div>
+  </div>
+  <div class="section-body" id="scaleBody" style="display:none">
+    <div class="info-bar" style="margin-bottom:16px;border-color:rgba(58,143,160,.3);background:rgba(58,143,160,.07);color:var(--teal)">
+      🎵 <b>조성</b>은 음악의 감정 색채를 결정합니다. 같은 가야금이라도 Am(애절)과 G(신명)는 완전히 다른 음악이 됩니다.
+    </div>
+    <div style="margin-bottom:20px">
+      <div style="font-size:12px;color:var(--teal);font-weight:600;margin-bottom:10px">① 서양 조성 (Key) <span style="font-size:10px;color:var(--muted)">— 하나 선택</span>
+        <span style="font-size:10px;color:var(--gold);margin-left:8px">⭐ = 국악 퓨전 추천</span>
+      </div>
+      <div class="card-grid col3" id="musicKeyGrid"></div>
+    </div>
+    <div>
+      <div style="font-size:12px;color:var(--korean2);font-weight:600;margin-bottom:10px">② 국악 음계 (Korean Scale) <span style="font-size:10px;color:var(--muted)">— 하나 선택</span></div>
+      <div class="card-grid col3" id="koreanScaleGrid"></div>
+    </div>
+  </div>
+</div>
+
 <div class="section" style="border-color:rgba(201,168,76,.4);background:rgba(201,168,76,.03)">
   <div class="section-head" onclick="toggleSection('arcBody','arcIcon')" style="cursor:pointer;background:rgba(201,168,76,.08)">
     <div class="sec-num">09B</div>
