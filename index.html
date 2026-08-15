@@ -3828,11 +3828,11 @@ function _doBuildPrompt() {
     if (STATE.energyArc !== null && DATA.energyArcs[STATE.energyArc]) {
       const arc = DATA.energyArcs[STATE.energyArc];
       const brief = _ENERGY_ARC_STYLE_BRIEF[STATE.energyArc] || arc.en;
-      parts.push(`[Energy Arc] ${brief}. (Detailed section-by-section dynamics are directed in the lyrics.)`);
+      parts.push(`[Energy Arc] ${brief}. (Detailed section-by-section dynamics are directed in the lyrics.) IMPORTANT: "quiet"/"whisper"/"stillness" here describe VOLUME and instrumental density only — they never mean the vocal melody goes flat or monotone. Even in the quietest, sparsest moment, the vocal must still leap widely in pitch per [Melodic Contour] — a hushed, stripped-down section is exactly when that pitch movement should be most exposed and audible, not suppressed.`);
     } else {
       const _dyn = STATE.intensity || 5;
       const _peak = _dyn>=8?'wide dynamic range, capable of explosive peaks':_dyn>=5?'moderate dynamic range, warm and charged':'gentle, mostly steady warmth';
-      parts.push(`[Energy Arc] ${_peak}. (Detailed section-by-section dynamics are directed in the lyrics.)`);
+      parts.push(`[Energy Arc] ${_peak}. (Detailed section-by-section dynamics are directed in the lyrics.) IMPORTANT: gentle/steady volume never means flat vocal pitch — [Melodic Contour]'s wide pitch movement stays fully present regardless of loudness.`);
     }
 
     /* ── ⑪ 조성 + 음계 (통합 압축) ── */
