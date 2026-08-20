@@ -3889,6 +3889,14 @@ function _doBuildPrompt() {
     if (!window._promptLocked) box.textContent=hasUserSelection?scrubArtistNames(parts.join('\n')):'← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다. (여기에 직접 붙여넣기 가능)';  // 사용자가 직접 편집하면 잠겨 덮어쓰지 않음
     /* UPG-1: 빌드 완료 후 히스토리 저장 */
     if (typeof _saveHistoryAfterBuild === 'function') _saveHistoryAfterBuild();
+    // ★ 새로고침해도 보컬 선택이 유지되도록 저장 — 프롬프트가 새로 빌드될 때마다
+    //   (즉 어떤 경로로 바뀌었든) 여기 한 곳에서 최신 상태를 저장
+    try {
+      localStorage.setItem('gugak_vocal_selection', JSON.stringify({
+        vocalTones: STATE.vocalTones, vocalStyle: STATE.vocalStyle,
+        gugakVocalStyle: STATE.gugakVocalStyle, vocalGenderLock: STATE.vocalGenderLock,
+      }));
+    } catch(e) {}
   } catch(e) {
     console.error('[_doBuildPrompt 오류]', e);
     document.getElementById('promptBox').textContent='← 위 항목들을 선택하면 자동으로 프롬프트가 생성됩니다.';
@@ -7492,6 +7500,24 @@ window.addEventListener('DOMContentLoaded',()=>{
     const _isPreset = ['3:30','4:00','4:30','5:00','5:30'].includes(_savedDuration);
     if (_isPreset) setSongDuration(_savedDuration); else setSongDurationCustom(_savedDuration);
   }
+  // ★ 새로고침해도 보컬 선택(톤/스타일/국악창법/성별고정)이 유지되도록 복원
+  try {
+    const _savedVocal = JSON.parse(localStorage.getItem('gugak_vocal_selection') || 'null');
+    if (_savedVocal) {
+      if (Array.isArray(_savedVocal.vocalTones)) STATE.vocalTones = _savedVocal.vocalTones;
+      if (_savedVocal.vocalStyle !== undefined) STATE.vocalStyle = _savedVocal.vocalStyle;
+      if (_savedVocal.gugakVocalStyle !== undefined) STATE.gugakVocalStyle = _savedVocal.gugakVocalStyle;
+      if (_savedVocal.vocalGenderLock !== undefined) STATE.vocalGenderLock = _savedVocal.vocalGenderLock;
+      // 성별 고정 버튼 UI(눌린 표시)도 복원된 값에 맞춰 동기화
+      document.querySelectorAll('.gender-lock-btn').forEach(b => b.classList.remove('active'));
+      const _glIdMap = { male:'vlock_male', female:'vlock_female', both:'vlock_both' };
+      if (STATE.vocalGenderLock && _glIdMap[STATE.vocalGenderLock]) {
+        document.getElementById(_glIdMap[STATE.vocalGenderLock])?.classList.add('active');
+      } else {
+        document.getElementById('vlock_none')?.classList.add('active');
+      }
+    }
+  } catch(e) {}
   renderAll();syncSliders();
   updateRatioSlider(STATE.koreanRatio||70);
   syncGueumUI();
@@ -7810,6 +7836,16 @@ async function runQualityEngine() {
   const c = _qeSelectedCombo;
   const btn = document.getElementById('qeRunBtn');
   if (btn) btn.disabled = true;
+
+  // ★ "🔒 최종 보컬 고정" 버튼을 따로 안 눌렀어도, 사용자가 06번 섹션에서
+  //   이미 특정 성별의 보컬 톤만 선택해뒀다면 그 선택을 존중하도록 자동으로 고정 처리.
+  //   (성별 필터는 화면에 뭘 보여줄지 정할 뿐이라, 실제로 선택해둔 항목이 기준)
+  if (!STATE.vocalGenderLock && Array.isArray(STATE.vocalTones) && STATE.vocalTones.length > 0) {
+    const genders = new Set(STATE.vocalTones.map(i => DATA.vocalTones[i]?.gender).filter(g => g && g !== 'both'));
+    if (genders.size === 1) {
+      STATE.vocalGenderLock = [...genders][0];
+    }
+  }
 
   document.getElementById('qeResultBox').style.display='none';
   const pw = document.getElementById('qeProgressWrap');
