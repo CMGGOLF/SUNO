@@ -2915,6 +2915,9 @@ function setVocalGenderLock(g) {
   const idMap = { male:'vlock_male', female:'vlock_female', both:'vlock_both', null:'vlock_none' };
   document.getElementById(idMap[g])?.classList.add('active');
   enforceVocalGenderLock();
+  // ★ 이 버튼 클릭만으론 buildPrompt가 안 불려서(=저장 훅이 안 걸려서) 새로고침하면
+  //   방금 고정한 성별이 저장 안 된 채로 날아가는 문제가 있었음 — 여기서 직접 호출해 보정
+  buildPrompt();
   showToast(g ? `🔒 보컬 ${g==='male'?'남성':g==='female'?'여성':'혼성'}으로 고정됨` : '🔓 보컬 성별 고정 해제됨');
 }
 
@@ -2991,6 +2994,9 @@ function setGender(g, btn) {
     return d && (g==='all' || d.gender===g || d.gender==='both');
   });
   renderTones(g);
+  // ★ 이 버튼도 buildPrompt를 안 불러서 저장 훅이 안 걸렸음 — 새로고침 시 필터가
+  //   "전체"로 되돌아가던 문제 보정
+  buildPrompt();
 }
 const toggleTexture=createToggleFunction('textures','textureGrid','texture');
 const toggleGroove=createToggleFunction('grooves','grooveGrid','groove');
@@ -3895,6 +3901,7 @@ function _doBuildPrompt() {
       localStorage.setItem('gugak_vocal_selection', JSON.stringify({
         vocalTones: STATE.vocalTones, vocalStyle: STATE.vocalStyle,
         gugakVocalStyle: STATE.gugakVocalStyle, vocalGenderLock: STATE.vocalGenderLock,
+        gender: STATE.gender,
       }));
     } catch(e) {}
   } catch(e) {
@@ -4477,7 +4484,6 @@ const GENRE_SONGFORM = {
       '[a cold reverb tail opens the space — {sec}s, distant and hollow, before daegeum breath enters]',
       '[janggu drives in immediately at full tempo, no silence, no build-up — the rhythmic pulse is there from the very first second]',
       '[gayageum and daegeum trade short phrases back and forth immediately, a musical conversation before the beat settles in]',
-      '[vocal enters first with the opening line completely dry, no instruments yet — {sec}s before the instruments join]',
     ],
     outroStyle: [
       '[voice alone — last phrase without instruments, then silence]\n[end]',
@@ -4507,7 +4513,6 @@ const GENRE_SONGFORM = {
       '[a single haegeum bends a blue note like a muted trumpet — {sec}s, then rhythm section enters]',
       '[brush drums swing in immediately at tempo, no silence, no build-up — the groove is live from the first second]',
       '[haegeum and upright bass trade short phrases back and forth immediately, a musical conversation before the groove settles in]',
-      '[vocal enters first with the opening line completely dry, no instruments yet — {sec}s before the instruments join]',
     ],
     outroStyle: [
       '[last chord held — instrument sustains until it disappears on its own]\n[no fade, just silence]\n[end]',
@@ -4537,7 +4542,6 @@ const GENRE_SONGFORM = {
       '[wind and empty air open the space — {sec}s, then haegeum wails alone]',
       '[soribuk strikes in immediately at full intensity, no silence — the pansori pulse drives from the first second]',
       '[haegeum and soribuk trade short phrases back and forth immediately, call and response before the vocal enters]',
-      '[vocal enters first with the opening line completely dry, no instruments yet — {sec}s before the instruments join]',
     ],
     outroStyle: [
       '[voice alone — unaccompanied final cry, then silence]\n[end]',
@@ -4567,7 +4571,6 @@ const GENRE_SONGFORM = {
       '[a field-recording-like ambience of creaking wood and wind opens — {sec}s, then gayageum riff enters]',
       '[janggu drives in immediately at full tempo, no silence — the folk rhythm pulse is there from the first second]',
       '[haegeum and gayageum trade short phrases back and forth immediately, a musical conversation before the beat settles in]',
-      '[vocal enters first with the opening line completely dry, no instruments yet — {sec}s before the instruments join]',
     ],
     outroStyle: [
       '[repeat last line spoken, not sung — voice alone]\n[end]',
@@ -4597,7 +4600,6 @@ const GENRE_SONGFORM = {
       '[gayageum sample and 808 hit together on beat 1 — {sec}s, no build, hook and beat simultaneous from note one]',
       '[janggu and the rhythm section drive in immediately at full tempo, no silence, no build-up]',
       '[gayageum and the rhythm section trade short phrases back and forth immediately]',
-      '[vocal enters first with the opening line completely dry, no instruments yet — {sec}s before the instruments join]',
     ],
     outroStyle: [
       '[hard stop — music cuts, one bar of silence, then single janggu hit]\n[end]',
@@ -4627,7 +4629,6 @@ const GENRE_SONGFORM = {
       '[a single temple-bell tone rings and its reverb tail fills the space — {sec}s, then silence again]',
       '[a soft but steady percussive pulse enters immediately, no silence, setting a gentle ambient rhythm from the first second]',
       '[daegeum and gayageum trade slow overlapping phrases immediately, a quiet musical conversation with no rhythm yet]',
-      '[vocal enters first with the opening line completely dry, no instruments yet — {sec}s before the instruments join]',
     ],
     outroStyle: [
       '[final daegeum note, brief and clear, dissolving quickly into a short reverb tail]\n[end]',
@@ -4657,7 +4658,6 @@ const GENRE_SONGFORM = {
       '[ajaeng bows a low note like rain on the room — {sec}s, then a deep Rhodes chord answers]',
       '[a slow deep pulse drives in immediately, no silence — the rhythm is grounded and heavy from the very first second]',
       '[ajaeng and haegeum trade short aching phrases back and forth immediately, a musical conversation before the beat settles in]',
-      '[vocal enters first with the opening line completely dry, no instruments yet — {sec}s before the instruments join]',
     ],
     outroStyle: [
       '[ajaeng sustains alone — voice gone, one bowed note slowly decays]\n[end]',
@@ -4687,7 +4687,6 @@ const GENRE_SONGFORM = {
       '[a single gayageum note rings out briefly and clearly — {sec}s, then the groove locks in]',
       '[janggu and a modern rhythm layer drive in immediately at full tempo, no silence, no build-up]',
       '[gayageum and haegeum trade short phrases back and forth immediately, a musical conversation before the modern elements enter]',
-      '[vocal enters first with the opening line completely dry, no instruments yet — {sec}s before the instruments join]',
     ],
     outroStyle: [
       '[groove fades — bass note last to leave]\n[end]',
@@ -4719,7 +4718,6 @@ const GENRE_SONGFORM = {
       '[완전 침묵 뒤 보컬이 무반주로 한 소절 먼저 부름 — {sec}초, 그 뒤 악기 들어옴]',
       '[janggu drives in immediately at full trot tempo, no silence, no build-up — the beat is there from the very first second]',
       '[haegeum and gayageum trade short phrases back and forth immediately, a musical conversation before the beat settles in]',
-      '[vocal enters first with the opening line completely dry, no instruments yet — {sec}s before the instruments join]',
     ],
     outroStyle: [
       '[모든 악기가 멈추고 목소리만 홀로 남아 여운을 남김]\n[end]',
@@ -5431,7 +5429,11 @@ function buildDynamicStructure(totalSec, opts) {
   const hasPreChorus = form.sections.includes('prechorus');
 
   // 장르별 인트로 스타일 — 트롯트 구조면 선택 장르의 introStyle 우선, 없으면 트롯트 기본
-  const _introSec = Math.round(totalSec * 0.07);
+  // ★ 예전엔 항상 곡 길이의 정확히 7%로 고정 — 어떤 장르든 인트로 길이가 똑같아서
+  // 곡마다 다양하게 들려야 할 인트로가 다 똑같이 박제된 느낌이었음.
+  // 또한 지나치게 긴 정적 구간은 Suno가 정확히 못 채우고 노이즈로 메꾸는 경우가 있어
+  // 상한도 같이 둠 — 곡마다 4~9% 사이로 랜덤, 6~13초 범위로 제한
+  const _introSec = Math.max(6, Math.min(13, Math.round(totalSec * (0.04 + Math.random() * 0.05))));
   const _pickForm = (v, kindKey) => {
     if (!Array.isArray(v)) return v || '';
     if (!v.length) return '';
@@ -7508,6 +7510,12 @@ window.addEventListener('DOMContentLoaded',()=>{
       if (_savedVocal.vocalStyle !== undefined) STATE.vocalStyle = _savedVocal.vocalStyle;
       if (_savedVocal.gugakVocalStyle !== undefined) STATE.gugakVocalStyle = _savedVocal.gugakVocalStyle;
       if (_savedVocal.vocalGenderLock !== undefined) STATE.vocalGenderLock = _savedVocal.vocalGenderLock;
+      if (_savedVocal.gender !== undefined) STATE.gender = _savedVocal.gender;
+      // 성별 필터 버튼(전체/남성/여성) UI도 복원된 값에 맞춰 동기화 —
+      // 이 버튼들은 고유 id가 없어 onclick 속성으로 정확히 지정 (허스키 보컬 성별 버튼과 클래스가 겹침)
+      document.querySelectorAll('[onclick*="setGender("]').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('onclick')?.includes(`setGender('${STATE.gender || 'all'}'`));
+      });
       // 성별 고정 버튼 UI(눌린 표시)도 복원된 값에 맞춰 동기화
       document.querySelectorAll('.gender-lock-btn').forEach(b => b.classList.remove('active'));
       const _glIdMap = { male:'vlock_male', female:'vlock_female', both:'vlock_both' };
