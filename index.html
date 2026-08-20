@@ -5295,18 +5295,10 @@ function buildBackingVocalCueBlock() {
     : '';
 }
 
-async function genLyrics(lang) {
-  const current = document.getElementById('promptBox').textContent;
-  const lyricMoodSeed = extractLyricMoodSeed(current); // 무드·감정 줄만 추출 — BPM·악기·구음 제외
-  const lyricStory = (document.getElementById('lyricsStoryKr')?.value || '').trim(); // 사용자 스토리/키워드
-  const loading = document.getElementById('lyricsKrLoading');
-  const out     = document.getElementById('lyricsKrOut');
-  const durationInput = document.getElementById('lyricsDurationKr');
-  if (durationInput) enforceDuration(durationInput);
-  const duration = durationInput?.value || '3:30';
-  const [minsStr, secsStr] = duration.split(':');
-  const totalSec = parseInt(minsStr) * 60 + parseInt(secsStr || '0');
-
+/* genLyrics·genTrendLyrics 공용 — 장르별 송폼 선택부터 절/후렴/구음/브릿지
+   랜덤 구조(structureKr) 완성까지 전체. totalSec만 받으면 STATE(장르·트롯베이스 등)를
+   참조해 스스로 완결된 구조를 만들어 반환 — 두 함수 다 이걸 쓰면 구조 생성 방식이 완전히 같아짐 ── */
+function buildDynamicStructure(totalSec) {
   /* ── ① 장르에 맞는 송폼 선택 ── */
   const form = (STATE.genre !== null && GENRE_SONGFORM[STATE.genre])
     ? GENRE_SONGFORM[STATE.genre]
@@ -5468,6 +5460,23 @@ async function genLyrics(lang) {
   /* 🔀 잠긴 구조는 1회 소비 후 해제 (다음 생성은 새 랜덤, 또는 다시 섞기로 재잠금) */
   _lyricStructOverride = null; _lyricStructMode = null; _lyricStructLong = null;
 
+  return { form, isHiphop, isTrot, _trotDiv, tr, scaleFactor, verseLines, preLines, choLines, bridgeLines, outroLines, hasPreChorus, structureKr, _useGugakBase, _gueumExplicit, _wantGueum };
+}
+
+async function genLyrics(lang) {
+  const current = document.getElementById('promptBox').textContent;
+  const lyricMoodSeed = extractLyricMoodSeed(current); // 무드·감정 줄만 추출 — BPM·악기·구음 제외
+  const lyricStory = (document.getElementById('lyricsStoryKr')?.value || '').trim(); // 사용자 스토리/키워드
+  const loading = document.getElementById('lyricsKrLoading');
+  const out     = document.getElementById('lyricsKrOut');
+  const durationInput = document.getElementById('lyricsDurationKr');
+  if (durationInput) enforceDuration(durationInput);
+  const duration = durationInput?.value || '3:30';
+  const [minsStr, secsStr] = duration.split(':');
+  const totalSec = parseInt(minsStr) * 60 + parseInt(secsStr || '0');
+
+  const { form, isHiphop, isTrot, _trotDiv, tr, scaleFactor, verseLines, preLines, choLines, bridgeLines, outroLines, hasPreChorus, structureKr, _useGugakBase, _gueumExplicit, _wantGueum } = buildDynamicStructure(totalSec);
+
 /* genLyrics·genTrendLyrics 공용 — 사용자 스토리 블록 */
 
   /* ── ④ 라이밍 지시 + ⑤ 금칙어 (트롯트 모드 분기) ── */
@@ -5619,16 +5628,15 @@ async function genTrendLyrics(lang) {
   const durationInput = document.getElementById('lyricsDurationKr');
   if(durationInput) enforceDuration(durationInput);
   const duration = durationInput?.value || '3:30';
+  const [minsStr, secsStr] = duration.split(':');
+  const totalSec = parseInt(minsStr) * 60 + parseInt(secsStr || '0');
   loading.classList.add('show');
   try {
-    /* 트렌드 가사도 장르 송폼·라임·금칙어 적용 */
-    const trendForm = (STATE.genre !== null && GENRE_SONGFORM[STATE.genre])
-      ? GENRE_SONGFORM[STATE.genre] : SONGFORM_DEFAULT;
-    const trendRhymeKr = `라임 체계: ${trendForm.rhyme} — ${trendForm.rhyme === 'AABB' ? '1·2번째 줄 라임, 3·4번째 줄 라임' : trendForm.rhyme === 'ABAB' ? '1·3번째 줄 라임, 2·4번째 줄 라임' : trendForm.rhyme === 'AAB' ? '1·2번째 줄 유사 반복, 3번째 줄 해소 라임' : '2·4번째 줄만 라임'}. 행말 라임 필수.`;
+    /* ★ 한국어 가사 생성과 완전히 동일한 구조 생성 로직 사용 — 장르마다 절·후렴·구음·브릿지가
+       다르게 랜덤 배치되고, 트롯 베이스 토글에 따라 트롯 구조/어휘까지 그대로 반영됨 */
+    const { form, structureKr } = buildDynamicStructure(totalSec);
+    const trendRhymeKr = `라임 체계: ${form.rhyme} — ${form.rhyme === 'AABB' ? '1·2번째 줄 라임, 3·4번째 줄 라임' : form.rhyme === 'ABAB' ? '1·3번째 줄 라임, 2·4번째 줄 라임' : form.rhyme === 'AAB' ? '1·2번째 줄 유사 반복, 3번째 줄 해소 라임' : '2·4번째 줄만 라임'}. 행말 라임 필수.`;
     const trendBanKr  = `금칙어 (절대 금지): ${getLyricClicheWords().join(', ')}. 악기명·음악 용어 가사에 금지.`;
-    // 결함7 수정: T/R 아크를 GENRE_SONGFORM에서 동적으로 가져옴 (하드코딩 제거)
-    const _tl = trendForm.trLabel || {};
-    const trendArc = `절 ${_tl.verse||_tl.verse1||'+6'} → 후렴 ${_tl.chorus||_tl.refrain||'T+5↔R-5'} → 브릿지 ${_tl.bridge||'+9'} → Big Finish +10 → 아웃트로 ${_tl.outro||'-8'}`;
 
     const trendPromptKr = `2026년 최신 트렌드 스타일의 조선 코어 가사를 ${duration} 길이로 작성하세요.
 ${buildStoryBlockKr(lyricStory)}
@@ -5641,9 +5649,8 @@ ${buildStoryBlockKr(lyricStory)}
 6. ${trendRhymeKr}
 7. ${trendBanKr}
 
-긴장/이완 아크: ${trendArc}
-
-구조: [인트로] [절 1] 긴장 ${_tl.verse||_tl.verse1||'+6'} [후렴] ${_tl.chorus||_tl.refrain||'T+5↔R-5'} [절 2] 긴장 ${_tl.verse||_tl.verse2||'+7'} [후렴] [브릿지] 긴장 ${_tl.bridge||'+9'} [후렴 - 마지막][Big Finish] 긴장 +10 [아웃트로] 이완 ${_tl.outro||'-8'} [fade out] [end]
+구조:
+${structureKr}
 ${buildEnergyArcSectionBlockKr()}${buildInlineEventBlockKr()}${buildDuetBlockKr()}${buildBackingVocalCueBlock()}
 음악 분위기 참고:
 ${lyricMoodSeed}`;
