@@ -4017,6 +4017,23 @@ async function callClaude(prompt, systemPrompt = '', temperature = 0.85, maxToke
   const modelToUse = useOnline ? (_selectedModel + ':online') : _selectedModel;  // :online = OpenRouter 실제 웹 검색(Exa) — 검색당 약 $0.02 추가
   return await _callOnce(modelToUse, messages, temperature, apiKey, maxTokens);
 }
+/* ★ AI가 [인트로] 태그만 쓰고 그 아래 악기 지시문을 빼먹는 경우가 있음 —
+   Suno가 인트로에 아무 가이드도 못 받아서 즉흥으로 채우다 노이즈처럼 들리는 원인.
+   프롬프트에 지시해도 AI가 가끔 빼먹으므로, 코드에서 강제로 채워넣는 안전장치 ── */
+function ensureIntroContent(lyricsText, structureKr) {
+  if (!lyricsText || !structureKr) return lyricsText;
+  const m = structureKr.match(/\[인트로\]\n([^\n]+)/);
+  if (!m) return lyricsText;
+  const introFallback = m[1];
+  // [인트로] 바로 다음이 "전절/후렴/브릿지/프리코러스/구음/아웃트로" 같은 실제 구조 태그로
+  // 곧장 넘어가면 "비어있음"으로 판단 (인트로 자체의 악기 지시문도 대괄호로 시작하므로,
+  // 단순히 "다음이 대괄호인가"만 보면 정상 인트로까지 오탐하게 됨 — 구조 태그 이름을 명시해 구분)
+  if (/\[인트로\]\s*\n\s*\[(전절|절\s*\d|후렴|브릿지|프리코러스|프리훅|Gugak\s*Guum|아웃트로|Ad-lib|Big\s*Finish|Verse|Chorus|Bridge|Pre-?Chorus|Hook)/i.test(lyricsText)) {
+    return lyricsText.replace(/\[인트로\]\s*\n/, `[인트로]\n${introFallback}\n\n`);
+  }
+  return lyricsText;
+}
+
 function cleanLyrics(text) {
   if (!text) return '';
   let cleaned = text
@@ -5675,7 +5692,7 @@ ${structureKr}`;
         : `당신은 세계적인 탑라인 작사가입니다. 최우선: ① 라임 체계 일관성 유지 ② 후렴 앵커 라인은 그 순간만을 위해 곡을 다시 틀 만큼 강렬하게 ③ [Big Finish]는 곡 전체가 그 순간을 향해 달려온 것처럼.${_outputRule}`);
 
     const text = await callClaude(lyricPrompt, sysP, 0.92);
-    out.value = cleanLyrics(text);
+    out.value = ensureIntroContent(cleanLyrics(text), structureKr);
     showToast(`✅ [${form.nameKr}] ${duration} 가사 생성 완료!`);
   } catch(e) {
     out.value = '오류: ' + (e.message || '알 수 없는 오류');
@@ -5722,7 +5739,7 @@ ${buildEnergyArcSectionBlockKr()}${buildInlineEventBlockKr()}${buildDuetBlockKr(
 ${lyricMoodSeed}`;
     const sysTrendKr = `당신은 국악 정서를 바탕에 깐 2026년 트렌드 감각의 작사가입니다. 짧고 강렬한 훅 중심 구조를 쓰되, 정서는 반드시 이 채널 고유의 깊고 서글픈 한(恨)이 바탕입니다 — 국악기(해금·가야금 등)가 정서의 근간이라는 전제 위에서 트렌디한 훅을 얹는 것이지, 국악 정서를 버리고 일반 K팝처럼 쓰는 게 아닙니다. 반드시 [인트로] 같은 [섹션] 태그로 시작 — 곡 제목·머리말을 맨 앞에 붙이지 말 것. [섹션] 태그와 가사 줄만 출력 — 번호·설명 금지. "긴장 +6", "이완 -5", "T+5↔R-5" 같은 수치·라벨은 감정 지침일 뿐이니 절대 가사에 쓰지 말 것. 모든 줄을 "~다"로 끝내지 말 것.${buildOutputRule({ modern: true })}`;
     const text = await callClaude(trendPromptKr, sysTrendKr, 0.95);
-    out.value = cleanLyrics(text);
+    out.value = ensureIntroContent(cleanLyrics(text), structureKr);
     showToast(`✅ 2026 트렌드 가사 생성 완료!`);
   } catch(e) { out.value='오류: '+(e.message||'알 수 없는 오류'); }
   loading.classList.remove('show');
