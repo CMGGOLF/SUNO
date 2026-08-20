@@ -6787,6 +6787,8 @@ function setSongDuration(val) {
   // 🔗 11번 가사창 곡 길이도 함께 동기화 (실제 가사 줄 수·구조가 여기 값을 읽음)
   const lyricsDur = document.getElementById('lyricsDurationKr');
   if (lyricsDur) lyricsDur.value = val;
+  // ★ 새로고침해도 유지되도록 저장 — 다시 직접 바꾸기 전까지 이 값 고정
+  try { localStorage.setItem('gugak_song_duration', val); } catch(e) {}
   buildPrompt(true);
 }
 function setSongDurationCustom(val) {
@@ -6802,6 +6804,8 @@ function setSongDurationCustom(val) {
   // 🔗 11번 가사창 곡 길이도 함께 동기화
   const lyricsDur = document.getElementById('lyricsDurationKr');
   if (lyricsDur) lyricsDur.value = STATE.songDuration;
+  // ★ 새로고침해도 유지되도록 저장
+  try { localStorage.setItem('gugak_song_duration', STATE.songDuration); } catch(e) {}
   buildPrompt();
 }
 
@@ -7391,7 +7395,14 @@ function importState() {
 
 
 window.addEventListener('DOMContentLoaded',()=>{
-  loadSavedKey();renderAll();syncSliders();
+  loadSavedKey();
+  // ★ 새로고침해도 곡 길이가 마지막 선택값으로 유지되도록 복원
+  const _savedDuration = localStorage.getItem('gugak_song_duration');
+  if (_savedDuration) {
+    const _isPreset = ['3:30','4:00','4:30','5:00','5:30'].includes(_savedDuration);
+    if (_isPreset) setSongDuration(_savedDuration); else setSongDurationCustom(_savedDuration);
+  }
+  renderAll();syncSliders();
   updateRatioSlider(STATE.koreanRatio||70);
   syncGueumUI();
   initModelSelector();
