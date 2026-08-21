@@ -7851,6 +7851,23 @@ async function runQualityEngine() {
   const btn = document.getElementById('qeRunBtn');
   if (btn) btn.disabled = true;
 
+  // ★ 카드의 정체성(고정값)은 그대로 유지하되, 매번 100% 똑같이 나오지 않도록
+  //   같은 카테고리 풀에서 1개(가끔 2개)를 추가로 섞어 넣어 변주를 줌.
+  //   같은 카드를 여러 번 써도 곡마다 질감이 조금씩 달라지게 하기 위함 —
+  //   카드 고유 항목은 절대 빼지 않고 "추가만" 하므로 카드의 핵심 정체성은 안 깨짐
+  function _qeVaried(base, poolSize, extraChance, extraCount) {
+    const arr = [...base];
+    if (poolSize > arr.length && Math.random() < (extraChance ?? 0.65)) {
+      let added = 0, guard = 0;
+      while (added < (extraCount ?? 1) && guard < 20) {
+        guard++;
+        const cand = Math.floor(Math.random() * poolSize);
+        if (!arr.includes(cand)) { arr.push(cand); added++; }
+      }
+    }
+    return arr;
+  }
+
   // ★ "🔒 최종 보컬 고정" 버튼을 따로 안 눌렀어도, 사용자가 06번 섹션에서
   //   이미 특정 성별의 보컬 톤만 선택해뒀다면 그 선택을 존중하도록 자동으로 고정 처리.
   //   (성별 필터는 화면에 뭘 보여줄지 정할 뿐이라, 실제로 선택해둔 항목이 기준)
@@ -7886,10 +7903,10 @@ async function runQualityEngine() {
     if (c.concept !== undefined)    STATE.concept = c.concept;
     if (c.vocalStyle !== undefined) STATE.vocalStyle = c.vocalStyle;
     if (c.vocalTones !== undefined) STATE.vocalTones = [...c.vocalTones];
-    if (c.textures !== undefined)   STATE.textures = [...c.textures];
-    if (c.grooves !== undefined)    STATE.grooves = [...c.grooves];
-    if (c.spaces !== undefined)     STATE.spaces = [...c.spaces];
-    if (c.moods !== undefined)      STATE.moods = [...c.moods];
+    if (c.textures !== undefined)   STATE.textures = _qeVaried(c.textures, DATA.textures.length);
+    if (c.grooves !== undefined)    STATE.grooves = _qeVaried(c.grooves, DATA.grooves.length);
+    if (c.spaces !== undefined)     STATE.spaces = _qeVaried(c.spaces, DATA.spaces.length, 0.4);
+    if (c.moods !== undefined)      STATE.moods = _qeVaried(c.moods, DATA.moods.length);
     syncSliders();
     qeSetStep(1, `BPM ${STATE.bpm} · 강도 ${c.intensity} · 비율 ${c.koreanRatio}% · 에너지 아크 세팅 완료`);
     await sleep(150);
@@ -7910,16 +7927,16 @@ async function runQualityEngine() {
 
     // ── STEP 3: Human Feel + Black Soul ─────────────
     qeSetStep(2);
-    STATE.humanFeelElements  = [...c.humanFeelElements];
-    STATE.blackSoulElements  = [...c.blackSoulElements];
-    STATE.bassStyles         = [...c.bassStyles];
+    STATE.humanFeelElements  = _qeVaried(c.humanFeelElements, DATA.humanFeelElements.length);
+    STATE.blackSoulElements  = _qeVaried(c.blackSoulElements, DATA.blackSoulElements.length);
+    STATE.bassStyles         = _qeVaried(c.bassStyles, DATA.bassStyles.length, 0.4);
     qeSetStep(3, `Human Feel ${c.humanFeelElements.length}개 · Black Soul ${c.blackSoulElements.length}개 · Bass ${c.bassStyles.length}개 적용`);
     await sleep(150);
 
     // ── STEP 4: Korean Groove + Feeling ─────────────
     qeSetStep(3);
-    STATE.koreanGrooves   = [...c.koreanGrooves];
-    STATE.koreanFeelings  = [...c.koreanFeelings];
+    STATE.koreanGrooves   = _qeVaried(c.koreanGrooves, DATA.koreanGrooves.length);
+    STATE.koreanFeelings  = _qeVaried(c.koreanFeelings, DATA.koreanFeelings.length);
     STATE.hanSoulStyle    = c.hanSoulStyle;
     renderAll();
     qeSetStep(4, `Korean Groove ${c.koreanGrooves.length}개 · Korean Feeling ${c.koreanFeelings.length}개 · 한소울 스타일 #${c.hanSoulStyle}`);
