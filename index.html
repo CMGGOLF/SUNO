@@ -1356,6 +1356,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <b>🎵 국악 트롯트 정서 베이스</b>
         <span style="font-size:10px;color:var(--muted)">— 어떤 장르를 골라도 깊고 서글픈 국악 트롯트 느낌으로 (가사+음악)</span>
       </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--korean2);margin-bottom:8px;cursor:pointer">
+        <input type="checkbox" id="simpleIntroToggle" onchange="STATE.simpleIntro=this.checked; buildPrompt(true); showToast(this.checked?'🟢 인트로 단순하게 ON — 특수 연출 없이 전 악기가 바로 자연스럽게 시작':'인트로 단순하게 OFF — 다양한 연출 풀 사용');">
+        <b>🟢 인트로 단순하게</b>
+        <span style="font-size:10px;color:var(--muted)">— 화려한 연출(정적·솔로 등) 대신, 전 악기가 처음부터 자연스럽게 같이 시작 (노이즈 위험 최소화)</span>
+      </label>
       <div style="margin-bottom:8px">
         <div style="font-size:12px;color:var(--korean2);margin-bottom:4px"><b>📖 가사 스토리/상황 (선택)</b> <span style="font-size:10px;color:var(--muted)">— 키워드·인물·장면·대사를 넣으면 그 이야기로 가사를 만듭니다</span></div>
         <textarea id="lyricsStoryKr" style="width:100%;min-height:60px;font-size:12px;padding:8px;box-sizing:border-box" placeholder="예) 어머니 산소 가는 길, 칠석날, 베옷 한 벌&#10;예) 첫사랑이 살던 그 골목, 눈 내리는 밤, '잘 지내냐' 한마디&#10;예) 떠난 임 / 막걸리 한잔 / 빈 의자 / 옛 노래"></textarea>
@@ -1889,6 +1894,7 @@ const STATE = {
   dnaSeed: Math.random(),       // 매 생성마다 다른 DNA 변형 선택용
   negativeSeed: Math.random(),  // 매 생성마다 다른 금지어 조합용
   gugakTrotBase: true,          // 전 장르 공통 — 국악 베이스 + 한(恨)의 애절함 테두리 (기본 ON)
+  simpleIntro: false,           // 켜면 인트로 연출 풀 대신 안전한 단일 문구 사용 (기본 OFF)
   sanjoBallad: false,           // 산조재즈 발라드 모드 (서울 심야 재즈용) — true면 발라드 DNA 풀 사용
 };
 
@@ -3350,8 +3356,8 @@ const GENRE_DNA_EXTRA = {
   0: [ // 조선 궁중 소울 추가
     "moonlit palace soul — gayageum plucking sparse crystalline notes over a slow neo-soul groove, haegeum sighing in the gaps, ajaeng deep bass, warm Rhodes held low, the loneliness of an empty royal courtyard",
     "regal slow-burn soul — geomungo low resonant strokes anchoring the floor, gayageum melody drifting above, soft janggu heartbeat, distant strings, dignified sorrow that swells late",
-    "candlelit court ballad — daegeum breathy long tones answered by gayageum, a hushed upright bass, brushed cymbals, the restrained grief of a noblewoman alone at night",
-    "ceremonial soul nocturne — haegeum crying long bent notes, gayageum tremolo, ajaeng drone underneath, sparse piano chords, incense-smoke atmosphere, deep dignified han",
+    "candlelit court ballad — daegeum breathy phrases answered by gayageum, a hushed upright bass, brushed cymbals, the restrained grief of a noblewoman alone at night",
+    "ceremonial soul nocturne — haegeum crying long bent notes, gayageum rippling phrases, ajaeng drone underneath, sparse piano chords, incense-smoke atmosphere, deep dignified han",
     "after-rain palace soul — gayageum droplets over warm Rhodes, haegeum weeping softly, slow janggu pulse, the stillness after weeping, elegant and heavy",
     "twilight throne-room soul — slow swelling strings under gayageum, geomungo bass plucks, a single mournful piri line, grandeur dimmed by loss",
     "silk-and-shadow soul — gayageum and haegeum trading aching phrases, muffled janggu, a low warm bass, the weight of unspoken longing in royal halls",
@@ -3371,7 +3377,7 @@ const GENRE_DNA_EXTRA = {
     "raw gospel-pansori shout — a powerful Korean voice tearing on the high notes, haegeum and ajaeng answering, organ-like swells held low, janggu backbone, cathartic release of han",
     "slow-burning pansori soul — gayageum sparse and aching, the voice starting in a hoarse whisper and breaking open into a wail, deep ajaeng bass, devastating build",
     "field-holler pansori blues — call-and-response between a cracked deukeum (raw) voice and weeping haegeum, hand-clap percussion, raw and earthen, sorrow wrung dry",
-    "torch-song pansori soul — a single mournful melody carried by a husky breaking voice, gayageum tremolo, ajaeng drone, smoky and intimate, grief turned beautiful",
+    "torch-song pansori soul — a single mournful melody carried by a husky breaking voice, gayageum rippling phrases, ajaeng drone, smoky and intimate, grief turned beautiful",
     "explosive pansori catharsis — restrained verses erupting into full-throated belting, janggu thunder, haegeum screaming, the climax of a lifetime of held-in sorrow",
     "midnight pansori ballad — soft gayageum, a weary aching voice telling its grief, brushed percussion, warm low bass, the quiet kind of crying",
     "ancestral pansori soul — geomungo and ajaeng deep and grave, the voice rough as bark, sparse percussion, a ritual lament that rises and falls like breathing",
@@ -3398,10 +3404,10 @@ const GENRE_DNA_EXTRA = {
     "marching gugak hip-hop — booming taepyeongso-like piri over a stomping beat, janggu and 808, chant-like hooks, ceremonial and powerful",
   ],
   5: [ // 대금 앰비언트 추가
-    "vast daegeum ambient — a single breathy daegeum tone stretched across huge reverb, faint gayageum droplets, sub-bass drone, the silence of distant mountains",
-    "fog-drift ambient — overlapping daegeum and haegeum long tones, no pulse, only swells, ajaeng drone beneath, dissolving and weightless",
+    "vast daegeum ambient — breathy daegeum phrases drifting across huge reverb, faint gayageum droplets, sub-bass drone, the silence of distant mountains",
+    "fog-drift ambient — overlapping daegeum and haegeum phrases, no pulse, only swells, ajaeng drone beneath, dissolving and weightless",
     "temple-bell ambient — sparse resonant strikes decaying into reverb, daegeum breath, gayageum harmonics, meditative and sorrowful",
-    "snowfall daegeum ambient — gentle gayageum specks over a sustained daegeum pad, soft wind textures, cold and beautiful stillness",
+    "snowfall daegeum ambient — gentle gayageum specks over soft daegeum textures, soft wind textures, cold and beautiful stillness",
     "deep-night ambient — low ajaeng drone, distant daegeum sighs, occasional gayageum ripple, a vast lonely darkness",
     "river-mist ambient — flowing daegeum lines blurred in reverb, faint percussion like dripping water, gayageum echoes, hypnotic melancholy",
     "cavern ambient gugak — echoing daegeum and haegeum in a huge space, sub drone, sparse resonant plucks, awe and grief intertwined",
@@ -4622,7 +4628,7 @@ const GENRE_SONGFORM = {
     secPerLine: 9, maxScale: 1.1,
     verseLines: 3, preLines: 0, choLines: 3, bridgeLines: 2, outroLines: 2,
     introStyle: [
-      '[a single faint daegeum breath sustained quietly — {sec}s, nothing else]',
+      '[a single faint daegeum breath, soft and brief — {sec}s, nothing else]',
       '[a low ajaeng drone sustains at a steady quiet level under reverb, no growing crescendo, no rhythm, vast space — {sec}s]',
       '[distant gayageum harmonics shimmer in — {sec}s, formless and floating]',
       '[wind-like piri tone fades up from a faint hush — {sec}s, lonely and wide]',
@@ -4713,7 +4719,7 @@ const GENRE_SONGFORM = {
       '[해금이 애절한 한 소절을 먼저 흐느낌 — {sec}초, 그 뒤 장단 들어옴]',
       '[피리가 구슬픈 선율 한 줄 — {sec}초, 아쟁 저음이 받쳐줌, 보컬 없음]',
       '[아쟁 저음 한 음이 길게 깔리고 — {sec}초, 장구가 천천히 들어옴]',
-      '[아주 희미하게 남은 여백 — {sec}초, 그 뒤 대금 한 음이 홀로 길게 울림, 보컬 없음]',
+      '[아주 희미하게 남은 여백 — {sec}초, 그 뒤 대금이 짧게 숨을 불어넣듯 두세 음, 보컬 없음]',
       '[여러 악기가 동시에 낮게 스며들 듯 시작 — {sec}초, 솔로 아닌 합주로 문을 엶]',
       '[태평소 짧은 신호음 한 번 — {sec}초, 격식 있게 곡의 시작을 알림, 장구 뒤이어]',
       '[바람 소리 같은 여백 위로 가야금 아르페지오가 스며듦 — {sec}초, 보컬 없음]',
@@ -5446,10 +5452,14 @@ function buildDynamicStructure(totalSec, opts) {
     const storageKey = `gugak_recent_${kindKey || 'form'}_g${STATE.genre}`;
     return pickUnusedFromPool(v, storageKey, Math.min(3, v.length - 1) || 1, Math.random());
   };  // 풀(배열) 지원 + 최근 사용분 회피
-  const _introSrc = _pickForm(form.introStyle, 'intro') || (isTrot ? _pickForm(_trotForm.introStyle, 'intro') : null);
-  const _introStyle = _introSrc
-    ? _introSrc.replace('{sec}', _introSec).replace('{초}', _introSec)
-    : `(기악 — ${_introSec}초)`;
+  const _introSrc = STATE.simpleIntro
+    ? null  // 단순 모드에서는 아래 안전한 기본 문구 사용
+    : (_pickForm(form.introStyle, 'intro') || (isTrot ? _pickForm(_trotForm.introStyle, 'intro') : null));
+  const _introStyle = STATE.simpleIntro
+    ? `[전 악기가 처음부터 자연스럽게 함께 시작 — 특수 연출 없이, 곡의 기본 편성 그대로 바로 연주]`
+    : (_introSrc
+        ? _introSrc.replace('{sec}', _introSec).replace('{초}', _introSec)
+        : `(기악 — ${_introSec}초)`);
   let structureKr = `[인트로]\n${_introStyle}\n\n`;
 
   if (isHiphop) {
