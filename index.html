@@ -1361,6 +1361,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         <b>🟢 인트로 단순하게</b>
         <span style="font-size:10px;color:var(--muted)">— 화려한 연출(정적·솔로 등) 대신, 전 악기가 처음부터 자연스럽게 같이 시작 (노이즈 위험 최소화)</span>
       </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--korean2);margin-bottom:8px;cursor:pointer">
+        <input type="checkbox" id="coldOpenToggle" onchange="STATE.coldOpen=this.checked; buildPrompt(true); showToast(this.checked?'🎤 콜드 오픈 ON — 인트로 없이 0초부터 보컬로 바로 시작':'콜드 오픈 OFF');">
+        <b>🎤 콜드 오픈</b>
+        <span style="font-size:10px;color:var(--muted)">— 인트로 태그 자체를 없애고, 첫 마디부터 보컬이 바로 노래 시작 (인트로 단순하게보다 더 강하게)</span>
+      </label>
       <div style="margin-bottom:8px">
         <div style="font-size:12px;color:var(--korean2);margin-bottom:4px"><b>📖 가사 스토리/상황 (선택)</b> <span style="font-size:10px;color:var(--muted)">— 키워드·인물·장면·대사를 넣으면 그 이야기로 가사를 만듭니다</span></div>
         <textarea id="lyricsStoryKr" style="width:100%;min-height:60px;font-size:12px;padding:8px;box-sizing:border-box" placeholder="예) 어머니 산소 가는 길, 칠석날, 베옷 한 벌&#10;예) 첫사랑이 살던 그 골목, 눈 내리는 밤, '잘 지내냐' 한마디&#10;예) 떠난 임 / 막걸리 한잔 / 빈 의자 / 옛 노래"></textarea>
@@ -1895,6 +1900,7 @@ const STATE = {
   negativeSeed: Math.random(),  // 매 생성마다 다른 금지어 조합용
   gugakTrotBase: true,          // 전 장르 공통 — 국악 베이스 + 한(恨)의 애절함 테두리 (기본 ON)
   simpleIntro: false,           // 켜면 인트로 연출 풀 대신 안전한 단일 문구 사용 (기본 OFF)
+  coldOpen: false,              // 켜면 인트로 태그 자체를 생략하고 보컬로 바로 시작 (기본 OFF)
   sanjoBallad: false,           // 산조재즈 발라드 모드 (서울 심야 재즈용) — true면 발라드 DNA 풀 사용
 };
 
@@ -3807,6 +3813,26 @@ function _doBuildPrompt() {
     const _ratio = STATE.koreanRatio !== undefined ? STATE.koreanRatio : 70;
     const _intensLabel = STATE.intensity<=3?'Chill':STATE.intensity<=6?'Emotional':'Explosive Soul';
     parts.push(`BPM ${STATE.bpm} · ${_ratio}%KR:${100-_ratio}%modern · Intensity ${STATE.intensity}/10 (${_intensLabel})`);
+    const _tempoVariants = [
+      `[Tempo] steady, locked BPM ${STATE.bpm} maintained consistently from the very first beat to the last — no gradual speeding up or slowing down, no tempo drift across sections`,
+      `[Tempo] BPM ${STATE.bpm} held rock-steady throughout the entire track — the pulse never rushes or drags, identical feel from the first bar to the final one`,
+      `[Tempo] a constant, unwavering BPM ${STATE.bpm} across every section — verses, choruses, and bridge all lock to the same tempo, no unintentional acceleration or slowdown`,
+      `[Tempo] BPM ${STATE.bpm} stays perfectly fixed from start to finish — no section rushes ahead or lags behind, the click never wavers`,
+      `[Tempo] the pulse is locked to BPM ${STATE.bpm} for the whole song — every transition keeps the exact same speed, no creeping tempo changes`,
+      `[Tempo] BPM ${STATE.bpm} throughout, with zero tempo variance between sections — the groove feels identical in speed from the first note to the last`,
+    ];
+    parts.push(_tempoVariants[Math.floor(Math.random() * _tempoVariants.length)]);
+    if (STATE.coldOpen) {
+      const _coldOpenVariants = [
+        `[Cold Open] the vocal begins singing immediately at 0:00 with no instrumental intro of any kind — no build-up, no solo instrument lead-in, the voice is the very first sound heard, instruments join in supporting the vocal from the start`,
+        `[Cold Open] no intro whatsoever — the first sound of the track is the singer's voice, with the full arrangement entering right alongside it from bar one`,
+        `[Cold Open] track starts directly on the opening vocal line, zero instrumental lead-in — the band falls in behind the voice from the very first word`,
+        `[Cold Open] singing starts at the very first second — no pre-roll, no instrumental setup, the voice leads and the arrangement catches up around it`,
+        `[Cold Open] the first thing heard is the vocal, not the band — instruments arrive in step with the singer rather than before them`,
+        `[Cold Open] zero-second lead-in — vocals open the track directly, with the full band already playing underneath from the first syllable`,
+      ];
+      parts.push(_coldOpenVariants[Math.floor(Math.random() * _coldOpenVariants.length)]);
+    }
 
     /* ── ⑨-2 [음악적 한(恨) 강화] 진양조 성향 + 저음 드론 + 미해결 종지 —
        지루해지지 않도록: 진양조는 느린곡에만 편향, 드론은 "밑에 깔리는 층"일 뿐 다른 악기의
@@ -3874,6 +3900,15 @@ function _doBuildPrompt() {
     // 숨소리 억제 — 항상 포함 (숨소리 노이즈뿐 아니라 "숨결 섞인" 보컬 질감 자체도 금지 — 관능적으로 들리는 것 방지)
     const _breathAvoid = 'audible HUMAN VOCAL breathing/gasping/panting sounds mixed into the singing (hakhak, heokheok, heavy breathing, exaggerated inhale/exhale noise from the singer), breathy or whispery/sultry VOCAL delivery, sensual or intimate-sounding vocal breathiness — this restriction applies ONLY to the human voice, NOT to wind instruments (daegeum/piri/danso), whose natural breath-texture tone is expected and should NOT be suppressed. Also avoid: rapid tremolo-like string plucking or strumming bursts especially in intro/outro (sounds like a glitch or error), a single wind instrument holding one unbroken sustained tone for many seconds especially in intro/outro (sounds like a stuck note or error), a long slowly-growing crescendo/swell in the intro that keeps building in volume or density for many seconds before the main groove locks in (sounds like an error or malfunction, not a musical build) — the intro should enter at a settled, steady quiet level almost immediately, not ramp up gradually';
     parts.push(`[AVOID] ${_negWords.join(', ')}, ${_breathAvoid}`);
+    const _endingVariants = [
+      `[Ending Control] the song must end deliberately and cleanly — either a graceful fade, a clean full-band stop together, or a natural decay/reverb tail on the final note. Never let the ending trail off into random noise, static, or an unintended abrupt glitch; the final seconds should sound clearly intentional, not like the recording just cut off`,
+      `[Ending Control] end the track with clear intent — choose one: a smooth fade-out, all instruments stopping together on the final beat, or the last note ringing out into natural silence. Avoid any ending that sounds like a glitch, a stuck note, or the track simply cutting off mid-air`,
+      `[Ending Control] the final moment should feel purposeful, not accidental — either fade gently, cut cleanly on a unified final hit, or let the last note decay naturally into quiet. No trailing noise, no abrupt malfunction-like stop`,
+      `[Ending Control] close the song with a clear, intentional finish — a slow fade, a synchronized full-stop, or a natural ring-out on the last chord. The track should never just trail into static or stop as if something broke`,
+      `[Ending Control] the outro must resolve cleanly — pick one clear ending gesture (fade, unified stop, or natural decay) and commit to it fully; avoid ambiguous endings that dissolve into noise or cut off unexpectedly`,
+      `[Ending Control] finish with deliberate closure — either the sound fades away smoothly, every instrument lands together on a final stop, or the last note is allowed to ring out and decay naturally. No glitchy or accidental-sounding endings`,
+    ];
+    parts.push(_endingVariants[Math.floor(Math.random() * _endingVariants.length)]);
 
     /* ── ⑮ 장르별 시작·끝 구조 힌트 — 모든 곡이 fade out으로 끝나는 레퍼토리화 방지 ── */
     const _sform = (STATE.genre !== null && GENRE_SONGFORM[STATE.genre]) ? GENRE_SONGFORM[STATE.genre] : null;
@@ -4449,7 +4484,7 @@ async function aiExpandPrompt() {
     const _writingGuide = _activeGuide ? `\nWRITING STYLE GUIDE: ${_activeGuide}` : '';
     const text = await callClaude(
       `Create ONE Suno AI style prompt from 7:3 Joseon Core settings below.\nRules:\n- English only, up to 950 characters, keep Korean instrument timbre+role detail (gayageum NOT harp / haegeum NOT violin etc.)\n- Korean traditional music carries 70% melodic & emotional core\n- Modern jazz/blues/soul elements serve as elegant elevation (30%)\n- Include Korean instrument name, traditional phrasing, BPM, emotional tone\n- MANDATORY: begin the prompt with this sonic DNA to differentiate from other genres: "${_dnaHint}"\nSettings:\n${current}`,
-      `You are a Suno AI music prompt expert. Output only one English prompt under 950 characters that keeps the per-instrument timbre and role detail.${_writingGuide}`
+      `You are a Suno AI music prompt expert. Output only one English prompt under 950 characters that keeps the per-instrument timbre and role detail. ★ Never describe a wind instrument (daegeum/piri) holding one sustained/long unbroken tone for many seconds, and never describe a string instrument (gayageum/geomungo) in rapid tremolo — Suno renders these as glitches or stuck-note errors, especially in intro/outro. Preserve any existing tempo-consistency and clean-ending guidance found in the settings below rather than dropping it for space.${_writingGuide}`
     );
     box.textContent = sanitizeSunoPrompt(text, 750);
     showToast('✅ Suno 프롬프트 생성 완료!');
@@ -5327,6 +5362,9 @@ function buildEnergyArcSectionBlockKr() {
 - 각 구조 태그([Verse 1] 등) 바로 밑에, 그 구간이 이 흐름에서 어느 지점인지를 담은 짧은 편곡 메모를 대괄호[]로 한 줄 쓸 것 — 같은 곡 안에서도 절대 같은 문장을 두 번 이상 쓰지 말 것 (예: 전절3·후렴3·브릿지가 전부 "폭발 직전"일 수 없음 — 서로 다른 지점이면 반드시 다른 표현으로)
 - ★★ 반드시 실제 악기 이름을 넣어 "누가 빠지고 누가 남는지·누가 더 들어오는지"로 쓸 것 (이 곡에 쓰이는 악기: ${_inlineInstr}, 그 외 장구·베이스도 가능). "강가에 갈대가 속삭이고" 같은 장면 묘사·시적 문구는 편곡 메모가 아니다 — 예시처럼 쓸 것: "[여린 장구만 남고, 해금 한 가닥]" / "[전 악기 한 템포 더 밀어붙임]" / "[장구만 남고 해금 빠짐 — 거의 무음]" / "[전곡 최고 긴장 — 해금 한 음만 길게 떨림, 장구 멈춤]" (이 예시 문장들을 그대로 베끼지 말고, 형식만 참고해 이 곡의 실제 악기로 새로 쓸 것)
 - ★ [인트로]와 [아웃트로]에는 이 편곡 메모를 추가하지 말 것 — 그 두 구간은 이미 별도의 전용 악기 지시문이 붙어있어서, 여기에 또 붙이면 서로 충돌해 Suno가 인트로에서 노이즈만 내는 등 오작동을 일으킴. 이 지시는 오직 보컬이 있는 구간([Verse]·[Chorus]·[Bridge]·[Pre-Chorus] 등)에만 적용할 것
+- ★ Build/Drop 표기(선택) — 후렴 직전(프리코러스 끝, 또는 절이 후렴으로 넘어가는 마지막 줄)처럼 긴장이 명확히 쌓였다가 후렴에서 확 터지는 지점이 있다면, 그 지점의 편곡 메모 대괄호 맨 앞에 "[Build]"를, 후렴이 시작되는 첫 줄 편곡 메모 대괄호 맨 앞에 "[Drop]"을 붙여도 됨 (예시는 형식 참고용일 뿐 — 반드시 이 곡에 쓰이는 실제 악기(${_inlineInstr})로 곡마다 다르게 쓸 것: "[Build — (이 곡 악기) 필인 점점 빨라지며 긴장 고조]", "[Drop — 전 악기 동시에 터지며 후렴 시작]"). ★단, 인트로·아웃트로에서는 이 표기를 절대 쓰지 말 것 — 그 구간에서 점점 커지는 빌드업은 Suno가 오작동으로 오인해 이상한 소리를 냄. Build/Drop은 반드시 곡 중간(후렴 진입부)에서만
+- ★ 매 마디 상승 솔로(선택, 브릿지에서만, 곡당 최대 1번): 브릿지 시작 부분 편곡 메모에 악기 솔로가 마디마다 한 단계씩 음정을 높여가며 클라이맥스로 끌고 가는 느낌을 넣어도 됨. ★반드시 이 곡에 쓰이는 실제 악기(${_inlineInstr}) 중 하나를 골라 쓸 것 — 예시처럼 매번 같은 악기(해금 등)만 쓰지 말고 곡마다 다르게: "[가야금 솔로가 마디마다 한 단계씩 음을 높여가며 절정으로 치닫음]"은 형식 참고용 예시일 뿐, 실제로는 이 곡의 악기로 새로 쓸 것. 실제로 조성을 여러 번 바꾸라는 게 아니라 그런 상승감이 느껴지게 연주하라는 뜻 — 짧고 굵게, 브릿지 전체를 다 쓰지 말고 브릿지 앞부분 1~2마디 정도의 느낌으로만
+- ★ 오케스트라 큐(선택, 브릿지에서만, 곡당 최대 1번): 브릿지의 가사 줄이 시작되기 직전에, 가사 없이 대괄호만 2~3줄 연속으로 써서 국악 합주가 스스로 작은 흐름(고조→정점→가라앉음)을 만들게 할 수 있음 (예: "[국악 합주가 서서히 쌓여오름]\\n[전 악기가 정점에서 부딪힘]\\n[한 박 쉬고 가라앉으며 보컬 준비]" — 이때도 막연히 "국악 합주"라고만 쓰지 말고 가능하면 이 곡의 실제 악기(${_inlineInstr}) 이름을 넣을 것). 이건 가사가 아니라 순수 연주 지시이므로 반드시 대괄호로만, 절대 괄호나 실제 가사 줄로 쓰지 말 것. 위 "매 마디 상승 솔로"와 동시에 쓰지 말고 둘 중 하나만
 - 소괄호() 절대 금지 — 소괄호는 실제로 노래로 불리는 가사/백킹보컬 전용이라, 이 편곡 메모를 소괄호에 쓰면 Suno가 그대로 노래로 불러버림
 - ★★★ 매우 중요 — 이 편곡 메모는 오직 "악기"에 대한 지시일 뿐, 보컬과는 무관하다: "여리다/절제되다/거의 무음" 같은 표현은 악기 편성이 얇아진다는 뜻이지, 보컬이 음정 없이 밋밋하게 불러야 한다는 뜻이 결코 아니다. 악기가 적어지고 조용해질수록, 오히려 보컬의 음정 도약(스타일 프롬프트의 [Melodic Contour] 지시)은 더 선명하게 두드러져야 한다 — 특히 전절(절)처럼 편곡이 여릴 때일수록 목소리 하나로 넓은 음역을 오르내리며 감정을 실어야 그 여백이 살아난다. 절대 "악기가 절제되니 보컬도 절제해서 평평하게" 식으로 해석되면 안 됨
 `
@@ -5340,6 +5378,7 @@ function buildInlineEventBlockKr() {
 - 반드시 이 곡에 이미 쓰이는 악기 중에서만 고를 것: ${_inlineInstr} (새 악기 지어내지 말 것)
 - "지금 터지는/들어오는" 순간만 인라인 가능 (예: [해금 스와이프], [가야금 아르페지오], [장구 필인], [대금 브레스]). "빠지는/남기는" 지시는 인라인 금지 — 그건 구조 태그 밑에만
 - 과밀 금지: 모든 줄에 다 붙이면 반영률이 떨어짐, 듬성듬성 배치할 것
+- ★ 대사→악기 응답 브레이크(선택, 브릿지나 절 한 곳에 최대 1번): 노래하듯이 아니라 말하듯 읊조리는 대사 한 줄을 쓰고 싶다면, 그 줄 자체는 평범한 가사 줄로 쓰되 줄 끝에 이 이벤트를 붙일 것 — 예: "그 말을 잊었을까 [해금이 짧게 대답하듯 한 소절]". 대사 내용을 대괄호 안에 쓰지 말고(그러면 안 불림), 대사는 반드시 대괄호 밖 가사 줄 본문에 쓸 것. 이 이벤트는 곡 전체에서 많아야 1번만
 `;
 }
 
@@ -5460,7 +5499,9 @@ function buildDynamicStructure(totalSec, opts) {
     : (_introSrc
         ? _introSrc.replace('{sec}', _introSec).replace('{초}', _introSec)
         : `(기악 — ${_introSec}초)`);
-  let structureKr = `[인트로]\n${_introStyle}\n\n`;
+  // ★ 콜드 오픈 — 인트로 태그 자체를 생략하고 구조가 곧바로 첫 절/후렴부터 시작.
+  // "인트로 단순하게"보다 한 단계 더 강한 옵션 (그건 짧은 인트로, 이건 인트로 자체가 없음)
+  let structureKr = STATE.coldOpen ? '' : `[인트로]\n${_introStyle}\n\n`;
 
   if (isHiphop) {
     const _hipSeq = _getMidSeq('hiphop', totalSec >= 240, false);
@@ -5912,7 +5953,7 @@ PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 550자(최대 650자 �
 === 변형 5 ===
 
 각 항목은 한 줄로. PROMPT 안에 큰따옴표 쓰지 말 것. 반드시 5개 블록 모두 채울 것.`;
-    sysP = 'You are a Suno AI music prompt expert specializing in Korean traditional music fusion with a strictly DARK, sorrowful, han-driven aesthetic. Every variation MUST stay melancholic, heavy, mournful — NEVER bright, happy, cheerful, hopeful, uplifting, or celebratory. Output the 5 variations in the exact delimiter format requested (=== 변형 N === blocks with TITLE/PROMPT lines). Do NOT use JSON, brackets, or quotes around values. Always output all 5 blocks. No markdown, no code fences.';
+    sysP = 'You are a Suno AI music prompt expert specializing in Korean traditional music fusion with a strictly DARK, sorrowful, han-driven aesthetic. Every variation MUST stay melancholic, heavy, mournful — NEVER bright, happy, cheerful, hopeful, uplifting, or celebratory. ★ Never describe a wind instrument (daegeum/piri) holding one sustained/long unbroken tone for many seconds, and never describe a string instrument (gayageum/geomungo) in rapid tremolo — Suno renders these as glitches or stuck-note errors, especially in intro/outro. Keep tempo steady throughout each variation; each should end deliberately (fade/stop/decay), never an abrupt unintended cutoff. Output the 5 variations in the exact delimiter format requested (=== 변형 N === blocks with TITLE/PROMPT lines). Do NOT use JSON, brackets, or quotes around values. Always output all 5 blocks. No markdown, no code fences.';
 
   } else {
     // 같은 분위기, 다른 장르 7개
@@ -5951,7 +5992,7 @@ PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 550자, 최대 650자 �
 === 변형 7 ===
 
 각 항목은 한 줄로. PROMPT 안에 큰따옴표 쓰지 말 것. 반드시 7개 블록 모두 채울 것.`;
-    sysP = 'You are a Suno AI music prompt expert specializing in Korean traditional music fusion. CRITICAL: preserve the EXACT mood, energy, and tempo of the reference piece — if it is bright/energetic, keep all variations bright/energetic; if dark/sorrowful, keep them dark/sorrowful. NEVER flip to the opposite mood. Only the genre changes. Output 7 variations (one per requested genre) in the exact delimiter format (=== 변형 N === blocks with TITLE/PROMPT lines). Each variation MUST have a DISTINCT vocal (different singing style, timbre, gender, technique fitting its genre) — never the same voice across all 7 — while keeping the sorrowful han emotion and Korean vocal techniques (kkeokki bends, sigimsae ornaments). Do NOT use JSON, brackets, or quotes around values. Always output all 7 blocks. No markdown, no code fences.';
+    sysP = 'You are a Suno AI music prompt expert specializing in Korean traditional music fusion. CRITICAL: preserve the EXACT mood, energy, and tempo of the reference piece — if it is bright/energetic, keep all variations bright/energetic; if dark/sorrowful, keep them dark/sorrowful. NEVER flip to the opposite mood. Only the genre changes. ★ Never describe a wind instrument (daegeum/piri) holding one sustained/long unbroken tone for many seconds, and never describe a string instrument (gayageum/geomungo) in rapid tremolo — Suno renders these as glitches or stuck-note errors, especially in intro/outro. Keep tempo steady throughout each variation; each should end deliberately (fade/stop/decay), never an abrupt unintended cutoff. Output 7 variations (one per requested genre) in the exact delimiter format (=== 변형 N === blocks with TITLE/PROMPT lines). Each variation MUST have a DISTINCT vocal (different singing style, timbre, gender, technique fitting its genre) — never the same voice across all 7 — while keeping the sorrowful han emotion and Korean vocal techniques (kkeokki bends, sigimsae ornaments). Do NOT use JSON, brackets, or quotes around values. Always output all 7 blocks. No markdown, no code fences.';
   }
 
   try {
@@ -7325,6 +7366,7 @@ SUNO PROMPT ENGINEERING RULES:
 5. NEVER use "Joseon Core" or "7:3" — describe the SOUND
 6. ★ MUST KEEP the per-instrument TIMBRE detail from the settings — each Korean instrument's timbre AND role (e.g. "gayageum — crystalline plucked zither, NOT harp, LEAD melody", "haegeum — nasal crying bowed fiddle, NOT violin, counter-melody", "ajaeng — low bowed zither bass", "janggu — rhythm"). Korean instruments must be the FOREGROUND and take the solos; western backing stays low. NEVER drop instruments to save space.
 7. Limit: up to 950 chars per prompt (Suno v5.5 allows 1000). Use the room to KEEP instrument detail; do not pad with fluff.
+8. ★ Never describe a wind instrument (daegeum/piri) holding one sustained/long unbroken tone for many seconds, and never describe a string instrument (gayageum/geomungo) in rapid tremolo — Suno renders these as glitches or stuck-note errors, especially in intro/outro moments. Keep the tempo steady and consistent throughout (no drift). The ending should be deliberate — a clear fade, stop, or decay — never an abrupt unintended cutoff.
 ${_activeGuide ? `\nGENRE GUIDE: ${_activeGuide}` : ''}
 
 Generate 3 variations, each MUST start with a DIFFERENT sonic DNA phrase, optimized for a DIFFERENT angle:
