@@ -4046,11 +4046,20 @@ async function _callOnce(model, messages, temperature, apiKey, maxTokens, _retri
   //   .test()를 걸지 말 것
   const _trimmedText = text.trim();
   const _leadingText = _trimmedText.slice(0, 80);
+  // ★ 한국어는 "작성할 수는 없습니다"처럼 조사(는/가/도 등)가 중간에 자유롭게 끼어들 수 있어서
+  // 고정 문구를 그대로 찾는 방식은 계속 새로운 변형에 뚫림. "수" 뒤에 조사+공백을 유연하게 허용.
+  const _krRefusalLoose = /(죄송|미안)[^\n]{0,40}(수\s*(는|가|도)?\s*없|어렵습니다|어려울 것 같|드리기\s*(는|가)?\s*어려)/.test(_leadingText);
+  // ★ 백업 판정: 대괄호로 시작 안 하고, "죄송/미안"류 사과 표현이 있으면서, 실제 노래 가사치고는
+  // 너무 짧은 경우(진짜 가사는 항상 이보다 훨씬 김) — 문구 매칭이 또 뚫려도 걸리도록 하는 안전망
+  const _shortApologyBackup = /(죄송|미안|sorry)/i.test(_leadingText) && _trimmedText.length < 400;
   const looksLikeRefusal = !_trimmedText.startsWith('[') && (
-    /(죄송|미안)[^\n]{0,25}(수행할 수 없|도와드릴 수 없|생성할 수 없|응답할 수 없|답변할 수 없|드릴 수 없|작성할 수 없)/.test(_leadingText) ||
+    _krRefusalLoose ||
+    _shortApologyBackup ||
     /^i'?m sorry,?\s*(but\s*)?i\s*(can'?t|cannot|am unable to|won'?t)\s*(assist|help|generate|create|write|comply|do that|provide)/i.test(_leadingText) ||
     /^i\s*(can'?t|cannot|am unable to|won'?t)\s*(assist|help|generate|create|write|comply with|provide)\s*(with|that|this)?/i.test(_leadingText) ||
-    /^as an ai( language model)?,?\s*i\s*(can'?t|cannot|am unable)/i.test(_leadingText)
+    /^as an ai( language model)?,?\s*i\s*(can'?t|cannot|am unable)/i.test(_leadingText) ||
+    /^i\s*apologi[sz]e,?\s*(but\s*)?i\s*(can'?t|cannot|am unable to|won'?t)\s*(assist|help|generate|create|write|comply|do that|provide)/i.test(_leadingText) ||
+    /unfortunately,?\s*i'?m\s*not\s*able\s*to\s*(assist|help|generate|create|write|do that|provide)/i.test(_leadingText)
   );
   if (looksLikeRefusal && !_retried) {
     return await _callOnce(model, messages, temperature, apiKey, maxTokens, true);
