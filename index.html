@@ -3824,12 +3824,12 @@ function _doBuildPrompt() {
     parts.push(_tempoVariants[Math.floor(Math.random() * _tempoVariants.length)]);
     if (STATE.coldOpen) {
       const _coldOpenVariants = [
-        `[Cold Open] the vocal begins singing immediately at 0:00 with no instrumental intro of any kind — no build-up, no solo instrument lead-in, the voice is the very first sound heard, instruments join in supporting the vocal from the start`,
-        `[Cold Open] no intro whatsoever — the first sound of the track is the singer's voice, with the full arrangement entering right alongside it from bar one`,
-        `[Cold Open] track starts directly on the opening vocal line, zero instrumental lead-in — the band falls in behind the voice from the very first word`,
-        `[Cold Open] singing starts at the very first second — no pre-roll, no instrumental setup, the voice leads and the arrangement catches up around it`,
-        `[Cold Open] the first thing heard is the vocal, not the band — instruments arrive in step with the singer rather than before them`,
-        `[Cold Open] zero-second lead-in — vocals open the track directly, with the full band already playing underneath from the first syllable`,
+        `[Cold Open] the vocal begins singing immediately at 0:00, entering at a natural, moderate volume — NOT a full-belt shout or harsh loud burst. A soft, subtle instrumental texture (a single held chord or gentle pad) enters in perfect sync with the very first note, quietly grounding the pitch and tempo — the voice leads, but is never fully bare or unaccompanied even for a moment. No separate instrumental lead-in before the vocal, no build-up`,
+        `[Cold Open] no instrumental intro — but the full arrangement enters gently and simultaneously with the first vocal note, at a calm, controlled dynamic level. Avoid any harsh, loud, or abrupt burst at the very start; the entrance should feel natural and grounded, not jarring`,
+        `[Cold Open] track starts directly on the opening vocal line, sung at a soft-to-moderate volume — the band falls in quietly alongside the very first word, giving the pitch and tempo immediate grounding. No shouting or sudden loud attack at the start`,
+        `[Cold Open] singing starts at the very first second at a gentle, restrained dynamic — instruments enter in the same instant, softly, so the voice is never left completely bare. No pre-roll, no instrumental setup, and no harsh or abrupt vocal attack`,
+        `[Cold Open] the vocal and a light instrumental texture begin together at 0:00, calm and controlled in volume — not a loud or harsh entrance. The voice leads the arrangement, but the two are locked together from the very first note, avoiding any bare or ungrounded opening`,
+        `[Cold Open] zero-second lead-in — vocals and a soft underlying texture open the track together, at a natural conversational volume rather than a big loud attack. The entrance should feel smooth and grounded, never jarring or noisy`,
       ];
       parts.push(_coldOpenVariants[Math.floor(Math.random() * _coldOpenVariants.length)]);
     }
@@ -4065,7 +4065,8 @@ async function _callOnce(model, messages, temperature, apiKey, maxTokens, _retri
     return await _callOnce(model, messages, temperature, apiKey, maxTokens, true);
   }
   if (looksLikeRefusal && _retried) {
-    throw new Error('AI가 이 요청을 거절했습니다 (재시도도 거절됨) — 곡 길이나 옵션을 조금 바꿔서 다시 시도해 주세요.');
+    const _snippet = _trimmedText.slice(0, 150).replace(/\n/g, ' ');
+    throw new Error(`AI가 이 요청을 거절했습니다 (재시도도 거절됨) — 곡 길이나 옵션을 조금 바꿔서 다시 시도해 주세요. [AI 응답: "${_snippet}${_trimmedText.length > 150 ? '...' : ''}"]`);
   }
   return text;
 }
