@@ -4046,7 +4046,12 @@ async function _callOnce(model, messages, temperature, apiKey, maxTokens, _retri
   //   .test()를 걸지 말 것
   const _trimmedText = text.trim();
   const _leadingText = _trimmedText.slice(0, 80);
-  const looksLikeRefusal = !_trimmedText.startsWith('[') && /(죄송|미안)[^\n]{0,25}(수행할 수 없|도와드릴 수 없|생성할 수 없|응답할 수 없|답변할 수 없|드릴 수 없|작성할 수 없)/.test(_leadingText);
+  const looksLikeRefusal = !_trimmedText.startsWith('[') && (
+    /(죄송|미안)[^\n]{0,25}(수행할 수 없|도와드릴 수 없|생성할 수 없|응답할 수 없|답변할 수 없|드릴 수 없|작성할 수 없)/.test(_leadingText) ||
+    /^i'?m sorry,?\s*(but\s*)?i\s*(can'?t|cannot|am unable to|won'?t)\s*(assist|help|generate|create|write|comply|do that|provide)/i.test(_leadingText) ||
+    /^i\s*(can'?t|cannot|am unable to|won'?t)\s*(assist|help|generate|create|write|comply with|provide)\s*(with|that|this)?/i.test(_leadingText) ||
+    /^as an ai( language model)?,?\s*i\s*(can'?t|cannot|am unable)/i.test(_leadingText)
+  );
   if (looksLikeRefusal && !_retried) {
     return await _callOnce(model, messages, temperature, apiKey, maxTokens, true);
   }
@@ -7393,6 +7398,7 @@ SUNO PROMPT ENGINEERING RULES:
 6. ★ MUST KEEP the per-instrument TIMBRE detail from the settings — each Korean instrument's timbre AND role (e.g. "gayageum — crystalline plucked zither, NOT harp, LEAD melody", "haegeum — nasal crying bowed fiddle, NOT violin, counter-melody", "ajaeng — low bowed zither bass", "janggu — rhythm"). Korean instruments must be the FOREGROUND and take the solos; western backing stays low. NEVER drop instruments to save space.
 7. Limit: up to 950 chars per prompt (Suno v5.5 allows 1000). Use the room to KEEP instrument detail; do not pad with fluff.
 8. ★ Never describe a wind instrument (daegeum/piri) holding one sustained/long unbroken tone for many seconds, and never describe a string instrument (gayageum/geomungo) in rapid tremolo — Suno renders these as glitches or stuck-note errors, especially in intro/outro moments. Keep the tempo steady and consistent throughout (no drift). The ending should be deliberate — a clear fade, stop, or decay — never an abrupt unintended cutoff.
+${_qeCardHint ? `9. ★★★ HIGHEST PRIORITY — the person explicitly chose this exact preset card: "${_qeCardHint}". Every variation MUST match this described mood/genre/energy precisely. Do NOT reinterpret it into a different genre or energy level (e.g. do not turn a slow minimal blues into an energetic fast jazz-swing piece) just because an underlying preset name (like "sanjo") has other loose associations — the card's own description overrides any such association.` : ''}
 ${_activeGuide ? `\nGENRE GUIDE: ${_activeGuide}` : ''}
 
 Generate 3 variations, each MUST start with a DIFFERENT sonic DNA phrase, optimized for a DIFFERENT angle:
@@ -7852,6 +7858,10 @@ const QE_COMBOS = [
 
 
 let _qeSelectedCombo = null;
+// ★ 퀄리티 엔진이 AI 슈퍼프롬프트를 부를 때, 숫자 설정값만으론 카드가 의도한
+// 실제 무드(예: "B.B.King류 여백형 블루스, 미니멀 편곡")를 AI가 놓칠 수 있어서
+// 카드의 설명문을 직접 전달하기 위한 힌트. 카드 실행 시에만 채워지고, 끝나면 비움
+let _qeCardHint = '';
 let _qeRunning = false;
 let _qeFinalPrompt = '';
 
@@ -8046,6 +8056,7 @@ async function runQualityEngine() {
     const apiKey = (typeof getApiKey === 'function') ? getApiKey() : (localStorage.getItem('openrouter_key')||'');
     if (apiKey) {
       try {
+        _qeCardHint = c.desc ? `${c.name} — ${c.desc}` : c.name;
         await genSuperPromptSilent();
         await sleep(200);
         // superVariations VAR 자동 선택 — 장르·분위기에 따라 분기 (결함3 수정)
@@ -8130,6 +8141,7 @@ async function runQualityEngine() {
     console.error(err);
   } finally {
     _qeRunning = false;
+    _qeCardHint = ''; // 다음에 사용자가 수동으로 AI 슈퍼프롬프트를 눌렀을 때 안 새어나가도록 정리
     if (btn) btn.disabled = false;
   }
 }
