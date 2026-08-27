@@ -2941,7 +2941,12 @@ function enforceVocalGenderLock() {
     // ★ 여여 듀엣 — 두 목소리가 실제로 구분되게 들리도록, 매번 서로 다른 여성 톤 2개를
     // 랜덤으로 새로 배정 (기존 선택을 그냥 필터링만 하면 우연히 같은 톤 1개만 남을 수 있어
     // "듀엣인데 한 명처럼 들리는" 문제가 생김 — 그래서 항상 2개를 강제로 다시 뽑음)
-    const femalePool = DATA.vocalTones.map((d,i)=>({d,i})).filter(x => x.d.gender === 'female').map(x=>x.i);
+    // ★ '화음/harmonies' 계열은 특정 가수의 음색이 아니라 "화음을 쌓아라"는 기술 지시라,
+    // 듀엣의 두 번째 리드보컬로 배정되면 Suno가 별개 가수가 아니라 그냥 화음 레이어로
+    // 처리해버려 "듀엣처럼 안 들리는" 문제가 생김 — 리드보컬 후보에서 제외
+    const femalePool = DATA.vocalTones.map((d,i)=>({d,i}))
+      .filter(x => x.d.gender === 'female' && !/harmon|화음/i.test(x.d.en + x.d.kr))
+      .map(x=>x.i);
     if (femalePool.length >= 2) {
       STATE.vocalTones = femalePool.sort(() => Math.random()-0.5).slice(0, 2);
     } else if (femalePool.length === 1) {
@@ -3768,7 +3773,13 @@ function _doBuildPrompt() {
     else if (STATE.gender === 'female') _vsLine.push('STRICTLY female voice');
     // 🔒 최종 보컬 고정이 '혼성'이면, 성별 태그(both)만으로는 실제 남녀 보컬이 명시되지 않으므로 직접 명문화
     if (STATE.vocalGenderLock === 'both') _vsLine.push('male and female vocals together — mixed-gender duet, alternating or overlapping lead lines, both voices clearly present');
-    else if (STATE.vocalGenderLock === 'female_duet') _vsLine.push('TWO DISTINCT female voices in duet — STRICTLY female, no male vocals — the two voices must sound clearly different from each other in timbre/texture (not the same singer double-tracked), alternating or overlapping lead lines, both voices clearly present');
+    else if (STATE.vocalGenderLock === 'female_duet') {
+      const _dt = (STATE.vocalTones || []).map(i => DATA.vocalTones[i]).filter(Boolean);
+      const _dtDesc = _dt.length === 2
+        ? ` — Voice A: ${_dt[0].en} (${_dt[0].desc}). Voice B: ${_dt[1].en} (${_dt[1].desc}). These are TWO SEPARATE SINGERS, not one singer with harmony layered on top`
+        : '';
+      _vsLine.push(`TWO DISTINCT female voices in duet — STRICTLY female, no male vocals — the two voices must sound clearly different from each other in timbre/texture, like two different real singers (NOT the same singer double-tracked, NOT one lead voice with harmony/backing vocals added), alternating or overlapping lead lines, both voices clearly and separately audible${_dtDesc}`);
+    }
     else if (STATE.vocalGenderLock === 'male') _vsLine.push('STRICTLY male voice only, no female vocals');
     else if (STATE.vocalGenderLock === 'female') _vsLine.push('STRICTLY female voice only, no male vocals');
     if(STATE.vocalTones.length){const vts=getEnList(STATE.vocalTones,DATA.vocalTones);if(vts)_vsLine.push(vts);}
