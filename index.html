@@ -5512,6 +5512,16 @@ function buildDynamicStructure(totalSec, opts) {
   ── */
   const spl = form.secPerLine;
   const usableSec = totalSec * 0.85;
+  // ★ 절/후렴 음절 수를 secPerLine(줄당 시간)에 비례해서 계산 — 예전엔 장르 상관없이
+  // "8~11음절" 고정이라, 줄당 시간이 짧은 장르(트롯 5초 등)는 초당 음절 밀도가
+  // 느린 장르(대금앰비언트 9초)보다 훨씬 빡빡해서 촉박하게 들리는 문제가 있었음.
+  // 초당 약 1.3~1.5음절(느릿하게 끄는 발라드/한 정서에 맞는 속도)을 기준으로 역산.
+  // 힙합(secPerLine 3초)은 원래 랩처럼 빠른 밀도가 어울리므로 별도로 더 높게 잡음.
+  const _isFastGenre = spl <= 3;
+  const _verseSyllMin = _isFastGenre ? Math.max(6, Math.round(spl * 2.2)) : Math.max(5, Math.round(spl * 1.3));
+  const _verseSyllMax = _isFastGenre ? Math.max(9, Math.round(spl * 3.2)) : Math.max(8, Math.round(spl * 1.7));
+  const _choSyllMin = _isFastGenre ? Math.max(5, Math.round(spl * 1.8)) : Math.max(4, Math.round(spl * 1.0));
+  const _choSyllMax = _isFastGenre ? Math.max(8, Math.round(spl * 2.6)) : Math.max(7, Math.round(spl * 1.35));
   // 섹션 수 기반으로 줄 수 스케일 — 기본값은 폼에서 가져오되 곡 길이로 보정
   const scaleFactor = Math.max(0.8, Math.min(1.4, usableSec / 170));
   const verseLines  = Math.round(form.verseLines  * scaleFactor);
@@ -5666,7 +5676,7 @@ function buildDynamicStructure(totalSec, opts) {
   /* 🔀 잠긴 구조는 1회 소비 후 해제 (다음 생성은 새 랜덤, 또는 다시 섞기로 재잠금) */
   _lyricStructOverride = null; _lyricStructMode = null; _lyricStructLong = null;
 
-  return { form, isHiphop, isTrot, _trotDiv, tr, scaleFactor, verseLines, preLines, choLines, bridgeLines, outroLines, hasPreChorus, structureKr, _useGugakBase, _gueumExplicit, _wantGueum };
+  return { form, isHiphop, isTrot, _trotDiv, tr, scaleFactor, verseLines, preLines, choLines, bridgeLines, outroLines, hasPreChorus, structureKr, _useGugakBase, _gueumExplicit, _wantGueum, spl, _verseSyllMin, _verseSyllMax, _choSyllMin, _choSyllMax };
 }
 
 async function genLyrics(lang) {
@@ -5681,7 +5691,7 @@ async function genLyrics(lang) {
   const [minsStr, secsStr] = duration.split(':');
   const totalSec = parseInt(minsStr) * 60 + parseInt(secsStr || '0');
 
-  const { form, isHiphop, isTrot, _trotDiv, tr, scaleFactor, verseLines, preLines, choLines, bridgeLines, outroLines, hasPreChorus, structureKr, _useGugakBase, _gueumExplicit, _wantGueum } = buildDynamicStructure(totalSec);
+  const { form, isHiphop, isTrot, _trotDiv, tr, scaleFactor, verseLines, preLines, choLines, bridgeLines, outroLines, hasPreChorus, structureKr, _useGugakBase, _gueumExplicit, _wantGueum, spl, _verseSyllMin, _verseSyllMax, _choSyllMin, _choSyllMax } = buildDynamicStructure(totalSec);
 
 /* genLyrics·genTrendLyrics 공용 — 사용자 스토리 블록 */
 
@@ -5732,7 +5742,7 @@ ${rhymeRuleKr}
 ${clicheRuleKr}
 
 ★★ 국악 트롯트 8대 필수 규칙 ★★
-① 음수율: 한 줄은 3·4조 / 4·4조 / 7·5조 중 하나로 선택해 전체 일관 유지
+① 음수율: 한 줄은 3·4조(7음절) / 4·4조(8음절) / 7·5조(12음절) 중 하나로 선택해 전체 일관 유지. ★이 곡은 한 줄에 약 ${spl}초가 배정되므로 ${spl <= 5 ? '3·4조(7음절)를 우선 권장 — 7·5조(12음절)는 이 짧은 시간에 너무 빽빽해져 촉박하게 들림, 되도록 피할 것' : spl <= 7 ? '4·4조(8음절) 또는 3·4조를 권장 — 7·5조는 여전히 다소 빡빡할 수 있음' : '7·5조(12음절)도 무리 없이 소화 가능 — 시간이 충분함'}. 물결표(~)로 늘여 부르는 여유까지 감안해서 선택할 것
 ② 한(恨)의 정서: 감정 직접 서술 금지 — 체념·상황·구체 사물로 표현
    → 이번 곡의 감정 색: 「${_trotDiv.subEmotion}」 — 슬픔·한 안에서 이 결을 일관되게 유지할 것
 ③ 종결어미 (이번 곡 권장 계열): ${_trotDiv.ending}
@@ -5781,7 +5791,7 @@ ${clicheRuleKr}
 - 앵커 구절(최대 6단어) — 가사 쓰기 전에 먼저 결정
 - 앵커는 모든 후렴/훅의 첫 줄
 - 각 섹션 내에서 앵커 최소 1회 반복
-- 후렴 줄: 6~9음절 내외로 짧고 일정하게, 따라부르기 쉽고 감정이 직접적 (줄마다 길이를 비슷하게)
+- 후렴 줄: ${_choSyllMin}~${_choSyllMax}음절 내외로 짧고 일정하게, 따라부르기 쉽고 감정이 직접적 (줄마다 길이를 비슷하게)
 - 음악·악기·장르 관련 단어 가사에 절대 금지
 
 ★★★ [Big Finish] 규칙 — 최최최우선 ★★★
@@ -5794,7 +5804,7 @@ ${clicheRuleKr}
 ★ 절(Verse) 규칙 ★
 - 각 절은 이전 절보다 더 강한 긴장감 (T/R 수치가 에너지 가이드)
 - 구체적 이미지: 물, 돌, 불, 계절, 몸, 숨 — 추상적 감정 레이블 금지
-- 각 줄 8~11음절 내외로 일정하게 (단어 수가 아니라 부를 때의 음절 수 기준, 같은 절 안에서 줄 길이를 비슷하게)
+- 각 줄 ${_verseSyllMin}~${_verseSyllMax}음절 내외로 일정하게 (단어 수가 아니라 부를 때의 음절 수 기준, 같은 절 안에서 줄 길이를 비슷하게) — 이 곡은 한 줄에 약 ${spl}초가 배정되니, 물결표(~)로 늘여 부르는 여유까지 감안해 너무 빽빽하지 않게
 
 ★ 긴장/이완 수치 ★
 - 섹션 옆 숫자(예: 긴장 +6, 이완 -4)는 감정 강도 지표
