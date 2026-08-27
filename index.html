@@ -5560,11 +5560,20 @@ function buildDynamicStructure(totalSec, opts) {
     const storageKey = `gugak_recent_${kindKey || 'form'}_g${STATE.genre}`;
     return pickUnusedFromPool(v, storageKey, Math.min(3, v.length - 1) || 1, Math.random());
   };  // 풀(배열) 지원 + 최근 사용분 회피
+  const _simpleIntroPool = [
+    `[전 악기가 처음부터 함께 시작 — 짧고 자연스러운 리듬 프레이즈로 바로 연주 (한 화음을 길게 붙잡거나 늘어뜨리지 않음, 지속음/드론 금지). 현악기가 먼저 살짝 앞서 나오고 나머지가 바로 뒤따름]`,
+    `[전 악기가 처음부터 함께 시작 — 짧고 자연스러운 리듬 프레이즈로 바로 연주 (한 화음을 길게 붙잡거나 늘어뜨리지 않음, 지속음/드론 금지). 타악기가 먼저 살짝 앞서 나오고 나머지가 바로 뒤따름]`,
+    `[전 악기가 처음부터 함께 시작 — 짧고 자연스러운 리듬 프레이즈로 바로 연주 (한 화음을 길게 붙잡거나 늘어뜨리지 않음, 지속음/드론 금지). 관악기가 먼저 살짝 앞서 나오고 나머지가 바로 뒤따름]`,
+    `[전 악기가 거의 동시에, 짧고 리듬감 있는 프레이즈로 자연스럽게 시작 — 특수 연출 없이 곡의 기본 편성 그대로. 어느 한 악기가 화음을 길게 붙잡고 있지 않도록 할 것 (지속음/드론 금지)]`,
+  ];
+  const _simpleIntroTxt = pickUnusedFromPool(
+    _simpleIntroPool, `gugak_recent_simpleintro_g${STATE.genre}`, 2, Math.random()
+  );
   const _introSrc = STATE.simpleIntro
     ? null  // 단순 모드에서는 아래 안전한 기본 문구 사용
     : (_pickForm(form.introStyle, 'intro') || (isTrot ? _pickForm(_trotForm.introStyle, 'intro') : null));
   const _introStyle = STATE.simpleIntro
-    ? `[전 악기가 처음부터 자연스럽게 함께 시작 — 특수 연출 없이, 곡의 기본 편성 그대로 바로 연주]`
+    ? _simpleIntroTxt
     : (_introSrc
         ? _introSrc.replace('{sec}', _introSec).replace('{초}', _introSec)
         : `(기악 — ${_introSec}초)`);
