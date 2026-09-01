@@ -2952,6 +2952,20 @@ function enforceVocalGenderLock() {
     } else if (femalePool.length === 1) {
       STATE.vocalTones = femalePool.slice();
     }
+  } else if (g === 'both') {
+    // ★ 혼성 듀엣 — 예전엔 gender:'both'(성별 무관 일반 창법 묘사, 예: "느긋한 그루브 창법")만
+    // 필터링해서 배정했는데, 이러면 "이게 남성 목소리, 이게 여성 목소리"라는 구체적 음색
+    // 닻이 전혀 없어서 Suno가 절 중간에 목소리를 흐릿하게 드리프트시키는 문제가 생김
+    // (예: 남성으로 시작했다가 서서히 여성으로 변함). 남성 톤 1개 + 여성 톤 1개를
+    // 명시적으로 각각 배정해 구체적인 대비를 줌.
+    const malePool = DATA.vocalTones.map((d,i)=>({d,i})).filter(x => x.d.gender === 'male').map(x=>x.i);
+    const femalePool2 = DATA.vocalTones.map((d,i)=>({d,i}))
+      .filter(x => x.d.gender === 'female' && !/harmon|화음/i.test(x.d.en + x.d.kr))
+      .map(x=>x.i);
+    const _picked = [];
+    if (malePool.length) _picked.push(malePool[Math.floor(Math.random()*malePool.length)]);
+    if (femalePool2.length) _picked.push(femalePool2[Math.floor(Math.random()*femalePool2.length)]);
+    if (_picked.length) STATE.vocalTones = _picked;
   } else {
     // 고정 성별과 안 맞는 것 제거
     STATE.vocalTones = (STATE.vocalTones || []).filter(i => DATA.vocalTones[i]?.gender === g);
@@ -3772,7 +3786,15 @@ function _doBuildPrompt() {
     if (STATE.gender === 'male') _vsLine.push('STRICTLY male voice');
     else if (STATE.gender === 'female') _vsLine.push('STRICTLY female voice');
     // 🔒 최종 보컬 고정이 '혼성'이면, 성별 태그(both)만으로는 실제 남녀 보컬이 명시되지 않으므로 직접 명문화
-    if (STATE.vocalGenderLock === 'both') _vsLine.push('male and female vocals together — mixed-gender duet, alternating or overlapping lead lines, both voices clearly present');
+    if (STATE.vocalGenderLock === 'both') {
+      const _mt = (STATE.vocalTones || []).map(i => DATA.vocalTones[i]).filter(Boolean);
+      const _male = _mt.find(t => t.gender === 'male');
+      const _female = _mt.find(t => t.gender === 'female');
+      const _mtDesc = (_male && _female)
+        ? ` — Male voice: ${_male.en} (${_male.desc}). Female voice: ${_female.en} (${_female.desc}). These are TWO SEPARATE SINGERS with distinct, stable timbres throughout — the male voice must NOT drift or morph into the female voice or vice versa within a line or section`
+        : '';
+      _vsLine.push(`male and female vocals together — mixed-gender duet, alternating or overlapping lead lines, both voices clearly present and distinct${_mtDesc}`);
+    }
     else if (STATE.vocalGenderLock === 'female_duet') {
       const _dt = (STATE.vocalTones || []).map(i => DATA.vocalTones[i]).filter(Boolean);
       const _dtDesc = _dt.length === 2
