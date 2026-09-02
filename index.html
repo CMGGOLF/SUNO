@@ -639,6 +639,13 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
       <div class="info-bar">💡 감성 키워드를 넣으면 장르·분위기·악기·BPM·보컬을 분석합니다. YouTube 링크는 <b>영상 제목·채널명을 실제로 가져와</b> 그 정보를 바탕으로 국악 퓨전 스타일을 추천합니다 (음원·가사 직접 분석은 아님). 위 체크박스를 켜면 실제 웹 검색 결과를 근거로 분석합니다 (텍스트 정보만 — 정확한 BPM·멜로디까지 보장하진 않음).</div>
       <div class="ai-loading" id="kwLoading"><div class="dot-anim"><span></span><span></span><span></span></div>AI 분석 중...</div>
       <div id="kwResult" class="yt-result"></div>
+
+      <div style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--border)">
+        <div style="font-size:12px;color:var(--korean2);margin-bottom:6px;font-weight:600">📋 외부에서 만든 JSON 붙여넣고 적용 (API 크레딧 안 씀)</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Claude 채팅 등에서 "가수 - 곡명"을 물어봐서 받은 JSON을 여기에 붙여넣으면, 이 도구 안에서 AI를 다시 호출하지 않고 바로 적용됩니다.</div>
+        <textarea id="jsonPasteInput" style="min-height:80px;font-size:11px;font-family:monospace" placeholder='예) {"genre":"gugak trot","moods":["han","mournful"],"bpm":72,"musicKey":"Am","koreanScale":"Gyemyeonjo","energyArc":"Slow Burn Rise","instruments":"해금, 아쟁, 장구","intensity":8,"vocalGender":"male"}'></textarea>
+        <button class="btn btn-outline" style="margin-top:6px" onclick="applyPastedJSON()">✅ 이 JSON 적용</button>
+      </div>
     </div>
   </div>
 </div>
@@ -4432,17 +4439,19 @@ async function runAI() {
     } catch(e) { /* oEmbed 실패 시 무시하고 URL만으로 진행 */ }
   }
 
-  const sysPrompt=`당신은 7:3 Joseon Core 전문가입니다. 반드시 다음 JSON 형식만 응답: {"genre":"","moods":[],"instruments":"","concept":"","vocalStyle":"","bpm":85,"textures":[],"koreanGrooves":[],"koreanFeelings":[],"summary":""}`;
+  const sysPrompt=`당신은 7:3 Joseon Core 전문가입니다. ★★ 가장 중요한 제약: 가사는 절대 검색·인용·재현하지 않는다 (저작권) — "가수 - 곡명" 형태의 입력이 주어져도, 오직 음악적 요소(장르·분위기·BPM·조성·편곡·보컬 특징 등)만 조사하고, 가사 원문은 단 한 글자도 검색 결과에 포함시키거나 summary에 인용하지 말 것. 반드시 다음 JSON 형식만 응답 (musicKey/koreanScale/energyArc/grooves/spaces/backingVocal/intensity/vocalGender는 확실한 근거가 있을 때만 채우고, 애매하면 빈 값/빈 배열로 둘 것 — 억지로 채우지 말 것): {"genre":"","moods":[],"instruments":"","concept":"","vocalStyle":"","bpm":85,"musicKey":"","koreanScale":"","energyArc":"","grooves":[],"spaces":[],"backingVocal":"","intensity":7,"vocalGender":"","textures":[],"koreanGrooves":[],"koreanFeelings":[],"summary":""}`;
   const useOnline = document.getElementById('webSearchToggle')?.checked || false;
+  const _lyricSafety = ' (★가사 원문은 검색·인용 금지, 음악적 요소만)';
+  const _fieldGuide = ' 가능하면 조성(musicKey, 예: "Am"/"C"), 에너지 흐름(energyArc — 곡이 서서히 고조되는지/파도처럼 반복되는지/폭발하는지 등을 서술), 곡의 감정 강도(intensity, 1~10), 보컬 성별(vocalGender)도 파악되는 대로 채워주세요 — 확실하지 않으면 비워둘 것.';
   let userPrompt;
   if (isYT && ytMeta && ytMeta.title) {
     // 실제 영상 제목·채널을 기반으로 분석
-    userPrompt=`다음은 YouTube 영상의 실제 제목과 채널명입니다.\n제목: "${ytMeta.title}"\n채널: "${ytMeta.author}"\n${useOnline ? '이 곡을 웹 검색해서 실제 장르·분위기·BPM 등 정보를 찾아보고, ' : ''}이 곡의 분위기·장르를 ${useOnline ? '검색 결과와 제목' : '제목'}에서 추론하여, 7:3 국악 퓨전 스타일로 재해석한 추천을 작성하세요. summary에는 무엇을 근거로 분석했는지(${useOnline ? '검색으로 찾은 근거를' : '제목 기반 추론임을'}) 한 줄로 밝혀주세요. JSON만 작성.`;
+    userPrompt=`다음은 YouTube 영상의 실제 제목과 채널명입니다.\n제목: "${ytMeta.title}"\n채널: "${ytMeta.author}"\n${useOnline ? '이 곡을 웹 검색해서 실제 장르·분위기·BPM 등 정보를 찾아보고, ' : ''}이 곡의 분위기·장르를 ${useOnline ? '검색 결과와 제목' : '제목'}에서 추론하여, 7:3 국악 퓨전 스타일로 재해석한 추천을 작성하세요${_lyricSafety}.${_fieldGuide} summary에는 무엇을 근거로 분석했는지(${useOnline ? '검색으로 찾은 근거를' : '제목 기반 추론임을'}) 한 줄로 밝혀주세요. JSON만 작성.`;
   } else if (isYT) {
     // oEmbed 실패 — 솔직하게 URL만으로는 추론 한계 명시
     userPrompt=`YouTube 링크(${kw})가 주어졌으나 영상 정보를 가져오지 못했습니다. 일반적인 7:3 국악 퓨전 추천을 작성하되, summary에 "영상 정보를 불러오지 못해 일반 추천입니다"라고 밝혀주세요. JSON만 작성.`;
   } else {
-    userPrompt=`"${kw}"${useOnline ? '를 웹 검색해서 실제 정보(장르·분위기·BPM·발매 정보 등)를 찾아보고, 그 근거로' : ''} 키워드를 7:3 Joseon Core 스타일로 추천. summary에는 ${useOnline ? '검색으로 찾은 근거를' : '무엇을 근거로 추천했는지'} 한 줄로 밝혀주세요. JSON만 작성.`;
+    userPrompt=`"${kw}"${useOnline ? '를 웹 검색해서 실제 정보(장르·분위기·BPM·발매 정보 등)를 찾아보고, 그 근거로' : ''} 키워드를 7:3 Joseon Core 스타일로 추천${_lyricSafety}.${_fieldGuide} summary에는 ${useOnline ? '검색으로 찾은 근거를' : '무엇을 근거로 추천했는지'} 한 줄로 밝혀주세요. JSON만 작성.`;
   }
   try {
     const text=await callClaude(userPrompt,sysPrompt, 0.35, 4000, useOnline);
@@ -4458,6 +4467,24 @@ async function runAI() {
   } catch(e) { result.innerHTML=`<span style="color:var(--red)">분석 실패: ${e.message}</span>`; result.classList.add('show'); }
   loading.classList.remove('show');
 }
+function applyPastedJSON() {
+  const box = document.getElementById('jsonPasteInput');
+  const raw = (box?.value || '').trim();
+  if (!raw) { showToast('⚠️ 붙여넣은 JSON이 없습니다'); return; }
+  // 코드블록(```json ... ```)으로 감싸서 붙여넣었을 경우 대비 — 마크다운 펜스 제거
+  const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
+  const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) { showToast('⚠️ JSON 형식을 찾을 수 없습니다 — { }로 감싸진 형태인지 확인해주세요'); return; }
+  let analysis;
+  try {
+    analysis = JSON.parse(jsonMatch[0]);
+  } catch (e) {
+    showToast('⚠️ JSON 파싱 실패: ' + e.message);
+    return;
+  }
+  applyAnalysisToUI(analysis);
+}
+
 function applyAnalysisToUI(analysis) {
   resetAll(false);
   // ── 장르 매핑 ──
@@ -4514,23 +4541,72 @@ function applyAnalysisToUI(analysis) {
   }
   // ── 한국적 그루브 매핑 ──
   if (analysis.koreanGrooves&&Array.isArray(analysis.koreanGrooves)) { analysis.koreanGrooves.forEach(n=>{const idx=DATA.koreanGrooves.findIndex(k=>k.en.toLowerCase().includes((n||'').toLowerCase())||k.kr.includes(n||''));if(idx!==-1&&!STATE.koreanGrooves.includes(idx))STATE.koreanGrooves.push(idx);}); }
-  // ── 분위기/장르 기반 조성·음계 자동 매핑 ──
+  // ── [신규] 그루브 매핑 (grooves → STATE.grooves) ──
+  STATE.grooves = [];
+  if (analysis.grooves&&Array.isArray(analysis.grooves)&&analysis.grooves.length) {
+    analysis.grooves.forEach(g=>{const idx=DATA.grooves.findIndex(d=>d.en.toLowerCase().includes((g||'').toLowerCase())||d.kr.includes(g||''));if(idx!==-1&&!STATE.grooves.includes(idx))STATE.grooves.push(idx);});
+  }
+  // ── [신규] 공간감 매핑 (spaces → STATE.spaces) ──
+  STATE.spaces = [];
+  if (analysis.spaces&&Array.isArray(analysis.spaces)&&analysis.spaces.length) {
+    analysis.spaces.forEach(s=>{const idx=DATA.spaces.findIndex(d=>d.en.toLowerCase().includes((s||'').toLowerCase())||d.kr.includes(s||''));if(idx!==-1&&!STATE.spaces.includes(idx))STATE.spaces.push(idx);});
+  }
+  // ── [신규] 백킹보컬 매핑 (backingVocal → STATE.backingVocal) ──
+  if (analysis.backingVocal) {
+    const bvi=DATA.backingVocals.findIndex(d=>d.en.toLowerCase().includes((analysis.backingVocal||'').toLowerCase())||d.kr.includes(analysis.backingVocal||''));
+    if(bvi!==-1) STATE.backingVocal=bvi;
+  }
+  // ── [신규] 강도 매핑 (intensity → STATE.intensity) ──
+  if (analysis.intensity&&analysis.intensity>=1&&analysis.intensity<=10) STATE.intensity=parseInt(analysis.intensity);
+  // ── [신규] 보컬 성별 매핑 (vocalGender → STATE.gender, 단일성별일 때만 — 듀엣류는 자동 적용 안 함, 사용자가 직접 06번에서 고정) ──
+  if (analysis.vocalGender) {
+    const vg=(analysis.vocalGender||'').toLowerCase();
+    if (vg.includes('male')&&!vg.includes('female')) STATE.gender='male';
+    else if (vg.includes('female')) STATE.gender='female';
+  }
+  // ── [신규] 조성 매핑 (musicKey → STATE.musicKey, AI가 직접 지정한 값 우선) ──
+  let _keyMatched = false;
+  if (analysis.musicKey) {
+    const mk=(analysis.musicKey||'').toLowerCase();
+    const ki=DATA.musicKeys.findIndex(d=>(d.short||'').toLowerCase()===mk||(d.en||'').toLowerCase().includes(mk)||(d.kr||'').includes(analysis.musicKey));
+    if(ki!==-1){ STATE.musicKey=ki; _keyMatched=true; }
+  }
+  // ── [신규] 국악 음계 매핑 (koreanScale → STATE.koreanScale, AI가 직접 지정한 값 우선) ──
+  let _scaleMatched = false;
+  if (analysis.koreanScale) {
+    const ks=(analysis.koreanScale||'').toLowerCase();
+    const si=DATA.koreanScales.findIndex(d=>(d.en||'').toLowerCase().includes(ks)||(d.kr||'').includes(analysis.koreanScale));
+    if(si!==-1){ STATE.koreanScale=si; _scaleMatched=true; }
+  }
+  // ── [신규] 에너지 아크 매핑 (energyArc → STATE.energyArc, AI가 직접 지정한 값 우선) ──
+  let _arcMatched = false;
+  if (analysis.energyArc) {
+    const ea=(analysis.energyArc||'').toLowerCase();
+    const ai=DATA.energyArcs.findIndex(d=>(d.en||'').toLowerCase().includes(ea)||(d.kr||'').includes(analysis.energyArc));
+    if(ai!==-1){ STATE.energyArc=ai; _arcMatched=true; }
+  }
+  // ── 조성·음계·에너지아크 폴백 — AI가 직접 지정 안 했을 때만 장르/분위기 텍스트로 간접 추론 ──
   const analysisGenre=(analysis.genre||'').toLowerCase();
   const analysisMoods=(analysis.moods||[]).join(' ').toLowerCase();
-  if(analysisGenre.includes('court')||analysisGenre.includes('cinematic')){STATE.musicKey=4;STATE.koreanScale=1;}
-  else if(analysisMoods.includes('hopeful')||analysisMoods.includes('bright')){STATE.musicKey=7;STATE.koreanScale=2;}
-  else if(analysisGenre.includes('hip')||analysisGenre.includes('trap')){STATE.musicKey=1;STATE.koreanScale=0;}
-  else if(analysisGenre.includes('jazz')){STATE.musicKey=2;STATE.koreanScale=0;}
-  else if(analysisMoods.includes('sad')||analysisMoods.includes('mournful')||analysisMoods.includes('han')||analysisMoods.includes('슬')||analysisMoods.includes('애절')){STATE.musicKey=1;STATE.koreanScale=4;}
-  else if(analysisMoods.includes('chill')||analysisMoods.includes('ambient')){STATE.musicKey=5;STATE.koreanScale=3;}
-  else{STATE.musicKey=0;STATE.koreanScale=0;}
-  // ── 장르/분위기 기반 에너지 아크 자동 매핑 ──
-  if(analysisGenre.includes('hip')||analysisGenre.includes('trap')||analysisMoods.includes('energetic')||analysisMoods.includes('aggressive')){STATE.energyArc=4;}
-  else if(analysisGenre.includes('ambient')||analysisMoods.includes('chill')||analysisMoods.includes('meditative')){STATE.energyArc=5;}
-  else if(analysisMoods.includes('sad')||analysisMoods.includes('ballad')||analysisMoods.includes('한')||analysisMoods.includes('애절')){STATE.energyArc=0;}
-  else if(analysisGenre.includes('jazz')||analysisMoods.includes('groovy')){STATE.energyArc=1;}
-  else if(analysisGenre.includes('court')||analysisGenre.includes('cinematic')){STATE.energyArc=2;}
-  else{STATE.energyArc=0;}
+  if (!_keyMatched || !_scaleMatched) {
+    let _fbKey=0, _fbScale=0;
+    if(analysisGenre.includes('court')||analysisGenre.includes('cinematic')){_fbKey=4;_fbScale=1;}
+    else if(analysisMoods.includes('hopeful')||analysisMoods.includes('bright')){_fbKey=7;_fbScale=2;}
+    else if(analysisGenre.includes('hip')||analysisGenre.includes('trap')){_fbKey=1;_fbScale=0;}
+    else if(analysisGenre.includes('jazz')){_fbKey=2;_fbScale=0;}
+    else if(analysisMoods.includes('sad')||analysisMoods.includes('mournful')||analysisMoods.includes('han')||analysisMoods.includes('슬')||analysisMoods.includes('애절')){_fbKey=1;_fbScale=4;}
+    else if(analysisMoods.includes('chill')||analysisMoods.includes('ambient')){_fbKey=5;_fbScale=3;}
+    if (!_keyMatched) STATE.musicKey=_fbKey;
+    if (!_scaleMatched) STATE.koreanScale=_fbScale;
+  }
+  if (!_arcMatched) {
+    if(analysisGenre.includes('hip')||analysisGenre.includes('trap')||analysisMoods.includes('energetic')||analysisMoods.includes('aggressive')){STATE.energyArc=4;}
+    else if(analysisGenre.includes('ambient')||analysisMoods.includes('chill')||analysisMoods.includes('meditative')){STATE.energyArc=5;}
+    else if(analysisMoods.includes('sad')||analysisMoods.includes('ballad')||analysisMoods.includes('한')||analysisMoods.includes('애절')){STATE.energyArc=0;}
+    else if(analysisGenre.includes('jazz')||analysisMoods.includes('groovy')){STATE.energyArc=1;}
+    else if(analysisGenre.includes('court')||analysisGenre.includes('cinematic')){STATE.energyArc=2;}
+    else{STATE.energyArc=0;}
+  }
   syncSliders(); renderAll(); buildPrompt(true);
   showToast("✅ 분석 결과가 자동으로 적용되었습니다!");
 }
