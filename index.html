@@ -4164,14 +4164,21 @@ function findBannedWords(text, words) {
 async function generateWithClicheCheck(prompt, sysPrompt, temperature, bannedWords) {
   let text = await callClaude(prompt, sysPrompt, temperature);
   let found = findBannedWords(text, bannedWords);
+  let attempts = 1;
+  const maxRetries = 3; // 총 최대 4회 시도
+  while (found.length > 0 && attempts <= maxRetries) {
+    // ★ 전체를 처음부터 다시 쓰게 하면 멀쩡했던 다른 줄까지 바뀌면서 새 문제가
+    // 생길 위험이 있음 — 대신 금칙어가 걸린 "그 줄만" 콕 집어서, 나머지는 그대로
+    // 보존한 채 교체하도록 요청 (기존에 잘 나온 부분은 최대한 유지)
+    const lines = text.split('\n');
+    const badLines = [...new Set(lines.filter(l => found.some(w => l.includes(w))))];
+    const targetedPrompt = `아래는 방금 생성된 가사 전체입니다:\n\n${text}\n\n이 중 다음 줄(들)에 금칙어(${found.join(', ')})가 포함되어 있어 문제입니다:\n${badLines.map(l => '- ' + l).join('\n')}\n\n★ 반드시 지킬 것:\n- 위에 나열된 문제 줄들"만" 금칙어 없이, 비슷한 음절 수·감정선·라임을 유지하며 다른 구체적 표현으로 바꿀 것 (예: 식사 소재가 문제라면 등불·편지·옷고름·강가·발자국 같은 다른 사물로)\n- 문제 줄이 아닌 나머지 모든 줄([섹션] 태그 포함)은 토씨 하나 바꾸지 말고 원문 그대로 유지할 것\n- 전체 가사를 처음부터 끝까지 다시 출력할 것 (문제없는 줄은 원문 그대로 복사, 문제 줄만 교체)`;
+    text = await callClaude(targetedPrompt, sysPrompt, temperature);
+    found = findBannedWords(text, bannedWords);
+    attempts++;
+  }
   if (found.length > 0) {
-    const retryPrompt = prompt + `\n\n★★★ 방금 시도에서 금칙어가 사용됐습니다: ${found.join(', ')} — 이번엔 반드시 이 단어들을 전부 피해서 처음부터 다시 작성할 것 ★★★`;
-    const retryText = await callClaude(retryPrompt, sysPrompt, temperature);
-    const stillFound = findBannedWords(retryText, bannedWords);
-    text = retryText;
-    if (stillFound.length > 0) {
-      showToast(`⚠️ 금칙어(${stillFound.join(', ')})가 재시도에도 남아있어요 — 확인 후 직접 수정해주세요`);
-    }
+    showToast(`⚠️ 금칙어(${found.join(', ')})가 ${maxRetries}번 재시도에도 남아있어요 — 확인 후 직접 수정해주세요`);
   }
   return text;
 }
