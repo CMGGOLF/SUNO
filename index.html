@@ -7567,7 +7567,7 @@ SUNO PROMPT ENGINEERING RULES:
 4. Use micro-texture words Suno responds to: "breathy", "raw", "resonant", "pulsing", "aching", "urgent"
 5. NEVER use "Joseon Core" or "7:3" — describe the SOUND
 6. ★ MUST KEEP the per-instrument TIMBRE detail from the settings — each Korean instrument's timbre AND role (e.g. "gayageum — crystalline plucked zither, NOT harp, LEAD melody", "haegeum — nasal crying bowed fiddle, NOT violin, counter-melody", "ajaeng — low bowed zither bass", "janggu — rhythm"). Korean instruments must be the FOREGROUND and take the solos; western backing stays low. NEVER drop instruments to save space.
-7. Limit: up to 950 chars per prompt (Suno v5.5 allows 1000). Use the room to KEEP instrument detail; do not pad with fluff.
+7. Limit: up to 950 chars per prompt (Suno v5.5 allows 1000) — this is a HARD LIMIT, not a suggestion. After writing each variation, count its characters yourself; if it exceeds 950, cut less-essential adjectives (not instrument details) until it fits. Use the room to KEEP instrument detail; do not pad with fluff.
 8. ★ Never describe a wind instrument (daegeum/piri) holding one sustained/long unbroken tone for many seconds, and never describe a string instrument (gayageum/geomungo) in rapid tremolo — Suno renders these as glitches or stuck-note errors, especially in intro/outro moments. Keep the tempo steady and consistent throughout (no drift). The ending should be deliberate — a clear fade, stop, or decay — never an abrupt unintended cutoff.
 ${_qeCardHint ? `9. ★★★ HIGHEST PRIORITY — the person explicitly chose this exact preset card: "${_qeCardHint}". Every variation MUST match this described mood/genre/energy precisely. Do NOT reinterpret it into a different genre or energy level (e.g. do not turn a slow minimal blues into an energetic fast jazz-swing piece) just because an underlying preset name (like "sanjo") has other loose associations — the card's own description overrides any such association.` : ''}
 ${_activeGuide ? `\nGENRE GUIDE: ${_activeGuide}` : ''}
@@ -7606,10 +7606,25 @@ Return ONLY the JSON object.`;
     const vars   = parsed.variations;
     if (!Array.isArray(vars) || vars.length < 3) throw new Error('변형 3개가 생성되지 않았습니다');
 
-    _superVariations = vars.map(v => ({
-      label:  v.label  || '',
-      prompt: (v.prompt || '').trim().slice(0, 1000),
-    }));
+    // ★ AI가 950자 지시를 넘겨서(예: 1200자) 응답하는 경우가 실제로 흔함 — 이때
+    // 무조건 1000번째 글자에서 뚝 자르면 문장이 중간에 끊겨서 "조화롭게" 같은
+    // 미완성 상태로 끝나버림. 대신 1000자 이내에서 가장 가까운 문장부호(마침표·쉼표)
+    // 를 찾아 그 지점까지만 자연스럽게 자름.
+    const _trimToNaturalBoundary = (s) => {
+      if (s.length <= 1000) return { text: s, wasTrimmed: false };
+      const window = s.slice(0, 1000);
+      // 900자 이후 구간에서 가장 마지막 문장부호 위치를 찾음 (너무 짧게 잘리지 않도록 하한선)
+      let cut = -1;
+      for (let i = window.length - 1; i >= 900; i--) {
+        if (/[.,;·]/.test(window[i])) { cut = i + 1; break; }
+      }
+      if (cut === -1) cut = 1000; // 문장부호를 못 찾으면 어쩔 수 없이 1000자에서 절단
+      return { text: window.slice(0, cut).trim(), wasTrimmed: true };
+    };
+    _superVariations = vars.map(v => {
+      const { text, wasTrimmed } = _trimToNaturalBoundary((v.prompt || '').trim());
+      return { label: v.label || '', prompt: text, wasTrimmed };
+    });
 
     const ids = [
       ['superVar1Label','superVar1Text','superVar1Chars'],
@@ -7619,7 +7634,7 @@ Return ONLY the JSON object.`;
     _superVariations.forEach((v, i) => {
       document.getElementById(ids[i][0]).textContent = v.label;
       document.getElementById(ids[i][1]).textContent = v.prompt;
-      document.getElementById(ids[i][2]).textContent = `${v.prompt.length} / 1000자`;
+      document.getElementById(ids[i][2]).textContent = `${v.prompt.length} / 1000자${v.wasTrimmed ? ' (⚠️ AI 응답이 길어 자연스러운 지점에서 잘림)' : ''}`;
     });
 
     if (!silent) {
@@ -8036,6 +8051,7 @@ const QE_COMBOS = [
     tags:['국악가요','판소리풍','록 융합'],
     desc:'담담한 그리움에서 시작해 "하늘이시여"처럼 절규하듯 터지는 원조 국악가요. 판소리풍 남성 창법.',
     preset73:'pansori',
+    gugakTrotBase:false, // 록 융합 국악가요 — 트롯 8대 규칙(체념→맺풀기) 대신 일반 분기로
     bpmRange:[76,88],
     musicKey:1, koreanScale:4,
     energyArc:3,        // Explosive Climax — 브릿지에서 한 번에 몰아치는 절정
@@ -8061,6 +8077,7 @@ const QE_COMBOS = [
     tags:['사이키델릭 소울록','몽환','폭발형'],
     desc:'몽환적으로 얽히다가 후렴에서 확 열리는 70년대 사이키델릭 소울록. 여성 보컬, 원색적 에너지.',
     preset73:'sanjo',
+    gugakTrotBase:false, // 사이키델릭 소울록 — 트롯 구조 강제 안 함
     bpmRange:[80,94],
     musicKey:2, koreanScale:0,
     energyArc:3,        // Explosive Climax
@@ -8086,6 +8103,7 @@ const QE_COMBOS = [
     tags:['한(恨)의 대표작','절규 창법','폭발형'],
     desc:'연분홍 치마의 담담함으로 시작해 후반부로 갈수록 목메어 절규하는, 한국적 슬픔의 표준.',
     preset73:'pansori',
+    gugakTrotBase:false, // 판소리풍 가곡 — 트롯이 아니므로 트롯 구조 강제 안 함
     bpmRange:[62,74],
     musicKey:1, koreanScale:4,
     energyArc:0,        // Slow Burn Rise — 담담하게 시작해 끝까지 서서히 감정이 쌓임
@@ -8112,6 +8130,7 @@ const QE_COMBOS = [
     tags:['피아노 발라드','서정적','고음 폭발'],
     desc:'서정적으로 흐르다가 후렴 고음에서 감정이 터지는 80년대 정통 가요 발라드. (음악적 요소만 참고)',
     preset73:'court',
+    gugakTrotBase:false, // 정통 피아노 발라드 — 트롯 구조 강제 안 함
     bpmRange:[70,82],
     musicKey:1, koreanScale:2,
     energyArc:2,        // Twin Peaks — 후렴마다 두 차례 감정이 터짐
@@ -8138,6 +8157,7 @@ const QE_COMBOS = [
     tags:['국악 트로트','실제 애절 사례','여성 창법'],
     desc:'백년해로 언약을 두고 떠난 임을 향한 원망과 그리움. 국악 트로트 가수의 실제 애절한 창법 사례.',
     preset73:'trot',
+    gugakTrotBase:true, // 실제 트롯곡 — 트롯 8대 규칙 확실히 유지
     bpmRange:[68,80],
     musicKey:1, koreanScale:4,
     energyArc:0,        // Slow Burn Rise — 절마다 원망이 한 단계씩 쌓여감
@@ -8164,6 +8184,7 @@ const QE_COMBOS = [
     tags:['국악 트로트','순애보적 그리움','실제 화제 무대'],
     desc:'가시밭길도 저 세상도 마다 않고 따르겠다는 천년의 순애보. 젊은 국악 트로트 가수의 실제 화제 무대.',
     preset73:'trot',
+    gugakTrotBase:true, // 실제 트롯곡 — 트롯 8대 규칙 확실히 유지
     bpmRange:[66,78],
     musicKey:1, koreanScale:4,
     energyArc:1,        // Wave Form — 그리움이 밀려왔다 빠지길 반복
@@ -8326,6 +8347,16 @@ async function runQualityEngine() {
     if (c.musicKey !== undefined)   STATE.musicKey = c.musicKey;
     if (c.koreanScale !== undefined) STATE.koreanScale = c.koreanScale;
     if (c.energyArc !== undefined)  STATE.energyArc = c.energyArc;
+    // ★ 카드가 gugakTrotBase를 명시적으로 지정했으면 그대로 반영 — 실제 트롯이 아닌
+    // 레퍼런스 곡(록융합/사이키델릭소울록/피아노발라드 등)인데 이 값이 켜진 채로 있으면,
+    // 스타일(악기·무드)은 카드가 지정한 대로 가는데 가사만 트롯 8대 규칙(체념→카타르시스
+    // 맺풀기 구조·3·4조 등)을 억지로 따라가면서, 특히 브릿지·마지막 후렴 같은 후반부에서
+    // 스타일과 가사 창법이 서로 다른 장르처럼 따로 노는 문제가 생길 수 있음
+    if (c.gugakTrotBase !== undefined) {
+      STATE.gugakTrotBase = c.gugakTrotBase;
+      const _tbToggle = document.getElementById('gugakTrotBaseToggle');
+      if (_tbToggle) _tbToggle.checked = c.gugakTrotBase;
+    }
     // ── 카드별 고유 정체성 오버라이드 (같은 preset73을 쓰더라도 카드마다 확실히 다르게) ──
     if (c.concept !== undefined)    STATE.concept = c.concept;
     if (c.vocalStyle !== undefined) STATE.vocalStyle = c.vocalStyle;
