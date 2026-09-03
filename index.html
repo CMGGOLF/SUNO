@@ -7770,6 +7770,18 @@ function importState() {
 }
 
 
+// ★ 모바일 브라우저는 "새로고침"을 눌러도 페이지를 완전히 새로 불러오는 대신
+// bfcache(뒤로가기-앞으로가기 캐시)에서 그대로 복원하는 경우가 많음 — 이때 JS는
+// 재실행 안 되고 DOM(잠긴 프롬프트박스 내용 포함)만 그대로 남아서, 예전에 생성된
+// 프롬프트가 계속 화면에 떠있는 것처럼 보임. pageshow 이벤트로 이 캐시 복원을
+// 감지해서, 그때 강제로 잠금을 풀고 최신 STATE 기준으로 다시 생성.
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) {
+    window._promptLocked = false;
+    if (typeof buildPrompt === 'function') buildPrompt(true);
+  }
+});
+
 window.addEventListener('DOMContentLoaded',()=>{
   loadSavedKey();
   // ★ 새로고침해도 곡 길이가 마지막 선택값으로 유지되도록 복원
