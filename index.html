@@ -1096,11 +1096,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
         ⚡ <b style="color:#ffb432">AI 슈퍼 프롬프트 3종</b> — 각도가 다른 3가지 변형을 AI가 생성합니다(악기 지시 유지). A/B 테스트용.<br>
         &nbsp;&nbsp;&nbsp;• <b style="color:#ffb432">감정 강조형</b> — 한(恨)·그리움·깊은 감정 극대화<br>
         &nbsp;&nbsp;&nbsp;• <b style="color:var(--korean2)">리듬 강조형</b> — 그루브·장단·추진력 극대화<br>
-        &nbsp;&nbsp;&nbsp;• <b style="color:var(--teal)">악기 강조형</b> — 국악기 음색·레이어링·질감 극대화<br>
+        &nbsp;&nbsp;&nbsp;• <b style="color:var(--teal)">보컬 강조형</b> — 창법·꺾기·비브라토 등 보컬 표현력 극대화<br>
         <span style="font-size:10px;color:var(--muted)">💡 어느 걸 고를지 모르겠다면 — 곡 성격에 맞춰 골라보세요:<br>
-        &nbsp;&nbsp;애절함·원망·그리움이 핵심인 곡("가버린 사랑"처럼) → <b style="color:#ffb432">감정 강조형</b><br>
-        &nbsp;&nbsp;힘있고 씩씩한 가창력이 핵심인 곡("훨훨훨"처럼) → <b style="color:var(--korean2)">리듬 강조형</b><br>
-        &nbsp;&nbsp;특정 악기(가야금병창처럼 독특한 음색 등)가 부각돼야 하는 곡 → <b style="color:var(--teal)">악기 강조형</b><br>
+        &nbsp;&nbsp;<b style="color:#ffb432">감정 강조형</b> — 애절함·원망·그리움이 핵심인 곡: "가버린 사랑" · "님이시여" · "봄날은 간다"<br>
+        &nbsp;&nbsp;<b style="color:var(--korean2)">리듬 강조형</b> — 힘있고 씩씩한 가창력이 핵심인 곡: "훨훨훨" · "님은 먼 곳에" · "한네의 이별"<br>
+        &nbsp;&nbsp;<b style="color:var(--teal)">보컬 강조형</b> — 독특한 음색·창법 자체가 핵심인 곡: "어매" · "천년학" · "우리 어머니"<br>
         &nbsp;&nbsp;확신이 없으면 3개 다 뽑아서 들어보고 고르는 것도 좋은 방법입니다</span>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
@@ -7680,7 +7680,7 @@ Generate 3 variations, each MUST start with a DIFFERENT sonic DNA phrase, optimi
   MANDATORY opening phrase: "${_dnaHints[0]}"
 - VAR 2 (리듬 강조형): maximize groove, rhythm, and percussive energy — movement, pulse, drive
   MANDATORY opening phrase: "${_dnaHints[1]}"
-- VAR 3 (악기 강조형): maximize instrumental texture and tonal color — timbre, layering, sonic detail
+- VAR 3 (보컬 강조형): maximize vocal expressiveness and character — vocal timbre, delivery nuance, ornamentation detail (kkeokki/vibrato/melisma), the singer's emotional presence
   MANDATORY opening phrase: "${_dnaHints[2]}"
 
 Each variation MUST be distinct AND must keep the Korean instrument timbre+role detail (rule 6).
@@ -7690,7 +7690,7 @@ OUTPUT — ONLY valid JSON, nothing else:
   "variations": [
     { "label": "감정 강조형", "prompt": "< ≤950 char prompt starting with VAR1 DNA, keeps instrument detail >" },
     { "label": "리듬 강조형", "prompt": "< ≤950 char prompt starting with VAR2 DNA, keeps instrument detail >" },
-    { "label": "악기 강조형", "prompt": "< ≤950 char prompt starting with VAR3 DNA, keeps instrument detail >" }
+    { "label": "보컬 강조형", "prompt": "< ≤950 char prompt starting with VAR3 DNA, keeps instrument detail >" }
   ]
 }`;
 
