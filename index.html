@@ -6612,7 +6612,13 @@ function applyReferenceQuickPreset(id) {
   const c = REFERENCE_QUICK_PRESETS.find(x => x.id === id);
   if (!c) return;
   resetAll(false);
-  STATE.genre = 8;
+  // ★ genre를 8(트롯)로 고정하면 안 됨 — isTrot 판정은
+  // (form.id === 'gugak_trot') || (gugakTrotBase && !isHiphop) 두 조건 중 하나라도
+  // 참이면 트롯이 되는데, genre=8 자체가 'gugak_trot' 폼이라서, gugakTrotBase를
+  // false로 꺼도 genre가 8이면 첫 번째 조건 때문에 여전히 트롯 8대 규�칙을 탐.
+  // 비트롯 카드(별리·님은먼곳에·봄날은간다·묻어버린아픔)는 concept과 같은 실제
+  // 장르 번호로 genre를 맞춰야 gugakTrotBase:false가 진짜로 일반 분기를 타게 됨.
+  STATE.genre = c.concept !== undefined ? c.concept : 8;
   STATE.concept = c.concept !== undefined ? c.concept : 8;
   STATE.gugakTrotBase = c.gugakTrotBase !== undefined ? c.gugakTrotBase : true;
   // ★ 조성 — 카드 지정 조성을 기준으로, 인접한 조성 1~2개 중에서도 가끔 선택되도록
