@@ -3894,6 +3894,12 @@ function _doBuildPrompt() {
     if (STATE.genre === 8) {
       parts.push(`[Trot Character — CRITICAL] This is a modern, dark, han-driven trot ballad — absolutely NOT the cheesy, bouncy, old-fashioned "ppongjjak" oldies-trot sound (no corny polka-like oom-pah bounce, no bright dance-trot energy like commercial pop-trot). Sorrowful, aching, restrained — never festive, never comedic, never novelty-sounding.`);
     }
+    // ★ 흔한 대중가요/트롯 관습: 마지막 후렴에서 조를 올려(key change/modulation)
+    // "신나고 짜릿하게" 고조시키는 연출 — 이게 아무 제지 없이 걸리면, 가사·조성·무드
+    // 지시가 다 슬퍼도 멜로디 자체가 후반부로 갈수록 밝고 신나는 쪽으로 흘러가버림.
+    // 클라이맥스의 "고조"는 반드시 보컬 파워·악기 밀도로만 이루어지고, 화성이
+    // 밝아지거나 들뜨는 방식이면 안 됨을 명시적으로 못박음 (전 장르 공통 적용)
+    parts.push(`[Climax Character — CRITICAL] The intensifying climax (final chorus/Big Finish) must NEVER modulate to a higher or brighter key, and must NEVER take on a triumphant, uplifting, or "exciting key-change" quality like a typical crowd-pleasing pop-trot finale. The melody must stay in the same minor/mournful tonal world all the way through — even at its most intense, it should sound like grief breaking open and overflowing, NOT like a joyful or exhilarating release. Climax intensity comes ONLY from vocal power, density of instruments, and dynamic volume — never from the harmony or melody becoming happier, brighter, or more "fun."`);
     parts.push(`[Underlying Tension] a low ajaeng phrase recurs quietly and briefly at intervals throughout the ENTIRE song as a subtle foundation layer of unease — short recurring low phrases, NEVER one continuously held/sustained note or drone. NOT dominant, barely noticeable consciously, just enough to keep an undercurrent of ache present even in quieter or busier moments. All other instruments and dynamics remain fully active and varied above it.`);
     parts.push(`[Harmonic Ache] chorus lines occasionally end on a harmonically unresolved note (not fully landing "home") — leaving a lingering, unsettled longing rather than a neat resolution. Use sparingly, only where it heightens the ache, not on every line.`);
     parts.push(`[Mix & Mastering] clean, well-controlled dynamics with no clipping or distortion at any point — especially in the transition from the final chorus/Big Finish into the outro: the loud climax must genuinely decay and taper down in volume (not stay hot or cut abruptly), leaving clear headroom so the ending is quiet, clear, and undistorted, never a loud or crushed wall of sound at the very end.`);
@@ -4165,13 +4171,20 @@ async function generateWithClicheCheck(prompt, sysPrompt, temperature, bannedWor
   let found = findBannedWords(text, bannedWords);
   let attempts = 1;
   const maxRetries = 3; // 총 최대 4회 시도
+  // ★ AI가 "밥상"을 피하라고 하면 "밥숟가락"처럼 같은 뿌리의 다른 복합어로
+  // 슬쩍 피해가는 패턴이 실제로 있음 — 이번 시도에서 걸린 단어들을 계속 누적해서
+  // "이 단어들 전부, 그리고 이것들과 같은 카테고리(예: 식사/밥/그릇/숟가락 등)에
+  // 속하는 어떤 표현도" 피하라고 점점 더 넓게 차단
+  const _allFoundEver = new Set();
   while (found.length > 0 && attempts <= maxRetries) {
+    found.forEach(w => _allFoundEver.add(w));
     // ★ 전체를 처음부터 다시 쓰게 하면 멀쩡했던 다른 줄까지 바뀌면서 새 문제가
     // 생길 위험이 있음 — 대신 금칙어가 걸린 "그 줄만" 콕 집어서, 나머지는 그대로
     // 보존한 채 교체하도록 요청 (기존에 잘 나온 부분은 최대한 유지)
     const lines = text.split('\n');
     const badLines = [...new Set(lines.filter(l => found.some(w => l.includes(w))))];
-    const targetedPrompt = `아래는 방금 생성된 가사 전체입니다:\n\n${text}\n\n이 중 다음 줄(들)에 금칙어(${found.join(', ')})가 포함되어 있어 문제입니다:\n${badLines.map(l => '- ' + l).join('\n')}\n\n★ 반드시 지킬 것:\n- 위에 나열된 문제 줄들"만" 금칙어 없이, 비슷한 음절 수·감정선·라임을 유지하며 다른 구체적 표현으로 바꿀 것 (예: 식사 소재가 문제라면 등불·편지·옷고름·강가·발자국 같은 다른 사물로)\n- 문제 줄이 아닌 나머지 모든 줄([섹션] 태그 포함)은 토씨 하나 바꾸지 말고 원문 그대로 유지할 것\n- 전체 가사를 처음부터 끝까지 다시 출력할 것 (문제없는 줄은 원문 그대로 복사, 문제 줄만 교체)`;
+    const _everList = [..._allFoundEver].join(', ');
+    const targetedPrompt = `아래는 방금 생성된 가사 전체입니다:\n\n${text}\n\n이 중 다음 줄(들)에 금칙어(${found.join(', ')})가 포함되어 있어 문제입니다:\n${badLines.map(l => '- ' + l).join('\n')}\n\n★ 반드시 지킬 것:\n- 위에 나열된 문제 줄들"만" 다른 구체적 표현으로 바꿀 것 (나머지 줄은 그대로 보존)\n- ★★ 지금까지 이 곡에서 걸렸던 단어들: ${_everList} — 이 단어들 자체뿐 아니라, 이것들과 같은 소재 범주(예: 밥/식사/끼니/숟가락/그릇/밥상처럼 "먹는 것" 관련 이미지 전체)에 속하는 어떤 단어·복합어도 절대 쓰지 말 것. 단어만 살짝 바꿔서 같은 이미지로 다시 돌아오는 것(예: "밥상"을 피했다고 "밥숟가락"으로 바꾸는 식)은 회피가 아니라 규칙 위반임 — 완전히 다른 소재 범주(등불·편지·옷고름·강가·발자국·달빛·바람 등)로 확실히 바꿀 것\n- 문제 줄이 아닌 나머지 모든 줄([섹션] 태그 포함)은 토씨 하나 바꾸지 말고 원문 그대로 유지할 것\n- 전체 가사를 처음부터 끝까지 다시 출력할 것 (문제없는 줄은 원문 그대로 복사, 문제 줄만 교체)`;
     text = await callClaude(targetedPrompt, sysPrompt, temperature);
     found = findBannedWords(text, bannedWords);
     attempts++;
@@ -6685,7 +6698,11 @@ function applyReferenceQuickPreset(id) {
   // ★ 악기(03번) — 카드마다 항상 같은 악기 하나로 고정되지 않도록, 국악 트롯트에
   // 자연스러운 현악기·타악기 조합 중에서 매번 다르게 선택. 곡의 핵심 정체성(장르 8·
   // 국악 트롯트 콘셉트)은 그대로 유지되고, 표면적인 악기 편성만 다양해짐.
-  selectInstrByCategory('string', _rp([0,1,2,3,4]), true);
+  // ★ 인덱스 4(양금)는 "화성 코어" 성격의 밝고 금속성(bright bell-tone) 음색이라
+  // 이 채널의 "가슴먹먹 서글픈 한" 정서와 안 맞음 — 랜덤 풀에서 제외.
+  // 해금(1)·아쟁(2)은 활로 켜는 악기 특유의 흐느끼는·우는 음색이라 한(恨) 표현에
+  // 가장 적합하므로 가중치를 둬서 더 자주 뽑히게 함.
+  selectInstrByCategory('string', _rp([0,1,1,2,2,3,5,6]), true);
   if (Math.random() < 0.6) selectInstrByCategory('percussion', _rp([0,1,2]), false);
   if (Math.random() < 0.4) selectInstrByCategory('wind', _rp([0,1,2]), false);
 
@@ -8544,7 +8561,7 @@ const REFERENCE_QUICK_PRESETS = [
     desc:'서정적으로 흐르다가 후렴 고음에서 감정이 터지는 80년대 정통 가요 발라드. (음악적 요소만 참고)',
     gugakTrotBase:false,
     bpmRange:[70,82],
-    musicKey:1, koreanScale:2, energyArc:2, intensity:7, koreanRatio:55,
+    musicKey:1, koreanScale:0, energyArc:2, intensity:7, koreanRatio:55,
     concept:0, vocalStyle:7,
     vocalTones:[18,9],
     textures:[0,3], grooves:[1], spaces:[1,3],
