@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -4167,9 +4168,48 @@ function ensureIntroContent(lyricsText, structureKr) {
 function findBannedWords(text, words) {
   return words.filter(w => text.includes(w));
 }
-async function generateWithClicheCheck(prompt, sysPrompt, temperature, bannedWords) {
+
+/* ★ 음절 수도 금칙어와 똑같은 문제가 있었음 — "이 범위 안으로 써라"라고
+   텍스트로만 지시해도 AI가 실제로는 목표치의 2배 가까이 쓰는 경우가 실측됨
+   (예: 목표 7음절인데 15음절). 그 결과 Suno가 노래를 다 못 담아 랩처럼
+   급하게 부르게 됨 — 그래서 생성 후 실제로 한글 음절 수를 세어보고,
+   초과한 줄만 콕 집어 재시도시키는 코드 검증을 추가함 */
+function countKoreanSyllables(line) {
+  const m = line.match(/[가-힣]/g);
+  return m ? m.length : 0;
+}
+function isBracketOnlyLine(line) {
+  // 대괄호[...] 악기/구조 지시만 있고 실제로 부르는 가사가 없는 줄인지 확인
+  return line.replace(/\[[^\]]*\]/g, '').trim() === '';
+}
+function findSyllableViolations(text, limits) {
+  if (!limits) return [];
+  const { verseMin, verseMax, choMin, choMax } = limits;
+  const TOLERANCE = 2; // 한두 음절 정도의 자연스러운 오차는 허용
+  const lines = text.split('\n');
+  const violations = [];
+  let currentType = 'verse';
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line) continue;
+    const sectionMatch = line.match(/^\[([^\]]+)\]$/);
+    if (sectionMatch) {
+      currentType = /후렴|Chorus|프리코러스|Pre-[Cc]horus/i.test(sectionMatch[1]) ? 'chorus' : 'verse';
+      continue;
+    }
+    if (isBracketOnlyLine(line)) continue; // 순수 악기 지시 줄은 노래가 아니므로 제외
+    const syll = countKoreanSyllables(line);
+    if (syll === 0) continue; // 괄호 애드립만 있는 줄 등은 제외
+    const max = currentType === 'chorus' ? choMax : verseMax;
+    if (syll > max + TOLERANCE) violations.push({ line, syll, max });
+  }
+  return violations;
+}
+
+async function generateWithClicheCheck(prompt, sysPrompt, temperature, bannedWords, syllableLimits) {
   let text = await callClaude(prompt, sysPrompt, temperature);
   let found = findBannedWords(text, bannedWords);
+  let syllViolations = findSyllableViolations(text, syllableLimits);
   let attempts = 1;
   const maxRetries = 3; // 총 최대 4회 시도
   // ★ AI가 "밥상"을 피하라고 하면 "밥숟가락"처럼 같은 뿌리의 다른 복합어로
@@ -4177,21 +4217,37 @@ async function generateWithClicheCheck(prompt, sysPrompt, temperature, bannedWor
   // "이 단어들 전부, 그리고 이것들과 같은 카테고리(예: 식사/밥/그릇/숟가락 등)에
   // 속하는 어떤 표현도" 피하라고 점점 더 넓게 차단
   const _allFoundEver = new Set();
-  while (found.length > 0 && attempts <= maxRetries) {
+  while ((found.length > 0 || syllViolations.length > 0) && attempts <= maxRetries) {
     found.forEach(w => _allFoundEver.add(w));
     // ★ 전체를 처음부터 다시 쓰게 하면 멀쩡했던 다른 줄까지 바뀌면서 새 문제가
-    // 생길 위험이 있음 — 대신 금칙어가 걸린 "그 줄만" 콕 집어서, 나머지는 그대로
+    // 생길 위험이 있음 — 대신 문제 걸린 "그 줄만" 콕 집어서, 나머지는 그대로
     // 보존한 채 교체하도록 요청 (기존에 잘 나온 부분은 최대한 유지)
     const lines = text.split('\n');
-    const badLines = [...new Set(lines.filter(l => found.some(w => l.includes(w))))];
+    const bannedBadLines = [...new Set(lines.filter(l => found.some(w => l.includes(w))))];
+    const syllBadLines = syllViolations.map(v => v.line);
+    const allBadLines = [...new Set([...bannedBadLines, ...syllBadLines])];
     const _everList = [..._allFoundEver].join(', ');
-    const targetedPrompt = `아래는 방금 생성된 가사 전체입니다:\n\n${text}\n\n이 중 다음 줄(들)에 금칙어(${found.join(', ')})가 포함되어 있어 문제입니다:\n${badLines.map(l => '- ' + l).join('\n')}\n\n★ 반드시 지킬 것:\n- 위에 나열된 문제 줄들"만" 다른 구체적 표현으로 바꿀 것 (나머지 줄은 그대로 보존)\n- ★★ 지금까지 이 곡에서 걸렸던 단어들: ${_everList} — 이 단어들 자체뿐 아니라, 이것들과 같은 소재 범주(예: 밥/식사/끼니/숟가락/그릇/밥상처럼 "먹는 것" 관련 이미지 전체)에 속하는 어떤 단어·복합어도 절대 쓰지 말 것. 단어만 살짝 바꿔서 같은 이미지로 다시 돌아오는 것(예: "밥상"을 피했다고 "밥숟가락"으로 바꾸는 식)은 회피가 아니라 규칙 위반임 — 완전히 다른 소재 범주(등불·편지·옷고름·강가·발자국·달빛·바람 등)로 확실히 바꿀 것\n- 문제 줄이 아닌 나머지 모든 줄([섹션] 태그 포함)은 토씨 하나 바꾸지 말고 원문 그대로 유지할 것\n- 전체 가사를 처음부터 끝까지 다시 출력할 것 (문제없는 줄은 원문 그대로 복사, 문제 줄만 교체)`;
+
+    const problemParts = [];
+    if (found.length > 0) {
+      problemParts.push(`- 금칙어(${found.join(', ')})가 포함된 줄이 있음. 지금까지 이 곡에서 걸렸던 단어들: ${_everList} — 이 단어들 자체뿐 아니라, 이것들과 같은 소재 범주(예: 밥/식사/끼니/숟가락/그릇/밥상처럼 "먹는 것" 관련 이미지 전체)에 속하는 어떤 단어·복합어도 절대 쓰지 말 것. 단어만 살짝 바꿔서 같은 이미지로 다시 돌아오는 것은 회피가 아니라 규칙 위반임 — 완전히 다른 소재 범주(등불·편지·옷고름·강가·발자국·달빛·바람 등)로 확실히 바꿀 것`);
+    }
+    if (syllViolations.length > 0) {
+      const detail = syllViolations.map(v => `  "${v.line}" → 현재 ${v.syll}음절, 목표 ${v.max}음절 이하로`).join('\n');
+      problemParts.push(`- 다음 줄들이 목표 음절 수를 초과함 (노래로 부르기엔 너무 빽빽해서 Suno가 랩처럼 급하게 읊게 됨):\n${detail}\n  음절을 줄일 때는 의미는 유지하되 단어 자체를 더 짧고 간결한 표현으로 바꿀 것 (물결표는 그대로 유지)`);
+    }
+
+    const targetedPrompt = `아래는 방금 생성된 가사 전체입니다:\n\n${text}\n\n다음 문제가 있는 줄들이 있습니다:\n${allBadLines.map(l => '- ' + l).join('\n')}\n\n문제 내용:\n${problemParts.join('\n')}\n\n★ 반드시 지킬 것:\n- 위에 나열된 문제 줄들"만" 고칠 것 (나머지 줄은 그대로 보존)\n- 문제 줄이 아닌 나머지 모든 줄([섹션] 태그 포함)은 토씨 하나 바꾸지 말고 원문 그대로 유지할 것\n- 전체 가사를 처음부터 끝까지 다시 출력할 것 (문제없는 줄은 원문 그대로 복사, 문제 줄만 교체)`;
     text = await callClaude(targetedPrompt, sysPrompt, temperature);
     found = findBannedWords(text, bannedWords);
+    syllViolations = findSyllableViolations(text, syllableLimits);
     attempts++;
   }
-  if (found.length > 0) {
-    showToast(`⚠️ 금칙어(${found.join(', ')})가 ${maxRetries}번 재시도에도 남아있어요 — 확인 후 직접 수정해주세요`);
+  if (found.length > 0 || syllViolations.length > 0) {
+    const msgs = [];
+    if (found.length > 0) msgs.push(`금칙어(${found.join(', ')})`);
+    if (syllViolations.length > 0) msgs.push(`음절 초과 ${syllViolations.length}줄`);
+    showToast(`⚠️ ${msgs.join(', ')}가 ${maxRetries}번 재시도에도 남아있어요 — 확인 후 직접 수정해주세요`);
   }
   return text;
 }
@@ -5977,7 +6033,7 @@ ${structureKr}`;
         ? `당신은 한국 국악의 정서를 현대 장르에 녹여내는 작사가입니다. 선택된 장르(재즈·블루스·소울 등)의 형식을 따르되, 가사의 정서는 반드시 깊고 서글프고 애절한 한(恨)을 바탕에 깔아야 합니다. 최우선: ① 문어체 시적 문장 지향 ② 은유·상징으로 표현, 직설 감정어 금지 ③ 라임·앵커 일관성 ④ 종결어미 ~로다/~네/~여/~구나 등을 섞어 — 모든 줄을 "~다"로 끝내지 말 것. 장르는 표면, 국악적 애절함이 영혼입니다.${_outputRule}`
         : `당신은 세계적인 탑라인 작사가입니다. 최우선: ① 라임 체계 일관성 유지 ② 후렴 앵커 라인은 그 순간만을 위해 곡을 다시 틀 만큼 강렬하게 ③ [Big Finish]는 곡 전체가 그 순간을 향해 달려온 것처럼.${_outputRule}`);
 
-    const text = await generateWithClicheCheck(lyricPrompt, sysP, 0.92, activeClicheWords);
+    const text = await generateWithClicheCheck(lyricPrompt, sysP, 0.92, activeClicheWords, { verseMin: _verseSyllMin, verseMax: _verseSyllMax, choMin: _choSyllMin, choMax: _choSyllMax });
     out.value = ensureIntroContent(cleanLyrics(text), structureKr);
     showToast(`✅ [${form.nameKr}] ${duration} 가사 생성 완료!`);
   } catch(e) {
