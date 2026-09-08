@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BV 뮤직 프롬프트 메이커 v48 - Joseon Core</title>
+<title>BV 뮤직 프롬프트 메이커 v49 - Joseon Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Black+Han+Sans&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -456,11 +456,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
     <div class="logo-block">
       <div class="logo-symbol">♪</div>
       <div>
-        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v48</span></div>
-        <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 AUTO COMBO · 퀄리티 엔진 · v48 악기 확장</div>
+        <div class="logo-text">BV 뮤직 프롬프트 메이커 <span style="font-size:14px;color:var(--korean2)">v49</span></div>
+        <div class="logo-sub">Joseon Core · 7:3 정통화 · 구음 AUTO COMBO · 퀄리티 엔진 · 한(恨) 순수 정제판</div>
       </div>
     </div>
-    <div class="header-badge">JOSEON CORE v48 · 악기 12→19종 확장 · 가사 엔진 v2 ⚡</div>
+    <div class="header-badge">JOSEON CORE v49 · 한(恨) 전용 정제판 · 가사 엔진 v2 ⚡</div>
   </div>
 </header>
 
@@ -1414,26 +1414,16 @@ const DATA = {
     {en:'Gugak Trot',kr:'국악 트롯트',desc:'5음계 단조 민요 선율(70%) + 전통 장단·추임새(30%) — 한(恨)과 흥(興)이 공존하는 전·후절 맺풀기',ratio:'7:3'},
   ],
   moods: [
-    {en:'Head-Nodding Groove',kr:'고개 끄덕이는 그루브',desc:'자연스럽게 몸이 반응하는 리듬 중심 무드'},
     {en:'Seoul Night Atmosphere',kr:'서울 밤 감성',desc:'도시적이고 세련된 한국 심야 분위기'},
     {en:'Dreamy Korean Soul',kr:'몽환적 코리안 소울',desc:'몽환적 공간감과 한국적 감정선의 결합'},
-    {en:'Funky Korean Rhythm',kr:'펑키한 한국 리듬',desc:'장구·가야금 리듬이 살아있는 Funk 스타일'},
     {en:'Emotional Seoul Jazz',kr:'감성적인 서울 재즈',desc:'재즈바 감성과 한국적 여백감이 공존하는 무드'},
     {en:'Late-night Korean Lounge',kr:'심야 한국 라운지',desc:'늦은 밤 서울 라운지 감성의 Chill Groove'},
-    {en:'Groovy Oriental Fusion',kr:'그루비 오리엔탈 퓨전',desc:'동양적 감성과 Groove 중심 리듬의 세련된 결합'},
     {en:'Modern Korean Melancholy',kr:'현대적 한국 애절함',desc:'한(恨) 감성을 현대 Soul/R&B로 표현한 분위기'},
     {en:'Late Night Melancholic Blues',kr:'늦은 밤 애절한 블루스',desc:'고독하고 부드러운 심야 블루스 감성'},
     {en:'Whiskey Bar Atmosphere',kr:'위스키 바 감성',desc:'늦은 밤 조용한 바, 쓸쓸하고 세련된 분위기'},
     {en:'Lonely Midnight Reflection',kr:'고독한 심야 사색',desc:'혼자 있는 늦은 밤, 조용히 곱씹는 감정선'},
-    {en:'Energetic & Driving',kr:'에너지 넘치는 드라이브',desc:'고속도로를 달리며 듣기 좋은 활기찬 분위기'},
-    {en:'Motivational Workout',kr:'운동 동기부여',desc:'운동할 때 힘이 나는 에너지와 리듬감'},
-    {en:'Focused Labor',kr:'집중 노동',desc:'작업에 집중할 수 있게 해주는 안정적이고 리드미컬한 무드'},
-    {en:'Chill Drive',kr:'편안한 드라이브',desc:'여유롭고 감성적인 드라이브 분위기'},
-    {en:'Aggressive Hip-hop',kr:'공격적인 힙합',desc:'강렬하고 파워풀한 힙합 에너지'},
-    {en:'Uplifting & Positive',kr:'밝고 긍정적인',desc:'기분을 좋게 만들어주는 상쾌한 분위기'},
     {en:'Trot Melancholy (Aesu)',kr:'트로트 애수',desc:'정통 트로트의 구성지고 애달픈 삶의 애환 — 뽕끼 없는 깊은 한(恨)'},
     {en:'Han-laden Passionate Cry',kr:'한 서린 절창',desc:'억누르다 후렴에서 터뜨리는 격정적 슬픔 — 초혼처럼 벨트로 폭발하는 절창'},
-    {en:'Bittersweet Festivity',kr:'겉흥속한 (흥과 한)',desc:'경쾌한 트로트 리듬 속에 감춰진 이별의 슬픔 — 웃으며 우는 정서'},
     {en:'Fleeting Life Sorrow',kr:'인생무상 트로트',desc:'세월·회한·덧없음을 노래하는 중년의 애상, 지나간 날의 그리움'},
   ],
   instrumentsString: [
@@ -1458,7 +1448,6 @@ const DATA = {
     {en:'Piri Traditional Lead + Subtle Funk Bass + Light Drums',kr:'피리 전통 리드 + 은은한 펑크 베이스 + 라이트 드럼',desc:'피리 토속 비음·프레이즈(70%) + 현대 그루브 승화(30%) — 가장 한국적',ratio:'7:3'},
     {en:'Danso Solo + Dreamy Pad + Soft Texture',kr:'단소 솔로 + 드리미 패드 + 소프트 텍스처',desc:'단소 맑고 여린 솔로·호흡(70%) + 몽환적 Ambient(30%)',ratio:'7:3'},
     {en:'Saenghwang Harmonic Core + Ethereal Pad',kr:'생황 화성 코어 + 에테리얼 패드',desc:'생황 독특한 화성·동양 음색(70%) + 현대 패드 승화(30%)',ratio:'7:3'},
-    {en:'Taepyeongso Fierce Lead + Afro Funk Bass + Live Percussion',kr:'태평소 강렬한 리드 + 아프로 펑크 베이스 + 라이브 퍼커션',desc:'태평소 원색적 비음·고음 강렬한 어택(70%) + 아프로펑크 그루브·퍼커션 승화(30%) — 절규에 가까운 원초적 한(恨)의 강렬한 토해냄',ratio:'7:3'},
     {en:'Sogeum Bright Lead + Dreamy Synth + Soft Texture',kr:'소금 청명한 리드 + 드리미 신스 + 소프트 텍스처',desc:'소금 고음역 청명하고 투명한 선율(70%) + 드리미 신스 레이어 승화(30%) — Lo-fi·Dreamy 장르 차별화',ratio:'7:3'},
   ],
   concepts: [
@@ -1493,7 +1482,7 @@ const DATA = {
         genre:2, hanSoulFallback:0,
         keyScale:[1,0],
         gueumStyle:0, gueumPositions:['start','mid','end'], gueumPitch:'low', gueumGender:'male', gueumStrength:'strong',
-        moods:[7,8], blackSoul:[0,1], vocalTones:[5,7], bpmRange:[70,88],
+        moods:[4,5], blackSoul:[0,1], vocalTones:[5,7], bpmRange:[70,88],
         label:'판소리 × 딥블루스 자동 조합',
       }
     },
@@ -1503,9 +1492,9 @@ const DATA = {
       tags:['Namdo','꺾음목','Delta Blues Bend','Vibrato','Mournful'],gender:'both',pitch:'중저음',
       autoCombo:{
         genre:3, hanSoulFallback:0,
-        keyScale:[0,4],
+        keyScale:[0,1],
         gueumStyle:1, gueumPositions:['start','mid','end'], gueumPitch:'midlow', gueumGender:'both', gueumStrength:'strong',
-        moods:[7,8,10], blackSoul:[0,4], vocalTones:[5,6], bpmRange:[68,85],
+        moods:[4,5,7], blackSoul:[0,4], vocalTones:[5,6], bpmRange:[68,85],
         label:'남도창법 × 델타블루스 자동 조합',
       }
     },
@@ -1515,9 +1504,9 @@ const DATA = {
       tags:['Court','Dignified','Cool Jazz','Modal','Restrained'],gender:'both',pitch:'중음',
       autoCombo:{
         genre:0, hanSoulFallback:2,
-        keyScale:[4,1],
+        keyScale:[4,0],
         gueumStyle:2, gueumPositions:['mid','end'], gueumPitch:'midhigh', gueumGender:'both', gueumStrength:'normal',
-        moods:[1,2], blackSoul:[3], vocalTones:[8,9], bpmRange:[72,88],
+        moods:[0,1], blackSoul:[3], vocalTones:[8,9], bpmRange:[72,88],
         label:'정악창법 × 쿨재즈 자동 조합',
       }
     },
@@ -1527,9 +1516,9 @@ const DATA = {
       tags:['Seodo','Lonesome','Jazz Ballad','Wide Vibrato','Haunting'],gender:'male',pitch:'중저음',
       autoCombo:{
         genre:6, hanSoulFallback:4,
-        keyScale:[1,4],
+        keyScale:[1,1],
         gueumStyle:3, gueumPositions:['mid','end'], gueumPitch:'low', gueumGender:'male', gueumStrength:'strong',
-        moods:[10,8], blackSoul:[0,6], vocalTones:[5,6], bpmRange:[60,80],
+        moods:[7,5], blackSoul:[0,6], vocalTones:[5,6], bpmRange:[60,80],
         label:'수심가 × 딥소울 발라드 자동 조합',
       }
     },
@@ -1539,9 +1528,9 @@ const DATA = {
       tags:['Gasa','Lyrical','Cool Jazz','Modal','Scholar Vocal'],gender:'male',pitch:'중음',
       autoCombo:{
         genre:5, hanSoulFallback:2,
-        keyScale:[2,1],
+        keyScale:[2,0],
         gueumStyle:2, gueumPositions:['mid'], gueumPitch:'midhigh', gueumGender:'both', gueumStrength:'normal',
-        moods:[2,4], blackSoul:[3,6], vocalTones:[8,9], bpmRange:[60,78],
+        moods:[1,2], blackSoul:[3,6], vocalTones:[8,9], bpmRange:[60,78],
         label:'가사시창 × 앰비언트재즈 자동 조합',
       }
     },
@@ -1634,7 +1623,6 @@ const DATA = {
     {en:'Saenghwang harmonic texture',kr:'생황의 화성 질감',desc:'생황의 동양적 화음 레이어로 Dreamy·Ambient 분위기에 독특한 한국색',korean:true},
     {en:'Jing deep metallic decay',kr:'징의 묵직한 금속 울림',desc:'징을 한 번 쳤을 때 서서히 잦아드는 길고 웅장한 여운으로 Cinematic·Trap 저음 공간을 한국 색깔로 채움',korean:true},
     {en:'Jwago grand ceremonial strike',kr:'좌고 웅장한 의식적 타격',desc:'좌고의 대형 북 장엄한 타격감으로 서사적·의식적 에너지 폭발',korean:true},
-    {en:'Taepyeongso fierce attack phrasing',kr:'태평소 강렬한 어택 프레이즈',desc:'태평소의 원색적 비음과 강한 어택으로 절규하듯 터지는 원초적 한(恨)의 에너지 — Afrobeat·Funk 퓨전 최적',korean:true},
     {en:'Sogeum transparent high melody',kr:'소금의 투명한 고음 선율',desc:'소금의 청명하고 투명한 고음역 선율로 Lo-fi·Dreamy 분위기에 한국 색깔 추가',korean:true},
     {en:'Pyeonjong melodic bell strikes',kr:'편종의 선율 종 타격',desc:'편종의 금속 배음 선율 타격으로 동양적 신비감과 멜로딕 그루브 동시 구현',korean:true},
     {en:'Geomungo and ajaeng dual string tension',kr:'거문고·아쟁 이중 현악 긴장감',desc:'거문고 저역 타격과 아쟁 찰현 드론이 교차하는 깊고 묵직한 이중 현악 텍스처',korean:true},
@@ -1812,14 +1800,10 @@ const DATA = {
     {en:'G minor',short:'Gm',kr:'솔 단조',desc:'신비롭고 드라마틱한 긴장감 — 시네마틱 퓨전에 적합',mood:'신비·시네마틱'},
     {en:'C minor',short:'Cm',kr:'도 단조',desc:'클래식하고 장엄한 어두움 — 궁중 소울과 잘 맞음',mood:'장엄·웅장'},
     {en:'F major',short:'F',kr:'파 장조',desc:'따뜻하고 서정적 — Neo Soul·라운지 감성',mood:'따뜻·서정적'},
-    {en:'G major',short:'G',kr:'솔 장조',desc:'밝고 희망적인 에너지 — 신명나는 장단과 잘 어울림',mood:'밝음·신명·희망'},
     {en:'B♭ major',short:'Bb',kr:'시♭ 장조',desc:'재즈 스탠다드의 왕 — 빅밴드·소울 오케스트레이션',mood:'재즈·소울·성숙'},
   ],
   koreanScales: [
     {en:'Gyemyeonjo',kr:'계면조',desc:'남도 민요의 핵심 음계 — 슬프고 애절한 한(恨)의 정서.',feel:'슬픔·애절·한(恨)',suno:'pentatonic minor with Korean phrasing, mournful slides, 시김새'},
-    {en:'Pyeongjo',kr:'평조',desc:'궁중 정악의 음계 — 밝고 웅장하며 기품 있음.',feel:'밝음·웅장·기품',suno:'pentatonic major with noble Korean court phrasing, graceful'},
-    {en:'Ujo',kr:'우조',desc:'강하고 호탕한 기상 — 굿거리·무악에서 기원.',feel:'강함·호탕·당당',suno:'strong pentatonic scale, bold and powerful Korean shaman phrasing'},
-    {en:'Gyeongtori',kr:'경토리',desc:'경기 민요의 경쾌한 음계 — 발랄하고 신명남.',feel:'경쾌·신명·발랄',suno:'bright Korean pentatonic, lively and playful Seoul folk phrasing'},
     {en:'Menaritori',kr:'메나리토리',desc:'강원·함경도 산악 지방의 음계 — 구슬프고 처연하며 광야의 외로움.',feel:'처연·구슬픔·외로움',suno:'Korean mountain pentatonic, haunting and lonesome, wide vibrato slides'},
   ],
   energyArcs: [
@@ -1877,11 +1861,11 @@ const PRESET_POOLS = {
   /* ─── 7:3 Joseon Core 프리셋 ─── */
   joseon: {
     genre:              [0, 7],
-    moods:              [0, 1, 3, 5, 6],
+    moods:              [0, 2, 3],
     hanSoul:            [0, 2],
     instr:              [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'string',idx:2},{cat:'percussion',idx:0}],
     keys:               [0, 4],
-    scales:             [0, 1],
+    scales:             [0],
     moodN:              [2, 3],
     vocalStyle:         [0, 7, 9],
     concept:            [0, 7],
@@ -1898,11 +1882,11 @@ const PRESET_POOLS = {
   },
   sanjo: {
     genre:              [1],
-    moods:              [2, 4, 5, 6, 8],
+    moods:              [1, 2, 3, 5],
     hanSoul:            [2, 3],
     instr:              [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'string',idx:2},{cat:'percussion',idx:0}],
     keys:               [0, 2],
-    scales:             [0, 2],
+    scales:             [0],
     moodN:              [2, 2],
     vocalStyle:         [1, 2, 5],
     concept:            [1, 5],
@@ -1919,11 +1903,11 @@ const PRESET_POOLS = {
   },
   pansori: {
     genre:              [2, 3, 6],
-    moods:              [2, 7, 8, 10],
+    moods:              [1, 4, 5, 7],
     hanSoul:            [0, 1, 4],
     instr:              [{cat:'string',idx:1},{cat:'string',idx:0},{cat:'string',idx:2},{cat:'percussion',idx:0}],
     keys:               [0, 1],
-    scales:             [0, 4],
+    scales:             [0, 1],
     moodN:              [2, 3],
     vocalStyle:         [1, 4, 8],
     concept:            [2, 6],
@@ -1940,11 +1924,11 @@ const PRESET_POOLS = {
   },
   minyo: {
     genre:              [3, 2],
-    moods:              [7, 8, 2, 3, 10],
+    moods:              [4, 5, 1, 7],
     hanSoul:            [3, 4],
     instr:              [{cat:'wind',idx:1},{cat:'string',idx:1},{cat:'string',idx:2},{cat:'percussion',idx:0}],
     keys:               [0, 2],
-    scales:             [0, 4],
+    scales:             [0, 1],
     moodN:              [2, 2],
     vocalStyle:         [0, 1, 4],
     concept:            [3, 2],
@@ -1961,11 +1945,11 @@ const PRESET_POOLS = {
   },
   court: {
     genre:              [7, 0, 4],
-    moods:              [0, 1, 5, 6, 16],
+    moods:              [0, 3, 4],
     hanSoul:            [1, 2],
     instr:              [{cat:'wind',idx:0},{cat:'string',idx:0},{cat:'string',idx:2},{cat:'percussion',idx:0}],
-    keys:               [0, 4, 6],
-    scales:             [0, 1],
+    keys:               [0, 4],
+    scales:             [0],
     moodN:              [2, 3],
     vocalStyle:         [7, 0, 9],
     concept:            [7, 0],
@@ -1981,119 +1965,13 @@ const PRESET_POOLS = {
     gueumPositions:     [['start','mid'],['mid','end'],['start','mid','end']],
   },
   /* ─── 용도별 빠른 시작 ─── */
-  drive: {
-    genre:              [2, 1, 7],
-    moods:              [11, 14, 0, 6],
-    hanSoul:            [2, 3],
-    instr:              [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'string',idx:2},{cat:'percussion',idx:1}],
-    keys:               [2, 0, 5],
-    scales:             [0, 3],
-    moodN:              [2, 2],
-    vocalStyle:         [0, 5, 7],
-    concept:            [1, 7],
-    vocalTones:         [[9,10],[4,9],[8,10]],
-    textures:           [[0,6],[3,6],[0,3]],
-    grooves:            [[1,6],[5,6],[0,6]],
-    spaces:             [[0,2],[2],[0]],
-    koreanGrooves:      [[0,2,4],[0,4,9],[2,4,10]],
-    bassStyles:         [[0,2,4],[2,4],[0,4]],
-    koreanFeelings:     [[0,3,5],[0,5],[3,5]],
-    blackSoulElements:  [[2,3],[0,3],[1,3]],
-    humanFeelElements:  [[1,6],[0,6],[1,4]],
-    gueumPositions:     [['start'],['mid'],['start','mid']],
-  },
-  workout: {
-    genre:              [4, 7],
-    moods:              [12, 11, 15, 0],
-    hanSoul:            [1, 2],
-    instr:              [{cat:'percussion',idx:0},{cat:'string',idx:0},{cat:'string',idx:2},{cat:'percussion',idx:1}],
-    keys:               [1, 2, 6],
-    scales:             [0, 3],
-    moodN:              [2, 2],
-    vocalStyle:         [5, 1, 7],
-    concept:            [4, 7],
-    vocalTones:         [[8,10],[5,10],[4,10]],
-    textures:           [[1,5],[0,5],[3,5]],
-    grooves:            [[2,5],[5,6],[2,6]],
-    spaces:             [[1,2],[2],[0,2]],
-    koreanGrooves:      [[0,2,13],[0,5,13],[2,5,13]],
-    bassStyles:         [[0,3],[0,4],[3,4]],
-    koreanFeelings:     [[0,5],[0,3],[3,5]],
-    blackSoulElements:  [[1,2],[0,2],[2,5]],
-    humanFeelElements:  [[0,4],[4,6],[0,6]],
-    gueumPositions:     [['start'],['start','mid'],['mid']],
-  },
-  hiphop: {
-    genre:              [4, 7],
-    moods:              [15, 0, 3, 11],
-    hanSoul:            [1, 2],
-    instr:              [{cat:'percussion',idx:3},{cat:'string',idx:0},{cat:'string',idx:3},{cat:'percussion',idx:0}],
-    keys:               [1, 0, 2],
-    scales:             [0, 3],
-    moodN:              [2, 2],
-    vocalStyle:         [5, 1, 0],
-    concept:            [4, 7],
-    vocalTones:         [[5,10],[4,8],[8,9]],
-    textures:           [[1,2],[0,2],[1,3]],
-    grooves:            [[2,6],[2,4],[4,6]],
-    spaces:             [[1],[0,1],[2]],
-    koreanGrooves:      [[0,1,13],[1,5,13],[0,5,13]],
-    bassStyles:         [[0,3],[3,4],[0,4]],
-    koreanFeelings:     [[0,3],[0,5],[3,5]],
-    blackSoulElements:  [[0,1],[1,2],[0,2]],
-    humanFeelElements:  [[0,4],[1,4],[0,6]],
-    gueumPositions:     [['start'],['start','mid'],['mid','end']],
-  },
-  labor: {
-    genre:              [3, 2],
-    moods:              [13, 0, 7],
-    hanSoul:            [0, 4],
-    instr:              [{cat:'wind',idx:0},{cat:'string',idx:1},{cat:'string',idx:2},{cat:'percussion',idx:0}],
-    keys:               [5, 0, 6],
-    scales:             [0, 2],
-    moodN:              [1, 2],
-    vocalStyle:         [1, 4, 8],
-    concept:            [2, 3],
-    vocalTones:         [[5,6],[4,6],[4,5]],
-    textures:           [[0,2],[1,2],[0,1]],
-    grooves:            [[1,3],[3,4],[1,4]],
-    spaces:             [[0],[0,3],[3]],
-    koreanGrooves:      [[2,11,12],[5,11,12],[2,5,12]],
-    bassStyles:         [[1,2],[0,2],[0,1]],
-    koreanFeelings:     [[1,4],[1,6],[4,6]],
-    blackSoulElements:  [[0,4],[4,5],[0,5]],
-    humanFeelElements:  [[0,3],[3,6],[0,6]],
-    gueumPositions:     [['start','end'],['start'],['start','mid','end']],
-  },
-  night: {
-    genre:              [6, 1, 5],
-    moods:              [9, 10, 8, 2, 5],
-    hanSoul:            [3, 4],
-    instr:              [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'string',idx:2},{cat:'percussion',idx:0}],
-    keys:               [0, 1, 2],
-    scales:             [0, 4],
-    moodN:              [2, 3],
-    vocalStyle:         [2, 6, 9],
-    concept:            [5, 6],
-    vocalTones:         [[0,2],[2,6],[0,9]],
-    textures:           [[4,7],[6,7],[4,6]],
-    grooves:            [[0,3],[1,3],[0,1]],
-    spaces:             [[0,2],[0],[0,3]],
-    koreanGrooves:      [[6,7,8],[7,8,9],[6,8,9]],
-    bassStyles:         [[1,2],[0,1],[2,5]],
-    koreanFeelings:     [[2,6,7],[0,6,7],[2,7]],
-    blackSoulElements:  [[0,6],[1,6],[0,3]],
-    humanFeelElements:  [[0,2],[2,3],[0,3]],
-    gueumPositions:     [['end'],['mid','end'],['start','end']],
-  },
-  /* ─── 구음 × 한소울 프리셋 ─── */
   pansori_han_blues: {
     genre:              [2, 3, 6],
-    moods:              [7, 8, 10, 2],
+    moods:              [4, 5, 7, 1],
     hanSoul:            [0, 1],
     instr:              [{cat:'string',idx:1},{cat:'string',idx:2},{cat:'string',idx:0},{cat:'percussion',idx:0}],
     keys:               [0, 1],
-    scales:             [0, 4],
+    scales:             [0, 1],
     moodN:              [2, 3],
     vocalStyle:         [1, 4, 8],
     concept:            [2, 3],
@@ -2110,11 +1988,11 @@ const PRESET_POOLS = {
   },
   seoul_midnight_jazz: {
     genre:              [1],
-    moods:              [4, 9, 10, 5],
+    moods:              [2, 6, 7, 3],
     hanSoul:            [2, 3],
     instr:              [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'string',idx:2},{cat:'percussion',idx:0}],
     keys:               [2, 0],
-    scales:             [0, 2],
+    scales:             [0],
     moodN:              [2, 3],
     vocalStyle:         [2, 6, 9],
     concept:            [1, 5],
@@ -2129,34 +2007,13 @@ const PRESET_POOLS = {
     humanFeelElements:  [[0,2],[0,6],[2,6]],
     gueumPositions:     [['end'],['mid','end'],['start','end']],
   },
-  sanjo_blue: {
-    genre:              [1, 3],
-    moods:              [2, 4, 6, 8],
-    hanSoul:            [2, 3],
-    instr:              [{cat:'string',idx:0},{cat:'string',idx:1},{cat:'string',idx:2},{cat:'percussion',idx:0}],
-    keys:               [0, 2],
-    scales:             [0, 2],
-    moodN:              [2, 3],
-    vocalStyle:         [1, 2, 5],
-    concept:            [1, 5],
-    vocalTones:         [[1,9],[0,2],[2,8]],
-    textures:           [[3,4],[4,7],[3,7]],
-    grooves:            [[0,7],[0,3],[3,7]],
-    spaces:             [[0,2],[2],[0]],
-    koreanGrooves:      [[0,3,4],[3,4,7],[0,4,7]],
-    bassStyles:         [[1,5],[0,1],[3,5]],
-    koreanFeelings:     [[2,4,7],[0,4],[2,7]],
-    blackSoulElements:  [[0,3],[1,3],[0,1]],
-    humanFeelElements:  [[0,2],[2,6],[0,6]],
-    gueumPositions:     [['start','mid','end'],['mid','end'],['start','end']],
-  },
   ajaeng_soul_ballad: {
     genre:              [6, 2],
-    moods:              [2, 7, 10, 8],
+    moods:              [1, 4, 7, 5],
     hanSoul:            [3, 4],
     instr:              [{cat:'string',idx:2},{cat:'string',idx:1},{cat:'string',idx:3},{cat:'percussion',idx:0}],
     keys:               [0, 1],
-    scales:             [0, 4],
+    scales:             [0, 1],
     moodN:              [2, 3],
     vocalStyle:         [8, 4, 0],
     concept:            [6, 2],
@@ -2262,15 +2119,9 @@ function renderGenres() {
       <div class="card-desc">${d.desc}</div>
     </div>`).join('');
 }
-// ★ v48 채널 정체성(가슴먹먹하고 절절히 아픈 한恨)과 안 맞는 "신나는" 계열 무드는
-// 화면 선택지·자동조합 풀에서 제외 — 배열 자체에서 지우면 인덱스가 밀려서 기존
-// 34개 카드가 전부 깨지므로, 배열은 그대로 두고 UI·랜덤풀에서만 숨김
-const _EXCLUDED_UPBEAT_MOODS = new Set([0, 3, 6, 11, 12, 13, 14, 15, 16, 19]);
-
 function renderMoods() {
   const g = document.getElementById('moodGrid');
   g.innerHTML = DATA.moods.map((d,i) => {
-    if (_EXCLUDED_UPBEAT_MOODS.has(i)) return ''; // 신나는 계열 숨김
     const isActive = STATE.moods.includes(i);
     return `<div class="chip ${isActive?'active':''}" id="mood_${i}" onclick="toggleMood(${i})">
       <span class="chip-en">${d.en}</span>
@@ -2482,15 +2333,10 @@ function renderHanSoulStyles() {
       <div style="font-size:10px;color:var(--soul);margin-top:8px;padding:4px 8px;background:rgba(200,80,80,.1);border-radius:4px">→ ${d.style}</div>
     </div>`).join('');
 }
-// ★ 09번 조성·음계도 무드와 같은 이유로 "신나는" 계열은 제외
-const _EXCLUDED_UPBEAT_KEYS = new Set([6]);        // 솔 장조 — 밝고 희망적·신명나는 장단
-const _EXCLUDED_UPBEAT_SCALES = new Set([1, 2, 3]); // 평조(밝고웅장) · 우조(강하고호탕) · 경토리(경쾌·신명·발랄)
-
 function renderMusicKeys() {
   const g = document.getElementById('musicKeyGrid');
   if (!g) return;
   g.innerHTML = DATA.musicKeys.map((d,i) => {
-    if (_EXCLUDED_UPBEAT_KEYS.has(i)) return '';
     return `
     <div class="selcard" id="mkey_${i}" onclick="selectMusicKey(${i})" style="${d.recommend?'border-left:3px solid var(--gold)':''}">
       <div class="check-dot"></div>
@@ -2508,7 +2354,6 @@ function renderKoreanScales() {
   const g = document.getElementById('koreanScaleGrid');
   if (!g) return;
   g.innerHTML = DATA.koreanScales.map((d,i) => {
-    if (_EXCLUDED_UPBEAT_SCALES.has(i)) return '';
     return `
     <div class="selcard korean-card" id="kscale_${i}" onclick="selectKoreanScale(${i})">
       <div class="check-dot"></div>
@@ -2734,20 +2579,20 @@ function _autoSetKeyScale(keyIdx, scaleIdx) {
 }
 
 /* 장르별 조성·음계 자동 매핑 테이블
-   musicKeys:    0=Am 1=Dm 2=Em 3=Gm 4=Cm 5=F 6=G 7=Bb
-   koreanScales: 0=계면조 1=평조 2=우조 3=경토리 4=메나리토리 */
+   musicKeys:    0=Am 1=Dm 2=Em 3=Gm 4=Cm 5=F 6=Bb
+   koreanScales: 0=계면조 1=메나리토리 */
 /* 장르별 조성 풀 — 각 3개(전부 슬픔 계열 단조). 곡마다 랜덤으로 뽑아 음 높이가 달라져 다양성 ↑.
-   키: 0Am 1Dm 2Em 3Gm 4Cm (단조) / 음계: 0계면조 4메나리토리 (둘 다 한·슬픔). 장조·밝은 선법 배제. */
+   키: 0Am 1Dm 2Em 3Gm 4Cm (단조) / 음계: 0계면조 1메나리토리 (둘 다 한·슬픔). 장조·밝은 선법 배제. */
 const _GENRE_KEY_MAP = [
   [[0,0],[1,0],[2,0]], // 0 조선궁중소울  → Am/Dm/Em + 계면조 (애절·한)
   [[2,0],[0,0],[1,0]], // 1 산조재즈      → Em/Am/Dm + 계면조 (즉흥·재즈)
   [[1,0],[2,0],[3,0]], // 2 판소리소울    → Dm/Em/Gm + 계면조 (서사적·깊은 한)
-  [[0,4],[1,4],[2,4]], // 3 민요블루스    → Am/Dm/Em + 메나리토리 (처연·구슬픔)
+  [[0,1],[1,1],[2,1]], // 3 민요블루스    → Am/Dm/Em + 메나리토리 (처연·구슬픔)
   [[1,0],[0,0],[3,0]], // 4 국악궁중힙합  → Dm/Am/Gm + 계면조 (묵직·힙합)
-  [[0,4],[1,4],[3,0]], // 5 대금앰비언트  → Am/Dm 메나리토리, Gm 계면조 (서정·처연)
-  [[1,4],[3,0],[4,0]], // 6 아쟁딥소울    → Dm 메나리토리, Gm/Cm 계면조 (깊은 슬픔)
-  [[4,1],[1,0],[0,0]], // 7 네오조선퓨전  → Cm 평조(장엄), Dm/Am 계면조
-  [[0,4],[1,4],[1,0]], // 8 국악트롯트    → Am/Dm 메나리토리, Dm 계면조 (한+흥)
+  [[0,1],[1,1],[3,0]], // 5 대금앰비언트  → Am/Dm 메나리토리, Gm 계면조 (서정·처연)
+  [[1,1],[3,0],[4,0]], // 6 아쟁딥소울    → Dm 메나리토리, Gm/Cm 계면조 (깊은 슬픔)
+  [[4,0],[1,0],[0,0]], // 7 네오조선퓨전  → Cm/Dm/Am 전부 계면조 (장엄·절제)
+  [[0,1],[1,1],[1,0]], // 8 국악트롯트    → Am/Dm 메나리토리, Dm 계면조 (한+흥)
 ];
 
 /* 한소울스타일별 조성·음계 자동 매핑 */
@@ -2756,22 +2601,22 @@ const _HANSOUL_KEY_MAP = [
   [1, 0], // 1 Joseon Court HipHop     → Dm + 계면조 (묵직·힙합·그루브)
   [2, 0], // 2 Seoul Midnight Jazz    → Em + 계면조
   [0, 0], // 3 Sanjo Blue Notes       → Am + 계면조
-  [1, 4], // 4 Han Soul Ballad        → Dm + 메나리토리
+  [1, 1], // 4 Han Soul Ballad        → Dm + 메나리토리
   [0, 0], // 5 Gritty Korean R&B      → Am + 계면조
 ];
 
-/* 장르별 어울리는 국악 창법 후보 (0판소리 1남도민요 2경기민요 3정악 4수심가 5가사시창)
+/* 장르별 어울리는 국악 창법 후보 (0판소리 1남도민요 2정악 3수심가 4가사시창)
    장르 선택 시 이 후보 중 무작위로 하나가 자동으로 켜짐 → 곡마다 창법이 달라져 다양 */
 const GENRE_CHANGSIK_CANDIDATES = {
-  0: [3, 5, 4],     // 조선 궁중 소울 → 정악·가사시창·수심가 (정제·기품 + 애절)
-  1: [0, 4, 1],     // 산조 재즈 → 판소리·수심가·남도민요 (즉흥·블루지)
-  2: [0, 4, 1],     // 판소리 소울 → 판소리·수심가·남도민요 (깊은 한)
-  3: [1, 4, 0],     // 민요 블루스 → 남도민요·수심가·판소리
-  4: [2, 0, 1],     // 국악 궁중 힙합 → 경기민요·판소리·남도민요 (경쾌·리듬 + 꺾음)
-  5: [5, 3, 4],     // 대금 앰비언트 → 가사시창·정악·수심가 (여백·서정)
-  6: [4, 0, 1],     // 아쟁 딥 소울 → 수심가·판소리·남도민요 (처연·깊음)
-  7: [0, 2, 1],     // 네오조선 퓨전 → 판소리·경기민요·남도민요 (다양)
-  8: [0, 1, 4],     // 국악 트롯트 → 판소리·남도민요·수심가 (한+흥)
+  0: [2, 4, 3],     // 조선 궁중 소울 → 정악·가사시창·수심가 (정제·기품 + 애절)
+  1: [0, 3, 1],     // 산조 재즈 → 판소리·수심가·남도민요 (즉흥·블루지)
+  2: [0, 3, 1],     // 판소리 소울 → 판소리·수심가·남도민요 (깊은 한)
+  3: [1, 3, 0],     // 민요 블루스 → 남도민요·수심가·판소리
+  4: [0, 1, 2],     // 국악 궁중 힙합 → 판소리·남도민요·정악 (꺾음+격식)
+  5: [4, 2, 3],     // 대금 앰비언트 → 가사시창·정악·수심가 (여백·서정)
+  6: [3, 0, 1],     // 아쟁 딥 소울 → 수심가·판소리·남도민요 (처연·깊음)
+  7: [0, 1, 4],     // 네오조선 퓨전 → 판소리·남도민요·가사시창 (다양)
+  8: [0, 1, 3],     // 국악 트롯트 → 판소리·남도민요·수심가 (한+흥)
 };
 function selectGenre(i) {
   document.querySelectorAll('#genreGrid .selcard').forEach(el => el.classList.remove('active'));
@@ -3250,7 +3095,7 @@ const ARTIST_SCRUB_MAP = {
   "Robert Johnson": "haunted Delta crossroads blues",
   "Muddy Waters": "electric slide Delta blues",
   "Junior Kimbrough": "hypnotic one-chord hill-country blues",
-  "Fred McDowell": "open-tuned slide blues drone",
+  "Fred McDowell": "open-tuned slide blues",
   "Lightnin Hopkins": "back-porch one-take country blues",
   "Lightnin' Hopkins": "back-porch one-take country blues",
   "Jessie Mae Hemphill": "drum-and-voice fife blues",
@@ -3268,12 +3113,12 @@ const ARTIST_SCRUB_MAP = {
   "DJ Premier": "knife-cut scratch boom bap",
   // Ambient / modern classical
   "Brian Eno": "oblique ambient space",
-  "Stars of the Lid": "slow-motion drone ambient",
+  "Stars of the Lid": "slow-motion ambient stillness",
   "William Basinski": "decaying tape-loop ambient",
   "Arvo Part": "tintinnabuli sacred stillness",
   "Arvo Pärt": "tintinnabuli sacred stillness",
   "Harold Budd": "soft-pedal ambient piano",
-  "Eliane Radigue": "long-form sustained drone",
+  "Eliane Radigue": "slow-shifting ambient stillness",
   // Folk / singer-songwriter
   "Nick Drake": "fingerpicked melancholic folk emptiness",
   "Sade": "cool slow-burn sophisti-soul",
@@ -3322,7 +3167,7 @@ const GENRE_DNA = {
     "Delta swamp moan, Mississippi mud pentatonic bend that never resolves, heavy summer air before the storm breaks, Robert Johnson crossroads at midnight",
     "Muddy Waters electric slide over Korean folk melody, slow 12-bar under haegeum weeping, Louisiana bayou heat and Korean mountain rain",
     "Junior Kimbrough hypnotic loop, one riff repeated until it becomes a prayer, pentatonic shared between Mississippi and Jeolla Province",
-    "Fred McDowell open-tuned slide drone, haegeum carrying the blue note that never lands, two traditions finding the same ache",
+    "Fred McDowell open-tuned slide blues, haegeum carrying the blue note that never lands, two traditions finding the same ache",
     "Lightnin Hopkins back-porch one-take rawness — Korean folk melody hummed over slow 12-bar, no polish, no plan, just truth",
     "Jessie Mae Hemphill drum and voice alone, janggu replacing the snare, minyo melody where the vocal line would be",
   ],
@@ -3341,15 +3186,15 @@ const GENRE_DNA = {
     "William Basinski decay loop feel — daegeum breath recorded once and allowed to dissolve, the note disappearing slower than the grief",
     "Arvo Part tintinnabuli stillness — single daegeum pitch ringing against its own decay, nothing added, everything removed",
     "Harold Budd Ambient 2 — daegeum note placed in reverb so large the room becomes the instrument, no rhythm, only drift",
-    "Eliane Radigue long-form drone — one sustained breath expanding outward for minutes, harmonics shifting like weather in slow motion",
+    "Eliane Radigue slow-shifting ambient stillness — brief breath phrases recurring quietly, harmonics shifting like weather in slow motion",
   ],
   6: [ // 아쟁 딥 소울
     "bowed low-string in a lightless room, hair-trigger sob just below middle C, Sam Cooke voice about to collapse, heavy reverb on a single low note",
-    "Nick Drake fingerpicked emptiness replaced by ajaeng bow, dark room at 4am, one note sustained until it becomes a question with no answer",
+    "Nick Drake fingerpicked emptiness replaced by ajaeng bow, dark room at 4am, one note held briefly until it becomes a question with no answer",
     "Solomon Burke slow-drag soul groove under bowed Korean zither, bass note that makes your chest feel hollow, barely any reverb needed",
     "Al Green late-night ache — ajaeng replacing the strings, bass guitar barely moving, the groove so slow it feels like standing still",
     "Curtis Mayfield falsetto fragility — ajaeng carrying the low end the voice cannot, two extremes of the same sorrow, one song",
-    "Isaac Hayes orchestral patience — everything slowed until each note arrives like a decision, ajaeng sustain under Rhodes left-hand fog",
+    "Isaac Hayes orchestral patience — everything slowed until each note arrives like a decision, ajaeng bow phrases recurring under Rhodes left-hand fog",
   ],
   7: [ // 네오조선 퓨전
     "plucked court zither over warm Rhodes electric piano, 2am neon Seoul rain on taxi window, late-night lounge amber glow, D'Angelo slow-burn groove",
@@ -3372,7 +3217,7 @@ const GENRE_DNA = {
 /* 산조 재즈 발라드 전용 DNA (서울 심야 재즈용 — 다운템포·고요·새벽 재즈바) */
 const SANJO_BALLAD_DNA = [
   "late-night jazz ballad with Korean soul — soft brushed drums and a gentle slow walking bass, gayageum and haegeum trading tender phrases over warm Rhodes voicings, hushed and intimate, the last song in an empty club",
-  "downtempo nocturne — haegeum weeping long sustained lines like a muted trumpet at 3am, sparse Rhodes chords, soft brushed snare, gayageum answering quietly, smoke and dim light, deeply melancholic",
+  "downtempo nocturne — haegeum weeping long aching bends like a muted trumpet at 3am, sparse Rhodes chords, soft brushed snare, gayageum answering quietly, smoke and dim light, deeply melancholic",
   "slow sanjo-jazz ballad, rubato feel — gayageum placing notes with space between them, upright bass walking slowly, brush on the snare barely there, haegeum sobbing softly, a quiet rainy Seoul midnight",
   "tender Korean jazz lullaby — warm piano comping in slow swing, gayageum gentle melody, haegeum long aching bends, soft cymbal swells, intimate late-night whisper, restrained and full of longing",
   "ballad-tempo sanjo jazz — sparse and breathing, gayageum and haegeum in slow call-and-response over a soft walking bass and brushed drums, warm Rhodes underneath, the ache held quietly, never rushed",
@@ -3461,7 +3306,7 @@ const GENRE_DNA_EXTRA = {
     "widescreen neojoseon — spacious production, gayageum and daegeum over a deep groove, slow build to an emotional drop, modern grandeur",
   ],
   8: [ // 국악 트롯트 추가
-    "classic gugak trot — haegeum sustaining then bending into a kkeokneun-mok, piri behind, ajaeng bass, janggu pulse, a trembling husky voice, resignation then a sob",
+    "classic gugak trot — haegeum ringing briefly then bending into a kkeokneun-mok, piri behind, ajaeng bass, janggu pulse, a trembling husky voice, resignation then a sob",
     "slow trot ballad — sparse haegeum, a quivering low female voice carrying the melody, soft janggu, the ache of a love that left on the last train",
     "namdo-minyo trot — wide vibrato and bent notes, gayageum and piri behind, a powerful belting voice, deep gyemyeonjo sorrow",
     "retro gugak trot — a nostalgic two-beat feel with janggu, haegeum lead, warm bass, the bittersweet swing of old Korean melodrama",
@@ -3672,7 +3517,7 @@ function _doBuildPrompt() {
       'Buk':      'barrel drum — deep warm ceremonial thud, slow measured strikes',
       'Jing':     'large gong — massive low-frequency wash, long sustaining metallic hum, cuts space with weight not sharpness',
       'Jwago':    'large barrel drum — thunderous ceremonial boom, massive strike energy, epic and majestic, NOT pop drum',
-      'Taepyeongso':'conical oboe — fiercely bright nasal shriek, raw and powerful, celebratory energy like a Korean shehnai',
+      'Taepyeongso':'conical oboe — fiercely bright nasal shriek, raw and powerful, like a wailing cry of anguish, similar in timbre to a Korean shehnai',
       'Sogeum':   'small bamboo flute — one octave above daegeum, pure transparent high tone, delicate airy shimmer',
       'Pyeonjong':'bronze bell chime — bright metallic bell melody, tuned resonance, harmonic overtone ring',
       'Gayageum 25':'extended plucked zither — chromatic range beyond pentatonic, richer harmonic colors, contemporary modal bend',
@@ -4057,7 +3902,7 @@ async function _callOnce(model, messages, temperature, apiKey, maxTokens, _retri
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
       'HTTP-Referer': window.location.href,
-      'X-Title': 'Gugak Prompt Maker v48',
+      'X-Title': 'Gugak Prompt Maker v49',
     },
     body: JSON.stringify({
       model, messages,
@@ -4417,7 +4262,7 @@ function _parseJsonLoose(text) {
 }
 function escapeHtml(s) { return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function sanitizeSunoPrompt(text,maxLen=750) {
-  let t=cleanModelText(text).replace(/^[-•\s]*(Suno prompt|Prompt|프롬프트)\s*[:：-]\s*/i,'').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim();
+  let t=scrubArtistNames(cleanModelText(text)).replace(/^[-•\s]*(Suno prompt|Prompt|프롬프트)\s*[:：-]\s*/i,'').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim();
   if (t.length>maxLen) {
     t=t.slice(0,maxLen);
     // 단어/구간 중간에서 잘리지 않도록, 가장 가까운 " | " 구분자 또는 공백까지만 남김
@@ -4455,7 +4300,7 @@ function randomizeCombination() {
   STATE.moods = [];
   document.querySelectorAll('[id^="mood_"]').forEach(el => el.classList.remove('active'));
   const moodCount = 2 + Math.floor(Math.random() * 2);
-  const allMoodIdx = DATA.moods.map((_, i) => i).filter(i => !_EXCLUDED_UPBEAT_MOODS.has(i));
+  const allMoodIdx = DATA.moods.map((_, i) => i);
   const shuffledMoods = allMoodIdx.sort(() => Math.random() - 0.5).slice(0, moodCount);
   shuffledMoods.forEach(i => {
     STATE.moods.push(i);
@@ -4582,7 +4427,7 @@ function applyAnalysisToUI(analysis) {
   // ── 장르 매핑 ──
   if (analysis.genre) { const gi=DATA.genres.findIndex(g=>g.en.toLowerCase().includes(analysis.genre.toLowerCase())||g.kr.includes(analysis.genre)); if(gi!==-1)STATE.genre=gi; }
   // ── 분위기 매핑 ──
-  if (analysis.moods&&Array.isArray(analysis.moods)) { analysis.moods.forEach(m=>{const idx=DATA.moods.findIndex(d=>d.en.toLowerCase().includes(m.toLowerCase())||d.kr.includes(m));if(idx!==-1&&!_EXCLUDED_UPBEAT_MOODS.has(idx)&&!STATE.moods.includes(idx))STATE.moods.push(idx);}); }
+  if (analysis.moods&&Array.isArray(analysis.moods)) { analysis.moods.forEach(m=>{const idx=DATA.moods.findIndex(d=>d.en.toLowerCase().includes(m.toLowerCase())||d.kr.includes(m));if(idx!==-1&&!STATE.moods.includes(idx))STATE.moods.push(idx);}); }
   // ── BPM 매핑 ──
   if (analysis.bpm&&analysis.bpm>=65&&analysis.bpm<=145) STATE.bpm=parseInt(analysis.bpm);
   // ── 악기 매핑 (instruments → STATE.instrList, 다중) ──
@@ -4683,11 +4528,10 @@ function applyAnalysisToUI(analysis) {
   if (!_keyMatched || !_scaleMatched) {
     let _fbKey=0, _fbScale=0;
     if(analysisGenre.includes('court')||analysisGenre.includes('cinematic')){_fbKey=4;_fbScale=1;}
-    else if(analysisMoods.includes('hopeful')||analysisMoods.includes('bright')){_fbKey=7;_fbScale=2;}
     else if(analysisGenre.includes('hip')||analysisGenre.includes('trap')){_fbKey=1;_fbScale=0;}
     else if(analysisGenre.includes('jazz')){_fbKey=2;_fbScale=0;}
-    else if(analysisMoods.includes('sad')||analysisMoods.includes('mournful')||analysisMoods.includes('han')||analysisMoods.includes('슬')||analysisMoods.includes('애절')){_fbKey=1;_fbScale=4;}
-    else if(analysisMoods.includes('chill')||analysisMoods.includes('ambient')){_fbKey=5;_fbScale=3;}
+    else if(analysisMoods.includes('sad')||analysisMoods.includes('mournful')||analysisMoods.includes('han')||analysisMoods.includes('슬')||analysisMoods.includes('애절')){_fbKey=1;_fbScale=1;}
+    else if(analysisMoods.includes('chill')||analysisMoods.includes('ambient')){_fbKey=5;_fbScale=1;}
     if (!_keyMatched) STATE.musicKey=_fbKey;
     if (!_scaleMatched) STATE.koreanScale=_fbScale;
   }
@@ -6160,11 +6004,11 @@ function applyRecCard(idx) {
   STATE.textures=[0]; STATE.grooves=[1,6]; STATE.spaces=[0]; STATE.koreanFeelings=[0]; STATE.intensity=6;
   // 장르/분위기 기반 조성·음계 자동 매핑
   const genreKey=DATA.genres[STATE.genre]?.en?.toLowerCase()||'';
-  if(genreKey.includes('court')||genreKey.includes('cinematic')){STATE.musicKey=4;STATE.koreanScale=1;}
-  else if(genreKey.includes('funk')){STATE.musicKey=7;STATE.koreanScale=2;}
+  if(genreKey.includes('court')||genreKey.includes('cinematic')){STATE.musicKey=6;STATE.koreanScale=0;}
+  else if(genreKey.includes('funk')){STATE.musicKey=6;STATE.koreanScale=0;}
   else if(genreKey.includes('hip')||genreKey.includes('trap')){STATE.musicKey=1;STATE.koreanScale=0;}
   else if(genreKey.includes('jazz')||genreKey.includes('lounge')){STATE.musicKey=2;STATE.koreanScale=0;}
-  else if(genreKey.includes('ambient')||genreKey.includes('chill')){STATE.musicKey=5;STATE.koreanScale=3;}
+  else if(genreKey.includes('ambient')||genreKey.includes('chill')){STATE.musicKey=5;STATE.koreanScale=1;}
   else{STATE.musicKey=0;STATE.koreanScale=0;} // 기본값: Am + 계면조
   document.querySelectorAll('#recGrid .rec-card').forEach((c,i)=>{c.style.borderColor=(i===idx)?'var(--gold)':'';c.style.background=(i===idx)?'var(--selected-bg)':'';});
   syncSliders(); renderAll();
@@ -6451,9 +6295,8 @@ function _finalizePreset(toastMsg) {
 }
   /* ===== 랜덤 마법 추가 ===== */
 const STRONG_RANDOM_PRESETS = [
-  'hiphop', // 기존 강한 랜덤
-  'court','pansori',                                   // 추가: 강한 감정선
-  'pansori_han_blues','ajaeng_soul_ballad',                                      // 추가: 깊은 한(恨) 계열
+  'court','pansori',                                   // 강한 감정선
+  'pansori_han_blues','ajaeng_soul_ballad',                                      // 깊은 한(恨) 계열
 ];
 
 function applyPresetRandomness(isStrong) {
@@ -6495,7 +6338,8 @@ function applyPresetRandomness(isStrong) {
 
   // ── 한국적 그루브 1개 교체 (70% 확률) — 신선한 리듬감
   if (Math.random() < 0.7 && DATA.koreanGrooves && STATE.koreanGrooves.length > 0) {
-    const next = Math.floor(Math.random() * DATA.koreanGrooves.length);
+    let next = Math.floor(Math.random() * DATA.koreanGrooves.length);
+    let _guard = 0;
     const ri   = Math.floor(Math.random() * STATE.koreanGrooves.length);
     const updated = [...STATE.koreanGrooves];
     updated[ri] = next;
@@ -6582,7 +6426,7 @@ function apply73Preset(type) {
   resetAll(false);
   window._promptLocked = false;  // 프리셋 적용 시 자동생성 복귀
   if (type==='joseon') {
-    STATE.genre=0;STATE.moods=[0,3];STATE.concept=0;STATE.vocalStyle=0;STATE.vocalTones=[0,5];
+    STATE.genre=0;STATE.moods=[1,4];STATE.concept=0;STATE.vocalStyle=0;STATE.vocalTones=[0,5];
     STATE.textures=[0,6];STATE.grooves=[3,6];STATE.spaces=[0];STATE.koreanGrooves=[0,4,9,10];
     STATE.bassStyles=[2,4];STATE.koreanFeelings=[0,3,6];
     STATE.blackSoulElements=[0,3];
@@ -6597,7 +6441,7 @@ function apply73Preset(type) {
     STATE.hanSoulStyle=0;
     selectInstrByCategory('string',0, true);
   } else if (type==='sanjo') {
-    STATE.genre=1;STATE.moods=[2,5];STATE.concept=1;STATE.vocalStyle=2;STATE.vocalTones=[2,9];
+    STATE.genre=1;STATE.moods=[1,3];STATE.concept=1;STATE.vocalStyle=2;STATE.vocalTones=[2,9];
     STATE.textures=[4,6];STATE.grooves=[0,6];STATE.spaces=[2];STATE.koreanGrooves=[0,3,7];
     STATE.bassStyles=[1,5];STATE.koreanFeelings=[4,7];
     STATE.blackSoulElements=[0,3];
@@ -6612,7 +6456,7 @@ function apply73Preset(type) {
     STATE.hanSoulStyle=3;
     selectInstrByCategory('string',1, true);
   } else if (type==='pansori') {
-    STATE.genre=2;STATE.moods=[2,7];STATE.concept=2;STATE.vocalStyle=2;STATE.vocalTones=[5,6,8];
+    STATE.genre=2;STATE.moods=[1,4];STATE.concept=2;STATE.vocalStyle=2;STATE.vocalTones=[5,6,8];
     STATE.textures=[0,1,6];STATE.grooves=[1,3];STATE.spaces=[0,3];STATE.koreanGrooves=[4,9,10];
     STATE.bassStyles=[1,2];STATE.koreanFeelings=[1,6,7];
     STATE.blackSoulElements=[0,4];
@@ -6627,14 +6471,14 @@ function apply73Preset(type) {
     STATE.hanSoulStyle=0;
     selectInstrByCategory('string',2, true);
   } else if (type==='minyo') {
-    STATE.genre=3;STATE.moods=[7,8];STATE.concept=3;STATE.vocalStyle=1;STATE.vocalTones=[5,6];
+    STATE.genre=3;STATE.moods=[4,5];STATE.concept=3;STATE.vocalStyle=1;STATE.vocalTones=[5,6];
     STATE.textures=[0,1];STATE.grooves=[1,4];STATE.spaces=[0];STATE.koreanGrooves=[4,8];
     STATE.bassStyles=[2];STATE.koreanFeelings=[1,6];
     STATE.blackSoulElements=[0,4,5];
     STATE.humanFeelElements=[0,6];
     STATE.energyArc=1;
     STATE.bpm=75;STATE.intensity=6;STATE.koreanRatio=80;
-    STATE.musicKey=0;STATE.koreanScale=4;
+    STATE.musicKey=0;STATE.koreanScale=1;
     // 06B 구음 자동 조합 — 민요 블루스: 중간+끝 포인트, 중저음, 여성 보컬, 정간보 구음 스타일
     STATE.gueumPositions=['mid','end'];STATE.gueumPitch='midlow';STATE.gueumGender='female';
     STATE.gueumStyle=2;STATE.gueumStrength='strong';
@@ -6642,14 +6486,14 @@ function apply73Preset(type) {
     STATE.hanSoulStyle=4;
     selectInstrByCategory('string',0, true);
   } else if (type==='court') {
-    STATE.genre=7;STATE.moods=[0,5];STATE.concept=7;STATE.vocalStyle=7;STATE.vocalTones=[9,10];
+    STATE.genre=7;STATE.moods=[0,3];STATE.concept=7;STATE.vocalStyle=7;STATE.vocalTones=[9,10];
     STATE.textures=[5,6];STATE.grooves=[5,7];STATE.spaces=[1,2];STATE.koreanGrooves=[0,3,11];
     STATE.bassStyles=[3,4];STATE.koreanFeelings=[0,5];
     STATE.blackSoulElements=[2,3];
     STATE.humanFeelElements=[1,4];
     STATE.energyArc=2;
     STATE.bpm=95;STATE.intensity=7;STATE.koreanRatio=85;
-    STATE.musicKey=4;STATE.koreanScale=1;
+    STATE.musicKey=4;STATE.koreanScale=0;
     // 06B 구음 자동 조합 — 궁중격상: 시작+중간 포인트, 중고음, 남녀 혼성, 휘모리 샤우트 스타일
     STATE.gueumPositions=['start','mid'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
     STATE.gueumStyle=6;STATE.gueumStrength='strong';
@@ -6657,7 +6501,7 @@ function apply73Preset(type) {
     STATE.hanSoulStyle=2;
     selectInstrByCategory('wind',0, true);
   } else if (type==='trot') {
-    STATE.genre=8;STATE.moods=[17,19];STATE.concept=8;STATE.vocalStyle=0;STATE.vocalTones=[13,17];
+    STATE.genre=8;STATE.moods=[8,9];STATE.concept=8;STATE.vocalStyle=0;STATE.vocalTones=[13,17];
     STATE.textures=[0,3];STATE.grooves=[6,7];STATE.spaces=[0,1];STATE.koreanGrooves=[2,3,9];
     STATE.bassStyles=[0,2];STATE.koreanFeelings=[1,4];
     STATE.blackSoulElements=[0,4];
@@ -6689,14 +6533,13 @@ function apply73Preset(type) {
 //   같은 카드를 여러 번 써도 곡마다 질감이 조금씩 달라지게 하기 위함 —
 //   카드 고유 항목은 절대 빼지 않고 "추가만" 하므로 카드의 핵심 정체성은 안 깨짐.
 //   (원래 runQualityEngine 안에 갇혀있던 걸 전역으로 승격 — applyReferenceQuickPreset도 재사용)
-function _qeVaried(base, poolSize, extraChance, extraCount, excludeSet) {
+function _qeVaried(base, poolSize, extraChance, extraCount) {
   const arr = [...base];
   if (poolSize > arr.length && Math.random() < (extraChance ?? 0.65)) {
     let added = 0, guard = 0;
     while (added < (extraCount ?? 1) && guard < 20) {
       guard++;
       const cand = Math.floor(Math.random() * poolSize);
-      if (excludeSet && excludeSet.has(cand)) continue; // 제외목록에 있으면 후보에서 스킵
       if (!arr.includes(cand)) { arr.push(cand); added++; }
     }
   }
@@ -6720,7 +6563,7 @@ function applyReferenceQuickPreset(id) {
   // ★ 조성 — 카드 지정 조성을 기준으로, 인접한 조성 1~2개 중에서도 가끔 선택되도록
   // (계면조 등 국악 음계 정체성은 koreanScale로 별도 고정되니, 조성만 살짝 바뀌어도
   // 곡의 전체적 색깔은 카드 정체성 안에서 유지됨)
-  STATE.musicKey = Math.random() < 0.6 ? c.musicKey : _rp([c.musicKey, (c.musicKey + 1) % DATA.musicKeys.length, (c.musicKey + DATA.musicKeys.length - 1) % DATA.musicKeys.length].filter(k => !_EXCLUDED_UPBEAT_KEYS.has(k)));
+  STATE.musicKey = Math.random() < 0.6 ? c.musicKey : _rp([c.musicKey, (c.musicKey + 1) % DATA.musicKeys.length, (c.musicKey + DATA.musicKeys.length - 1) % DATA.musicKeys.length]);
   STATE.koreanScale = c.koreanScale;
   // ★ 에너지 아크 — 카드 지정값 위주로, 가끔 비슷한 극적 형태의 다른 아크로도
   STATE.energyArc = Math.random() < 0.6 ? c.energyArc : _rp([...new Set([c.energyArc, 0, 1, 4])]);
@@ -6728,7 +6571,7 @@ function applyReferenceQuickPreset(id) {
   STATE.intensity = Math.max(1, Math.min(10, c.intensity + _rp([-1,0,0,0,1])));
   STATE.koreanRatio = Math.max(60, Math.min(95, c.koreanRatio + _rp([-5,0,0,5])));
   STATE.vocalStyle = c.vocalStyle;
-  STATE.moods = _qeVaried(c.moods, DATA.moods.length, 0.65, 1, _EXCLUDED_UPBEAT_MOODS);
+  STATE.moods = _qeVaried(c.moods, DATA.moods.length);
   STATE.textures = _qeVaried(c.textures, DATA.textures.length);
   STATE.grooves = _qeVaried(c.grooves, DATA.grooves.length);
   STATE.spaces = _qeVaried(c.spaces, DATA.spaces.length, 0.4);
@@ -6793,152 +6636,14 @@ function applyReferenceQuickPreset(id) {
 }
 
 
-function applyGugakTrotPreset(style) {
-  style = style || 'classic';
-  resetAll(false);
-  STATE.genre = 8;                 // 국악 트롯트 (모두 국악 베이스)
-  STATE.concept = 8;               // 국악 트롯트 컨셉 (genre와 일치)
-  STATE.gugakTrotBase = true;
-  STATE.gender = 'female';
-  STATE.musicKey = 1;              // Dm
-  STATE.koreanScale = 0;           // 계면조 (깊은 한)
-  STATE.hanSoulStyle = 4;          // 한(恨) 소울 발라드
-  // 공통 악기: 해금 + 피리 + 아쟁(저음) + 장구 (멜로디+베이스+리듬)
-  STATE.instrList = [{cat:'string',idx:1},{cat:'wind',idx:1},{cat:'string',idx:2},{cat:'percussion',idx:0}];
-  STATE.koreanGrooves = [2, 3];
-  STATE.koreanFeelings = [4, 5];
-  STATE.blackSoulElements = [2];
-  STATE.humanFeelElements = [1, 6];
-  STATE.koreanRatio = [80, 85, 90][Math.floor(Math.random() * 3)];  // 국악 베이스 유지(80~90), 버튼 누를 때마다 비율 변동 (슬라이더 step5)
-
-  let toast;
-  if (style === 'ballad') {
-    // 트롯 발라드 — 더 느리고 애절, 슬픔 극대화
-    STATE.moods = [17, 20, 8];   // 트로트 애수 + 인생무상 + 애절한 블루스
-    STATE.vocalStyle = 4;          // 절절한 발라드/트롯 보컬
-    STATE.gugakVocalStyle = null;  // 수심가 등 전통 lament 창법 제거 (정가처럼 들리던 원인)
-    STATE.vocalTones = [13, 1, 9];  // 트로트 꺾기 비브라토 + 소울풀 + 감성 표현
-    STATE.energyArc = 0;           // 슬로우 번 (발라드라 느린 건 유지)
-    STATE.bpm = 66 + Math.floor(Math.random() * 7); // 66~72 (느림)
-    STATE.intensity = 6;
-    STATE.textures = [5, 6];
-    STATE.gueumPositions = ['start','end'];
-    STATE.gueumPitch = 'mid';
-    STATE.gueumGender = 'female';
-    STATE.gueumStyle = 0;
-    STATE.gueumStrength = 'medium';
-    toast = '🌹 국악 트롯트 — 발라드 (느리고 절절한 한)';
-  } else if (style === 'gueum') {
-    // 트롯 구음 강조 — 판소리 득음·추임새·구음 전면, 전 구간 최대 강도
-    STATE.moods = [18, 17];      // 한 서린 절창 + 트로트 애수 (구음: 가장 격정적 한)
-    STATE.vocalStyle = 1;          // 판소리 창법 전면
-    STATE.gugakVocalStyle = 0;     // 판소리 (구음 강조 변형이라 의도적 유지)
-    STATE.vocalTones = [13, 11, 1]; // 트로트 꺾기 + 거친 소울 벨트 + 소울풀
-    STATE.energyArc = 0;
-    STATE.bpm = 82 + Math.floor(Math.random() * 8); // 82~89
-    STATE.intensity = 9;           // 가장 파워풀
-    STATE.textures = [5, 6];
-    STATE.gueumPositions = ['start','mid','end'];
-    STATE.gueumPitch = 'midhigh';
-    STATE.gueumGender = 'female';
-    STATE.gueumStyle = 0;          // 판소리 딥 블루스 구음
-    STATE.gueumStrength = 'maximum';
-    toast = '🌹 국악 트롯트 — 구음 강조 (판소리 득음·추임새 전면)';
-  } else if (style === 'festive') {
-    // 빠른 흥과 한 — 경쾌한 트로트 리듬 속 감춰진 이별의 슬픔 (술 맹세 스타일, 겉흥속한)
-    STATE.moods = [19, 17];        // 겉흥속한 (흥과 한) + 트로트 애수
-    STATE.vocalStyle = 4;          // 트롯 보컬
-    STATE.gugakVocalStyle = null;  // 전통 정가/판소리 창법 제거 (경쾌한 트롯)
-    STATE.vocalTones = [13, 1, 9]; // 트로트 꺾기 비브라토 + 소울풀 + 감성
-    STATE.energyArc = 2;           // 흐름 있는 아크 (경쾌하되 뽕짝 아님)
-    STATE.bpm = 118 + Math.floor(Math.random() * 16); // 118~133 (빠른 트롯)
-    STATE.intensity = 7;
-    STATE.textures = [5, 6];
-    STATE.gueumPositions = ['start','end'];
-    STATE.gueumPitch = 'mid';
-    STATE.gueumGender = 'female';
-    STATE.gueumStyle = 0;
-    STATE.gueumStrength = 'medium';
-    toast = '🌹 국악 트롯트 — 흥과 한 (빠른 트롯 · 겉은 흥 속은 한)';
-  } else if (style === 'authentic_male') {
-    // 정통 남성·호방 — 위엄있고 힘있는 정통 트롯 (장년 남성 시청자 타겟, 나훈아풍 참고)
-    STATE.gender = 'male';         // 위에서 female로 고정된 것을 덮어씀
-    STATE.moods = [20, 17];        // 인생무상 트로트 + 트로트 애수 (인생을 관조하는 무게감)
-    STATE.vocalStyle = 4;          // 절절한 발라드/트롯 보컬
-    STATE.gugakVocalStyle = null;
-    STATE.vocalTones = [13, 5, 16]; // 트로트 꺾기 비브라토 + 깊은 소울 남성 보컬 + 떨리며 울부짖는 창법
-    STATE.energyArc = 2;
-    STATE.bpm = 88 + Math.floor(Math.random() * 9); // 88~96 (위엄있는 미들 템포)
-    STATE.intensity = 8;
-    STATE.textures = [5, 6];
-    STATE.gueumPositions = ['start','end'];
-    STATE.gueumPitch = 'mid';
-    STATE.gueumGender = 'male';
-    STATE.gueumStyle = 0;
-    STATE.gueumStrength = 'medium';
-    toast = '🌹 국악 트롯트 — 정통 남성·호방 (위엄있는 정통 트롯)';
-  } else if (style === 'husky_male') {
-    // 허스키 한·저음 — 깊은 저음 허스키, 짙은 한(恨), 절제된 편곡 (진성풍 참고)
-    STATE.gender = 'male';
-    STATE.moods = [18, 17];        // 한 서린 절창 + 트로트 애수
-    STATE.vocalStyle = 4;
-    STATE.gugakVocalStyle = null;
-    STATE.vocalTones = [15, 13, 16]; // 허스키한 세월의 남성 보컬 + 트로트 꺾기 + 떨리며 울부짖는 창법
-    STATE.energyArc = 0;           // 슬로우 번 — 절제되다 터지는 구조
-    STATE.bpm = 74 + Math.floor(Math.random() * 7); // 74~80 (느리고 깊은)
-    STATE.intensity = 7;
-    STATE.textures = [5, 6];
-    STATE.gueumPositions = ['start','mid','end'];
-    STATE.gueumPitch = 'low';
-    STATE.gueumGender = 'male';
-    STATE.gueumStyle = 0;
-    STATE.gueumStrength = 'medium';
-    toast = '🌹 국악 트롯트 — 허스키 한·저음 (깊은 저음 허스키)';
-  } else {
-    STATE.moods = [17, 7];       // 트로트 애수 + 현대적 애절함 (정통)
-    STATE.vocalStyle = 4;          // 절절한 발라드/트롯 보컬
-    STATE.gugakVocalStyle = null;  // 전통 정가/판소리 창법 강제 제거 (정가처럼 들리던 원인)
-    STATE.vocalTones = [13, 11, 9]; // 트로트 꺾기 비브라토 + 거친 소울 벨트 + 감성
-    STATE.energyArc = 2;           // 슬로우번 대신 흐름 있는 아크 (정적 lament 방지)
-    STATE.bpm = 96 + Math.floor(Math.random() * 9); // 96~104 (트롯 미들 템포)
-    STATE.intensity = 8;
-    STATE.textures = [5, 6];
-    STATE.gueumPositions = ['start','mid','end'];
-    STATE.gueumPitch = 'midhigh';
-    STATE.gueumGender = 'female';
-    STATE.gueumStyle = 0;
-    STATE.gueumStrength = 'maximum';
-    toast = '🌹 국악 트롯트 — 정통 (트로트 꺾기 비브라토 · 미들 템포)';
-  }
-  const _tb = document.getElementById('gugakTrotBaseToggle'); if (_tb) _tb.checked = true;
-
-  // (C) 트롯트 곡마다 변주 — 키(Dm)·음계(계면조)·장르(8)는 고정, 나머지를 곡마다 다르게
-  STATE.energyArc = _rp([0, 1, 5]);                       // 슬로우번/웨이브/지속 — 모두 트롯에 어울리는 흐름
-  if (Math.random() < 0.5) {                              // 관악 교체 (피리/대금/단소)
-    const wi = STATE.instrList.findIndex(x => x.cat === 'wind');
-    if (wi >= 0) STATE.instrList[wi] = { cat: 'wind', idx: _rp([0, 1, 2]) };
-  }
-  if (Math.random() < 0.3 && !STATE.instrList.some(x => x.cat === 'percussion' && x.idx === 2)) {
-    STATE.instrList.push({ cat: 'percussion', idx: 2 });  // 북 액센트
-  }
-  if (Math.random() < 0.4 && Array.isArray(STATE.vocalTones)) {
-    const extraTone = _rp([1, 8, 9, 11]);                 // 소울풀/애절/감성/거친벨트 — 트롯 정서 내
-    if (!STATE.vocalTones.includes(extraTone)) STATE.vocalTones = [...STATE.vocalTones, extraTone].slice(0, 3);
-  }
-  STATE.gugakVocalStyle = _rp([STATE.gugakVocalStyle, 0, 1, 4]); // 창법도 한 계열 내 변주
-  STATE.dnaSeed = Math.random(); STATE.negativeSeed = Math.random();
-
-  _finalizePreset(toast);
-}
-
 function applyUltimateGroovePreset() {
   resetAll(false);
-  STATE.genre=7;STATE.moods=[0,1,5];STATE.concept=7;STATE.vocalStyle=0;STATE.vocalTones=[5,9];
+  STATE.genre=7;STATE.moods=[0,3];STATE.concept=7;STATE.vocalStyle=0;STATE.vocalTones=[5,9];
   STATE.textures=[0,6];STATE.grooves=[3,6];STATE.spaces=[0,2];STATE.koreanGrooves=[0,2,4,9,10];
   STATE.bassStyles=[0,2,4];STATE.koreanFeelings=[0,3,5];STATE.humanFeelElements=[0,1,4];
   STATE.bpm=90;STATE.intensity=6;
   STATE.energyArc=1; // Wave Form — 그루브는 파도처럼 밀려왔다 빠짐
-  STATE.musicKey=0;STATE.koreanScale=2;
+  STATE.musicKey=0;STATE.koreanScale=0;
   // 06B 구음 자동 조합 — Ultimate Groove: 시작+중간+끝, 중고음, 혼성, 장단 그루브
   STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
   STATE.gueumStyle=4;STATE.gueumStrength='strong';
@@ -6949,129 +6654,6 @@ function applyUltimateGroovePreset() {
   applyPresetRandomness(false);
   _finalizePreset("🔥 Ultimate 7:3 Joseon Groove 적용 완료! (구음+한소울 자동 조합)");
 }
-function applyGueumPreset(type) {
-  resetAll(false);
-  if (type==='pansori_han_blues') {
-    STATE.genre=2;STATE.moods=[7,8,10];STATE.concept=2;STATE.vocalStyle=1;STATE.vocalTones=[5,6];
-    STATE.textures=[0,1,6];STATE.grooves=[1,3];
-    STATE.spaces=[0,3]; // Jazz club + Intimate vocal space
-    STATE.bassStyles=[1,4]; // Walking jazz bass + Deep warm sub bass
-    STATE.koreanGrooves=[4,9,10];STATE.koreanFeelings=[1,6,7];
-    STATE.blackSoulElements=[0,4]; // Blues vocal grit + Delta blues slide guitar
-    STATE.humanFeelElements=[0,1]; // Imperfect timing + Live ensemble bleed
-    STATE.energyArc=0; // Slow Burn Rise — 판소리 한: 서서히 타오르는 한(恨)
-    STATE.bpm=72;STATE.intensity=7;STATE.koreanRatio=75;
-    STATE.gueumPositions=['start','end'];STATE.gueumPitch='midlow';STATE.gueumGender='male';
-    STATE.gueumStyle=3;STATE.hanSoulStyle=0;
-    STATE.musicKey=1;STATE.koreanScale=0; // Dm 레단조 + 계면조 (서사적·한·블루스)
-    selectInstrByCategory('string',2, true);
-  } else if (type==='seoul_midnight_jazz') {
-    STATE.genre=5;STATE.moods=[4,9,10];STATE.concept=7;STATE.vocalStyle=2;STATE.vocalTones=[1,2,6];
-    STATE.textures=[0,6,7];STATE.grooves=[0,3];
-    STATE.spaces=[0,3]; // Jazz club + Intimate vocal space
-    STATE.bassStyles=[1,2]; // Walking jazz bass + Neo soul bass groove
-    STATE.koreanGrooves=[4,6,10];STATE.koreanFeelings=[3,6,7];
-    STATE.blackSoulElements=[2,3]; // Call-and-response + Hammond organ textures
-    STATE.humanFeelElements=[1,3]; // Live ensemble bleed + Analog instability
-    STATE.energyArc=1; // Wave Form — 심야 재즈: 감정이 파도처럼 밀려왔다 빠짐
-    STATE.bpm=78;STATE.intensity=5;STATE.koreanRatio=70;
-    STATE.gueumPositions=['mid'];STATE.gueumPitch='midhigh';STATE.gueumGender='female';
-    STATE.gueumStyle=4;STATE.hanSoulStyle=2;
-    STATE.musicKey=2;STATE.koreanScale=0; // Em 미단조 + 계면조 (재즈·심야·애절)
-    selectInstrByCategory('string',1, true);
-  } else if (type==='sanjo_blue') {
-    STATE.genre=1;STATE.moods=[2,4,6];STATE.concept=1;STATE.vocalStyle=5;STATE.vocalTones=[9,10];
-    STATE.textures=[3,4];STATE.grooves=[0,5];
-    STATE.spaces=[0,2]; // Jazz club + Wide stereo
-    STATE.bassStyles=[1,5]; // Walking jazz bass + Syncopated bass movement
-    STATE.koreanGrooves=[0,3,7];STATE.koreanFeelings=[4,7];
-    STATE.blackSoulElements=[0,4]; // Blues vocal grit + Delta blues slide guitar
-    STATE.humanFeelElements=[0,1,6]; // Imperfect timing + Live ensemble + Spontaneous fills
-    STATE.energyArc=2; // Mountain Peak — 산조: 즉흥 절정 후 여운으로 하강
-    STATE.bpm=85;STATE.intensity=6;STATE.koreanRatio=72;
-    STATE.gueumPositions=['start','mid','end'];STATE.gueumPitch='midhigh';STATE.gueumGender='both';
-    STATE.gueumStyle=0;STATE.hanSoulStyle=3;
-    STATE.musicKey=0;STATE.koreanScale=0; // Am 라단조 + 계면조 (산조·즉흥·애절)
-    selectInstrByCategory('string',0, true);
-  } else if (type==='ajaeng_soul_ballad') {
-    STATE.genre=6;STATE.moods=[2,7,10];STATE.concept=6;STATE.vocalStyle=8;STATE.vocalTones=[5,6,8];
-    STATE.textures=[0,2,6];STATE.grooves=[1,3];
-    STATE.spaces=[0,3];
-    STATE.bassStyles=[2,4];
-    STATE.koreanGrooves=[9,10];STATE.koreanFeelings=[1,7,8];
-    STATE.blackSoulElements=[0,1];
-    STATE.humanFeelElements=[0,1]; // Imperfect timing + Live ensemble bleed
-    STATE.energyArc=0;
-    STATE.bpm=68;STATE.intensity=6;STATE.koreanRatio=75;
-    STATE.gueumPositions=['mid','end'];STATE.gueumPitch='low';STATE.gueumGender='male';
-    STATE.gueumStyle=1;STATE.hanSoulStyle=4;
-    STATE.musicKey=1;STATE.koreanScale=4;
-    selectInstrByCategory('string',2, true);
-  }
-  const labels={
-    pansori_han_blues:'🎙️ 판소리 한 블루스',
-    seoul_midnight_jazz:'🎷 서울 심야 재즈',
-    sanjo_blue:'🎸 산조 블루 노트',
-    ajaeng_soul_ballad:'🎻 아쟁 소울 발라드',
-  };
-    const isStrongGueum = STRONG_RANDOM_PRESETS.includes(type);
-  _applyPools(type);
-  // 서울 심야 재즈 = 발라드 고요 (발라드 DNA 모드 ON + 느린 BPM); 그 외 산조 계열은 업텐포 유지
-  if (type === 'seoul_midnight_jazz') { STATE.sanjoBallad = true; STATE.bpm = 68 + Math.floor(Math.random() * 13); } // 68~80
-  else { STATE.sanjoBallad = false; }
-  applyPresetRandomness(isStrongGueum);
-  _finalizePreset((labels[type]||'✅')+' 프리셋 적용 완료!');
-}
-function applyRandomPreset() {
-  resetAll(false);
-  STATE.genre=Math.floor(Math.random()*DATA.genres.length);
-  const _safeMoodIdx = DATA.moods.map((_,i)=>i).filter(i=>!_EXCLUDED_UPBEAT_MOODS.has(i));
-  STATE.moods=[_safeMoodIdx[Math.floor(Math.random()*_safeMoodIdx.length)]];
-  if(Math.random()>0.4){
-    const _rest = _safeMoodIdx.filter(i=>i!==STATE.moods[0]);
-    STATE.moods.push(_rest[Math.floor(Math.random()*_rest.length)]);
-  }
-  STATE.concept=Math.floor(Math.random()*DATA.concepts.length);
-  STATE.vocalStyle=Math.floor(Math.random()*DATA.vocalStyles.length);
-  STATE.bpm=75+Math.floor(Math.random()*50);
-  STATE.intensity=3+Math.floor(Math.random()*6);
-  const genders=['all','male','female'];
-  STATE.gender=genders[Math.floor(Math.random()*3)];
-  const cats=['string','percussion','wind'];const cat=cats[Math.floor(Math.random()*3)];
-  selectInstrByCategory(cat,Math.floor(Math.random()*getCatData(cat).length), true);
-  const vtShuffled=[...Array(DATA.vocalTones.length).keys()].sort(()=>Math.random()-.5);
-  STATE.vocalTones=vtShuffled.slice(0,1+Math.floor(Math.random()*2));
-  const txShuffled=[...Array(DATA.textures.length).keys()].sort(()=>Math.random()-.5);
-  STATE.textures=txShuffled.slice(0,1+Math.floor(Math.random()*2));
-  const grShuffled=[...Array(DATA.grooves.length).keys()].sort(()=>Math.random()-.5);
-  STATE.grooves=grShuffled.slice(0,1+Math.floor(Math.random()*2));
-  STATE.spaces=[Math.floor(Math.random()*DATA.spaces.length)];
-  STATE.bassStyles=[Math.floor(Math.random()*DATA.bassStyles.length)];
-  for(let i=0;i<3;i++){const r=Math.floor(Math.random()*DATA.koreanGrooves.length);if(!STATE.koreanGrooves.includes(r))STATE.koreanGrooves.push(r);}
-  STATE.koreanFeelings=[Math.floor(Math.random()*DATA.koreanFeelings.length)];
-  const domSteps=[60,65,70,75,80,85,90,95];
-  STATE.koreanDominance=domSteps[Math.floor(Math.random()*domSteps.length)];
-  STATE.koreanRatio=Math.floor(Math.random()*101);
-  const _safeKeyIdx = DATA.musicKeys.map((_,i)=>i).filter(i=>!_EXCLUDED_UPBEAT_KEYS.has(i));
-  STATE.musicKey=_safeKeyIdx[Math.floor(Math.random()*_safeKeyIdx.length)];
-  const _safeScaleIdx = DATA.koreanScales.map((_,i)=>i).filter(i=>!_EXCLUDED_UPBEAT_SCALES.has(i));
-  STATE.koreanScale=_safeScaleIdx[Math.floor(Math.random()*_safeScaleIdx.length)];
-  STATE.energyArc=Math.floor(Math.random()*DATA.energyArcs.length);
-  if(Math.random()<0.5){const bsShuffled=[...Array(DATA.blackSoulElements.length).keys()].sort(()=>Math.random()-.5);STATE.blackSoulElements=bsShuffled.slice(0,1+Math.floor(Math.random()*2));}
-  if(Math.random()<0.5){const hfShuffled=[...Array(DATA.humanFeelElements.length).keys()].sort(()=>Math.random()-.5);STATE.humanFeelElements=hfShuffled.slice(0,1+Math.floor(Math.random()*2));}
-  // 06B 구음 설정 — 랜덤 시 항상 자동 조합 적용
-  const allPositions=['start','add1','mid','add2','add3','end'];
-  STATE.gueumPositions=[...allPositions].sort(()=>Math.random()-.5).slice(0,1+Math.floor(Math.random()*3));
-  STATE.gueumPitch=['high','midhigh','midlow','low'][Math.floor(Math.random()*4)];
-  STATE.gueumGender=['both','male','female'][Math.floor(Math.random()*3)];
-  STATE.gueumStyle=Math.floor(Math.random()*DATA.gueumStyles.length);
-  STATE.gueumStrength=['normal','strong','maximum'][Math.floor(Math.random()*3)];
-  // 06C 한(恨) 소울 스타일 — 랜덤 시 항상 자동 조합 적용
-  STATE.hanSoulStyle=Math.floor(Math.random()*DATA.hanSoulStyles.length);
-  syncGueumUI();
-  _finalizePreset("✨ 랜덤 프리셋 적용! (구음+한소울 자동 조합)");
-}
-
 function syncGueumUI() {
   document.querySelectorAll(".gueum-ctrl-btn[id^=gpos_]").forEach(b=>b.classList.remove('active'));
   STATE.gueumPositions.forEach(p=>document.getElementById('gpos_'+p)?.classList.add('active'));
@@ -7753,7 +7335,7 @@ Return ONLY the JSON object.`;
       return { text: window.slice(0, cut).trim(), wasTrimmed: true };
     };
     _superVariations = vars.map(v => {
-      const { text, wasTrimmed } = _trimToNaturalBoundary((v.prompt || '').trim());
+      const { text, wasTrimmed } = _trimToNaturalBoundary(scrubArtistNames((v.prompt || '').trim()));
       return { label: v.label || '', prompt: text, wasTrimmed };
     });
 
@@ -7844,7 +7426,7 @@ function _saveHistoryAfterBuild() {
 /* UPG-2: STATE 내보내기 */
 function exportState() {
   const exportData = {
-    version: 'v48',
+    version: 'v49',
     timestamp: new Date().toISOString(),
     state: {
       genre: STATE.genre, moods: STATE.moods, concept: STATE.concept,
@@ -7975,7 +7557,7 @@ const QE_COMBOS = [
     intensity:7, koreanRatio:75,
     concept:2, vocalStyle:1,                 // Pansori Soul / Oriental Blues(남성 저음 블루스)
     textures:[3,6], grooves:[1,3], spaces:[0,1],
-    moods:[8,18],                             // Late Night Melancholic Blues + Han-laden Passionate Cry
+    moods:[5,9],                             // Late Night Melancholic Blues + Han-laden Passionate Cry
     gueumPos:['add1','mid'],
     gueumPitch:'low', gueumGender:'male', gueumStrength:'strong',
     gueumStyleIdx:2,
@@ -8000,7 +7582,7 @@ const QE_COMBOS = [
     concept:8, vocalStyle:0,                  // Gugak Trot / Korean Soul Fusion
     vocalTones:[13,17],                       // 꺾기 비브라토 + 애절한 가성 꺾기
     textures:[0,3], grooves:[6,7], spaces:[0,1],
-    moods:[17,18],                            // Trot Melancholy(Aesu) + Han-laden Passionate Cry
+    moods:[8,9],                            // Trot Melancholy(Aesu) + Han-laden Passionate Cry
     gueumPos:['mid','end'],
     gueumPitch:'midlow', gueumGender:'both', gueumStrength:'strong',
     gueumStyleIdx:1,
@@ -8019,12 +7601,12 @@ const QE_COMBOS = [
     desc:'아쟁 저음 찰현이 흐느끼듯 우는, 가장 사무치는 이별의 순간. 낮고 거친 남성 소울 보컬.',
     preset73:'ajaeng_soul_ballad',
     bpmRange:[64,74],
-    musicKey:1, koreanScale:4,
+    musicKey:1, koreanScale:1,
     energyArc:0,       // Slow Burn Rise — 담담하게 시작해 끝까지 서서히 감정이 쌓임
     intensity:9, koreanRatio:75,
     concept:6, vocalStyle:8,                  // Ajaeng Deep Soul / Ajaeng Soul(남성, 묵직하고 찰현적인 저음)
     textures:[0,2,6], grooves:[1,3], spaces:[0,3],
-    moods:[2,7,10],                            // Dreamy Korean Soul + Modern Korean Melancholy + Lonely Midnight Reflection
+    moods:[1,4,7],                            // Dreamy Korean Soul + Modern Korean Melancholy + Lonely Midnight Reflection
     gueumPos:['mid','end'],
     gueumPitch:'low', gueumGender:'male', gueumStrength:'strong',
     gueumStyleIdx:1,
@@ -8048,7 +7630,7 @@ const QE_COMBOS = [
     intensity:4, koreanRatio:85,
     concept:5, vocalStyle:6,                  // Daegeum Ambient Elevation / Lo-fi Jazz Gugak(여성, 나른한 로파이)
     textures:[4,7], grooves:[1,4], spaces:[1,2],
-    moods:[2,10],                              // Dreamy Korean Soul + Lonely Midnight Reflection
+    moods:[1,7],                              // Dreamy Korean Soul + Lonely Midnight Reflection
     gueumPos:['mid'],
     gueumPitch:'midlow', gueumGender:'female', gueumStrength:'normal',
     gueumStyleIdx:3,
@@ -8073,7 +7655,7 @@ const QE_COMBOS = [
     concept:6, vocalStyle:1,                   // Ajaeng Deep Soul(질감) / Oriental Blues(남성, 허스키 블루스 톤)
     vocalTones:[6,15],                          // Smoky blues baritone + Husky weathered male
     textures:[7,3], grooves:[1,3], spaces:[3,0],
-    moods:[8,10],                                // Late Night Melancholic Blues + Lonely Midnight Reflection
+    moods:[5,7],                                // Late Night Melancholic Blues + Lonely Midnight Reflection
     gueumPos:['mid'],                            // 구음 최소화 — 위치 하나만
     gueumPitch:'low', gueumGender:'male', gueumStrength:'normal',
     gueumStyleIdx:3,
@@ -8098,7 +7680,7 @@ const QE_COMBOS = [
     concept:8, vocalStyle:0,                     // Gugak Trot / Korean Soul Fusion
     vocalTones:[14,17],                          // Low crooning + Melismatic ornamentation
     textures:[3,6], grooves:[1,4], spaces:[1,3],
-    moods:[20,17],                                // Fleeting Life Sorrow + Trot Melancholy(Aesu)
+    moods:[10,8],                                // Fleeting Life Sorrow + Trot Melancholy(Aesu)
     gueumPos:['mid','end'],
     gueumPitch:'midlow', gueumGender:'male', gueumStrength:'normal',
     gueumStyleIdx:1,
@@ -8123,7 +7705,7 @@ const QE_COMBOS = [
     concept:8, vocalStyle:0,                      // Gugak Trot / Korean Soul Fusion
     vocalTones:[14,18],                           // Low crooning + Falsetto break(sorrowful)
     textures:[6,7], grooves:[1,4], spaces:[1,3],
-    moods:[10,17],                                 // Lonely Midnight Reflection + Trot Melancholy(Aesu)
+    moods:[7,8],                                 // Lonely Midnight Reflection + Trot Melancholy(Aesu)
     gueumPos:['mid','end'],
     gueumPitch:'midlow', gueumGender:'female', gueumStrength:'strong',
     gueumStyleIdx:1,
@@ -8150,7 +7732,7 @@ const QE_COMBOS = [
     concept:0, vocalStyle:0,
     vocalTones:[0,5],
     textures:[0,6], grooves:[3,6], spaces:[0],
-    moods:[2,7],                              // Dreamy Korean Soul + Modern Korean Melancholy
+    moods:[1,4],                              // Dreamy Korean Soul + Modern Korean Melancholy
     gueumPos:['mid','end'], gueumPitch:'midlow', gueumGender:'both', gueumStrength:'strong', gueumStyleIdx:4,
     koreanGrooves:[0,4,9,10], koreanFeelings:[0,3,6], blackSoulElements:[0,3], humanFeelElements:[1,3], bassStyles:[2,4], hanSoulStyle:0,
     emoji:'🎵'
@@ -8166,7 +7748,7 @@ const QE_COMBOS = [
     concept:2, vocalStyle:2,
     vocalTones:[5,6,8],
     textures:[0,1,6], grooves:[1,3], spaces:[0,3],
-    moods:[2,7],
+    moods:[1,4],
     gueumPos:['start','end'], gueumPitch:'midlow', gueumGender:'male', gueumStrength:'strong', gueumStyleIdx:3,
     koreanGrooves:[4,9,10], koreanFeelings:[1,6,7], blackSoulElements:[0,4], humanFeelElements:[0,1], bassStyles:[1,2], hanSoulStyle:0,
     emoji:'🎙️'
@@ -8178,11 +7760,11 @@ const QE_COMBOS = [
     desc:'한국 민요 특유의 애수를 블루스 정서로 재해석한 여성 창법 중심.',
     preset73:'minyo',
     bpmRange:[68,82],
-    musicKey:0, koreanScale:4, energyArc:1, intensity:6, koreanRatio:80,
+    musicKey:0, koreanScale:1, energyArc:1, intensity:6, koreanRatio:80,
     concept:3, vocalStyle:1,
     vocalTones:[5,6],
     textures:[0,1], grooves:[1,4], spaces:[0],
-    moods:[7,8],
+    moods:[4,5],
     gueumPos:['mid','end'], gueumPitch:'midlow', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
     koreanGrooves:[4,8], koreanFeelings:[1,6], blackSoulElements:[0,4,5], humanFeelElements:[0,6], bassStyles:[2], hanSoulStyle:4,
     emoji:'🌙'
@@ -8198,7 +7780,7 @@ const QE_COMBOS = [
     concept:2, vocalStyle:1,
     vocalTones:[5,6],
     textures:[0,1,6], grooves:[1,3], spaces:[0,3],
-    moods:[7,8,10],
+    moods:[4,5,7],
     gueumPos:['start','end'], gueumPitch:'midlow', gueumGender:'male', gueumStrength:'strong', gueumStyleIdx:3,
     koreanGrooves:[4,9,10], koreanFeelings:[1,6,7], blackSoulElements:[0,4], humanFeelElements:[0,1], bassStyles:[1,4], hanSoulStyle:0,
     emoji:'🎙️'
@@ -8214,7 +7796,7 @@ const QE_COMBOS = [
     concept:7, vocalStyle:2,
     vocalTones:[1,2,6],
     textures:[0,6,7], grooves:[0,3], spaces:[0,3],
-    moods:[4,9,10],
+    moods:[2,6,7],
     gueumPos:['mid'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:4,
     koreanGrooves:[4,6,10], koreanFeelings:[3,6,7], blackSoulElements:[2,3], humanFeelElements:[1,3], bassStyles:[1,2], hanSoulStyle:2,
     emoji:'🎷'
@@ -8226,11 +7808,11 @@ const QE_COMBOS = [
     desc:'아쟁 저음을 중심으로 한 깊은 소울 발라드. 저음 구음이 정서를 받쳐줌.',
     preset73:'ajaeng_soul_ballad',
     bpmRange:[62,74],
-    musicKey:1, koreanScale:4, energyArc:0, intensity:6, koreanRatio:75,
+    musicKey:1, koreanScale:1, energyArc:0, intensity:6, koreanRatio:75,
     concept:6, vocalStyle:8,
     vocalTones:[5,6,8],
     textures:[0,2,6], grooves:[1,3], spaces:[0,3],
-    moods:[2,7,10],
+    moods:[1,4,7],
     gueumPos:['mid','end'], gueumPitch:'low', gueumGender:'male', gueumStrength:'strong', gueumStyleIdx:1,
     koreanGrooves:[9,10], koreanFeelings:[1,7,8], blackSoulElements:[0,1], humanFeelElements:[0,1], bassStyles:[2,4], hanSoulStyle:4,
     emoji:'🎻'
@@ -8243,10 +7825,10 @@ const QE_COMBOS = [
     preset73:'trot',
     vocalGenderLock:'both', // ★ 09B에서도 원클릭으로 바로 혼성 듀엣이 되도록 — 카드가 직접 성별고정을 지정
     bpmRange:[68,82],
-    musicKey:1, koreanScale:4, energyArc:0, intensity:8, koreanRatio:78,
+    musicKey:1, koreanScale:1, energyArc:0, intensity:8, koreanRatio:78,
     concept:8, vocalStyle:0,
     textures:[0,3,6], grooves:[1,3], spaces:[0,3],
-    moods:[7,18],
+    moods:[4,9],
     gueumPos:['mid','end'], gueumPitch:'mid', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
     koreanGrooves:[4,9,10], koreanFeelings:[1,6,7], blackSoulElements:[0,1], humanFeelElements:[0,1], bassStyles:[2,4], hanSoulStyle:3,
     emoji:'👫'
@@ -8266,11 +7848,11 @@ const REFERENCE_QUICK_PRESETS = [
     desc:'백년해로 언약을 두고 떠난 임을 향한 원망과 그리움. 국악 트로트 가수의 실제 애절한 창법 사례.',
     bpmRange:[68,80],
     gugakTrotBase:true,
-    musicKey:1, koreanScale:4, energyArc:0, intensity:8, koreanRatio:80,
+    musicKey:1, koreanScale:1, energyArc:0, intensity:8, koreanRatio:80,
     concept:8, vocalStyle:0,
     vocalTones:[13,2],
     textures:[6,3], grooves:[2,4], spaces:[0,1],
-    moods:[7,17],
+    moods:[4,8],
     gueumPos:['mid','end'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
     koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
     emoji:'💌'
@@ -8282,11 +7864,11 @@ const REFERENCE_QUICK_PRESETS = [
     desc:'가시밭길도 저 세상도 마다 않고 따르겠다는 천년의 순애보. 젊은 국악 트로트 가수의 실제 화제 무대.',
     bpmRange:[66,78],
     gugakTrotBase:true,
-    musicKey:1, koreanScale:4, energyArc:1, intensity:9, koreanRatio:78,
+    musicKey:1, koreanScale:1, energyArc:1, intensity:9, koreanRatio:78,
     concept:8, vocalStyle:3,
     vocalTones:[13,17],
     textures:[6,3], grooves:[1,4], spaces:[0,1],
-    moods:[7,17],
+    moods:[4,8],
     gueumPos:['start','mid','end'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
     koreanGrooves:[4,8,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
     emoji:'🦢'
@@ -8299,10 +7881,10 @@ const REFERENCE_QUICK_PRESETS = [
     bpmRange:[70,82],
     gugakTrotBase:true,
     vocalGenderLock:'both',
-    musicKey:1, koreanScale:4, energyArc:0, intensity:8, koreanRatio:80,
+    musicKey:1, koreanScale:1, energyArc:0, intensity:8, koreanRatio:80,
     concept:8, vocalStyle:0,
     textures:[6,3], grooves:[2,4], spaces:[0,1],
-    moods:[17,7],
+    moods:[8,4],
     gueumPos:['mid','end'], gueumPitch:'mid', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
     koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
     emoji:'👫'
@@ -8314,11 +7896,11 @@ const REFERENCE_QUICK_PRESETS = [
     desc:'"사랑도 부질없어~" 첫 소절부터 탄성이 터지는 폭발적 가창력. 트롯 신동 신화의 시작점.',
     bpmRange:[88,100],
     gugakTrotBase:true,
-    musicKey:1, koreanScale:4, energyArc:2, intensity:9, koreanRatio:78,
+    musicKey:1, koreanScale:1, energyArc:2, intensity:9, koreanRatio:78,
     concept:8, vocalStyle:4,
     vocalTones:[13,11],
     textures:[6,3], grooves:[2,4], spaces:[0,1],
-    moods:[18,17],
+    moods:[9,8],
     gueumPos:['start','mid','end'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'maximum', gueumStyleIdx:2,
     koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
     emoji:'🕊️'
@@ -8331,11 +7913,11 @@ const REFERENCE_QUICK_PRESETS = [
     bpmRange:[64,74],
     gugakTrotBase:true,
     vocalForward:true,
-    musicKey:1, koreanScale:4, energyArc:2, intensity:8, koreanRatio:78,
+    musicKey:1, koreanScale:1, energyArc:2, intensity:8, koreanRatio:78,
     concept:8, vocalStyle:0,
     vocalTones:[13,16],
     textures:[6,3], grooves:[1,4], spaces:[0,3],
-    moods:[18,20],
+    moods:[9,10],
     gueumPos:['mid','end'], gueumPitch:'mid', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
     koreanGrooves:[4,8,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
     emoji:'🌾'
@@ -8347,11 +7929,11 @@ const REFERENCE_QUICK_PRESETS = [
     desc:'"~이여 ~이시여" 직접 호칭체의 애절한 이별가. 정통 트롯 이별의 아픔과 그리움.',
     bpmRange:[72,84],
     gugakTrotBase:true,
-    musicKey:1, koreanScale:4, energyArc:0, intensity:8, koreanRatio:80,
+    musicKey:1, koreanScale:1, energyArc:0, intensity:8, koreanRatio:80,
     concept:8, vocalStyle:0,
     vocalTones:[13,2],
     textures:[6,3], grooves:[2,4], spaces:[0,1],
-    moods:[17,18],
+    moods:[8,9],
     gueumPos:['mid','end'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
     koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
     emoji:'💧'
@@ -8363,11 +7945,11 @@ const REFERENCE_QUICK_PRESETS = [
     desc:'가야금병창 전공 가수의 독보적 음색. "이게 바로 한국의 한이다"라는 반응을 이끈 무대.',
     bpmRange:[66,76],
     gugakTrotBase:true,
-    musicKey:1, koreanScale:4, energyArc:0, intensity:8, koreanRatio:82,
+    musicKey:1, koreanScale:1, energyArc:0, intensity:8, koreanRatio:82,
     concept:8, vocalStyle:0,
     vocalTones:[16,19],
     textures:[6,3], grooves:[1,4], spaces:[0,1],
-    moods:[7,18],
+    moods:[4,9],
     gueumPos:['mid','end'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
     koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
     emoji:'🎋'
@@ -8379,11 +7961,11 @@ const REFERENCE_QUICK_PRESETS = [
     desc:'노래 시작부터 애절한 국악풍 목소리로 시작해, 뒤로 갈수록 진한 감동을 주는 무대.',
     bpmRange:[64,74],
     gugakTrotBase:true,
-    musicKey:1, koreanScale:4, energyArc:0, intensity:8, koreanRatio:80,
+    musicKey:1, koreanScale:1, energyArc:0, intensity:8, koreanRatio:80,
     concept:8, vocalStyle:0,
     vocalTones:[13,2],
     textures:[6,3], grooves:[2,4], spaces:[0,1],
-    moods:[7,18],
+    moods:[4,9],
     gueumPos:['mid','end'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
     koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
     emoji:'🌽'
@@ -8395,11 +7977,11 @@ const REFERENCE_QUICK_PRESETS = [
     desc:'세월의 무상함과 흘러가는 청춘을 향한 애상. 5분대 긴 호흡으로 서사를 쌓아가는 구조.',
     bpmRange:[78,90],
     gugakTrotBase:true,
-    musicKey:1, koreanScale:4, energyArc:4, intensity:8, koreanRatio:78,
+    musicKey:1, koreanScale:1, energyArc:4, intensity:8, koreanRatio:78,
     concept:8, vocalStyle:0,
     vocalTones:[13,9],
     textures:[6,3], grooves:[1,4], spaces:[0,1],
-    moods:[20,17],
+    moods:[10,8],
     gueumPos:['start','mid','end'], gueumPitch:'mid', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
     koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
     emoji:'⏳'
@@ -8411,11 +7993,11 @@ const REFERENCE_QUICK_PRESETS = [
     desc:'철새처럼 떠나는 방랑, 삶의 덧없음을 노래하는 애상. 인생무상 정서.',
     bpmRange:[70,80],
     gugakTrotBase:true,
-    musicKey:1, koreanScale:4, energyArc:0, intensity:7, koreanRatio:78,
+    musicKey:1, koreanScale:1, energyArc:0, intensity:7, koreanRatio:78,
     concept:8, vocalStyle:0,
     vocalTones:[13,1],
     textures:[6,3], grooves:[1,4], spaces:[0,1],
-    moods:[20,10],
+    moods:[10,7],
     gueumPos:['mid','end'], gueumPitch:'mid', gueumGender:'female', gueumStrength:'medium', gueumStyleIdx:2,
     koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
     emoji:'🪨'
@@ -8427,11 +8009,11 @@ const REFERENCE_QUICK_PRESETS = [
     desc:'매력적인 허스키 음색으로, 결이 다른 애절함과 구슬픔을 전한 화제의 무대.',
     bpmRange:[68,78],
     gugakTrotBase:true,
-    musicKey:1, koreanScale:4, energyArc:0, intensity:8, koreanRatio:80,
+    musicKey:1, koreanScale:1, energyArc:0, intensity:8, koreanRatio:80,
     concept:8, vocalStyle:0,
     vocalTones:[11,2],
     textures:[6,3], grooves:[2,4], spaces:[0,1],
-    moods:[7,18],
+    moods:[4,9],
     gueumPos:['mid','end'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
     koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
     emoji:'🕯️'
@@ -8444,11 +8026,11 @@ const REFERENCE_QUICK_PRESETS = [
     gugakTrotBase:false,
     vocalForward:true,
     bpmRange:[76,88],
-    musicKey:1, koreanScale:4, energyArc:3, intensity:8, koreanRatio:78,
+    musicKey:1, koreanScale:1, energyArc:3, intensity:8, koreanRatio:78,
     concept:2, vocalStyle:0,
     vocalTones:[5,9],
     textures:[3,6], grooves:[1,4], spaces:[1,3],
-    moods:[7,10],
+    moods:[4,7],
     gueumPos:['mid','end'], gueumPitch:'low', gueumGender:'male', gueumStrength:'strong', gueumStyleIdx:2,
     koreanGrooves:[4,9,12], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:2,
     emoji:'🎤'
@@ -8464,7 +8046,7 @@ const REFERENCE_QUICK_PRESETS = [
     concept:1, vocalStyle:0,
     vocalTones:[11,1],
     textures:[4,1], grooves:[3,6], spaces:[1],
-    moods:[2,7],
+    moods:[1,4],
     gueumPos:['start','mid'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:0,
     koreanGrooves:[0,5,10], koreanFeelings:[2,5], blackSoulElements:[1,4], humanFeelElements:[2,6], bassStyles:[0,5], hanSoulStyle:1,
     emoji:'🌀'
@@ -8476,11 +8058,11 @@ const REFERENCE_QUICK_PRESETS = [
     desc:'연분홍 치마의 담담함으로 시작해 후반부로 갈수록 목메어 절규하는, 한국적 슬픔의 표준.',
     gugakTrotBase:false,
     bpmRange:[62,74],
-    musicKey:1, koreanScale:4, energyArc:0, intensity:10, koreanRatio:82,
+    musicKey:1, koreanScale:1, energyArc:0, intensity:10, koreanRatio:82,
     concept:2, vocalStyle:8,
     vocalTones:[16,6],
     textures:[0,2,6], grooves:[1], spaces:[0,3],
-    moods:[7,17],
+    moods:[4,8],
     gueumPos:['mid','end'], gueumPitch:'low', gueumGender:'male', gueumStrength:'strong', gueumStyleIdx:1,
     koreanGrooves:[9,10,12], koreanFeelings:[1,6,8], blackSoulElements:[0,1], humanFeelElements:[0,1], bassStyles:[2,4], hanSoulStyle:4,
     emoji:'🌸'
@@ -8496,7 +8078,7 @@ const REFERENCE_QUICK_PRESETS = [
     concept:0, vocalStyle:7,
     vocalTones:[18,9],
     textures:[0,3], grooves:[1], spaces:[1,3],
-    moods:[7,10],
+    moods:[4,7],
     gueumPos:['end'], gueumPitch:'midhigh', gueumGender:'male', gueumStrength:'medium', gueumStyleIdx:4,
     koreanGrooves:[0,4], koreanFeelings:[0,5], blackSoulElements:[0,3], humanFeelElements:[1,3], bassStyles:[2], hanSoulStyle:0,
     emoji:'🎹'
@@ -8672,7 +8254,7 @@ async function runQualityEngine() {
     if (c.textures !== undefined)   STATE.textures = _qeVaried(c.textures, DATA.textures.length);
     if (c.grooves !== undefined)    STATE.grooves = _qeVaried(c.grooves, DATA.grooves.length);
     if (c.spaces !== undefined)     STATE.spaces = _qeVaried(c.spaces, DATA.spaces.length, 0.4);
-    if (c.moods !== undefined)      STATE.moods = _qeVaried(c.moods, DATA.moods.length, 0.65, 1, _EXCLUDED_UPBEAT_MOODS);
+    if (c.moods !== undefined)      STATE.moods = _qeVaried(c.moods, DATA.moods.length);
     syncSliders();
     qeSetStep(1, `BPM ${STATE.bpm} · 강도 ${c.intensity} · 비율 ${c.koreanRatio}% · 에너지 아크 세팅 완료`);
     await sleep(150);
@@ -9034,14 +8616,6 @@ a.back{color:var(--korean2); text-decoration:none; font-size:13px}
       <li><strong>구음 강조</strong> — 판소리 창법·추임새를 전면에 (BPM 83~89)</li>
     </ul>
   </div>
-  <div class="card">
-    <div class="num">🎬 그 외</div>
-    <ul>
-      <li><strong>🎬 Court Elevation</strong> — 궁중 격상·네오조선 퓨전</li>
-      <li><strong>용도별 빠른 시작</strong> — 드라이브 / 운동·조깅 / 트롯 한(恨) / 노동가·작업 / 늦은 밤 감성 / 랜덤 추천. "무슨 곡인지"보다 "언제 들을지"로 고르는 버튼</li>
-    </ul>
-    <div class="fx"><b>팁:</b> 같은 버튼이라도 BPM·악기 디테일이 매번 조금씩 달라져 변주가 생깁니다. 장르 자체를 고정하고 싶으면 버튼을 누른 뒤 01 장르 칸을 직접 확인·수정하세요.</div>
-  </div>
 </section>
 
 <section id="sections">
@@ -9387,7 +8961,7 @@ a.back{color:var(--korean2); text-decoration:none; font-size:13px}
 
 <footer>
   <div class="brush">音樂은 누구나 만들 수 있습니다</div>
-  <p>BV 뮤직 프롬프트 메이커(v48) 활용 상세 가이드<br>한 칸 켜고 → "프롬프트 생성" 칸 확인 → 한 칸 더. 이 반복이 모든 기능을 내 것으로 만듭니다.</p>
+  <p>BV 뮤직 프롬프트 메이커(v49) 활용 상세 가이드<br>한 칸 켜고 → "프롬프트 생성" 칸 확인 → 한 칸 더. 이 반복이 모든 기능을 내 것으로 만듭니다.</p>
   <p style="margin-top:18px"><a class="back" href="#">▲ 맨 위로</a></p>
 </footer>
 
