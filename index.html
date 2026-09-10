@@ -6613,9 +6613,19 @@ function insertGueumToLyrics(lang) {
     // ※ 이미 [instrumental break]가 바로 이어지는 경우는 건너뜀 (중복 방지)
     // [버그 수정] (\n|\[) 캡처 그룹이 다음 섹션의 '[' 첫 글자를 소비하던 문제 →
     //   lookahead(?=)로 변경해 문자를 소비하지 않도록 수정
+    // [버그 수정 2] "[태그] 다음 줄이 대괄호로 시작하면 빈 섹션"이라는 원래 판정이
+    //   [Intro]\n[several instruments seep in quietly...] 같은 정상 연출 지시문까지
+    //   "빈 섹션"으로 오인 → 그 뒤에 엉뚱한 [instrumental break]가 끼어들어 인트로·
+    //   아웃트로 연출이 이중지시로 꼬이던 원인. 섹션 헤더~다음 섹션 헤더 사이에
+    //   "무엇이든"(연출지시문이든 실제 가사든) 내용이 있으면 이미 채워진 것으로 보고,
+    //   완전히 텅 빈 섹션 헤더에만 [instrumental break]를 채우도록 수정.
     lyrics = existingLyrics.replace(
-      /(\[[^\]]+\])\n(?!\[instrumental break\])(?=\n|\[)/g,
-      (_, tag) => `${tag}\n[instrumental break]\n`
+      /\[([^\]]+)\]\n([\s\S]*?)(?=\n\[|\s*$)/g,
+      (m, tagContent, body) => {
+        if (!_KR_BRACKET_WHITELIST.test(tagContent.trim())) return m;
+        if (body.trim().length > 0) return m; // 연출지시문이든 가사든 뭐라도 있으면 그대로 둠
+        return `[${tagContent}]\n[instrumental break]\n`;
+      }
     );
   }
 
