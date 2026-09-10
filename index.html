@@ -5566,6 +5566,32 @@ function applyRecCard(idx) {
 let _lastVariations = {};
 /* 재생성 시 이전 결과 회피용 — 이번 세션에 만든 제목 누적 (15~20곡 리플레이 다양성) */
 let _seenVariations = { mood: [], genre: [], _ctxMood: '', _ctxGenre: '' };
+/* ★ 제목 재사용 방지 — localStorage 기반 영구 이력. _seenVariations는 "같은 컨텍스트
+   재생성" 회피용(세션 중, 장르/무드 바뀌면 리셋)이라 브라우저를 새로고침하거나
+   다른 날 다시 켜면 초기화됨 — 그래서 예전에 이미 쓴 제목이 다시 나올 수 있었음.
+   이 배열은 컨텍스트·세션과 무관하게 "지금까지 만든 모든 제목"을 계속 누적해서,
+   AI에게 항상 회피 목록으로 같이 전달함. 용량 관리를 위해 최근 300개만 유지. */
+const _USED_TITLES_KEY = 'v49_used_titles';
+function _loadUsedTitles() {
+  try {
+    const raw = localStorage.getItem(_USED_TITLES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+function _saveUsedTitles(list) {
+  try {
+    const trimmed = list.slice(-300); // 최근 300개까지만 보관(용량 관리)
+    localStorage.setItem(_USED_TITLES_KEY, JSON.stringify(trimmed));
+  } catch(e) { /* localStorage 실패해도 기능 자체는 계속 동작 */ }
+}
+function _recordUsedTitle(title) {
+  if (!title) return;
+  const list = _loadUsedTitles();
+  if (!list.includes(title)) {
+    list.push(title);
+    _saveUsedTitles(list);
+  }
+}
 async function generateVariations(type) {
   const loadingEl = document.getElementById('varLoading_'+type);
   const resultEl  = document.getElementById('varResult_'+type);
@@ -5681,10 +5707,11 @@ PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 550자, 최대 650자 �
     const ctxKey = type === 'mood' ? (currentGenre ? currentGenre.en : '') : currentMoods.map(m=>m.en).join('|');
     const ctxField = type === 'mood' ? '_ctxMood' : '_ctxGenre';
     if (_seenVariations[ctxField] !== ctxKey) { _seenVariations[type] = []; _seenVariations[ctxField] = ctxKey; }
-    const avoid = _seenVariations[type];
+    // ★ 세션 중 회피목록(avoid) + 브라우저를 껐다 켜도 유지되는 영구 제목 이력을 합쳐서 회피
+    const avoid = [...new Set([...(_loadUsedTitles()), ..._seenVariations[type]])];
     let aiPromptFinal = aiPrompt;
     if (avoid.length > 0) {
-      const list = avoid.slice(-20).join(', ');
+      const list = avoid.slice(-40).join(', ');
       aiPromptFinal += `\n\n★ 이미 만든 변형들이니 절대 겹치지 말고 완전히 다른 제목·분위기·접근으로 만드세요 (제목 재사용 금지): ${list}`;
     }
     const text = await callClaude(aiPromptFinal, sysP, 0.7, 12000);
@@ -5693,7 +5720,7 @@ PROMPT: Suno 스타일 프롬프트 (영어 한 줄, 약 550자, 최대 650자 �
     const _expected = (type === 'genre') ? 7 : 5;
     if (items.length < _expected) showToast(`⚠️ ${items.length}개만 생성됐어요. 다시 누르면 ${_expected}개가 나올 수 있습니다.`);
     _lastVariations[type] = items;  // ✅ 전역 저장소에 저장 (apply/copy에서 참조)
-    items.forEach(it => { if (it.title) _seenVariations[type].push(it.title); });  // 다음 재생성 때 회피
+    items.forEach(it => { if (it.title) { _seenVariations[type].push(it.title); _recordUsedTitle(it.title); } });  // 다음 재생성 때(세션+영구) 회피
 
     const colorPalette = [
       {border:'rgba(201,168,76,.5)',bg:'rgba(201,168,76,.06)',accent:'var(--gold)'},
@@ -7141,7 +7168,7 @@ const QE_COMBOS = [
     koreanFeelings:[1,4],
     blackSoulElements:[0,4],
     humanFeelElements:[0,3],
-    bassStyles:[0,2],
+    bassStyles:[3,2],
     hanSoulStyle:4,
     emoji:'🥁'
   },
@@ -7189,7 +7216,7 @@ const QE_COMBOS = [
     koreanFeelings:[4,6],
     blackSoulElements:[0],
     humanFeelElements:[2,5,6],
-    bassStyles:[0],
+    bassStyles:[3,2],
     hanSoulStyle:5,
     emoji:'🌅'
   },
@@ -7239,7 +7266,7 @@ const QE_COMBOS = [
     koreanFeelings:[4,6],
     blackSoulElements:[0,4],
     humanFeelElements:[2,5],
-    bassStyles:[0],
+    bassStyles:[3,2],
     hanSoulStyle:4,
     emoji:'🍂'
   },
@@ -7264,7 +7291,7 @@ const QE_COMBOS = [
     koreanFeelings:[3,6],
     blackSoulElements:[0,5],
     humanFeelElements:[0,2],
-    bassStyles:[0],
+    bassStyles:[3,2],
     hanSoulStyle:2,
     emoji:'🌆'
   },
@@ -7282,7 +7309,7 @@ const QE_COMBOS = [
     musicKey:0, koreanScale:0, energyArc:1, intensity:6, koreanRatio:80,
     concept:0, vocalStyle:0,
     vocalTones:[0,5],
-    textures:[0,6], grooves:[2,5], spaces:[0],
+    textures:[0,6], grooves:[2,5], spaces:[0,2],
     moods:[1,4],                              // Dreamy Korean Soul + Modern Korean Melancholy
     gueumPos:['mid','end'], gueumPitch:'midlow', gueumGender:'both', gueumStrength:'strong', gueumStyleIdx:4,
     koreanGrooves:[0,4,9,10], koreanFeelings:[0,3,6], blackSoulElements:[0,3], humanFeelElements:[1,3], bassStyles:[2,3], hanSoulStyle:0,
@@ -7381,7 +7408,7 @@ const QE_COMBOS = [
     textures:[0,3,6], grooves:[1,2], spaces:[0,3],
     moods:[4,9],
     gueumPos:['mid','end'], gueumPitch:'mid', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
-    koreanGrooves:[4,9,10], koreanFeelings:[1,6,7], blackSoulElements:[0,1], humanFeelElements:[0,1], bassStyles:[2,3], hanSoulStyle:3,
+    koreanGrooves:[4,9,10], koreanFeelings:[1,6,7], blackSoulElements:[0,1], humanFeelElements:[0,1], bassStyles:[2,3], hanSoulStyle:1,
     emoji:'👫'
   },
 ];
@@ -7405,7 +7432,7 @@ const REFERENCE_QUICK_PRESETS = [
     textures:[6,3], grooves:[3,4], spaces:[0,1],
     moods:[4,8],
     gueumPos:['mid','end'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
-    koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
+    koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:1,
     emoji:'💌'
   },
   {
@@ -7421,7 +7448,7 @@ const REFERENCE_QUICK_PRESETS = [
     textures:[6,3], grooves:[1,3], spaces:[0,1],
     moods:[4,8],
     gueumPos:['start','mid','end'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
-    koreanGrooves:[4,8,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
+    koreanGrooves:[4,8,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:1,
     emoji:'🦢'
   },
   {
@@ -7437,7 +7464,7 @@ const REFERENCE_QUICK_PRESETS = [
     textures:[6,3], grooves:[3,4], spaces:[0,1],
     moods:[8,4],
     gueumPos:['mid','end'], gueumPitch:'mid', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
-    koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
+    koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:1,
     emoji:'👫'
   },
   {
@@ -7453,7 +7480,7 @@ const REFERENCE_QUICK_PRESETS = [
     textures:[6,3], grooves:[3,4], spaces:[0,1],
     moods:[9,8],
     gueumPos:['start','mid','end'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'maximum', gueumStyleIdx:2,
-    koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
+    koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:1,
     emoji:'🕊️'
   },
   {
@@ -7470,7 +7497,7 @@ const REFERENCE_QUICK_PRESETS = [
     textures:[6,3], grooves:[1,3], spaces:[0,3],
     moods:[9,10],
     gueumPos:['mid','end'], gueumPitch:'mid', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
-    koreanGrooves:[4,8,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
+    koreanGrooves:[4,8,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:1,
     emoji:'🌾'
   },
   {
@@ -7486,7 +7513,7 @@ const REFERENCE_QUICK_PRESETS = [
     textures:[6,3], grooves:[3,4], spaces:[0,1],
     moods:[8,9],
     gueumPos:['mid','end'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
-    koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
+    koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:1,
     emoji:'💧'
   },
   {
@@ -7502,7 +7529,7 @@ const REFERENCE_QUICK_PRESETS = [
     textures:[6,3], grooves:[1,3], spaces:[0,1],
     moods:[4,9],
     gueumPos:['mid','end'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
-    koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
+    koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:1,
     emoji:'🎋'
   },
   {
@@ -7518,7 +7545,7 @@ const REFERENCE_QUICK_PRESETS = [
     textures:[6,3], grooves:[3,4], spaces:[0,1],
     moods:[4,9],
     gueumPos:['mid','end'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
-    koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
+    koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:1,
     emoji:'🌽'
   },
   {
@@ -7534,7 +7561,7 @@ const REFERENCE_QUICK_PRESETS = [
     textures:[6,3], grooves:[1,3], spaces:[0,1],
     moods:[10,8],
     gueumPos:['start','mid','end'], gueumPitch:'mid', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
-    koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
+    koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:1,
     emoji:'⏳'
   },
   {
@@ -7550,7 +7577,7 @@ const REFERENCE_QUICK_PRESETS = [
     textures:[6,3], grooves:[1,3], spaces:[0,1],
     moods:[10,7],
     gueumPos:['mid','end'], gueumPitch:'mid', gueumGender:'female', gueumStrength:'medium', gueumStyleIdx:2,
-    koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
+    koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:1,
     emoji:'🪨'
   },
   {
@@ -7566,7 +7593,7 @@ const REFERENCE_QUICK_PRESETS = [
     textures:[6,3], grooves:[3,4], spaces:[0,1],
     moods:[4,9],
     gueumPos:['mid','end'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:2,
-    koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:3,
+    koreanGrooves:[4,6,9], koreanFeelings:[1,6], blackSoulElements:[0,2], humanFeelElements:[0,3], bassStyles:[2], hanSoulStyle:1,
     emoji:'🕯️'
   },
   {
@@ -7599,7 +7626,7 @@ const REFERENCE_QUICK_PRESETS = [
     textures:[4,1], grooves:[2,5], spaces:[1],
     moods:[1,4],
     gueumPos:['start','mid'], gueumPitch:'midhigh', gueumGender:'female', gueumStrength:'strong', gueumStyleIdx:0,
-    koreanGrooves:[0,5,10], koreanFeelings:[2,5], blackSoulElements:[1,4], humanFeelElements:[2,6], bassStyles:[0,4], hanSoulStyle:1,
+    koreanGrooves:[0,5,10], koreanFeelings:[2,5], blackSoulElements:[1,4], humanFeelElements:[2,6], bassStyles:[2,4], hanSoulStyle:1,
     emoji:'🌀'
   },
   {
