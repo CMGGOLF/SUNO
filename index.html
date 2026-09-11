@@ -4832,7 +4832,7 @@ function buildConstrainedStructure(seed, opts) {
      쌓여서 3:30 설정에도 4~5분짜리 구조가 나올 수 있었음 — 짧은 곡은 상한을 확실히 낮춤 */
   const verseCount = longSong ? ri(2, 4) : ri(2, 2);          // 짧은 곡: 절 정확히 2개 고정
   const choCount   = longSong ? ri(2, 3) : ri(2, 2);          // 짧은 곡: 후렴 정확히 2개 고정
-  let guumBudget   = allowGuum ? (o.gueumCount ? Math.min(o.gueumCount, longSong ? 4 : 1) : ri(0, longSong ? 2 : 1)) : 0;  // 짧은 곡: 구음 최대 1개
+  let guumBudget   = allowGuum ? (o.gueumCount !== undefined ? Math.min(o.gueumCount, longSong ? 4 : 1) : ri(0, longSong ? 2 : 1)) : 0;  // 짧은 곡: 구음 최대 1개
   const prechorusChance = longSong ? 0.5 : 0.85;               // 짧은 곡: 임계값을 높여 실제 발동확률을 낮춤 (rnd()>임계값 조건이라 반대로 작동함에 주의)
   const doubleChorusChance = longSong ? 0.82 : 1.0;           // 짧은 곡: 더블 후렴 완전 비활성화
   seq.push('verse');
@@ -5191,6 +5191,16 @@ function buildDynamicStructure(totalSec, opts) {
         ? _introSrc.replace('{sec}', _introSec).replace('{초}', _introSec)
         : `(기악 — ${_introSec}초)`);
   let structureKr = `[인트로]\n${_introStyle}\n\n`;
+  // ★ 06B에서 선택한 구음 위치 6개(인트로직후/전절1직후/후렴직후/전절2직후/아웃트로직전/아웃트로직후) —
+  // 지금까지 'mid'(후렴 직후)만 buildConstrainedStructure 내부에서 랜덤 반영됐고, 나머지 5개는
+  // 이 구조 생성 로직 자체에 대응하는 자리가 없어 사실상 무시되고 있었음. 명시적으로 각 위치에 삽입.
+  const _gPos = (STATE.gueumPositions || []);
+  const _guumBlockText = () => {
+    const gh = (_trotDiv && _trotDiv.guumHigh) || '이~여~아~아~';
+    const gl = (_trotDiv && _trotDiv.guumLow) || '어~우~흐~음~';
+    return `[Gugak Guum]\n${gh} [High]\n${gl} [Low]\n(위 두 줄을 그대로 출력 — 가사가 아닌 무의미 구음 멜리스마. [High]/[Low]는 음역 표시이며 단어로 부르지 말 것)\n\n`;
+  };
+  if (_wantGueum && _gPos.includes('start')) structureKr += _guumBlockText();
 
   if (isHiphop) {
     const _hipSeq = _getMidSeq('hiphop', totalSec >= 240, false);
@@ -5214,7 +5224,8 @@ function buildDynamicStructure(totalSec, opts) {
   } else if (isTrot) {
     /* 국악 트롯트 폼: 제약된 랜덤 구조 — 곡마다 절·후렴·프리·구음·브릿지 순서 변경
        인트로(이미 위에서 추가됨) → [셔플된 미들블록들] → 빅피니시 → 애드립 → 아웃트로 */
-    const _midSeq = _getMidSeq('trot', totalSec >= 240, true);
+    const _wantMidGuum = _wantGueum && _gPos.includes('mid');
+    const _midSeq = _getMidSeq('trot', totalSec >= 240, true, _wantMidGuum, _wantMidGuum ? 1 : 0);
     let _vIdx = 0, _cIdx = 0, _gIdx = 0;
     const _choTLabels = ['긴장 T+4 ↔ 이완 R-8 — 첫 후렴, 한(恨)을 카타르시스로',
                          '긴장 T+6 ↔ 이완 R-9 — 앞 후렴보다 더 깊고 절절하게'];
@@ -5231,6 +5242,7 @@ function buildDynamicStructure(totalSec, opts) {
               `(마지막 행 종결어미: 자연스러운 요즘 구어체 어미 — ~로다/~하도다/~이여 같은 옛 어미 금지)\n\n`
             : `(문어체 어휘 적극 활용: ${_trotDiv.literary})\n` +
               `(마지막 행 종결어미 계열: ${_trotDiv.ending})\n\n`);
+        if (_wantGueum && ((_vIdx === 1 && _gPos.includes('add1')) || (_vIdx === 2 && _gPos.includes('add2')))) structureKr += _guumBlockText();
       } else if (blk === 'prechorus') {
         structureKr +=
           `[프리코러스] 이완 ${_trTrot.prechorus}\n` +
@@ -5256,7 +5268,8 @@ function buildDynamicStructure(totalSec, opts) {
           `(배경 정서 참고: ${_trotDiv.motif} — 단어 그대로 쓰지 말고 분위기만${modernVocab ? ', 종결어미는 요즘 자연스러운 구어체로 (예스러운 어미 금지)' : `, 종결어미 ${_trotDiv.ending}`})\n\n`;
       }
     }
-    // 고정: 빅피니시 → 애드립 → 아웃트로
+    // 고정: (아웃트로 직전 구음) → 빅피니시 → 애드립 → 아웃트로 → (아웃트로 직후 구음)
+    if (_wantGueum && _gPos.includes('add3')) structureKr += _guumBlockText();
     structureKr +=
       `[후렴 - 마지막] 긴장 ${_trTrot.finalchorus}\n[Big Finish]\n` +
       `(정확히 4줄 — 절정의 클라이맥스. 같은 줄 4번 복붙 절대 금지)\n` +
@@ -5266,14 +5279,17 @@ function buildDynamicStructure(totalSec, opts) {
       ` 4줄: 마지막 한 마디 — 가장 짧고 사무치게, 끝에 ${STATE.backingVocal !== null ? '위에서 지정한 백킹보컬 큐' : `추임새 ${_trotDiv.chuimsaeA}`})\n\n` +
       `[Ad-lib] 가사 없이 짧은 멜리스마 한 마디만 쓸 것 (예: "하~~~")\n\n` +
       `[아웃트로] 이완 ${_trTrot.outro}\n(정확히 ${_oLines}줄 — 감정이 서서히 가라앉음${modernVocab ? ', 종결어미는 요즘 자연스러운 구어체로 (예스러운 어미 금지)' : `, 종결어미 ${_trotDiv.ending}`})\n${_pickForm(form.outroStyle, 'outro')||_pickForm(_trotForm.outroStyle, 'outro')||'[fade out]\n[end]'}`;
+    if (_wantGueum && _gPos.includes('end')) structureKr += `\n\n${_guumBlockText()}`;
   } else {
     /* 일반 폼: 제약된 랜덤 구조 — 절·후렴·(프리)·(구음)·(브릿지) 순서/개수 곡마다 변경 */
-    const _genSeq = _getMidSeq('general', totalSec >= 270, _useGugakBase, _gueumExplicit, (STATE.gueumPositions||[]).length);
+    const _wantMidGuumGen = _wantGueum && _gPos.includes('mid');
+    const _genSeq = _getMidSeq('general', totalSec >= 270, _useGugakBase, _wantMidGuumGen, _wantMidGuumGen ? 1 : 0);
     let _vIdx = 0, _cIdx = 0;
     for (const blk of _genSeq) {
       if (blk === 'verse') {
         _vIdx++;
         structureKr += `[절 ${_vIdx}] 긴장 ${tr.verse}\n(정확히 ${verseLines}줄 — 감정 긴장 쌓기, 라임 체계: ${form.rhyme}, 줄당 최대 8단어)\n\n`;
+        if (_wantGueum && ((_vIdx === 1 && _gPos.includes('add1')) || (_vIdx === 2 && _gPos.includes('add2')))) structureKr += _guumBlockText();
       } else if (blk === 'prechorus') {
         structureKr += `[프리코러스] 이완 ${tr.prechorus}\n(정확히 ${preLines || 2}줄 — 에너지 잠시 수축, 후렴 기대감 조성)${STATE.backingVocal !== null ? ', 끝줄에만 위에서 지정한 백킹보컬 큐 사용' : (_useGugakBase&&_trotDiv) ? `, 끝줄에만 추임새 ${_trotDiv.chuimsaeA}` : ''}\n\n`;
       } else if (blk === 'chorus') {
@@ -5289,10 +5305,12 @@ function buildDynamicStructure(totalSec, opts) {
       }
     }
 
+    if (_wantGueum && _gPos.includes('add3')) structureKr += _guumBlockText();
     structureKr +=
       `[후렴 - 마지막] 긴장 ${tr.finalchorus}\n[Big Finish]\n(정확히 ${choLines}줄 — 앵커 라인으로 시작하되 같은 줄 복붙 금지: 1줄 앵커 그대로, 중간 줄은 감정 응축한 변형, 마지막 줄은 가장 짧고 강하게 끊어 절정${STATE.backingVocal !== null ? ', 마지막 줄 끝에만 위에서 지정한 백킹보컬 큐 사용' : (_useGugakBase&&_trotDiv) ? `, 마지막 줄 끝에만 추임새 ${_trotDiv.chuimsaeA}` : ''})\n\n` +
       ((_useGugakBase&&_trotDiv) ? `[Ad-lib] 가사 없이 짧은 멜리스마 한 마디만 쓸 것 (예: "하~~~")\n\n` : '') +
       `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내림)\n${_pickForm(form.outroStyle, 'outro')||'[fade out]\n[end]'}`;
+    if (_wantGueum && _gPos.includes('end')) structureKr += `\n\n${_guumBlockText()}`;
   }
 
   /* 🔀 잠긴 구조는 1회 소비 후 해제 (다음 생성은 새 랜덤, 또는 다시 섞기로 재잠금) */
@@ -5402,6 +5420,11 @@ ${storyBlockKr}${backingVocalCueBlock}${energyArcSectionBlockKr}${inlineEventBlo
 - 직설적 감정어 금지, 은유·상징·구체 장면으로 표현
 - ★감정 하이라이트 (가장 중요): 이 곡에 1~2군데 '감정이 확 차오르는 순간'(가슴 뭉클·눈물 찔끔·소름)을 심을 것 — 주로 [브릿지]와 [후렴-마지막]에, 담담하다가 억눌렀던 진심을 왈칵 터뜨리는 사무치는 한 마디. 추상적 '그리워' 대신 '아직도 네 밥그릇을 못 치웠어' 같은 구체적 디테일 한 방으로 급소를 찌를 것${_useGugakBase ? `
 - 추임새는 ${STATE.backingVocal !== null ? '위에서 지정한 백킹보컬 큐만 사용 — 일반 추임새 금지' : `${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만 사용 — 후렴에서 모든 줄이 아니라 1·3번째 줄 끝에만, 같은 추임새를 줄마다 반복하지 말 것`}` : ''}${_wantGueum ? `
+- ★★★ [Gugak Guum] 섹션 배치 위치 — 반드시 지킬 것: ${(() => {
+    const _posMapKr = {start:'[인트로] 섹션 바로 다음', add1:'[전절 1] 섹션 바로 다음', mid:'[후렴] 섹션 바로 다음', add2:'[전절 2] 섹션 바로 다음', add3:'[아웃트로] 섹션 바로 직전', end:'[아웃트로] 섹션이 끝난 맨 마지막'};
+    const _posList = (STATE.gueumPositions && STATE.gueumPositions.length) ? STATE.gueumPositions.map(p => _posMapKr[p] || p) : ['자연스러운 위치 1~2곳'];
+    return _posList.join(' / ') + ` — 이 ${_posList.length}곳에만 [Gugak Guum] 섹션을 넣고, 다른 곳에는 넣지 말 것. 지정된 위치가 아닌 임의의 자리에 구음을 넣으면 안 됨.`;
+  })()}
 - [Gugak Guum] 섹션은 두 줄로 출력: 첫 줄 "${_trotDiv.guumHigh} [High]", 둘째 줄 "${_trotDiv.guumLow} [Low]" — 가사가 아닌 무의미 구음 멜리스마. [High]/[Low]는 음역 표시일 뿐 단어로 부르지 말 것
 - [Ad-lib] 섹션도 무의미 구음: "하~~~" / "흐어~~~" 같은 멜리스마 — 지시어 단어 부르지 말 것` : ''}
 ` : ''}
@@ -6137,38 +6160,44 @@ function applyReferenceQuickPreset(id) {
   STATE.genre = c.concept !== undefined ? c.concept : 8;
   STATE.concept = c.concept !== undefined ? c.concept : 8;
   STATE.gugakTrotBase = c.gugakTrotBase !== undefined ? c.gugakTrotBase : true;
-  // ★ 조성 — 카드 지정 조성을 기준으로, 인접한 조성 1~2개 중에서도 가끔 선택되도록
-  // (계면조 등 국악 음계 정체성은 koreanScale로 별도 고정되니, 조성만 살짝 바뀌어도
-  // 곡의 전체적 색깔은 카드 정체성 안에서 유지됨)
-  STATE.musicKey = Math.random() < 0.6 ? c.musicKey : _rp([c.musicKey, (c.musicKey + 1) % DATA.musicKeys.length, (c.musicKey + DATA.musicKeys.length - 1) % DATA.musicKeys.length]);
+  // ★ 조성 — 카드 지정 조성을 기준으로, 인접한 조성 중에서도 더 자주/넓게 선택되도록
+  // (계면조 등 국악 음계 정체성은 koreanScale로 별도 고정되니, 조성만 좀 더 흔들려도
+  // 곡의 전체적 색깔은 카드 정체성 안에서 유지됨) — 고정확률을 낮추고 후보 폭을 넓힘
+  STATE.musicKey = Math.random() < 0.4 ? c.musicKey : _rp([
+    c.musicKey,
+    (c.musicKey + 1) % DATA.musicKeys.length,
+    (c.musicKey + DATA.musicKeys.length - 1) % DATA.musicKeys.length,
+    (c.musicKey + 2) % DATA.musicKeys.length,
+    (c.musicKey + DATA.musicKeys.length - 2) % DATA.musicKeys.length,
+  ]);
   STATE.koreanScale = c.koreanScale;
-  // ★ 에너지 아크 — 카드 지정값 위주로, 가끔 비슷한 극적 형태의 다른 아크로도
-  STATE.energyArc = Math.random() < 0.6 ? c.energyArc : _rp([...new Set([c.energyArc, 0, 1, 4])]);
-  // ★ 강도·국악비율 — 카드 지정값 근처에서 작은 폭으로 흔들림
-  STATE.intensity = Math.max(1, Math.min(10, c.intensity + _rp([-1,0,0,0,1])));
-  STATE.koreanRatio = Math.max(60, Math.min(95, c.koreanRatio + _rp([-5,0,0,5])));
+  // ★ 에너지 아크 — 카드 지정값 위주로, 좀 더 자주 비슷한 극적 형태의 다른 아크로도
+  STATE.energyArc = Math.random() < 0.45 ? c.energyArc : _rp([...new Set([c.energyArc, 0, 1, 4, 5])]);
+  // ★ 강도·국악비율 — 카드 지정값 근처에서 흔들리되, 폭을 넓힘
+  STATE.intensity = Math.max(1, Math.min(10, c.intensity + _rp([-2,-1,0,0,1,2])));
+  STATE.koreanRatio = Math.max(60, Math.min(95, c.koreanRatio + _rp([-8,-4,0,0,4,8])));
   STATE.vocalStyle = c.vocalStyle;
-  STATE.moods = _qeVaried(c.moods, DATA.moods.length);
-  STATE.textures = _qeVaried(c.textures, DATA.textures.length);
-  STATE.grooves = _qeVaried(c.grooves, DATA.grooves.length);
-  STATE.spaces = _qeVaried(c.spaces, DATA.spaces.length, 0.4);
-  STATE.koreanGrooves = _qeVaried(c.koreanGrooves, DATA.koreanGrooves.length);
-  STATE.koreanFeelings = _qeVaried(c.koreanFeelings, DATA.koreanFeelings.length, 0.4);
-  STATE.blackSoulElements = _qeVaried(c.blackSoulElements, DATA.blackSoulElements.length, 0.4);
-  STATE.humanFeelElements = _qeVaried(c.humanFeelElements, DATA.humanFeelElements.length, 0.4);
-  STATE.bassStyles = _qeVaried(c.bassStyles, DATA.bassStyles.length, 0.35);
+  STATE.moods = _qeVaried(c.moods, DATA.moods.length, 0.8, 2);
+  STATE.textures = _qeVaried(c.textures, DATA.textures.length, 0.75, 2);
+  STATE.grooves = _qeVaried(c.grooves, DATA.grooves.length, 0.75, 2);
+  STATE.spaces = _qeVaried(c.spaces, DATA.spaces.length, 0.5);
+  STATE.koreanGrooves = _qeVaried(c.koreanGrooves, DATA.koreanGrooves.length, 0.8, 2);
+  STATE.koreanFeelings = _qeVaried(c.koreanFeelings, DATA.koreanFeelings.length, 0.55, 2);
+  STATE.blackSoulElements = _qeVaried(c.blackSoulElements, DATA.blackSoulElements.length, 0.5);
+  STATE.humanFeelElements = _qeVaried(c.humanFeelElements, DATA.humanFeelElements.length, 0.5);
+  STATE.bassStyles = _qeVaried(c.bassStyles, DATA.bassStyles.length, 0.5);
   STATE.hanSoulStyle = c.hanSoulStyle;
   // ★ 카드마다 지정한 실제 곡 성격에 맞는 BPM 범위 안에서 매번 살짝 다르게
   const [_bpmLo, _bpmHi] = c.bpmRange || [70, 84];
   STATE.bpm = _bpmLo + Math.floor(Math.random() * (_bpmHi - _bpmLo + 1));
-  // ★ 구음 — 위치는 카드 정체성 기본 유지하되, 가끔 위치를 하나 더 추가해 변주
-  STATE.gueumPositions = Math.random() < 0.35 && c.gueumPos.length < 3
+  // ★ 구음 — 위치는 카드 정체성 기본 유지하되, 좀 더 자주 위치를 하나 더 추가해 변주
+  STATE.gueumPositions = Math.random() < 0.5 && c.gueumPos.length < 3
     ? [...new Set([...c.gueumPos, _rp(['start','mid','end'])])]
     : [...c.gueumPos];
-  STATE.gueumPitch = Math.random() < 0.65 ? c.gueumPitch : _rp(['low','mid','midhigh']);
+  STATE.gueumPitch = Math.random() < 0.5 ? c.gueumPitch : _rp(['low','mid','midhigh']);
   STATE.gueumGender = c.gueumGender; // 보컬 성별과 맞춰야 하므로 고정 유지
-  STATE.gueumStrength = Math.random() < 0.65 ? c.gueumStrength : _rp(['medium','strong']);
-  STATE.gueumStyle = Math.random() < 0.65 ? c.gueumStyleIdx : _rp([c.gueumStyleIdx, 0, 1, 2, 4]);
+  STATE.gueumStrength = Math.random() < 0.5 ? c.gueumStrength : _rp(['medium','strong']);
+  STATE.gueumStyle = Math.random() < 0.5 ? c.gueumStyleIdx : _rp([c.gueumStyleIdx, 0, 1, 2, 4]);
   STATE.vocalForward = c.vocalForward === true; // 카드가 명시 안 하면 매번 false로 초기화
 
   const _tb = document.getElementById('gugakTrotBaseToggle'); if (_tb) _tb.checked = STATE.gugakTrotBase;
@@ -7789,13 +7818,21 @@ async function runQualityEngine() {
     apply73Preset(c.preset73);
     await sleep(80);
 
-    // BPM: 범위 중간값
-    STATE.bpm = Math.round((c.bpmRange[0]+c.bpmRange[1])/2);
-    STATE.intensity = c.intensity;
-    STATE.koreanRatio = c.koreanRatio;
-    if (c.musicKey !== undefined)   STATE.musicKey = c.musicKey;
+    // BPM: 범위 내에서 매번 랜덤 (기존엔 중간값 고정이라 매번 똑같았음)
+    STATE.bpm = c.bpmRange[0] + Math.floor(Math.random() * (c.bpmRange[1] - c.bpmRange[0] + 1));
+    STATE.intensity = Math.max(1, Math.min(10, c.intensity + _rp([-1,0,0,1])));
+    STATE.koreanRatio = Math.max(60, Math.min(95, c.koreanRatio + _rp([-5,0,0,5])));
+    // musicKey: 카드 정체성 위주로 유지하되, 가끔 인접 조성으로도 (koreanScale은 국악
+    // 정체성의 핵심이라 그대로 고정, musicKey만 소폭 변주)
+    if (c.musicKey !== undefined) {
+      STATE.musicKey = Math.random() < 0.55 ? c.musicKey : _rp([
+        c.musicKey,
+        (c.musicKey + 1) % DATA.musicKeys.length,
+        (c.musicKey + DATA.musicKeys.length - 1) % DATA.musicKeys.length,
+      ]);
+    }
     if (c.koreanScale !== undefined) STATE.koreanScale = c.koreanScale;
-    if (c.energyArc !== undefined)  STATE.energyArc = c.energyArc;
+    if (c.energyArc !== undefined)  STATE.energyArc = Math.random() < 0.6 ? c.energyArc : _rp([...new Set([c.energyArc, 0, 1, 4])]);
     // ★ 카드가 gugakTrotBase를 명시적으로 지정했으면 그대로 반영 — 실제 트롯이 아닌
     // 레퍼런스 곡(록융합/사이키델릭소울록/피아노발라드 등)인데 이 값이 켜진 채로 있으면,
     // 스타일(악기·무드)은 카드가 지정한 대로 가는데 가사만 트롯 8대 규칙(체념→카타르시스
@@ -7838,10 +7875,10 @@ async function runQualityEngine() {
     // 안 그러면 뒤에서 AI가 이 시점의 (틀린) 성별로 최종 프롬프트를 먼저 다 써버린 뒤에
     // 나중에 STATE만 고쳐지는 문제가 생김 — 최종 프롬프트 생성 전에 반드시 먼저 확정
     enforceVocalGenderLock();
-    if (c.textures !== undefined)   STATE.textures = _qeVaried(c.textures, DATA.textures.length);
-    if (c.grooves !== undefined)    STATE.grooves = _qeVaried(c.grooves, DATA.grooves.length);
-    if (c.spaces !== undefined)     STATE.spaces = _qeVaried(c.spaces, DATA.spaces.length, 0.4);
-    if (c.moods !== undefined)      STATE.moods = _qeVaried(c.moods, DATA.moods.length);
+    if (c.textures !== undefined)   STATE.textures = _qeVaried(c.textures, DATA.textures.length, 0.75, 2);
+    if (c.grooves !== undefined)    STATE.grooves = _qeVaried(c.grooves, DATA.grooves.length, 0.75, 2);
+    if (c.spaces !== undefined)     STATE.spaces = _qeVaried(c.spaces, DATA.spaces.length, 0.5);
+    if (c.moods !== undefined)      STATE.moods = _qeVaried(c.moods, DATA.moods.length, 0.8, 2);
     syncSliders();
     qeSetStep(1, `BPM ${STATE.bpm} · 강도 ${c.intensity} · 비율 ${c.koreanRatio}% · 에너지 아크 세팅 완료`);
     await sleep(150);
