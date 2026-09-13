@@ -3298,7 +3298,19 @@ function _doBuildPrompt() {
     parts.push(`[Vocal Phrasing] sits slightly behind the beat, unhurried and lingering — like someone reluctant to let the feeling go, never rigidly on-time.`);
     // ★ 멜로디 피치 컨투어 — 음정이 밋밋하게 몇 개 음만 오가지 않고, 각 줄마다
     // 풍부하게 오르내리며 그 줄의 감정선을 그리도록. 힙합 삭제로 예외처리 불필요
-    parts.push(`[Melodic Contour — CRITICAL] The melody must NOT hover on just two or three notes in a flat, chant-like, recitative pattern — this is a common AI-generated-music flaw and must be avoided entirely. This is a SUNG melody, NEVER rapped or spoken in a rhythmic rap-flow cadence — no rap delivery, no rhythmic talking-over-the-beat, regardless of how many syllables are packed into a line; if a line feels too dense to sing melodically, it should still be SUNG (even if slightly rushed or breathless), not switched into a rap cadence. Each phrase should span a genuinely wide pitch range (leaps of a 5th or more, not just small steps), actively climbing and falling within the line itself, not only at the very end. Trace the emotional shape of the words with real melodic movement: rising into the ache, leaping on the most painful word, then descending and settling as the feeling releases. Every line should feel like its own distinct melodic phrase, never a repeated or interchangeable shape — this expressive, unpredictable pitch movement is essential to how the han (한) is felt, not decorative. Note: the lyrics contain tilde marks (~) at certain syllables signaling a held vibrato ornament — but that vibrato happens ONLY on the single note it's landed on; it never replaces the wide melodic movement earlier in the line. Reach that held note through a real melodic leap first, then apply the vibrato there.`);
+    // ★ 매번 100% 동일 문구로 나가던 걸 6가지 표현으로 순환 — 핵심 규칙(넓은 음정도약·
+    // 랩금지·평평한 찬트 금지·비브라토는 도약 후에만)은 전부 동일하게 유지, 표현·비유만
+    // 다르게 해서 매 곡마다 Suno가 똑같은 문장을 보고 똑같이 해석하는 걸 방지
+    const _MELODIC_CONTOUR_VARIANTS = [
+      `[Melodic Contour — CRITICAL] The melody must NOT hover on just two or three notes in a flat, chant-like, recitative pattern — this is a common AI-generated-music flaw and must be avoided entirely. This is a SUNG melody, NEVER rapped or spoken in a rhythmic rap-flow cadence — no rap delivery, no rhythmic talking-over-the-beat, regardless of how many syllables are packed into a line; if a line feels too dense to sing melodically, it should still be SUNG (even if slightly rushed or breathless), not switched into a rap cadence. Each phrase should span a genuinely wide pitch range (leaps of a 5th or more, not just small steps), actively climbing and falling within the line itself, not only at the very end. Trace the emotional shape of the words with real melodic movement: rising into the ache, leaping on the most painful word, then descending and settling as the feeling releases. Every line should feel like its own distinct melodic phrase, never a repeated or interchangeable shape — this expressive, unpredictable pitch movement is essential to how the han (한) is felt, not decorative. Note: the lyrics contain tilde marks (~) at certain syllables signaling a held vibrato ornament — but that vibrato happens ONLY on the single note it's landed on; it never replaces the wide melodic movement earlier in the line. Reach that held note through a real melodic leap first, then apply the vibrato there.`,
+      `[Melodic Contour — CRITICAL] Never settle into a narrow two-or-three-note recitative — that flat, chant-like delivery is a telltale AI-music flaw and must not happen here. Every line is SUNG, never rapped and never spoken in a rhythmic talk-over-the-beat cadence, no matter how many syllables are crammed in; a dense line should still be melodically sung, even breathlessly, rather than switching to rap. Think of each phrase like a wave: it must genuinely rise and fall across a wide span (a 5th or wider), climbing and dropping within the line itself, not just tacking a flourish onto the last syllable. Let the pitch trace the feeling — climbing into the ache, reaching highest on the most painful word, then falling and settling as it releases. No two lines should share the same melodic shape; this unpredictable, wide-ranging movement is how the han (한) actually lives in the voice, not an ornament on top of it. Where a tilde (~) marks a syllable, that is only a held vibrato at the note the leap already arrived at — the leap must happen first, the vibrato is just the trembling once it's landed.`,
+      `[Melodic Contour — CRITICAL] Absolutely avoid a flat, monotone chant sitting on two or three pitches — that recitative sameness is a common AI-generated-music failure. Everything here is SUNG, never rapped, never a rhythmic spoken cadence riding the beat — even a syllable-dense line stays sung (rushed or breathless is fine) rather than sliding into rap delivery. Picture each line as a mountain ridge, not a flat road: real climbs and drops spanning a 5th or more, moving inside the line itself rather than only resolving at the end. The melody should physically trace what the words feel — reaching up into the ache, peaking on the most wounding word, then descending and settling as it lets go. No line repeats another's shape; this is the actual mechanism of han (한), not decoration. A tilde (~) only marks where a vibrato holds once the voice has already leapt there — the wide movement comes first, the trembling ornament comes after, never instead of it.`,
+      `[Melodic Contour — CRITICAL] The vocal must never flatten into a narrow, two-or-three-note chant — that recitative monotony is a classic AI-music tell and is not allowed here. Every phrase is SUNG — never rapped, never a rhythmic talk-cadence over the beat, regardless of syllable density; a crowded line stays sung, even if rushed, rather than becoming rap. Each line needs real range: leaps of a 5th or wider, both climbing and falling within that single line, not just at its tail end. Let the pitch itself carry the emotion — rising toward the ache, hitting its highest point on the most painful word, then coming back down as the feeling releases. Treat every line as its own unrepeatable melodic shape; this restless, wide pitch movement is what makes the han (한) audible, not an extra layer on top. A tilde (~) signals a vibrato held on the note already reached by that leap — never a substitute for the leap itself.`,
+      `[Melodic Contour — CRITICAL] Do not let the melody sit on two or three notes like a flat chant — this narrow, recitative quality is one of the most common signs of AI-generated music and must be avoided. Every line here is SUNG, never rapped, never delivered as rhythmic speech over the beat, however many syllables it holds — a packed line stays melodic, even if breathless, instead of turning into a rap flow. Each phrase should genuinely swing wide — a 5th or more — rising and falling inside the line itself, not only as a tag at the end. The pitch should follow the emotion like a living line: climbing into the hurt, peaking exactly on the most painful word, then releasing downward as it settles. No two lines should feel interchangeable; this unpredictable, wide melodic motion is the actual voice of han (한), not decoration on it. Where a tilde (~) appears, it only marks a vibrato once the leap has already landed there — leap first, tremble second.`,
+      `[Melodic Contour — CRITICAL] The melody can never hover flatly on two or three pitches in a chant-like recitative — that's an unmistakable AI-generated-music flaw to avoid entirely. This is always a SUNG line, never rapped and never a rhythmic spoken cadence riding the beat, no matter how many syllables must fit — a dense line stays sung, even slightly rushed, rather than shifting into rap. Give each phrase a true wide arc — leaps of a 5th or beyond — actively rising and falling within that one line, not saved only for the ending. The pitch should trace the emotional shape of the words directly: rising into the ache, reaching its peak on the most painful syllable, then falling and settling as the feeling lets go. Every line must carry its own distinct melodic shape, never reused or interchangeable — this expressive, unpredictable pitch movement is how han (한) is actually felt, not an ornament. A tilde (~) marks only a held vibrato at the note the leap already reached — the leap always comes first, the vibrato only afterward.`,
+    ];
+    parts.push(_rp(_MELODIC_CONTOUR_VARIANTS));
+
 
     /* ── 국악기 음색 매핑: 악기명 + 연주 행동 묘사 ── */
     const instrSonicMap = {
@@ -5105,7 +5117,7 @@ function buildEnergyArcSectionBlockKr() {
 function buildInlineEventBlockKr() {
   const _inlineInstr = getInlineInstrForGenre();
   return `\n★★ 인라인 악기 이벤트 태그 (완전히 선택적 — 안 써도 전혀 상관없음) ★★
-- ★ 위 에너지 아크 편곡 메모와 Build/Drop 등을 이미 다 채웠다면, 이 인라인 이벤트는 생략해도 좋음. 굳이 추가한다면 가사 줄 2~3줄에 1번 이하로, 줄 끝에 대괄호로 짧은 악기 이벤트를 붙일 수 있음 — ★이것도 영어로 쓸 것 (예: "그리워라 [haegeum swipe]")
+- ★ 위 에너지 아크 편곡 메모와 Build/Drop 등을 이미 다 채웠다면, 이 인라인 이벤트는 생략해도 좋음. 굳이 추가한다면 가사 줄 2~3줄에 1번 이하로, 줄 끝에 대괄호로 짧은 악기 이벤트를 붙일 수 있음 — ★이것도 영어로 쓸 것 (예: "돌아오지 않는 밤 [haegeum swipe]")
 - 반드시 이 곡에 이미 쓰이는 악기 중에서만 고를 것: ${_inlineInstr} (새 악기 지어내지 말 것)
 - "지금 터지는/들어오는" 순간만 인라인 가능 (예: [haegeum swipe], [gayageum arpeggio], [janggu fill], [daegeum breath]). "빠지는/남기는" 지시는 인라인 금지 — 그건 구조 태그 밑에만
 - 과밀 금지: 모든 줄에 다 붙이면 반영률이 떨어짐, 듬성듬성 배치할 것
@@ -5163,12 +5175,12 @@ ${_pattern}
 
 /* ── 백킹보컬(05C)이 선택된 경우, 스타일 태그만으론 약해서 가사 자체에 실제 큐를 심음 ── */
 const _bvExamples = [
-  { label:'화성 보컬', guide:'후렴 각 줄 끝에, 방금 부른 가사의 핵심 단어나 어미를 괄호 안에 그대로 반복해 화음처럼 겹치게 할 것', example:'그리워라 내 사랑아 (내 사랑아~)' },
-  { label:'코러스 보컬', guide:'후렴 줄마다 끝에 짧은 애상적 추임새 코러스를 괄호로 넣어 여러 목소리가 함께 우는 듯한 느낌을 줄 것 — 밝거나 경쾌한 감탄사("오예~", "예~" 등 팝·R&B풍) 절대 금지, 반드시 아아~/에헤~/우우~ 계열의 애절한 추임새만 사용', example:'그리워라 그리워라 (아아~ 아아~)' },
-  { label:'대위 보컬', guide:'후렴 한 줄이 끝날 때마다, 리드와는 다른 짧은 구절을 괄호 안에 넣어 두 멜로디가 엇갈리게 할 것 — 단, 반드시 이 곡에서 이미 나온 단어·이미지만 재조합해서 쓸 것. 이 곡에 없던 새로운 소재·단어·이름을 절대 만들어내지 말 것 (문맥과 안 맞는 뜬금없는 말 방지)', example:'그리워라 (아직 못 잊었네)' },
-  { label:'애드립 보컬', guide:'후렴 끝이나 브릿지에 즉흥적인 감탄사·멜리스마를 괄호로 넣을 것 (가사 아닌 순수 감정 표현)', example:'그리워라 내 사랑아 (아~~~ 으흐~~~)' },
-  { label:'효과음 보컬', guide:'후렴 사이사이 가사 없는 순수 소리를 괄호로 넣어 분위기를 만들 것 — 반드시 "음~~~", "흐음~~~", "아아~" 같은 실제로 낼 수 있는 소리만 쓰고, "허밍"이나 "멜리스마" 같은 단어 자체를 괄호 안에 쓰면 절대 안 됨 (그 단어 글자가 그대로 노래로 불려버림)', example:'그리워라 내 사랑아 (음~~~ 흐음~~~)' },
-  { label:'콜앤리스폰스 보컬', guide:'후렴에서 리드가 한 줄 부르면, 바로 다음 줄에 괄호로 짧게 받아치는 응답구를 넣을 것 (질문-대답 구조). 단, 반드시 이 곡에서 이미 나온 단어·감정만 사용해 응답할 것 — 이 곡에 없던 새로운 소재·인물·장소를 절대 지어내지 말 것', example:'그리워라 그리워라\n(그래 나도 그립다오)' },
+  { label:'화성 보컬', guide:'후렴 각 줄 끝에, 방금 부른 가사의 핵심 단어나 어미를 괄호 안에 그대로 반복해 화음처럼 겹치게 할 것', example:['그리워라 내 사랑아 (내 사랑아~)', '돌아오오 부디 (부디~)', '잊지 마오 그 밤을 (그 밤을~)'] },
+  { label:'코러스 보컬', guide:'후렴 줄마다 끝에 짧은 애상적 추임새 코러스를 괄호로 넣어 여러 목소리가 함께 우는 듯한 느낌을 줄 것 — 밝거나 경쾌한 감탄사("오예~", "예~" 등 팝·R&B풍) 절대 금지, 반드시 아아~/에헤~/우우~ 계열의 애절한 추임새만 사용', example:['그리워라 그리워라 (아아~ 아아~)', '저 달을 보며 (에헤~ 에헤~)', '가슴이 아려 (우우~ 우우~)'] },
+  { label:'대위 보컬', guide:'후렴 한 줄이 끝날 때마다, 리드와는 다른 짧은 구절을 괄호 안에 넣어 두 멜로디가 엇갈리게 할 것 — 단, 반드시 이 곡에서 이미 나온 단어·이미지만 재조합해서 쓸 것. 이 곡에 없던 새로운 소재·단어·이름을 절대 만들어내지 말 것 (문맥과 안 맞는 뜬금없는 말 방지)', example:['그리워라 (아직 못 잊었네)', '돌아오오 (기다리다 지쳤소)', '잊었을까 (아니 못 잊었네)'] },
+  { label:'애드립 보컬', guide:'후렴 끝이나 브릿지에 즉흥적인 감탄사·멜리스마를 괄호로 넣을 것 (가사 아닌 순수 감정 표현)', example:['그리워라 내 사랑아 (아~~~ 으흐~~~)', '돌아오오 그리운 이여 (으어~~~ 흑~~~)', '잊지 못해 이 마음을 (아이고~~~ 흐윽~~~)'] },
+  { label:'효과음 보컬', guide:'후렴 사이사이 가사 없는 순수 소리를 괄호로 넣어 분위기를 만들 것 — 반드시 "음~~~", "흐음~~~", "아아~" 같은 실제로 낼 수 있는 소리만 쓰고, "허밍"이나 "멜리스마" 같은 단어 자체를 괄호 안에 쓰면 절대 안 됨 (그 단어 글자가 그대로 노래로 불려버림)', example:['그리워라 내 사랑아 (음~~~ 흐음~~~)', '돌아오오 부디 (으음~~~ 아음~~~)', '잊지 못해 (흐으음~~~ 우음~~~)'] },
+  { label:'콜앤리스폰스 보컬', guide:'후렴에서 리드가 한 줄 부르면, 바로 다음 줄에 괄호로 짧게 받아치는 응답구를 넣을 것 (질문-대답 구조). 단, 반드시 이 곡에서 이미 나온 단어·감정만 사용해 응답할 것 — 이 곡에 없던 새로운 소재·인물·장소를 절대 지어내지 말 것', example:['그리워라 그리워라\\n(그래 나도 그립다오)', '돌아오오 제발\\n(그래 나도 기다리오)', '잊었느냐 그 약속\\n(아니 아직 잊지 않았소)'] },
 ];
 function buildBackingVocalCueBlock() {
   return (STATE.backingVocal !== null && DATA.backingVocals[STATE.backingVocal])
@@ -5177,7 +5189,7 @@ function buildBackingVocalCueBlock() {
         return `\n★★ 백킹보컬 실제 반영 (필수) — "${bv.label}" ★★
 - 스타일 지시만으론 Suno가 놓치기 쉬우니, 가사 자체에 백킹보컬이 실제로 들어갈 자리를 괄호로 명시할 것
 - 규칙: ${bv.guide}
-- 예시(그대로 베끼지 말고 이 형식만 참고): "${bv.example}"
+- 예시(그대로 베끼지 말고 이 형식만 참고): "${_rp(bv.example)}"
 - 후렴이 나올 때마다 최소 1회 이상 이 괄호 큐를 넣을 것 (매 줄마다 넣어서 과하게 반복하지는 말 것)
 - ★★★ 매우 중요: 괄호 안에는 반드시 실제로 소리 내어 부를 수 있는 음절만 쓸 것 (음~~~/흐음~~~/아아~/라라라~ 등). "허밍", "멜리스마", "코러스", "화음" 같은 기법을 설명하는 단어 자체를 괄호 안에 쓰면 절대 안 됨 — 그 글자가 그대로 노래로 불려버림
 `;
@@ -5317,9 +5329,14 @@ function buildDynamicStructure(totalSec, opts) {
     for (const blk of _midSeq) {
       if (blk === 'verse') {
         _vIdx++;
+        const _trotVerseVariants = [
+          '체념·상황·구체 사물로 한(恨) 압축, 감정 직접 서술 금지',
+          '눈에 보이는 장면과 몸짓으로 그 순간을 그려내고, 마음을 직접 말하지 말 것',
+          '그날의 사소한 물건이나 풍경 하나에 감정을 실어 넌지시 드러낼 것 — "슬프다/괴롭다" 같은 감정어 직접 사용 금지',
+        ];
         structureKr +=
           `[전절 ${_vIdx}] 긴장 +${6 + _vIdx}\n` +
-          `(정확히 ${_vLines}줄 — 체념·상황·구체 사물로 한(恨) 압축, 감정 직접 서술 금지)\n` +
+          `(정확히 ${_vLines}줄 — ${_rp(_trotVerseVariants)})\n` +
           `(이번 절 배경 정서 참고: ${_trotDiv.motif} — 이 단어를 그대로 가사에 쓰지 말 것. 여기서 느껴지는 분위기·정서만 자연스러운 다른 표현으로 녹여낼 것)\n` +
           `(음수율: 3·4조 / 4·4조 / 7·5조 중 하나로 전체 일관 유지)\n` +
           (modernVocab
@@ -5329,24 +5346,42 @@ function buildDynamicStructure(totalSec, opts) {
               `(마지막 행 종결어미 계열: ${_trotDiv.ending})\n\n`);
         if (_wantGueum && ((_vIdx === 1 && _gPos.includes('add1')) || (_vIdx === 2 && _gPos.includes('add2')))) structureKr += _guumBlockText();
       } else if (blk === 'prechorus') {
+        const _trotPrechoVariants = [
+          '"떠나라 떠나라 못 떠나오" 같은 반어적 호소',
+          '"가지 마오 가지 마오" 같은 애원 섞인 만류',
+          '"잊으라 해도 잊지 못하네" 같은 체념 속의 미련',
+        ];
         structureKr +=
           `[프리코러스] 이완 ${_trTrot.prechorus}\n` +
-          `(정확히 ${_pLines}줄 — 후렴 직전 긴장 응축, "떠나라 떠나라 못 떠나오" 같은 반어적 호소 — 예시는 어조 참고일 뿐 그대로 쓰지 말 것)\n` +
+          `(정확히 ${_pLines}줄 — 후렴 직전 긴장 응축, ${_rp(_trotPrechoVariants)} — 예시는 어조 참고일 뿐 그대로 쓰지 말 것)\n` +
           `(끝줄에만 ${STATE.backingVocal !== null ? '위에서 지정한 백킹보컬 큐 사용 (일반 추임새 금지)' : `추임새 ${_trotDiv.chuimsaeA}`})\n\n`;
       } else if (blk === 'chorus') {
         const lbl = _choTLabels[Math.min(_cIdx, _choTLabels.length - 1)];
         _cIdx++;
+        // ★ 항상 "첫 줄이 앵커 그대로"로만 고정돼 있으면 Suno도 매 후렴을 비슷한
+        // 방식(한 소절 던지고 끝)으로 단순화하기 쉬움 — 4가지 배치 패턴을 순환
+        const _trotChoStructVariants = [
+          `첫 줄 앵커: "${_trotDiv.anchor}" — 그대로`,
+          `마지막 줄에 앵커: "${_trotDiv.anchor}" 배치 — 앞줄들로 감정을 쌓아 올린 뒤 이 구절로 후렴을 마무리`,
+          `앵커 "${_trotDiv.anchor}"를 앞줄과 뒷줄에 나눠 배치 — 앞줄이 화두를 던지면 뒷줄이 받아 완성`,
+          `첫 줄 앵커는 "${_trotDiv.anchor}"의 뜻은 그대로 살리되 어순이나 어미를 살짝 바꿔서 — 완전히 토씨까지 똑같이 베끼지 말 것`,
+        ];
         structureKr +=
           `[후렴 ${_cIdx}] ${lbl}\n` +
-          `(정확히 ${_cLines}줄 — 첫 줄 앵커: "${_trotDiv.anchor}")\n` +
+          `(정확히 ${_cLines}줄 — ${_rp(_trotChoStructVariants)})\n` +
           `(${STATE.backingVocal !== null ? '위에서 지정한 백킹보컬 큐만 사용 — 일반 추임새(아아~/에헤~ 등) 금지, 모든 줄이 아니라 1·3번째 줄 끝에만' : `추임새는 ${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만 사용 — 모든 줄이 아니라 1·3번째 줄 끝에만, 줄마다 같은 추임새 반복 금지`})\n\n`;
       } else if (blk === 'guum') {
         _gIdx++;
         structureKr += guumLinesToBlockText(buildGuumLines(Math.random()));
       } else if (blk === 'bridge') {
+        const _trotBridgeVariants = [
+          '최고조의 한(恨) 토로, "내 마음 울부짖어 노래하네" 같은 절규',
+          '그동안 참아온 감정이 여기서 터지듯, "이 가슴이 무너지네" 같은 격정',
+          '억눌렀던 슬픔이 폭발하는 지점, "차마 못 다한 말 여기서 쏟아내네" 같은 절절함',
+        ];
         structureKr +=
           `[브릿지] 긴장 ${_trTrot.bridge}\n` +
-          `(정확히 ${_bLines}줄 — 최고조의 한(恨) 토로, "내 마음 울부짖어 노래하네" 같은 절규 — 예시는 어조 참고일 뿐 그대로 쓰지 말 것, 추임새 없이 가사만)\n` +
+          `(정확히 ${_bLines}줄 — ${_rp(_trotBridgeVariants)} — 예시는 어조 참고일 뿐 그대로 쓰지 말 것, 추임새 없이 가사만)\n` +
           `(배경 정서 참고: ${_trotDiv.motif} — 단어 그대로 쓰지 말고 분위기만${modernVocab ? ', 종결어미는 요즘 자연스러운 구어체로 (예스러운 어미 금지)' : `, 종결어미 ${_trotDiv.ending}`})\n\n`;
       }
     }
@@ -5370,20 +5405,29 @@ function buildDynamicStructure(totalSec, opts) {
     for (const blk of _genSeq) {
       if (blk === 'verse') {
         _vIdx++;
-        structureKr += `[절 ${_vIdx}] 긴장 ${tr.verse}\n(정확히 ${verseLines}줄 — 감정 긴장 쌓기, 라임 체계: ${form.rhyme}, 줄당 최대 8단어)\n\n`;
+        structureKr += `[절 ${_vIdx}] 긴장 ${tr.verse}\n(정확히 ${verseLines}줄 — ${_rp(['이야기 전달, 리드미컬, 긴장 쌓기', '장면을 순서대로 펼치듯 서술하며 리듬을 타고 점점 긴장을 쌓아갈 것', '상황을 하나씩 드러내며 이야기를 진전시키고 후렴을 향해 감정의 밀도를 높여갈 것'])}, 라임 체계: ${form.rhyme}, 줄당 최대 8단어)\n\n`;
         if (_wantGueum && ((_vIdx === 1 && _gPos.includes('add1')) || (_vIdx === 2 && _gPos.includes('add2')))) structureKr += _guumBlockText();
       } else if (blk === 'prechorus') {
-        structureKr += `[프리코러스] 이완 ${tr.prechorus}\n(정확히 ${preLines || 2}줄 — 에너지 잠시 수축, 후렴 기대감 조성)${STATE.backingVocal !== null ? ', 끝줄에만 위에서 지정한 백킹보컬 큐 사용' : (_useGugakBase&&_trotDiv) ? `, 끝줄에만 추임새 ${_trotDiv.chuimsaeA}` : ''}\n\n`;
+        structureKr += `[프리코러스] 이완 ${tr.prechorus}\n(정확히 ${preLines || 2}줄 — ${_rp(['에너지 잠시 수축, 후렴 기대감 조성', '숨을 고르듯 잠시 가라앉혔다가 후렴을 향한 기대감을 슬쩍 쌓아올릴 것', '잠깐의 정적처럼 잦아들며 다음에 터질 후렴을 예고하듯 여운을 남길 것'])})${STATE.backingVocal !== null ? ', 끝줄에만 위에서 지정한 백킹보컬 큐 사용' : (_useGugakBase&&_trotDiv) ? `, 끝줄에만 추임새 ${_trotDiv.chuimsaeA}` : ''}\n\n`;
       } else if (blk === 'chorus') {
         _cIdx++;
         const choIntKr = _cIdx === 1
           ? `긴장 T+5 ↔ 이완 R-5 — 훅을 명확히 확립`
           : `긴장 T+${Math.min(8, 5+_cIdx)} ↔ 이완 R-${Math.min(8, 5+_cIdx)} — 앞 후렴보다 더 크게`;
-        structureKr += `[후렴 ${_cIdx}] ${choIntKr}\n(정확히 ${choLines}줄 — 앵커 라인 먼저, 1회 반복, 줄당 최대 6단어, 따라부를 수 있는 훅${STATE.backingVocal !== null ? '. 위에서 지정한 백킹보컬 큐만 사용 — 일반 추임새 금지' : (_useGugakBase&&_trotDiv) ? `. 추임새는 ${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만, 1·3번째 줄 끝에만 — 줄마다 반복 금지` : ''})\n\n`;
+        // ★ 후렴 구조가 매번 "앵커 라인 먼저, 1회 반복"으로만 고정돼 있으면 Suno도 매번
+        // 비슷한 "한 소절 부르고 그대로 반복" 식으로 멜로디를 단순화하기 쉬움 — 4가지
+        // 구조 패턴을 순환시켜 후렴마다 짜임새 자체가 달라지게 함
+        const _choStructVariants = [
+          `앵커 라인 먼저, 1회 반복`,
+          `앵커 라인으로 시작하되, 반복하는 줄은 토씨 하나까지 완전히 똑같이 베끼지 말고 감정을 살짝 더 얹은 변형으로 — 같은 뜻이지만 표현은 다르게`,
+          `앞줄에서 감정을 짧게 쌓아 올리다가, 마지막 줄에 이 후렴의 핵심 앵커구를 배치해 마무리`,
+          `앵커구를 앞줄과 뒷줄에 나눠 배치 — 앞줄이 화두를 던지면 뒷줄이 그것을 받아 완성하는 구조`,
+        ];
+        structureKr += `[후렴 ${_cIdx}] ${choIntKr}\n(정확히 ${choLines}줄 — ${_rp(_choStructVariants)}, 줄당 최대 6단어, 따라부를 수 있는 훅${STATE.backingVocal !== null ? '. 위에서 지정한 백킹보컬 큐만 사용 — 일반 추임새 금지' : (_useGugakBase&&_trotDiv) ? `. 추임새는 ${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만, 1·3번째 줄 끝에만 — 줄마다 반복 금지` : ''})\n\n`;
       } else if (blk === 'guum' && _wantGueum) {
         structureKr += guumLinesToBlockText(buildGuumLines(Math.random()));
       } else if (blk === 'bridge') {
-        structureKr += `[브릿지] 긴장 ${tr.bridge}\n(정확히 ${bridgeLines}줄 — ★감정 하이라이트: 억눌렀던 진심을 왈칵 터뜨려 듣는 사람 가슴이 무너지는 한 마디. 추상적 슬픔 말고 구체적 디테일로. 최대 대비, 마지막 폭발 전 수축)\n\n`;
+        structureKr += `[브릿지] 긴장 ${tr.bridge}\n(정확히 ${bridgeLines}줄 — ${_rp(['★감정 하이라이트: 억눌렀던 진심을 왈칵 터뜨려 듣는 사람 가슴이 무너지는 한 마디. 추상적 슬픔 말고 구체적 디테일로. 최대 대비, 마지막 폭발 전 수축', '★감정 하이라이트: 그동안 눌러왔던 속마음이 여기서 왈칵 쏟아지는 지점. 담백하던 어조를 깨고 가장 여린 진심 하나를 구체적으로 드러낼 것. 마지막 드롭 전 최고조', '★감정 하이라이트: 곡 전체가 향해온 가장 아픈 순간. 절제하던 태도를 내려놓고 이 화자만의 구체적이고 사무치는 한 마디를 던질 것. 클라이맥스 직전 최대 긴장'])})\n\n`;
       }
     }
 
@@ -5476,7 +5520,7 @@ ${clicheRuleKr}
 ⑧ 문학적 표현: 직설 금지, 은유·상징으로. 참고 어휘(이 중 일부만 골라 자연스럽게 녹일 것, 그대로 나열·매 곡 반복 금지): ${_trotDiv.literary}
    → "${_trotDiv.sampleA}" / "${_trotDiv.sampleB}" 같은 문어체 시적 문장 지향 (예시는 문체 참고일 뿐 — 그 문장·단어를 그대로 베끼지 말 것)
 ⑨ 어휘 다양성: 매 곡 신선한 단어·이미지를 쓰고, 흔한 상투어(달빛·강가·풍진·님)와 감정 상투어(그리움·설움·눈물·한숨·애끓는·서러워·사무치는)를 후렴 앵커구 외에는 한 곡에 한두 번 넘게 반복하지 말 것 — 같은 슬픔도 구체적 장면·동작·감각으로 새롭게 표현
-⑩ 감정 하이라이트 (가장 중요 — 곡의 승부처): 이 곡에 반드시 1~2군데 '감정이 확 차오르는 순간'(가슴 뭉클·눈물 찔끔·소름)을 심을 것. 주로 [브릿지]와 [후렴-마지막]에 — 그동안 담담히·절제하며 부르다가, 바로 이 지점에서 억눌렀던 진심을 왈칵 터뜨리는 가장 사무치는 한 마디(못 한 고백·뒤늦은 후회·차마 못 보낸 마음)를 넣어 듣는 사람의 가슴이 무너지게. 일반적 슬픔 서술이 아니라, 이 화자만 할 수 있는 구체적이고 취약한 진심으로 급소를 찌를 것 — 예: 추상적인 '그리워' 대신 '아직도 네 밥그릇을 못 치웠어' 같은 구체적 디테일 한 방.
+⑩ 감정 하이라이트 (가장 중요 — 곡의 승부처): 이 곡에 반드시 1~2군데 '감정이 확 차오르는 순간'(가슴 뭉클·눈물 찔끔·소름)을 심을 것. 주로 [브릿지]와 [후렴-마지막]에 — 그동안 담담히·절제하며 부르다가, 바로 이 지점에서 억눌렀던 진심을 왈칵 터뜨리는 가장 사무치는 한 마디(못 한 고백·뒤늦은 후회·차마 못 보낸 마음)를 넣어 듣는 사람의 가슴이 무너지게. 일반적 슬픔 서술이 아니라, 이 화자만 할 수 있는 구체적이고 취약한 진심으로 급소를 찌를 것 — 예: 추상적인 '그리워' 대신 ${_rp(["'네 신발이 아직 그 자리에 있어' 같은", "'달력에 네 생일에만 동그라미가 남아있어' 같은", "'휴대폰에 아직 네 번호를 못 지웠어' 같은", "'네가 앉던 자리가 아직도 그대로야' 같은"])} 구체적 디테일 한 방.
 
 ★ 긴장/이완 수치 ★
 - 전절 T 수치 높음(+7~+9) = 체념·압축·절박한 언어, 짧은 호흡
@@ -5500,7 +5544,7 @@ ${storyBlockKr}${backingVocalCueBlock}${energyArcSectionBlockKr}${inlineEventBlo
 - 종결어미 계열: ${_trotDiv.ending} (모든 줄 "~다" 금지)
 - 배경 정서 참고 소재 (단어 그대로 쓰지 말 것): ${_trotDiv.motif}
 - 직설적 감정어 금지, 은유·상징·구체 장면으로 표현
-- ★감정 하이라이트 (가장 중요): 이 곡에 1~2군데 '감정이 확 차오르는 순간'(가슴 뭉클·눈물 찔끔·소름)을 심을 것 — 주로 [브릿지]와 [후렴-마지막]에, 담담하다가 억눌렀던 진심을 왈칵 터뜨리는 사무치는 한 마디. 추상적 '그리워' 대신 '아직도 네 밥그릇을 못 치웠어' 같은 구체적 디테일 한 방으로 급소를 찌를 것${_useGugakBase ? `
+- ★감정 하이라이트 (가장 중요): 이 곡에 1~2군데 '감정이 확 차오르는 순간'(가슴 뭉클·눈물 찔끔·소름)을 심을 것 — 주로 [브릿지]와 [후렴-마지막]에, 담담하다가 억눌렀던 진심을 왈칵 터뜨리는 사무치는 한 마디. 추상적 '그리워' 대신 ${_rp(["'네 신발이 아직 그 자리에 있어'", "'달력에 네 생일에만 동그라미가 남아있어'", "'휴대폰에 아직 네 번호를 못 지웠어'", "'네가 앉던 자리가 아직도 그대로야'"])} 같은 구체적 디테일 한 방으로 급소를 찌를 것${_useGugakBase ? `
 - 추임새는 ${STATE.backingVocal !== null ? '위에서 지정한 백킹보컬 큐만 사용 — 일반 추임새 금지' : `${_trotDiv.chuimsaeA} 와 ${_trotDiv.chuimsaeB}만 사용 — 후렴에서 모든 줄이 아니라 1·3번째 줄 끝에만, 같은 추임새를 줄마다 반복하지 말 것`}` : ''}${_wantGueum ? `
 - ★★★ [Gugak Guum] 섹션 배치 위치 — 반드시 지킬 것: ${(() => {
     const _posMapKr = {start:'[인트로] 섹션 바로 다음', add1:'[전절 1] 섹션 바로 다음', mid:'[후렴] 섹션 바로 다음', add2:'[전절 2] 섹션 바로 다음', add3:'[아웃트로] 섹션 바로 직전', end:'[아웃트로] 섹션이 끝난 맨 마지막'};
