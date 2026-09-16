@@ -722,11 +722,11 @@ textarea{resize:vertical;min-height:100px;line-height:1.7}
   <div class="section-body" id="toneBody" style="display:none">
     <div class="gender-row" style="padding:10px 12px;border:1px solid var(--gold);border-radius:10px;background:rgba(255,215,120,.08);margin-bottom:12px">
       <span class="gender-lbl">🔒 최종 보컬 고정:</span>
-      <button class="gender-lock-btn" id="vlock_male" onclick="setVocalGenderLock('male')">남성으로 고정</button>
-      <button class="gender-lock-btn" id="vlock_female" onclick="setVocalGenderLock('female')">여성으로 고정</button>
-      <button class="gender-lock-btn" id="vlock_both" onclick="setVocalGenderLock('both')">혼성으로 고정</button>
-      <button class="gender-lock-btn" id="vlock_femaleduet" onclick="setVocalGenderLock('female_duet')">여성 듀엣으로 고정</button>
-      <button class="gender-lock-btn" id="vlock_none" onclick="setVocalGenderLock(null)">해제</button>
+      <button class="gender-lock-btn" id="vlock_male" onclick="userSetVocalGenderLock('male')">남성으로 고정</button>
+      <button class="gender-lock-btn" id="vlock_female" onclick="userSetVocalGenderLock('female')">여성으로 고정</button>
+      <button class="gender-lock-btn" id="vlock_both" onclick="userSetVocalGenderLock('both')">혼성으로 고정</button>
+      <button class="gender-lock-btn" id="vlock_femaleduet" onclick="userSetVocalGenderLock('female_duet')">여성 듀엣으로 고정</button>
+      <button class="gender-lock-btn" id="vlock_none" onclick="userSetVocalGenderLock(null)">해제</button>
       <div style="font-size:11px;color:var(--muted);width:100%;margin-top:4px">고정해두면 프리셋·퀄리티엔진·랜덤조합을 뭘 실행해도 항상 이 성별로 최종 적용됩니다.</div>
     </div>
     <div class="gender-row">
@@ -2339,6 +2339,7 @@ function createSelectOne(stateKey, selector, idPrefix) {
   return function(i) {
     document.querySelectorAll(selector).forEach(el=>el.classList.remove('active'));
     STATE[stateKey] = STATE[stateKey]===i ? null : i;
+    if (stateKey === 'gueumStyle') _userTouchedGueum = true;
     if (STATE[stateKey]!==null) document.getElementById(idPrefix+i)?.classList.add('active');
     buildPrompt();
   };
@@ -2626,6 +2627,7 @@ function toggleMood(i) {
 function toggleTone(i) {
   const idx=STATE.vocalTones.indexOf(i);
   if (idx>=0) STATE.vocalTones.splice(idx,1); else STATE.vocalTones.push(i);
+  _userTouchedVocalTones = true;
   document.getElementById('tone_'+i)?.classList.toggle('active');
   buildPrompt();
 }
@@ -2698,6 +2700,12 @@ function applyHuskyGritVocal(style) {
 /* ── 🔒 최종 보컬 성별 고정 — 프리셋/퀄리티엔진/랜덤조합/14곡세트를 뭘 실행해도
    마지막에 이 성별로 강제 적용됨. STATE.vocalGenderLock: null | 'male' | 'female' | 'both' ── */
 STATE.vocalGenderLock = null;
+/* ── 사용자가 06(보컬톤)·06B(구음)를 직접 클릭해서 만졌는지 추적 —
+   09B(원클릭 퀄리티엔진)가 항상 카드 지정값으로 무조건 덮어써서, 사용자가 06/06B에서
+   미리 골라둔 게 "적용이 안 되는 것처럼" 보이던 문제의 원인. 이 플래그가 서 있으면
+   09B는 해당 항목을 건드리지 않고 사용자 선택을 그대로 둠. ── */
+let _userTouchedVocalTones = false;
+let _userTouchedGueum = false;
 
 function setVocalGenderLock(g) {
   STATE.vocalGenderLock = g;
@@ -2710,6 +2718,15 @@ function setVocalGenderLock(g) {
   buildPrompt();
   const _glLabel = { male:'남성', female:'여성', both:'혼성', female_duet:'여성 듀엣' }[g];
   showToast(g ? `🔒 보컬 ${_glLabel}으로 고정됨` : '🔓 보컬 성별 고정 해제됨');
+}
+/* ── 06번 화면의 "성별 고정" 버튼이 직접 호출하는 함수 — setVocalGenderLock 자체는
+   09B/빠른프리셋이 카드값을 적용할 때도 내부적으로 호출하므로, 거기에 플래그를 넣으면
+   "카드가 자기 값 넣은 것"까지 사용자 조작으로 오인해버림. 그래서 실제 사람이 버튼을
+   눌렀다는 게 확실한 이 래퍼에서만 플래그를 세움. "해제" 버튼(g=null)은 사용자가
+   다시 자동으로 돌아가겠다는 의도이므로 플래그도 같이 풀어줌. ── */
+function userSetVocalGenderLock(g) {
+  _userTouchedVocalTones = (g !== null);
+  setVocalGenderLock(g);
 }
 
 function enforceVocalGenderLock() {
@@ -2868,10 +2885,12 @@ function toggleGueumPos(pos) {
   const idx=STATE.gueumPositions.indexOf(pos);
   if (idx>=0) { STATE.gueumPositions.splice(idx,1); btn?.classList.remove('active'); }
   else { STATE.gueumPositions.push(pos); btn?.classList.add('active'); }
+  _userTouchedGueum = true;
   buildPrompt();
 }
 function selectGueumPitch(pitch) {
   STATE.gueumPitch=pitch;
+  _userTouchedGueum = true;
   document.querySelectorAll(".gueum-ctrl-btn[id^=gpitch_]").forEach(b=>b.classList.remove('active'));
   document.getElementById('gpitch_'+pitch)?.classList.add('active');
   const sliderVal=pitch==='high'?4:pitch==='midhigh'?3:pitch==='midlow'?2:1;
@@ -2884,6 +2903,7 @@ function updateGueumPitchSlider(v) {
   const pitches={1:'low',2:'midlow',3:'midhigh',4:'high'};
   const labels={1:'저음',2:'중저음',3:'중고음',4:'고음'};
   STATE.gueumPitch=pitches[v];
+  _userTouchedGueum = true;
   document.getElementById('gueumPitchLabel').textContent=labels[v];
   const pct=((v-1)/3*100).toFixed(0)+'%';
   document.getElementById('gueumPitchSlider').style.setProperty('--gpct',pct);
@@ -2893,12 +2913,14 @@ function updateGueumPitchSlider(v) {
 }
 function selectGueumGender(g) {
   STATE.gueumGender=g;
+  _userTouchedGueum = true;
   document.querySelectorAll(".gueum-ctrl-btn[id^=ggender_]").forEach(b=>b.classList.remove('active'));
   document.getElementById('ggender_'+g)?.classList.add('active');
   buildPrompt();
 }
 function selectGueumStrength(level) {
   STATE.gueumStrength=level;
+  _userTouchedGueum = true;
   document.querySelectorAll('[id^="gstrength_"]').forEach(b=>b.classList.remove('active'));
   document.getElementById('gstrength_'+level)?.classList.add('active');
   buildPrompt();
@@ -6280,7 +6302,33 @@ function _qeVaried(base, poolSize, extraChance, extraCount) {
 function applyReferenceQuickPreset(id) {
   const c = REFERENCE_QUICK_PRESETS.find(x => x.id === id);
   if (!c) return;
+  // ★ 버그 수정: resetAll(false)이 _userTouchedVocalTones/_userTouchedGueum 플래그와
+  // STATE의 관련 값들을 리셋시켜서, 사용자가 06에서 미리 "혼성" 등을 눌러놔도 카드를
+  // 선택하는 순간 그 선택이 사라지던 문제 — 09B(runQualityEngine)와 동일한 패턴으로
+  // 호출 전에 백업해뒀다가 호출 후 필요하면 복원.
+  const _preUserTouchedVocal = _userTouchedVocalTones;
+  const _preUserTouchedGueum = _userTouchedGueum;
+  const _preVocalTones = [...(STATE.vocalTones||[])];
+  const _preVocalGenderLock = STATE.vocalGenderLock;
+  const _preGueumPositions = [...(STATE.gueumPositions||[])];
+  const _preGueumPitch = STATE.gueumPitch;
+  const _preGueumGender = STATE.gueumGender;
+  const _preGueumStrength = STATE.gueumStrength;
+  const _preGueumStyle = STATE.gueumStyle;
   resetAll(false);
+  if (_preUserTouchedVocal) {
+    STATE.vocalTones = _preVocalTones;
+    STATE.vocalGenderLock = _preVocalGenderLock;
+    _userTouchedVocalTones = true;
+  }
+  if (_preUserTouchedGueum) {
+    STATE.gueumPositions = _preGueumPositions;
+    STATE.gueumPitch = _preGueumPitch;
+    STATE.gueumGender = _preGueumGender;
+    STATE.gueumStrength = _preGueumStrength;
+    STATE.gueumStyle = _preGueumStyle;
+    _userTouchedGueum = true;
+  }
   // ★ genre를 8(트롯)로 고정하면 안 됨 — isTrot 판정은
   // (form.id === 'gugak_trot') || (gugakTrotBase && !isHiphop) 두 조건 중 하나라도
   // 참이면 트롯이 되는데, genre=8 자체가 'gugak_trot' 폼이라서, gugakTrotBase를
@@ -6321,22 +6369,30 @@ function applyReferenceQuickPreset(id) {
   const [_bpmLo, _bpmHi] = c.bpmRange || [70, 84];
   STATE.bpm = _bpmLo + Math.floor(Math.random() * (_bpmHi - _bpmLo + 1));
   // ★ 구음 — 위치는 카드 정체성 기본 유지하되, 좀 더 자주 위치를 하나 더 추가해 변주
-  STATE.gueumPositions = Math.random() < 0.5 && c.gueumPos.length < 3
-    ? [...new Set([...c.gueumPos, _rp(['start','mid','end'])])]
-    : [...c.gueumPos];
-  STATE.gueumPitch = Math.random() < 0.5 ? c.gueumPitch : _rp(['low','mid','midhigh']);
-  STATE.gueumGender = c.gueumGender; // 보컬 성별과 맞춰야 하므로 고정 유지
-  STATE.gueumStrength = Math.random() < 0.5 ? c.gueumStrength : _rp(['medium','strong']);
-  STATE.gueumStyle = Math.random() < 0.5 ? c.gueumStyleIdx : _rp([c.gueumStyleIdx, 0, 1, 2, 4]);
+  // (사용자가 06B에서 이미 직접 만졌으면 이 블록 전체를 건너뛰고 기존 선택 유지)
+  if (!_userTouchedGueum) {
+    STATE.gueumPositions = Math.random() < 0.5 && c.gueumPos.length < 3
+      ? [...new Set([...c.gueumPos, _rp(['start','mid','end'])])]
+      : [...c.gueumPos];
+    STATE.gueumPitch = Math.random() < 0.5 ? c.gueumPitch : _rp(['low','mid','midhigh']);
+    STATE.gueumGender = c.gueumGender; // 보컬 성별과 맞춰야 하므로 고정 유지
+    STATE.gueumStrength = Math.random() < 0.5 ? c.gueumStrength : _rp(['medium','strong']);
+    STATE.gueumStyle = Math.random() < 0.5 ? c.gueumStyleIdx : _rp([c.gueumStyleIdx, 0, 1, 2, 4]);
+  }
   STATE.vocalForward = c.vocalForward === true; // 카드가 명시 안 하면 매번 false로 초기화
 
   const _tb = document.getElementById('gugakTrotBaseToggle'); if (_tb) _tb.checked = STATE.gugakTrotBase;
 
   if (c.vocalGenderLock !== undefined) {
     // ★ 혼성 듀엣류 — 성별 고정을 먼저 지정한 뒤 enforceVocalGenderLock()이 알아서
-    // 남1+여1(또는 카드 지정 방식)로 배정
+    // 남1+여1(또는 카드 지정 방식)로 배정. 이건 카드의 핵심 정체성(듀엣 여부)이라
+    // 사용자의 06 수동선택보다 우선함(09B와 동일 정책).
     setVocalGenderLock(c.vocalGenderLock);
-  } else if (c.vocalTones !== undefined) {
+  } else if (c.vocalTones !== undefined && !_userTouchedVocalTones) {
+    // ★ 버그 수정: 사용자가 06에서 이미 직접 보컬 톤이나 성별고정을 골라뒀는데
+    // (_userTouchedVocalTones), 카드를 선택할 때마다 여기서 무조건 카드 지정값으로
+    // 재계산해서 덮어써서 "06에서 혼성을 눌러도 곡카드를 선택하면 도로 원래 성별로
+    // 돌아간다"는 증상의 원인이었음. 사용자가 직접 만졌으면 이 블록 전체를 건너뜀.
     STATE.vocalTones = [...c.vocalTones];
     // ★ 카드가 직접 고른 vocalTones의 실제 성별에 맞춰 vocalGenderLock도 먼저
     // 동기화 — 이전에 걸려있던 성별 고정값이 이 카드의 새 톤을 덮어쓰지 않도록.
@@ -6497,6 +6553,7 @@ function copyField(id){const el=document.getElementById(id);doCopy(el.value!==un
 function showToast(msg="✅ 완료!"){const t=document.getElementById('toast');if(t){t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}}
 
 function resetAll(doRender=true) {
+  _userTouchedVocalTones = false; _userTouchedGueum = false;
   STATE.genre=null;STATE.moods=[];STATE.instrList=[];
   STATE.concept=null;STATE.vocalStyle=null;STATE.gugakVocalStyle=null;STATE.vocalTones=[];STATE.textures=[];
   STATE.grooves=[];STATE.spaces=[];STATE.koreanGrooves=[];STATE.bassStyles=[];
@@ -7950,8 +8007,38 @@ async function runQualityEngine() {
     qeSetStep(0);
     await sleep(120);
 
+    // ★ 버그 수정: apply73Preset()이 내부적으로 resetAll(false)을 호출하는데,
+    // 이게 _userTouchedVocalTones/_userTouchedGueum 플래그까지 리셋시키고 STATE의
+    // vocalTones·gueumPositions 등도 프리셋값으로 하드코딩해버려서, 09B 처리부 뒷단에서
+    // 아무리 플래그를 체크해도 이미 늦은 상태였음(사용자가 06/06B에서 직접 고른 값이
+    // apply73Preset 한 줄 때문에 통째로 사라짐). 호출 전에 사용자가 만졌던 값들을
+    // 백업해뒀다가, 호출 후 플래그가 서 있었다면 그대로 복원.
+    const _preUserTouchedVocal = _userTouchedVocalTones;
+    const _preUserTouchedGueum = _userTouchedGueum;
+    const _preVocalTones = [...(STATE.vocalTones||[])];
+    const _preVocalGenderLock = STATE.vocalGenderLock;
+    const _preGueumPositions = [...(STATE.gueumPositions||[])];
+    const _preGueumPitch = STATE.gueumPitch;
+    const _preGueumGender = STATE.gueumGender;
+    const _preGueumStrength = STATE.gueumStrength;
+    const _preGueumStyle = STATE.gueumStyle;
+
     // 프리셋 적용 (preset73 기반)
     apply73Preset(c.preset73);
+
+    if (_preUserTouchedVocal) {
+      STATE.vocalTones = _preVocalTones;
+      STATE.vocalGenderLock = _preVocalGenderLock;
+      _userTouchedVocalTones = true;
+    }
+    if (_preUserTouchedGueum) {
+      STATE.gueumPositions = _preGueumPositions;
+      STATE.gueumPitch = _preGueumPitch;
+      STATE.gueumGender = _preGueumGender;
+      STATE.gueumStrength = _preGueumStrength;
+      STATE.gueumStyle = _preGueumStyle;
+      _userTouchedGueum = true;
+    }
     await sleep(80);
 
     // BPM: 범위 내에서 매번 랜덤 (기존엔 중간값 고정이라 매번 똑같았음)
@@ -7988,8 +8075,13 @@ async function runQualityEngine() {
       // 이전엔 이 필드를 읽는 로직이 아예 없어서, 카드에 vocalGenderLock:'both'를
       // 넣어도 09B에서는 무시되고 vocalTones 처리부의 자동 성별감지 로직만 타는
       // 문제가 있었음 (빠른프리셋에는 있었는데 09B에는 빠져있던 비대칭 버그)
+      // ※ 이건 카드의 핵심 정체성(듀엣 여부)이라 사용자의 06 수동선택보다 우선함
       setVocalGenderLock(c.vocalGenderLock);
-    } else if (c.vocalTones !== undefined) {
+    } else if (c.vocalTones !== undefined && !_userTouchedVocalTones) {
+      // ★ 버그 수정: 사용자가 06번에서 이미 직접 보컬 톤을 골라뒀는데(_userTouchedVocalTones),
+      // 09B 카드를 누르면 여기서 무조건 카드 지정 톤으로 덮어써서 "06에서 고른 게
+      // 적용이 안 되는 것처럼" 보이던 원인. 사용자가 직접 만졌으면 이 블록 전체를 건너뛰고
+      // 사용자의 기존 선택을 그대로 유지함 (성별 고정은 아래 enforceVocalGenderLock이 처리).
       STATE.vocalTones = [...c.vocalTones];
       // ★ 카드가 직접 고른 vocalTones의 실제 성별에 맞춰 vocalGenderLock도 먼저
       // 동기화해야 함 — 안 그러면 "이전에 걸려있던 성별 고정값"(예: 직전에 여성
@@ -8027,14 +8119,28 @@ async function runQualityEngine() {
     // ── STEP 2: 구음 최적 조합 ──────────────────────
     qeSetStep(1);
 
-    // 위치 초기화 후 선택
-    STATE.gueumPositions = [...c.gueumPos];
-    selectGueumPitch(c.gueumPitch);
-    selectGueumGender(c.gueumGender);
-    selectGueumStrength(c.gueumStrength);
-    STATE.gueumStyle = c.gueumStyleIdx;
-    syncGueumUI();
-    const posLabel = c.gueumPos.join('+');
+    // ★ 버그 수정: 사용자가 06B에서 이미 직접 구음 위치·음역·성별·강도·스타일을
+    // 골라뒀는데(_userTouchedGueum), 여기서 무조건 카드 지정값으로 덮어써서
+    // "06B에서 고른 게 적용이 안 되는 것처럼" 보이던 원인. 사용자가 직접 만졌으면
+    // 이 5개 항목 전부 건드리지 않고 기존 선택을 그대로 유지함.
+    let posLabel;
+    if (!_userTouchedGueum) {
+      // 위치 초기화 후 선택
+      STATE.gueumPositions = [...c.gueumPos];
+      selectGueumPitch(c.gueumPitch);
+      selectGueumGender(c.gueumGender);
+      selectGueumStrength(c.gueumStrength);
+      STATE.gueumStyle = c.gueumStyleIdx;
+      // ★ 위 3개 select 함수 자체가 "사용자가 만졌다"는 플래그를 세우므로, 09B가 카드값을
+      // 적용하는 이 호출 때문에 플래그가 오염되지 않도록 즉시 false로 되돌림. 안 그러면
+      // 이번 실행에서 카드가 자기 값을 넣자마자 다음 실행부터 계속 "사용자가 만졌다"고
+      // 오인해서 이후 어떤 09B 카드를 눌러도 구음 설정이 하나도 안 바뀌게 됨.
+      _userTouchedGueum = false;
+      syncGueumUI();
+      posLabel = c.gueumPos.join('+');
+    } else {
+      posLabel = (STATE.gueumPositions || []).join('+') || '사용자 지정';
+    }
     qeSetStep(2, `위치: ${posLabel} · 음역: ${c.gueumPitch} · 성별: ${c.gueumGender} · 강도: ${c.gueumStrength} · 스타일 #${c.gueumStyleIdx}`);
     await sleep(150);
 
