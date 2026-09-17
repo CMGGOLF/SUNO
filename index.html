@@ -2053,7 +2053,18 @@ function _applyPools(type) {
   if (p.blackSoulElements && p.blackSoulElements.length) STATE.blackSoulElements = [..._rp(p.blackSoulElements)];
   if (p.humanFeelElements && p.humanFeelElements.length) STATE.humanFeelElements = [..._rp(p.humanFeelElements)];
   if (p.gueumPositions    && p.gueumPositions.length)    STATE.gueumPositions    = [..._rp(p.gueumPositions)];
-  if (p.instr && p.instr.length) STATE.instrList = p.instr.map(x => ({cat:x.cat, idx:x.idx}));
+  // ★ 버그 수정: p.instr 배열이 매번 똑같은 순서([가야금,해금,아쟁,타악기] 등)로 그대로
+  // 들어가서, 스타일 프롬프트에서 항상 같은 악기(첫 번째=가야금)가 "주 악기"처럼 맨 앞에
+  // 고정 배치되던 게 "인트로가 거의 항상 가야금으로 들린다"는 문제의 원인 중 하나였음.
+  // 셔플해서 매번 다른 악기가 앞에 오도록 함(포함된 악기 종류 자체는 그대로 유지).
+  if (p.instr && p.instr.length) {
+    const _shuffled = [...p.instr];
+    for (let i = _shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [_shuffled[i], _shuffled[j]] = [_shuffled[j], _shuffled[i]];
+    }
+    STATE.instrList = _shuffled.map(x => ({cat:x.cat, idx:x.idx}));
+  }
   /* ── v27 추가: 장르 권장 BPM 범위로 BPM 설정 (GENRE_BPM_RANGE 연동) ── */
   const _bpmR = (STATE.genre !== null && GENRE_BPM_RANGE[STATE.genre])
     ? GENRE_BPM_RANGE[STATE.genre]
@@ -6191,7 +6202,10 @@ function apply73Preset(type) {
     STATE.gueumStyle=4;STATE.gueumStrength='strong';
     // 06C 한(恨) 소울 스타일 자동 조합 — 조선 궁중 소울
     STATE.hanSoulStyle=0;
-    selectInstrByCategory('string',0, true);
+    // ★ 버그 수정: selectInstrByCategory의 3번째 인자는 "화면갱신 생략"일 뿐 랜덤이 아님 —
+    // 항상 index0(가야금)을 100% 고정 선택하고 있었음. 궁중의 격식·웅장함에 어울리는
+    // 현악기 후보 중에서 매번 다르게 뽑히도록 수정.
+    selectInstrByCategory('string', _rp([0,3,4,5,6]), true);
   } else if (type==='sanjo') {
     STATE.genre=1;STATE.moods=[1,3];STATE.concept=1;STATE.vocalStyle=2;STATE.vocalTones=[2,9];
     STATE.textures=[4,6];STATE.grooves=[0,5];STATE.spaces=[2];STATE.koreanGrooves=[0,3,7];
@@ -6236,7 +6250,9 @@ function apply73Preset(type) {
     STATE.gueumStyle=2;STATE.gueumStrength='strong';
     // 06C 한(恨) 소울 스타일 자동 조합 — 민요 블루스 한
     STATE.hanSoulStyle=4;
-    selectInstrByCategory('string',0, true);
+    // ★ 버그 수정: 항상 가야금(index0)으로 고정되던 것을 민요 정서에 어울리는
+    // 가야금·해금 사이에서 랜덤으로 뽑히도록 수정.
+    selectInstrByCategory('string', _rp([0,1]), true);
   } else if (type==='court') {
     STATE.genre=7;STATE.moods=[0,3];STATE.concept=7;STATE.vocalStyle=6;STATE.vocalTones=[9,10];
     STATE.textures=[5,6];STATE.grooves=[4,6];STATE.spaces=[1,2];STATE.koreanGrooves=[0,3,11];
@@ -6266,7 +6282,11 @@ function apply73Preset(type) {
     STATE.gueumStyle=1;STATE.gueumStrength='strong';
     // 06C 한(恨) 소울 스타일 자동 조합 — 국악 트롯 한(恨)과 흥
     STATE.hanSoulStyle=4;
-    selectInstrByCategory('string',0, true);
+    // ★ 버그 수정: 트롯 프리셋에서 항상 가야금(index0)으로 100% 고정되던 게 "인트로가
+    // 거의 항상 가야금으로 들린다"는 문제의 실제 원인이었음. 트롯에 자연스러운
+    // 현악기 중에서 매번 다르게 뽑히도록 수정 (해금·아쟁이 한恨 표현에 특히 잘 맞아
+    // 조금 더 자주 나오게 가중치를 줌).
+    selectInstrByCategory('string', _rp([0,1,1,2,2,3,5,6]), true);
   }
   const isStrong73 = STRONG_RANDOM_PRESETS.includes(type);
   _applyPools(type);
@@ -6447,7 +6467,8 @@ function applyUltimateGroovePreset() {
   STATE.gueumStyle=4;STATE.gueumStrength='strong';
   // 06C 한(恨) 소울 스타일 — 네오조선 그루브 소울
   STATE.hanSoulStyle=2;
-  selectInstrByCategory('string',0, true);
+  // ★ 버그 수정: 항상 가야금(index0) 고정 → 조선궁중과 동일하게 랜덤 선택으로
+  selectInstrByCategory('string', _rp([0,3,4,5,6]), true);
   _applyPools('joseon'); // Ultimate Groove → joseon 풀에서 랜덤 변화
   applyPresetRandomness(false);
   _finalizePreset("🔥 Ultimate 7:3 Joseon Groove 적용 완료! (구음+한소울 자동 조합)");
