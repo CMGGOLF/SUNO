@@ -5433,7 +5433,7 @@ function buildDynamicStructure(totalSec, opts) {
       ` 2줄: 앞 절·후렴에서 쌓인 핵심 감정을 응축한 새 구절 (배경 정서 참고: ${_trotDiv.motif} — 단어 그대로 쓰지 말 것)\n` +
       ` 3줄: 앵커를 짧게 끊어 절규하듯 변형 (예: 앞부분만 떼어 "${(_trotDiv.anchor.split(' ')[0]||_trotDiv.anchor)}…")\n` +
       ` 4줄: 마지막 한 마디 — 가장 짧고 사무치게, 끝에 ${STATE.backingVocal !== null ? '위에서 지정한 백킹보컬 큐' : `추임새 ${_trotDiv.chuimsaeA}`})\n\n` +
-      `[Ad-lib] 가사 없이 짧은 멜리스마 한 마디만 쓸 것 (예: "하~~~")\n\n` +
+      `[Ad-lib] 가사 없이 짧은 멜리스마 한 마디만 쓸 것 (예: "${_rp(['하~~~','흐어~~~','으윽~~~','아이~~~','어허~~~'])}")\n\n` +
       `[아웃트로] 이완 ${_trTrot.outro}\n(정확히 ${_oLines}줄 — 감정이 서서히 가라앉음${modernVocab ? ', 종결어미는 요즘 자연스러운 구어체로 (예스러운 어미 금지)' : `, 종결어미 ${_trotDiv.ending}`})\n${_pickForm(form.outroStyle, 'outro')||_pickForm(_trotForm.outroStyle, 'outro')||'[fade out]\n[end]'}`;
     if (_wantGueum && _gPos.includes('end')) structureKr += `\n\n${_guumBlockText()}`;
   } else {
@@ -5473,7 +5473,7 @@ function buildDynamicStructure(totalSec, opts) {
     if (_wantGueum && _gPos.includes('add3')) structureKr += _guumBlockText();
     structureKr +=
       `[후렴 - 마지막] 긴장 ${tr.finalchorus}\n[Big Finish]\n(정확히 ${choLines}줄 — 앵커 라인으로 시작하되 같은 줄 복붙 금지: 1줄 앵커 그대로, 중간 줄은 감정 응축한 변형, 마지막 줄은 가장 짧고 강하게 끊어 절정${STATE.backingVocal !== null ? ', 마지막 줄 끝에만 위에서 지정한 백킹보컬 큐 사용' : (_useGugakBase&&_trotDiv) ? `, 마지막 줄 끝에만 추임새 ${_trotDiv.chuimsaeA}` : ''})\n\n` +
-      ((_useGugakBase&&_trotDiv) ? `[Ad-lib] 가사 없이 짧은 멜리스마 한 마디만 쓸 것 (예: "하~~~")\n\n` : '') +
+      ((_useGugakBase&&_trotDiv) ? `[Ad-lib] 가사 없이 짧은 멜리스마 한 마디만 쓸 것 (예: "${_rp(['하~~~','흐어~~~','으윽~~~','아이~~~','어허~~~'])}")\n\n` : '') +
       `[아웃트로] 이완 ${tr.outro}\n(정확히 ${outroLines}줄 — 에너지가 서서히 녹아내림)\n${_pickForm(form.outroStyle, 'outro')||'[fade out]\n[end]'}`;
     if (_wantGueum && _gPos.includes('end')) structureKr += `\n\n${_guumBlockText()}`;
   }
@@ -5591,7 +5591,7 @@ ${storyBlockKr}${backingVocalCueBlock}${energyArcSectionBlockKr}${inlineEventBlo
     return _posList.join(' / ') + ` — 이 ${_posList.length}곳에만 [Gugak Guum] 섹션을 넣고, 다른 곳에는 넣지 말 것. 지정된 위치가 아닌 임의의 자리에 구음을 넣으면 안 됨.`;
   })()}
 - [Gugak Guum] 섹션은 이미 위에 구체적으로 제시된 그대로 1~3줄을 출력할 것 — 가사가 아닌 무의미 구음 멜리스마. [High]/[Mid]/[Low]는 음역 표시일 뿐 단어로 부르지 말 것
-- [Ad-lib] 섹션도 무의미 구음: "하~~~" / "흐어~~~" 같은 멜리스마 — 지시어 단어 부르지 말 것` : ''}
+- [Ad-lib] 섹션도 무의미 구음: "${_rp(['하~~~','흐어~~~','으윽~~~','아이~~~','어허~~~'])}" 같은 멜리스마 — 지시어 단어 부르지 말 것` : ''}
 ` : ''}
 ${rhymeRuleKr}
 
