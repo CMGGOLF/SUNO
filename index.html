@@ -3348,6 +3348,17 @@ function _doBuildPrompt() {
     ];
     parts.push(_rp(_MELODIC_CONTOUR_VARIANTS));
 
+    // ★ 레퍼런스곡 멜로디·보컬 음정 매칭 — 15개 레퍼런스곡 프리셋 중 하나가 활성화된
+    // 경우, 그 실제 무대의 선율 굴곡·클라이맥스 위치·보컬 음역/음색을 위 일반 [Melodic
+    // Contour]보다 한 단계 더 구체적으로 지시. 국악기 편성상 원곡과 음색 자체는 다를
+    // 수밖에 없으므로 "동일 재현"이 아니라 "선율이 흘러가는 모양과 보컬 음역대를
+    // 텍스트로 최대한 근접하게" 지시하는 보조 레이어임 — 정확한 멜로디 복제를
+    // 보장하지 않음.
+    if (STATE.activeRefMelodyId && REF_MELODY_MATCH[STATE.activeRefMelodyId]) {
+      const _refM = REF_MELODY_MATCH[STATE.activeRefMelodyId];
+      parts.push(`[Reference Melody Match — "${STATE.activeRefMelodyId}"] Shape the melody as close as text can direct it to the real reference performance's contour: ${_refM.contour} Vocal register/character to match: ${_refM.vocalRange}`);
+    }
+
     // ★ 구음(gueum)은 오늘 요성(음정을 길게 떨며 늘이는 것) 표현을 강화했는데,
     // 정작 실제로 가사를 부르는 보컬 쪽엔 "꺾기(kkeokki)"라는 단어 하나 말고는
     // 국악 전통 가창 기법이 구체적으로 지시된 적이 없었음. [Melodic Contour]가
@@ -6479,6 +6490,11 @@ function applyReferenceQuickPreset(id) {
   if (Math.random() < 0.6) selectInstrByCategory('percussion', _rp([0,1,2]), false);
   if (Math.random() < 0.4) selectInstrByCategory('wind', _rp([0,1,2]), false);
 
+  // ★ 레퍼런스곡 멜로디·보컬 음정 매칭 — 카드별 실제 레퍼런스 무대 기준 선율 굴곡·
+  // 음역 지시를 _doBuildPrompt()가 참조하도록 활성 카드 id 기록 (다른 프리셋으로
+  // 넘어가면 resetAll에서 null로 초기화됨)
+  STATE.activeRefMelodyId = REF_MELODY_MATCH[c.id] ? c.id : null;
+
   _finalizePreset(`🌹 국악 트롯트 — "${c.name}" 풍 (${c.reference})`);
 }
 
@@ -6614,6 +6630,7 @@ function resetAll(doRender=true) {
   STATE.musicKey=null;STATE.koreanScale=null;STATE.energyArc=null;
   STATE.songDuration='3:30';
   STATE.sanjoBallad=false;
+  STATE.activeRefMelodyId=null;
   if(doRender){
     renderAll();syncSliders();
     document.querySelectorAll(".gueum-ctrl-btn[id^=gpos_]").forEach(b=>b.classList.remove('active'));
@@ -7945,6 +7962,79 @@ const REFERENCE_QUICK_PRESETS = [
   },
 ];
 
+/* ═══════════════════════════════════════════════════════════════
+   ★ 레퍼런스곡 멜로디·보컬 음정 매칭 (2026-09-26 추가)
+   REFERENCE_QUICK_PRESETS 15곡 각각에 대해, 실제 레퍼런스 무대의 멜로디 굴곡
+   (절/후렴 오르내림 패턴, 클라이맥스 위치·성격)과 보컬 음역·음색 특징을
+   최대한 구체적으로 텍스트 지시화한 것. 국악기 편성이라 음색 자체는 원곡과
+   같을 수 없으므로, "똑같이"가 아니라 "선율이 흘러가는 모양과 보컬의 음역/
+   음색 성격을 최대한 근접하게"가 목표. Suno는 음표 단위 멜로디를 텍스트로
+   지정받을 수 없으므로, 이건 일반적인 [Melodic Contour] 지시보다 한 단계
+   더 곡별로 구체화한 보조 지시일 뿐 — 정확한 선율 재현을 보장하지 않음.
+   카드 추가/삭제 시 이 테이블도 함께 갱신할 것 (tool-v49 3개 시스템 점검 원칙).
+═══════════════════════════════════════════════════════════════ */
+const REF_MELODY_MATCH = {
+  tqp_gabeorin: {
+    contour: `Verse opens low and restrained, almost speech-close in pitch, then climbs steadily through the pre-chorus into one wide upward leap right on the chorus's opening word — the anchor phrase should land on the highest sustained note of the section, held with yoseong trembling, then a long toeseong downslide closes the phrase. Each repeated chorus climbs a little higher than the last (slow-burn rise), never resetting back to the verse's low starting point.`,
+    vocalRange: `Female chest-voice alto, grounded and unstrained in the verse's low-to-mid register, opening into a supported mid-high belt at the chorus peak — never falsetto or airy; the climax should sound vocally pushed, not lightly floated.`
+  },
+  tqp_cheonnyeonhak: {
+    contour: `Each verse stays low and measured, then each chorus explodes upward in one dramatic leap on the title phrase's first syllable, like a bird taking flight — the leap repeats and widens each time (wave pattern), so the final chorus carries the widest, most sustained leap of the song, ending on a long held high note with strong yoseong tremble.`,
+    vocalRange: `Young but weighty female voice — comfortable low-mid chest register in the verse, lifting into a powerful, fully-supported high belt at the chorus (never thin or airy) — sounds effortless even at the very top of its range.`
+  },
+  tqp_hannaebyeol: {
+    contour: `The two vocal lines must stay clearly distinct in shape, never blended: the female line follows the familiar wide-leaping trot contour (low verse, high wide chorus leap); the male line answers in a grounded pansori shout-singing (deuk-eum) shape — shorter, more percussive melodic bursts rather than long lyrical arcs, entering a beat behind the female phrase like true call-and-response.`,
+    vocalRange: `Female: mid-to-high trot belt with full trembling ornamentation. Male: lower chest register with a rough, raw-throated pansori grit (deuk-eum) — deliberately coarser and less polished than the female line, for audible contrast.`
+  },
+  tqp_hwolhwolhwol: {
+    contour: `Opens already near its emotional peak — no slow build-up. The very first line carries a wide, dramatic upward leap right out of the gate, landing high with maximum yoseong trembling, and the whole song then sustains that high-energy intensity through an extended climax (mountain-peak plateau) before finally descending only in the outro.`,
+    vocalRange: `Female belt voice at full power from the very first phrase — no held-back or quiet opening; a strong chest-mix carries confidently into the upper register throughout, never tentative or held in reserve.`
+  },
+  tqp_hanobaeknyeon: {
+    contour: `Rooted in the traditional gyemyeonjo (계면조) minor-pentatonic color of the original folk song, in a slow, free-breathing pulse (like neujeun-jungmori 늦은중모리) where the voice lingers and bends before resolving. Alternates hushed, near-spoken verse passages with sudden orchestral/vocal swells that surge up and then recede back to quiet — repeat this quiet-swell-quiet pattern rather than building to one single climax.`,
+    vocalRange: `Female voice sits mostly in a low, resonant, earthy folk-song register during the quiet passages, lifting into a fuller mid-high belt only during the swell moments — grounded rather than bright.`
+  },
+  tqp_nimisiyeo: {
+    contour: `Each verse builds through repeated honorific vocative phrases ("~이여", "~이시여"), each repetition climbing slightly higher than the last in small stepwise ascents rather than one big leap — then the chorus finally releases into the widest leap of the song on the title address itself, held with a long toeseong downslide.`,
+    vocalRange: `Male chest voice, warm and weighty in the mid-low register during verses, rising to a strong, open-throated mid-high call at the chorus peak — direct and vocative, not delicate.`
+  },
+  tqp_eome: {
+    contour: `Carries a gayageum-byeongchang (가야금병창) folk-singing shape — verse phrases are longer-breathed and more melismatic than typical trot, with small internal ornamental turns rather than one clean leap. The chorus widens into a fuller leap but keeps that folk-singing melisma quality on the way up rather than a clean pop-belt attack.`,
+    vocalRange: `Female voice with a distinctive husky, woody folk-singing (판소리/병창) color even in the middle register — warmer and more textured than a typical trot voice — lifting to a controlled high note at the peak that keeps that grain rather than turning bright and clean.`
+  },
+  tqp_oksusubat: {
+    contour: `Even the very first line already carries a gugak-inflected ache, not a neutral pop opening — a subtle downward-curling ornament on the opening phrase. The song builds gradually verse by verse, each repetition of the story adding more ornamentation and wider leaps, until the final chorus/bridge becomes the most emotionally saturated and widest-ranging moment.`,
+    vocalRange: `Female voice, gugak-colored from the very first note (already trembling/bending, never neutral), moving from a controlled low-mid ache into a fully open high belt by the final section.`
+  },
+  tqp_gajima: {
+    contour: `A long-breath narrative with two distinct climaxes rather than one: build to a first strong peak partway through, drop back to near-whisper with only a solo instrument under the voice, then build again — more urgently and with wider leaps — into a second, larger climax that exceeds the first, before a long descending outro.`,
+    vocalRange: `Female voice ranging from a hushed, near-spoken low register in the valley between peaks to a full, powerful high belt at each peak — the contrast between the two registers should be dramatic, not gradual.`
+  },
+  tqp_cheonnyeonbawi: {
+    contour: `A wandering, unhurried melodic line that drifts rather than leaps aggressively in the verses — longer, floating phrases evoking migration and movement — building into a chorus with a firm, resigned upward lift, more "settling into acceptance" than a dramatic emotional break.`,
+    vocalRange: `Female voice, steady mid register throughout, warm rather than piercing — the chorus lifts in volume and pitch but stays within a comfortable belt rather than reaching for an extreme high note; the emotional weight comes from tone, not vocal extremity.`
+  },
+  tqp_urieomeoni: {
+    contour: `The verse-to-chorus lift is present but the emphasis sits on vocal texture — grit, breath, huskiness — more than register extremity. The melody still leaps into the chorus, but the rasp and huskiness of the voice, not just the pitch height, should carry the emotional peak.`,
+    vocalRange: `Female voice with a pronounced husky, slightly rasped quality throughout, even in the verse (never clean or bright) — the chorus rises to a mid-high belt but keeps that raspy grain rather than smoothing out at the top.`
+  },
+  tqp_byeolli: {
+    contour: `Opens already fairly present and grounded, not a quiet whisper intro — restrained, plainly sung verses with minimal ornamentation, until specific marked emotional points (not the whole chorus) where the voice suddenly pushes into a brief, powerful high surge and immediately pulls back to the restrained baseline — short, sharp emotional spikes rather than one sustained climb.`,
+    vocalRange: `Male voice, low-mid chest register as the default resting tone throughout, with brief, forceful excursions to a strong high note only at the marked emotional peaks — restraint is the baseline, power is the exception.`
+  },
+  tqp_nimeunmangosae: {
+    contour: `A hypnotic, coiled verse melody circling around a narrow center (psychedelic, slightly disorienting), before the chorus suddenly throws the door open with a wide ascending leap and a burst of raw, unrestrained energy — the contrast between the verse's tight winding shape and the chorus's sudden wide-open release is the core melodic gesture.`,
+    vocalRange: `Female voice, sultry and restrained in the low-mid register during the verse, opening into a full-throated, almost shouted high belt at the chorus — raw and immediate rather than polished.`
+  },
+  tqp_bomnal: {
+    contour: `Begins almost conversationally plain and unadorned, with very little pitch movement in the earliest lines, then very gradually — verse by verse — the phrases widen and the voice pushes harder, until the final sections turn into an almost cracking, near-screamed high climax before collapsing back to near silence. This is the most extreme quiet-to-devastating arc among all reference cards and should not resolve back down until the very last phrase.`,
+    vocalRange: `Male voice starting in a plain, near speech-like low register with very little vibrato, pushed by the climax into a raw, straining high belt that sounds right at the edge of breaking — the rawness at the top matters more than pitch precision.`
+  },
+  tqp_mudeobeorin: {
+    contour: `Classic 80s-ballad shape — a lyrical, evenly-flowing verse melody with gentle, singable steps (not wide trot-style leaps yet), building through a pre-chorus lift into a chorus that finally opens into the song's one clear wide leap and sustained high note, held with a long steady vibrato rather than a sharper kkeokki break — smoother and more legato than the gugak-trot cards.`,
+    vocalRange: `Male lyrical tenor, comfortable mid register in the verse, opening to a sustained, smoothly-supported high note at the chorus peak — closer to a classic ballad-tenor belt than a raw trot cry.`
+  },
+};
 
 let _qeSelectedCombo = null;
 // ★ 퀄리티 엔진이 AI 슈퍼프롬프트를 부를 때, 숫자 설정값만으론 카드가 의도한
